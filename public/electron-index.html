@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>نظام إدارة المبيعات - إبراهيم العراقي</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🏪%3C/text%3E%3C/svg%3E">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+      }
+      .loading-container {
+        text-align: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top: 3px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .loading-text {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+      .loading-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+      .error-message {
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">جاري تحميل نظام إدارة المبيعات...</div>
+      <div class="loading-subtitle">نظام إدارة المبيعات - إبراهيم العراقي</div>
+      <div class="error-message" id="errorMessage">
+        حدث خطأ في تحميل التطبيق. يرجى إعادة تشغيل التطبيق.
+      </div>
+    </div>
+
+    <script>
+      // إظهار رسالة خطأ إذا لم يتم تحميل التطبيق خلال 10 ثوان
+      setTimeout(() => {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.style.display = 'block';
+      }, 10000);
+
+      // محاولة تحميل التطبيق
+      try {
+        // تحميل ملفات CSS
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = './assets/css/index-91571318.css';
+        document.head.appendChild(cssLink);
+
+        // تحميل ملفات JavaScript
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = './assets/js/index-a65a8214.js';
+        script.onerror = () => {
+          document.getElementById('errorMessage').style.display = 'block';
+        };
+        document.head.appendChild(script);
+      } catch (error) {
+        console.error('خطأ في تحميل التطبيق:', error);
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
