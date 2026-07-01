@@ -26,14 +26,14 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
       <div className="relative z-10 w-full max-w-md mx-4">
         <div className="glass-card hover-lift p-8">
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse-custom">
-              <Shield className="h-10 w-10 text-white" />
+              <Shield className="h-10 w-10 text-slate-800" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">تسجيل الدخول</h1>
+            <h1 className="text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h1>
             <p className="text-purple-200 text-sm">مرحبا بك</p>
           </div>
 
@@ -62,7 +62,7 @@ const LoginForm = () => {
             <div className="relative">
               <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-300 h-5 w-5" />
               <input type={showPassword?'text':'password'} name="password" value={formData.password} onChange={(e)=>setFormData({...formData, password:e.target.value})} className="input-modern w-full pr-12 pl-12 py-4 text-right font-medium" placeholder="كلمة المرور" disabled={loading} autoComplete="current-password" />
-              <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-white transition-colors" disabled={loading}>
+              <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-slate-800 transition-colors" disabled={loading}>
                 {showPassword ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
               </button>
             </div>

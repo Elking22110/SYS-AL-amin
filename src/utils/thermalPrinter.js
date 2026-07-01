@@ -335,8 +335,8 @@ class ThermalPrinterManager {
 
       // رسالة شكر
       await this.sendCommand('\x1B\x61\x01'); // محاذاة وسط
-      await this.sendCommand('أطبع شنطتك.. تزيد شهرتك\n');
-      await this.sendCommand('MS GROUP\n');
+      await this.sendCommand('شكراً لثقتكم - جودة وخدمة مميزة\n');
+      await this.sendCommand('متجر الأمين\n');
 
       // قطع الورق
       await this.cutPaper();
@@ -393,7 +393,7 @@ class ThermalPrinterManager {
       // توقيع
       await this.sendCommand('\x1B\x61\x01'); // محاذاة وسط
       await this.sendCommand('تم إنشاء التقرير تلقائياً\n');
-      await this.sendCommand('MS GROUP\n');
+      await this.sendCommand('متجر الأمين\n');
 
       // قطع الورق
       await this.cutPaper();
@@ -419,7 +419,7 @@ class ThermalPrinterManager {
       await this.sendCommand('\x1B\x45\x01'); // نص عريض
       await this.sendCommand('اختبار الطابعة\n');
       await this.sendCommand('\x1B\x45\x00'); // إلغاء النص العريض
-      await this.sendCommand('MS GROUP\n');
+      await this.sendCommand('متجر الأمين\n');
       await this.printLine('=', 32);
       await this.sendCommand('الوقت: ' + formatDateTime(getCurrentDate()) + '\n');
       await this.sendCommand('الحالة: متصلة بنجاح\n');

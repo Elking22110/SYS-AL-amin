@@ -47,7 +47,66 @@ const Suppliers = () => {
         if (Array.isArray(savedSuppliers) && savedSuppliers.length > 0) {
           setSuppliers(savedSuppliers);
         } else {
-          setSuppliers([]);
+          // بيانات أولية لموردي متجر الأمين - مستخرجة من قاعدة AlmodeerBNK
+          const today = new Date().toISOString().split('T')[0];
+          const defaultSuppliers = [
+            {
+              id: 1001, name: 'شركة Br للأدوات الصحية',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1002, name: 'شركة الأهرام',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1003, name: 'شركة الشريف للأدوات الصحية',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1004, name: 'بولي مستورد (مواسير وتوصيلات)',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1005, name: 'سمارت هوم (مواسير وبوش)',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1006, name: 'روكسي (خلاطات ولوازم)',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1007, name: 'إنفيت (مواسير وكوع)',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'نشط'
+            },
+            {
+              id: 1008, name: 'دلتل (مواسير بولي)',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'جديد'
+            },
+            {
+              id: 1009, name: 'مورد أطقم صيني',
+              phone: '', email: '', address: '',
+              totalSpent: 0, orders: 0,
+              lastVisit: today, joinDate: today, status: 'جديد'
+            }
+          ];
+          setSuppliers(defaultSuppliers);
+          localStorage.setItem('suppliers', JSON.stringify(defaultSuppliers));
         }
       } catch (error) {
         console.error('خطأ في تحميل الموردين:', error);
@@ -63,7 +122,7 @@ const Suppliers = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    const unsubInvoices = typeof subscribe === 'function' ? subscribe('SUPPLIERS_CHANGED', loadSuppliers) : null;
+    const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.SUPPLIERS_CHANGED, loadSuppliers) : null;
 
 
     return () => {
@@ -99,7 +158,7 @@ const Suppliers = () => {
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // نشر حدث تغيير الموردين
-      publish('SUPPLIERS_CHANGED', {
+      publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'create',
         supplier: supplier,
         suppliers: updatedSuppliers
@@ -139,7 +198,7 @@ const Suppliers = () => {
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // نشر حدث تغيير الموردين
-      publish('SUPPLIERS_CHANGED', {
+      publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'update',
         supplier: updatedSupplier,
         suppliers: updatedSuppliers
@@ -165,7 +224,7 @@ const Suppliers = () => {
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // نشر حدث تغيير الموردين
-      publish('SUPPLIERS_CHANGED', {
+      publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'delete',
         supplierId: id,
         suppliers: updatedSuppliers
@@ -196,7 +255,7 @@ const Suppliers = () => {
     };
 
     // الاشتراك في أحداث تغيير الموردين
-    const unsubscribe = subscribe('SUPPLIERS_CHANGED', (payload) => {
+    const unsubscribe = subscribe(EVENTS.SUPPLIERS_CHANGED, (payload) => {
       console.log('📨 استقبال حدث تغيير الموردين:', payload);
       reloadSuppliers();
     });
@@ -228,10 +287,10 @@ const Suppliers = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center animate-fadeInDown space-y-4 md:space-y-0">
           <div className="flex-1">
-            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-white mb-2 md:mb-3 bg-gradient-to-r from-white via-purple-200 to-purple-300 bg-clip-text text-transparent">
+            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-slate-900 mb-2 md:mb-3">
               إدارة الموردين
             </h1>
-            <p className="text-purple-200 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة بيانات ومحفوظات الموردين للمصنع</p>
+            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة موردي متجر الأمين للأدوات الصحية</p>
           </div>
           <button
             onClick={() => { soundManager.play('openWindow'); setShowAddModal(true); }}
@@ -247,14 +306,14 @@ const Suppliers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">إجمالي الموردين</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">{suppliers.length}</p>
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">إجمالي الموردين</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">{suppliers.length}</p>
                 <div className="flex items-center text-xs md:text-sm">
                   <span className="text-blue-300 font-medium">موردون مسجلون</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <User className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <User className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -262,16 +321,16 @@ const Suppliers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">موردين VIP</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">موردين VIP</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
                   {suppliers.filter(c => c.status === 'VIP').length}
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
-                  <span className="text-purple-300 font-medium">موردون مميزون</span>
+                  <span className="text-slate-500 font-medium">موردون مميزون</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-purple-500 to-violet-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Star className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <Star className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -279,16 +338,16 @@ const Suppliers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">متوسط قيمة المشتريات</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
-                  ${Math.round(suppliers.reduce((total, c) => safeMath.add(total, c.totalSpent), 0) / (suppliers.length || 1))}
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">متوسط قيمة المشتريات</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
+                  {Math.round(suppliers.reduce((total, c) => safeMath.add(total, c.totalSpent), 0) / (suppliers.length || 1)).toLocaleString('en-US')} ج.م
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
                   <span className="text-green-300 font-medium">متوسط المشتريات</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -296,8 +355,8 @@ const Suppliers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">موردون جدد هذا الشهر</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">موردون جدد هذا الشهر</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
                   {suppliers.filter(c => c.status === 'جديد').length}
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
@@ -305,7 +364,7 @@ const Suppliers = () => {
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Calendar className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <Calendar className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -314,9 +373,9 @@ const Suppliers = () => {
         {/* Top Suppliers */}
         <div className="glass-card hover-lift animate-fadeInUp mb-4 md:mb-6" style={{ animationDelay: '0.5s' }}>
           <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h3 className="text-lg font-bold text-white">أفضل الموردين</h3>
+            <h3 className="text-lg font-bold text-slate-800">أفضل الموردين</h3>
             <div className="p-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-lg">
-              <Star className="h-6 w-6 text-white" />
+              <Star className="h-6 w-6 text-slate-800" />
             </div>
           </div>
           <div className="space-y-3">
@@ -324,10 +383,10 @@ const Suppliers = () => {
               <div key={supplier.id} className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all duration-300">
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
-                    <span className="text-white font-bold text-sm">{index + 1}</span>
+                    <span className="text-slate-800 font-bold text-sm">{index + 1}</span>
                   </div>
                   <div>
-                    <p className="font-bold text-white text-lg">{supplier.name}</p>
+                    <p className="font-bold text-slate-800 text-lg">{supplier.name}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <Phone className="h-3 w-3 text-green-400" />
                       <p className="text-sm text-green-300 font-medium bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">{supplier.phone}</p>
@@ -336,7 +395,7 @@ const Suppliers = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full">
-                    ${supplier.totalSpent}
+                    {supplier.totalSpent.toLocaleString('en-US')} ج.م
                   </div>
                   <div className="text-xs text-orange-300 bg-orange-500 bg-opacity-20 px-2 py-1 rounded-full mt-1">
                     {supplier.orders} طلب
@@ -357,7 +416,7 @@ const Suppliers = () => {
                 placeholder="البحث بالاسم أو الهاتف أو البريد الإلكتروني..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-3 text-right bg-white bg-opacity-10 border border-blue-500 border-opacity-30 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:border-blue-400 focus:border-opacity-60"
+                className="w-full pr-10 pl-4 py-3 text-right bg-white bg-opacity-10 border border-blue-500 border-opacity-30 rounded-lg text-slate-800 placeholder-blue-300 focus:outline-none focus:border-blue-400 focus:border-opacity-60"
               />
             </div>
 
@@ -366,7 +425,7 @@ const Suppliers = () => {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="pr-10 pl-4 py-3 text-right appearance-none bg-white bg-opacity-10 border border-purple-500 border-opacity-30 rounded-lg text-white focus:outline-none focus:border-purple-400 focus:border-opacity-60"
+                className="pr-10 pl-4 py-3 text-right appearance-none bg-white bg-opacity-10 border border-purple-500 border-opacity-30 rounded-lg text-slate-800 focus:outline-none focus:border-purple-400 focus:border-opacity-60"
               >
                 {statuses.map(status => (
                   <option key={status} value={status}>{status}</option>
@@ -374,12 +433,12 @@ const Suppliers = () => {
               </select>
             </div>
 
-            <button className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 flex items-center border border-gray-500 border-opacity-30 hover:scale-105">
+            <button className="bg-gradient-to-r from-gray-600 to-gray-700 text-slate-800 px-4 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 flex items-center border border-gray-500 border-opacity-30 hover:scale-105">
               <Download className="h-5 w-5 mr-2" />
               تصدير
             </button>
 
-            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 flex items-center border border-green-500 border-opacity-30 hover:scale-105">
+            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-slate-800 px-4 py-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 flex items-center border border-green-500 border-opacity-30 hover:scale-105">
               <Upload className="h-5 w-5 mr-2" />
               استيراد
             </button>
@@ -397,8 +456,8 @@ const Suppliers = () => {
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-emerald-300 uppercase tracking-wider">إجمالي المشتريات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-orange-300 uppercase tracking-wider">عدد الطلبات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-cyan-300 uppercase tracking-wider">آخر زيارة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-purple-300 uppercase tracking-wider">الحالة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">الحالة</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-20">
@@ -407,10 +466,10 @@ const Suppliers = () => {
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center ml-3 shadow-lg">
-                          <User className="h-5 w-5 text-white" />
+                          <User className="h-5 w-5 text-slate-800" />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-white">{supplier.name}</div>
+                          <div className="text-sm font-bold text-slate-800">{supplier.name}</div>
                           <div className="text-xs text-blue-300 bg-blue-500 bg-opacity-20 px-2 py-1 rounded-full inline-block mt-1">
                             انضم: {supplier.joinDate}
                           </div>
@@ -427,7 +486,7 @@ const Suppliers = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-purple-400" />
-                          <div className="text-sm font-medium text-purple-300 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
+                          <div className="text-sm font-medium text-slate-500 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {supplier.email}
                           </div>
                         </div>
@@ -435,7 +494,7 @@ const Suppliers = () => {
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
-                        ${supplier.totalSpent}
+                        {supplier.totalSpent.toLocaleString('en-US')} ج.م
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
@@ -499,19 +558,6 @@ const Suppliers = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowAddModal(false);
-              setEditingSupplier(null);
-              setNewSupplier({
-                name: '',
-                phone: '',
-                email: '',
-                address: ''
-              });
-            }
-          }}
         >
           <div
             className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
@@ -527,13 +573,13 @@ const Suppliers = () => {
               overflowY: 'auto'
             }}
           >
-            <h2 className="text-xl font-bold text-white mb-4">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">
               {editingSupplier ? 'تعديل بيانات المورد' : 'إضافة مورد جديد'}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">اسم المورد</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">اسم المورد</label>
                 <input
                   type="text"
                   value={newSupplier.name}
@@ -543,7 +589,7 @@ const Suppliers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">رقم الهاتف</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">رقم الهاتف</label>
                 <input
                   type="tel"
                   value={newSupplier.phone}
@@ -553,7 +599,7 @@ const Suppliers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">البريد الإلكتروني</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">البريد الإلكتروني</label>
                 <input
                   type="email"
                   value={newSupplier.email}
@@ -563,7 +609,7 @@ const Suppliers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">العنوان</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">العنوان</label>
                 <textarea
                   value={newSupplier.address}
                   onChange={(e) => setNewSupplier({ ...newSupplier, address: e.target.value })}
@@ -586,7 +632,7 @@ const Suppliers = () => {
                     address: ''
                   });
                 }}
-                className="px-4 py-2 text-purple-200 hover:text-white transition-colors"
+                className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
               >
                 إلغاء
               </button>

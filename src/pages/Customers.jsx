@@ -36,142 +36,48 @@ const Customers = () => {
 
   const statuses = ['الكل', 'نشط', 'VIP', 'جديد', 'غير نشط'];
 
-  // تحليل البيانات الحقيقية من المبيعات + دمج مع العملاء المحفوظين لضمان عدم التصفير بعد نهاية الوردية
+  // تحميل العملاء من التخزين المحلي مباشرة دون حسابات معقدة ومكررة
   useEffect(() => {
-    const analyzeCustomersFromSales = () => {
+    const loadCustomers = () => {
       try {
-        const sales = JSON.parse(localStorage.getItem('sales') || '[]');
         const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
-        console.log('تحليل العملاء من المبيعات:', sales.length, 'مبيعات');
 
-        const customerMap = new Map();
-
-        sales.forEach(sale => {
-          if (sale.customer && sale.customer.name) {
-            const customerName = sale.customer.name;
-            const customerPhone = sale.customer.phone || 'غير محدد';
-            const customerEmail = sale.customer.email || 'غير محدد';
-            const customerAddress = sale.customer.address || 'غير محدد';
-
-            if (!customerMap.has(customerName)) {
-              customerMap.set(customerName, {
-                id: customerMap.size + 1,
-                name: customerName,
-                phone: customerPhone,
-                email: customerEmail,
-                address: customerAddress,
-                totalSpent: 0,
-                orders: 0,
-                lastVisit: sale.timestamp,
-                joinDate: sale.timestamp,
-                status: 'نشط'
-              });
-            }
-
-            const customer = customerMap.get(customerName);
-            customer.totalSpent = safeMath.add(customer.totalSpent, sale.total || 0);
-            customer.orders += 1;
-
-            // تحديث آخر زيارة
-            if (new Date(sale.timestamp) > new Date(customer.lastVisit)) {
-              customer.lastVisit = sale.timestamp;
-            }
-
-            // تحديث تاريخ الانضمام (أول عملية)
-            if (new Date(sale.timestamp) < new Date(customer.joinDate)) {
-              customer.joinDate = sale.timestamp;
-            }
-          }
-        });
-
-        let customersList = Array.from(customerMap.values());
-
-        // دمج مع العملاء المحفوظين مسبقاً لضمان الاستمرارية بعد نهاية الوردية
-        if (Array.isArray(savedCustomers) && savedCustomers.length > 0) {
-          const merged = new Map();
-          // أضف المحفوظين أولاً
-          savedCustomers.forEach(c => {
-            if (!c || !c.name) return;
-            merged.set(c.name, { ...c });
-          });
-          // دمج المحسوبين من المبيعات (تحديث الإجماليات وآخر زيارة)
-          customersList.forEach(c => {
-            const prev = merged.get(c.name);
-            if (!prev) {
-              merged.set(c.name, { ...c });
-            } else {
-              merged.set(c.name, {
-                ...prev,
-                phone: prev.phone || c.phone,
-                email: prev.email || c.email,
-                address: prev.address || c.address,
-                totalSpent: safeMath.add(prev.totalSpent || 0, c.totalSpent || 0),
-                orders: Number(prev.orders || 0) + Number(c.orders || 0),
-                lastVisit: new Date(c.lastVisit) > new Date(prev.lastVisit) ? c.lastVisit : prev.lastVisit,
-                joinDate: new Date(c.joinDate) < new Date(prev.joinDate) ? c.joinDate : prev.joinDate,
-                status: prev.status || c.status
-              });
-            }
-          });
-          customersList = Array.from(merged.values());
-        }
-
-        // تحديد حالة العميل بناءً على إجمالي المشتريات
-        customersList.forEach(customer => {
+        // تحديث حالة العميل التلقائي
+        const updatedCustomers = savedCustomers.map(customer => {
+          let status = customer.status;
           if (customer.totalSpent >= 5000) {
-            customer.status = 'VIP';
+            status = 'VIP';
           } else if (customer.totalSpent >= 2000) {
-            customer.status = 'نشط';
+            status = 'نشط';
           } else if (customer.orders === 1) {
-            customer.status = 'جديد';
-          } else {
-            customer.status = 'نشط';
+            status = 'جديد';
           }
+          return { ...customer, status };
         });
 
-        setCustomers(customersList);
-        try { localStorage.setItem('customers', JSON.stringify(customersList)); } catch (_) { }
-        console.log('تم تحليل العملاء:', customersList.length, 'عميل');
-        console.log('تفاصيل العملاء:', customersList);
-
+        setCustomers(updatedCustomers);
+        console.log('تم تحميل العملاء:', updatedCustomers.length, 'عميل');
       } catch (error) {
-        console.error('خطأ في تحليل العملاء:', error);
-        // احتياطي: لا تفرّغ القائمة، استخدم المحفوظين
-        try {
-          const saved = JSON.parse(localStorage.getItem('customers') || '[]');
-          setCustomers(Array.isArray(saved) ? saved : []);
-        } catch (_) {
-          setCustomers([]);
-        }
+        console.error('خطأ في تحميل العملاء:', error);
+        setCustomers([]);
       }
     };
 
-    // تحميل مبدئي من المحفوظين إذا لم توجد مبيعات
-    try {
-      const sales = JSON.parse(localStorage.getItem('sales') || '[]');
-      if (!Array.isArray(sales) || sales.length === 0) {
-        const saved = JSON.parse(localStorage.getItem('customers') || '[]');
-        if (Array.isArray(saved) && saved.length > 0) {
-          setCustomers(saved);
-        }
+    loadCustomers();
+
+    // مراقبة تغييرات العملاء
+    const handleStorageChange = (e) => {
+      if (e.key === 'customers') {
+        loadCustomers();
       }
-    } catch (_) { }
-
-    analyzeCustomersFromSales();
-
-    // مراقبة تغييرات المبيعات
-    const handleStorageChange = () => {
-      analyzeCustomersFromSales();
     };
 
     window.addEventListener('storage', handleStorageChange);
-    const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, analyzeCustomersFromSales) : null;
-    const unsubShifts = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, analyzeCustomersFromSales) : null;
+    const unsubCustomers = typeof subscribe === 'function' ? subscribe(EVENTS.CUSTOMERS_CHANGED, loadCustomers) : null;
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      if (typeof unsubInvoices === 'function') unsubInvoices();
-      if (typeof unsubShifts === 'function') unsubShifts();
+      if (typeof unsubCustomers === 'function') unsubCustomers();
     };
   }, []);
 
@@ -330,10 +236,10 @@ const Customers = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center animate-fadeInDown space-y-4 md:space-y-0">
           <div className="flex-1">
-            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-white mb-2 md:mb-3 bg-gradient-to-r from-white via-purple-200 to-purple-300 bg-clip-text text-transparent">
+            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-slate-900 mb-2 md:mb-3">
               إدارة العملاء
             </h1>
-            <p className="text-purple-200 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة بيانات عملاء مصنع MS GROUP Plast</p>
+            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة بيانات عملاء متجر الأمين للأدوات الصحية</p>
           </div>
           <button
             onClick={() => { soundManager.play('openWindow'); setShowAddModal(true); }}
@@ -349,14 +255,14 @@ const Customers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">إجمالي العملاء</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">{customers.length}</p>
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">إجمالي العملاء</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">{customers.length}</p>
                 <div className="flex items-center text-xs md:text-sm">
                   <span className="text-blue-300 font-medium">عملاء مسجلون</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <User className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <User className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -364,16 +270,16 @@ const Customers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">عملاء VIP</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">عملاء VIP</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
                   {customers.filter(c => c.status === 'VIP').length}
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
-                  <span className="text-purple-300 font-medium">عملاء مميزون</span>
+                  <span className="text-slate-500 font-medium">عملاء مميزون</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-purple-500 to-violet-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Star className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <Star className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -381,16 +287,16 @@ const Customers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">متوسط قيمة المشتريات</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
-                  ${Math.round(customers.reduce((total, c) => safeMath.add(total, c.totalSpent), 0) / (customers.length || 1))}
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">متوسط قيمة المشتريات</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
+                  {Math.round(customers.reduce((total, c) => safeMath.add(total, c.totalSpent), 0) / (customers.length || 1)).toLocaleString('en-US')} ج.م
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
                   <span className="text-green-300 font-medium">متوسط المشتريات</span>
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -398,8 +304,8 @@ const Customers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-purple-200 mb-1 md:mb-2 uppercase tracking-wide">عملاء جدد هذا الشهر</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">عملاء جدد هذا الشهر</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
                   {customers.filter(c => c.status === 'جديد').length}
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
@@ -407,7 +313,7 @@ const Customers = () => {
                 </div>
               </div>
               <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Calendar className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-white" />
+                <Calendar className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -416,9 +322,9 @@ const Customers = () => {
         {/* Top Customers */}
         <div className="glass-card hover-lift animate-fadeInUp mb-4 md:mb-6" style={{ animationDelay: '0.5s' }}>
           <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h3 className="text-lg font-bold text-white">أفضل العملاء</h3>
+            <h3 className="text-lg font-bold text-slate-800">أفضل العملاء</h3>
             <div className="p-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-lg">
-              <Star className="h-6 w-6 text-white" />
+              <Star className="h-6 w-6 text-slate-800" />
             </div>
           </div>
           <div className="space-y-3">
@@ -426,10 +332,10 @@ const Customers = () => {
               <div key={customer.id} className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all duration-300">
                 <div className="flex items-center">
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
-                    <span className="text-white font-bold text-sm">{index + 1}</span>
+                    <span className="text-slate-800 font-bold text-sm">{index + 1}</span>
                   </div>
                   <div>
-                    <p className="font-bold text-white text-lg">{customer.name}</p>
+                    <p className="font-bold text-slate-800 text-lg">{customer.name}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <Phone className="h-3 w-3 text-green-400" />
                       <p className="text-sm text-green-300 font-medium bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">{customer.phone}</p>
@@ -438,7 +344,7 @@ const Customers = () => {
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full">
-                    ${customer.totalSpent}
+                    {customer.totalSpent.toLocaleString('en-US')} ج.م
                   </div>
                   <div className="text-xs text-orange-300 bg-orange-500 bg-opacity-20 px-2 py-1 rounded-full mt-1">
                     {customer.orders} طلب
@@ -459,7 +365,7 @@ const Customers = () => {
                 placeholder="البحث بالاسم أو الهاتف أو البريد الإلكتروني..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pr-10 pl-4 py-3 text-right bg-white bg-opacity-10 border border-blue-500 border-opacity-30 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:border-blue-400 focus:border-opacity-60"
+                className="w-full pr-10 pl-4 py-3 text-right bg-white bg-opacity-10 border border-blue-500 border-opacity-30 rounded-lg text-slate-800 placeholder-blue-300 focus:outline-none focus:border-blue-400 focus:border-opacity-60"
               />
             </div>
 
@@ -468,7 +374,7 @@ const Customers = () => {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="pr-10 pl-4 py-3 text-right appearance-none bg-white bg-opacity-10 border border-purple-500 border-opacity-30 rounded-lg text-white focus:outline-none focus:border-purple-400 focus:border-opacity-60"
+                className="pr-10 pl-4 py-3 text-right appearance-none bg-white bg-opacity-10 border border-purple-500 border-opacity-30 rounded-lg text-slate-800 focus:outline-none focus:border-purple-400 focus:border-opacity-60"
               >
                 {statuses.map(status => (
                   <option key={status} value={status}>{status}</option>
@@ -476,12 +382,12 @@ const Customers = () => {
               </select>
             </div>
 
-            <button className="bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 flex items-center border border-gray-500 border-opacity-30 hover:scale-105">
+            <button className="bg-gradient-to-r from-gray-600 to-gray-700 text-slate-800 px-4 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 flex items-center border border-gray-500 border-opacity-30 hover:scale-105">
               <Download className="h-5 w-5 mr-2" />
               تصدير
             </button>
 
-            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 flex items-center border border-green-500 border-opacity-30 hover:scale-105">
+            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-slate-800 px-4 py-3 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 flex items-center border border-green-500 border-opacity-30 hover:scale-105">
               <Upload className="h-5 w-5 mr-2" />
               استيراد
             </button>
@@ -499,8 +405,8 @@ const Customers = () => {
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-emerald-300 uppercase tracking-wider">إجمالي المشتريات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-orange-300 uppercase tracking-wider">عدد الطلبات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-cyan-300 uppercase tracking-wider">آخر زيارة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-purple-300 uppercase tracking-wider">الحالة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">الحالة</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-20">
@@ -509,10 +415,10 @@ const Customers = () => {
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center ml-3 shadow-lg">
-                          <User className="h-5 w-5 text-white" />
+                          <User className="h-5 w-5 text-slate-800" />
                         </div>
                         <div>
-                          <div className="text-sm font-bold text-white">{customer.name}</div>
+                          <div className="text-sm font-bold text-slate-800">{customer.name}</div>
                           <div className="text-xs text-blue-300 bg-blue-500 bg-opacity-20 px-2 py-1 rounded-full inline-block mt-1">
                             انضم: {customer.joinDate}
                           </div>
@@ -529,7 +435,7 @@ const Customers = () => {
                         </div>
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-purple-400" />
-                          <div className="text-sm font-medium text-purple-300 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
+                          <div className="text-sm font-medium text-slate-500 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.email}
                           </div>
                         </div>
@@ -537,7 +443,7 @@ const Customers = () => {
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
-                        ${customer.totalSpent}
+                        {customer.totalSpent.toLocaleString('en-US')} ج.م
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
@@ -594,19 +500,6 @@ const Customers = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowAddModal(false);
-              setEditingCustomer(null);
-              setNewCustomer({
-                name: '',
-                phone: '',
-                email: '',
-                address: ''
-              });
-            }
-          }}
         >
           <div
             className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
@@ -622,13 +515,13 @@ const Customers = () => {
               overflowY: 'auto'
             }}
           >
-            <h2 className="text-xl font-bold text-white mb-4">
+            <h2 className="text-xl font-bold text-slate-800 mb-4">
               {editingCustomer ? 'تعديل بيانات العميل' : 'إضافة عميل جديد'}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">اسم العميل</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">اسم العميل</label>
                 <input
                   type="text"
                   value={newCustomer.name}
@@ -638,7 +531,7 @@ const Customers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">رقم الهاتف</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">رقم الهاتف</label>
                 <input
                   type="tel"
                   value={newCustomer.phone}
@@ -648,7 +541,7 @@ const Customers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">البريد الإلكتروني</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">البريد الإلكتروني</label>
                 <input
                   type="email"
                   value={newCustomer.email}
@@ -658,7 +551,7 @@ const Customers = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">العنوان</label>
+                <label className="block text-sm font-medium text-slate-600 mb-1">العنوان</label>
                 <textarea
                   value={newCustomer.address}
                   onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
@@ -681,7 +574,7 @@ const Customers = () => {
                     address: ''
                   });
                 }}
-                className="px-4 py-2 text-purple-200 hover:text-white transition-colors"
+                className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"
               >
                 إلغاء
               </button>

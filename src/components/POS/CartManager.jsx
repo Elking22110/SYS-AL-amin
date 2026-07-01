@@ -116,10 +116,10 @@ const CartManager = ({
   }, [notifySuccess]);
 
   return (
-    <div className="w-full sm:w-96 lg:w-80 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl p-6 flex flex-col">
+    <div className="w-full bg-white border border-slate-200 rounded-xl shadow-lg p-6 flex flex-col">
       {/* عنوان السلة */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
           <ShoppingCart className="h-6 w-6 text-blue-400" />
           سلة المشتريات
         </h2>
@@ -140,7 +140,7 @@ const CartManager = ({
         {cart.length === 0 ? (
           <div className="text-center py-8">
             <ShoppingCart className="h-16 w-16 text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-400">السلة فارغة</p>
+            <p className="text-slate-500">السلة فارغة</p>
             <p className="text-gray-500 text-sm">أضف منتجات للبدء</p>
           </div>
         ) : (
@@ -148,10 +148,10 @@ const CartManager = ({
             {cart.map((item) => (
               <div
                 key={item.id}
-                className="bg-gray-700 rounded-lg p-3 hover:bg-gray-600 transition-colors"
+                className="bg-slate-50 rounded-lg p-3 hover:bg-blue-50 transition-colors border border-slate-100"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-white text-sm line-clamp-2">
+                  <h4 className="font-semibold text-slate-800 text-sm line-clamp-2">
                     {item.name}
                   </h4>
                   <button
@@ -167,25 +167,25 @@ const CartManager = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="bg-red-500 hover:bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
+                      className="bg-red-500 hover:bg-red-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
                     >
                       <Minus className="h-3 w-3" />
                     </button>
-                    <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-bold min-w-[30px] text-center">
+                    <span className="bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-sm font-bold min-w-[30px] text-center">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="bg-green-500 hover:bg-green-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
+                      className="bg-green-500 hover:bg-green-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
                     >
                       <Plus className="h-3 w-3" />
                     </button>
                   </div>
                   <div className="text-right">
-                    <div className="text-left font-bold text-white pr-2 whitespace-nowrap min-w-[70px]">
+                    <div className="text-left font-bold text-slate-800 pr-2 whitespace-nowrap min-w-[70px]">
                       {(safeMath.multiply(item.price, item.quantity)).toLocaleString('en-US')} جنيه
                     </div>
-                    <p className="text-gray-400 text-xs">
+                    <p className="text-slate-500 text-xs">
                       {item.price.toLocaleString('en-US')} × {item.quantity}
                     </p>
                   </div>
@@ -198,11 +198,11 @@ const CartManager = ({
 
       {/* ملخص السلة */}
       {cart.length > 0 && (
-        <div className="border-t border-gray-600 pt-4 space-y-3">
+        <div className="border-t border-slate-200 pt-4 space-y-3">
           {/* المجموع الفرعي */}
           <div className="flex justify-between items-center">
-            <span className="text-gray-300">المجموع الفرعي:</span>
-            <span className="text-gray-300 font-semibold">
+            <span className="text-slate-600">المجموع الفرعي:</span>
+            <span className="text-slate-600 font-semibold">
               {getSubtotal.toLocaleString('en-US')} جنيه
             </span>
           </div>
@@ -210,7 +210,7 @@ const CartManager = ({
           {/* الخصم */}
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <span className="text-gray-300">الخصم:</span>
+              <span className="text-slate-600">الخصم:</span>
               {getDiscountAmount > 0 && (
                 <button
                   onClick={removeDiscount}
@@ -239,7 +239,7 @@ const CartManager = ({
           {taxes.enabled && (
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="text-gray-300">{taxes.name}:</span>
+                <span className="text-slate-600">{taxes.name}:</span>
                 <button
                   onClick={removeTax}
                   className="text-red-400 hover:text-red-300 text-xs"
@@ -266,7 +266,7 @@ const CartManager = ({
           {/* العربون */}
           {downPayment.enabled && (
             <div className="flex justify-between items-center">
-              <span className="text-gray-300">العربون:</span>
+              <span className="text-slate-600">العربون:</span>
               <span className="text-blue-400 font-semibold">
                 {downPayment.amount.toLocaleString('en-US')} جنيه
               </span>
@@ -274,11 +274,11 @@ const CartManager = ({
           )}
 
           {/* الإجمالي */}
-          <div className="flex justify-between items-center pt-2 border-t border-gray-600">
-            <span className="text-white font-bold text-lg">
+          <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+            <span className="text-slate-800 font-bold text-lg">
               {downPayment.enabled ? 'المتبقي:' : 'الإجمالي:'}
             </span>
-            <span className="text-white font-bold text-lg">
+            <span className="text-slate-800 font-bold text-lg">
               {getRemainingAmount.toLocaleString('en-US')} جنيه
             </span>
           </div>
@@ -287,9 +287,9 @@ const CartManager = ({
 
       {/* بيانات العميل - مصغرة */}
       {cart.length > 0 && (
-        <div className="mt-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
-          <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-1">
-            <span className="text-gray-300">👤</span>
+        <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+          <h4 className="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-1">
+            <span className="text-slate-600">👤</span>
             بيانات العميل
           </h4>
           <div className="grid grid-cols-2 gap-2">
@@ -299,7 +299,7 @@ const CartManager = ({
                 value={customerInfo?.name || ''}
                 onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
                 placeholder="اسم العميل"
-                className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-500 text-xs"
+                className="w-full px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
               />
             </div>
             <div>
@@ -308,7 +308,7 @@ const CartManager = ({
                 value={customerInfo?.phone || ''}
                 onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
                 placeholder="رقم الهاتف *"
-                className="w-full px-2 py-1 bg-gray-700 border border-gray-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-500 text-xs"
+                className="w-full px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
                 required
               />
             </div>
@@ -324,14 +324,14 @@ const CartManager = ({
         <div className="mt-4 space-y-2">
           <button
             onClick={() => setShowDiscountModal(true)}
-            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
+            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-slate-800 py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
           >
             تطبيق خصم
           </button>
 
           <button
             onClick={() => setShowTaxModal(true)}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
+            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-slate-800 py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
           >
             {taxes.enabled ? 'تعديل الضريبة' : 'تطبيق ضريبة'}
           </button>
@@ -341,16 +341,16 @@ const CartManager = ({
       {/* نافذة الخصم */}
       {showDiscountModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-xl p-6 w-96 max-w-full mx-4">
-            <h3 className="text-xl font-bold text-white mb-4">تطبيق خصم</h3>
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق خصم</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-300 mb-2">نوع الخصم:</label>
+                <label className="block text-slate-600 mb-2">نوع الخصم:</label>
                 <select
                   value={discounts.type}
                   onChange={(e) => setDiscounts({ ...discounts, type: e.target.value, percentage: '', fixed: '' })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-gray-600 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="percentage">نسبة مئوية</option>
                   <option value="fixed">مبلغ ثابت</option>
@@ -358,14 +358,14 @@ const CartManager = ({
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">
+                <label className="block text-slate-600 mb-2">
                   {discounts.type === 'percentage' ? 'النسبة المئوية:' : 'المبلغ:'}
                 </label>
                 <input
                   type="number"
                   value={discounts.type === 'percentage' ? discounts.percentage : discounts.fixed}
                   onChange={(e) => setDiscounts({ ...discounts, [discounts.type]: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder={discounts.type === 'percentage' ? '0-100' : '0'}
                   min="0"
                   max={discounts.type === 'percentage' ? '100' : getSubtotal}
@@ -377,7 +377,7 @@ const CartManager = ({
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowDiscountModal(false)}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
               >
                 إلغاء
               </button>
@@ -395,28 +395,28 @@ const CartManager = ({
       {/* نافذة الضريبة */}
       {showTaxModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-xl p-6 w-96 max-w-full mx-4">
-            <h3 className="text-xl font-bold text-white mb-4">تطبيق ضريبة</h3>
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق ضريبة</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-gray-300 mb-2">اسم الضريبة:</label>
+                <label className="block text-slate-600 mb-2">اسم الضريبة:</label>
                 <input
                   type="text"
                   value={taxes.name}
                   onChange={(e) => setTaxes({ ...taxes, name: e.target.value })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="مثال: ضريبة القيمة المضافة"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-2">النسبة المئوية:</label>
+                <label className="block text-slate-600 mb-2">النسبة المئوية:</label>
                 <input
                   type="number"
                   value={taxes.vat}
                   onChange={(e) => setTaxes({ ...taxes, vat: parseFloat(e.target.value) || 0 })}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
                   placeholder="0-100"
                   min="0"
                   max="100"
@@ -428,7 +428,7 @@ const CartManager = ({
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setShowTaxModal(false)}
-                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
               >
                 إلغاء
               </button>

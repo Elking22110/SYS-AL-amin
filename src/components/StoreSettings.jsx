@@ -3,7 +3,7 @@ import { Store, Save, RefreshCw, Building, Phone, Mail, MapPin } from 'lucide-re
 
 const StoreSettings = () => {
   const [storeInfo, setStoreInfo] = useState({
-    storeName: 'MS GROUP',
+    storeName: 'متجر الأمين',
     storePhone: '01029022006',
     storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
     storeEmail: 'info@msgroupplast.com',
@@ -58,7 +58,7 @@ const StoreSettings = () => {
   // إعادة تعيين البيانات
   const handleReset = () => {
     setStoreInfo({
-      storeName: 'MS GROUP',
+      storeName: 'متجر الأمين',
       storePhone: '01029022006',
       storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
       storeEmail: 'info@msgroupplast.com',
@@ -85,11 +85,11 @@ const StoreSettings = () => {
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-6">
         <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center">
-          <Store className="h-6 w-6 text-white" />
+          <Store className="h-6 w-6 text-slate-800" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">إعدادات المتجر</h2>
-          <p className="text-gray-300 text-sm">قم بتخصيص بيانات متجرك للفواتير والإيصالات</p>
+          <h2 className="text-xl font-bold text-slate-800">إعدادات المتجر</h2>
+          <p className="text-slate-600 text-sm">قم بتخصيص بيانات متجرك للفواتير والإيصالات</p>
         </div>
       </div>
 
@@ -105,12 +105,12 @@ const StoreSettings = () => {
         <div className="glass-card p-6">
           <div className="flex items-center space-x-2 mb-4">
             <Building className="h-5 w-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">المعلومات الأساسية</h3>
+            <h3 className="text-lg font-semibold text-slate-800">المعلومات الأساسية</h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 اسم المتجر *
               </label>
               <input
@@ -124,7 +124,7 @@ const StoreSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 وصف المتجر
               </label>
               <textarea
@@ -136,7 +136,7 @@ const StoreSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 الرقم الضريبي
               </label>
               <input
@@ -154,16 +154,16 @@ const StoreSettings = () => {
         <div className="glass-card p-6">
           <div className="flex items-center space-x-2 mb-4">
             <Phone className="h-5 w-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">معلومات الاتصال</h3>
+            <h3 className="text-lg font-semibold text-slate-800">معلومات الاتصال</h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 العنوان
               </label>
               <div className="relative">
-                <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <MapPin className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 h-4 w-4" />
                 <input
                   type="text"
                   value={storeInfo.storeAddress || ''}
@@ -175,11 +175,11 @@ const StoreSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 رقم الهاتف
               </label>
               <div className="relative">
-                <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Phone className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 h-4 w-4" />
                 <input
                   type="tel"
                   value={storeInfo.storePhone || ''}
@@ -191,11 +191,11 @@ const StoreSettings = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 البريد الإلكتروني
               </label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 h-4 w-4" />
                 <input
                   type="email"
                   value={storeInfo.storeEmail || ''}
@@ -212,12 +212,12 @@ const StoreSettings = () => {
         <div className="glass-card p-6">
           <div className="flex items-center space-x-2 mb-4">
             <Building className="h-5 w-5 text-purple-400" />
-            <h3 className="text-lg font-semibold text-white">إعدادات الضرائب</h3>
+            <h3 className="text-lg font-semibold text-slate-800">إعدادات الضرائب</h3>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-300">تفعيل الضريبة</label>
+              <label className="text-sm font-medium text-slate-600">تفعيل الضريبة</label>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -242,7 +242,7 @@ const StoreSettings = () => {
             {storeInfo.taxEnabled && (
               <>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">اسم الضريبة</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">اسم الضريبة</label>
                   <input
                     type="text"
                     value={storeInfo.taxName || ''}
@@ -253,7 +253,7 @@ const StoreSettings = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">نسبة الضريبة (%)</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">نسبة الضريبة (%)</label>
                   <input
                     type="number"
                     value={storeInfo.taxRate || 0}
@@ -270,23 +270,23 @@ const StoreSettings = () => {
 
           {/* معاينة الضريبة */}
           <div className="mt-6">
-            <h4 className="text-sm font-medium text-gray-300 mb-3">معاينة الضريبة</h4>
-            <div className="bg-gray-800 rounded-lg p-4">
+            <h4 className="text-sm font-medium text-slate-600 mb-3">معاينة الضريبة</h4>
+            <div className="bg-white rounded-lg p-4">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-300">المجموع الفرعي:</span>
-                  <span className="text-white">$100.00</span>
+                  <span className="text-slate-600">المجموع الفرعي:</span>
+                  <span className="text-slate-800">$100.00</span>
                 </div>
                 {storeInfo.taxEnabled && (
                   <div className="flex justify-between">
-                    <span className="text-gray-300">{storeInfo.taxName} ({storeInfo.taxRate}%):</span>
-                    <span className="text-white">${(100 * storeInfo.taxRate / 100).toFixed(2)}</span>
+                    <span className="text-slate-600">{storeInfo.taxName} ({storeInfo.taxRate}%):</span>
+                    <span className="text-slate-800">${(100 * storeInfo.taxRate / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="border-t border-gray-600 pt-2">
+                <div className="border-t border-slate-400 pt-2">
                   <div className="flex justify-between">
-                    <span className="text-white font-bold">الإجمالي:</span>
-                    <span className="text-white font-bold">
+                    <span className="text-slate-800 font-bold">الإجمالي:</span>
+                    <span className="text-slate-800 font-bold">
                       ${storeInfo.taxEnabled ? (100 + (100 * storeInfo.taxRate / 100)).toFixed(2) : '100.00'}
                     </span>
                   </div>
@@ -299,7 +299,7 @@ const StoreSettings = () => {
 
       {/* معاينة الفاتورة */}
       <div className="glass-card p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">معاينة الفاتورة</h3>
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">معاينة الفاتورة</h3>
         <div className="bg-white text-black p-6 rounded-lg font-mono text-sm">
           <div className="text-center mb-4">
             <h4 className="text-lg font-bold">{storeInfo.storeName || 'اسم المتجر'}</h4>
@@ -319,7 +319,7 @@ const StoreSettings = () => {
           <hr className="my-2" />
           <div className="text-center text-xs text-gray-600">
             <p>شكراً لزيارتكم</p>
-            <p>MS GROUP - مصنع الشنط البلاستيكية الرائد</p>
+            <p>متجر الأمين - أدوات صحية وسباكة</p>
             <p>جميع الحقوق محفوظة {new Date().getFullYear()} ©</p>
           </div>
         </div>
@@ -329,7 +329,7 @@ const StoreSettings = () => {
       <div className="flex justify-end space-x-4">
         <button
           onClick={handleReset}
-          className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+          className="flex items-center space-x-2 px-4 py-2 bg-gray-600 hover:bg-slate-200 text-slate-800 rounded-lg transition-colors"
         >
           <RefreshCw className="h-4 w-4" />
           <span>إعادة تعيين</span>
@@ -338,7 +338,7 @@ const StoreSettings = () => {
         <button
           onClick={handleSave}
           disabled={isLoading || !storeInfo.storeName}
-          className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center space-x-2 px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-slate-800 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save className="h-4 w-4" />
           <span>{isLoading ? 'جاري الحفظ...' : 'حفظ البيانات'}</span>

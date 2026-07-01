@@ -17,7 +17,7 @@ import {
 import soundManager from '../utils/soundManager.js';
 import { formatDate, getCurrentDate } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
-import { publish, subscribe } from '../utils/observerManager';
+import { publish, subscribe, EVENTS } from '../utils/observerManager';
 
 const SupplierDetails = () => {
     const { id } = useParams();
@@ -182,6 +182,8 @@ const SupplierDetails = () => {
         allPayments.push(payment);
         localStorage.setItem('supplier_payments', JSON.stringify(allPayments));
 
+        publish(EVENTS.SUPPLIERS_CHANGED, { type: 'add_payment' });
+
         soundManager.play('save');
         setShowPaymentModal(false);
         setNewPayment({ amount: '', paymentMethod: 'نقدي', notes: '' });
@@ -218,6 +220,8 @@ const SupplierDetails = () => {
             const filteredPayments = allPayments.filter(p => p.id !== paymentId);
             localStorage.setItem('supplier_payments', JSON.stringify(filteredPayments));
 
+            publish(EVENTS.SUPPLIERS_CHANGED, { type: 'delete_payment' });
+
             soundManager.play('delete');
             loadData();
         }
@@ -241,7 +245,7 @@ const SupplierDetails = () => {
 
             // Update local state supplier and trigger event
             setSupplier(s);
-            publish('SUPPLIERS_CHANGED', { type: 'update' });
+            publish(EVENTS.SUPPLIERS_CHANGED, { type: 'update' });
         }
     };
 
@@ -251,7 +255,7 @@ const SupplierDetails = () => {
                 <div className="absolute inset-0 overflow-hidden">
                     <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-3 animate-float"></div>
                 </div>
-                <div className="text-white text-xl">جاري تحميل بيانات المورد... أو المورد غير موجود.</div>
+                <div className="text-slate-800 text-xl">جاري تحميل بيانات المورد... أو المورد غير موجود.</div>
             </div>
         );
     }
@@ -277,7 +281,7 @@ const SupplierDetails = () => {
                 <div className="flex items-center space-x-4 mb-4 rtl:space-x-reverse">
                     <button
                         onClick={() => navigate('/suppliers')}
-                        className="flex items-center text-blue-300 hover:text-white transition-colors bg-white bg-opacity-10 p-2 rounded-lg"
+                        className="flex items-center text-blue-300 hover:text-slate-800 transition-colors bg-white bg-opacity-10 p-2 rounded-lg"
                     >
                         <ArrowRight className="h-5 w-5 ml-2" />
                         العودة للموردين
@@ -288,10 +292,10 @@ const SupplierDetails = () => {
                 <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 animate-fadeInUp">
                     <div className="flex items-center">
                         <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center ml-4 shadow-lg">
-                            <User className="h-8 w-8 text-white" />
+                            <User className="h-8 w-8 text-slate-800" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-white mb-2">{supplier.name}</h1>
+                            <h1 className="text-2xl font-bold text-slate-800 mb-2">{supplier.name}</h1>
                             <div className="flex flex-wrap items-center text-sm gap-3">
                                 <span className="flex items-center bg-green-500 bg-opacity-20 text-green-300 px-3 py-1 rounded-full">
                                     <Phone className="h-4 w-4 ml-1" /> {supplier.phone}
@@ -310,7 +314,7 @@ const SupplierDetails = () => {
                     <div className="flex flex-col items-end">
                         <span className={`px-4 py-2 font-bold rounded-full ${totalRemaining > 0 ? 'bg-red-500 bg-opacity-20 text-red-400' : 'bg-green-500 bg-opacity-20 text-green-400'
                             }`}>
-                            المتبقي (الديون): ${totalRemaining}
+                            المتبقي (الديون): {totalRemaining.toLocaleString('en-US')} ج.م
                         </span>
                     </div>
                 </div>
@@ -321,19 +325,19 @@ const SupplierDetails = () => {
                         <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <DollarSign className="h-10 w-10 text-blue-400 mb-2" />
                         <p className="text-sm text-blue-200">إجمالي التوريدات كقيمة</p>
-                        <h3 className="text-2xl lg:text-3xl font-bold text-white mt-1">${calculateTotalSuppliesValue()}</h3>
+                        <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mt-1">{calculateTotalSuppliesValue().toLocaleString('en-US')} ج.م</h3>
                     </div>
                     <div className="glass-card p-6 flex flex-col items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-green-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <CreditCard className="h-10 w-10 text-green-400 mb-2" />
                         <p className="text-sm text-green-200">إجمالي المدفوع للمورد</p>
-                        <h3 className="text-2xl lg:text-3xl font-bold text-white mt-1">${calculateTotalPaid()}</h3>
+                        <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mt-1">{calculateTotalPaid().toLocaleString('en-US')} ج.م</h3>
                     </div>
                     <div className="glass-card p-6 flex flex-col items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-orange-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <Package className="h-10 w-10 text-orange-400 mb-2" />
                         <p className="text-sm text-orange-200">عدد التوريدات القادمة</p>
-                        <h3 className="text-2xl lg:text-3xl font-bold text-white mt-1">{supplies.length}</h3>
+                        <h3 className="text-2xl lg:text-3xl font-bold text-slate-800 mt-1">{supplies.length}</h3>
                     </div>
                 </div>
 
@@ -342,13 +346,13 @@ const SupplierDetails = () => {
                     <div className="flex space-x-2 rtl:space-x-reverse mb-4 md:mb-0">
                         <button
                             onClick={() => setActiveTab('supplies')}
-                            className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'supplies' ? 'bg-blue-600 text-white' : 'text-blue-200 hover:bg-white hover:bg-opacity-10'}`}
+                            className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'supplies' ? 'bg-blue-600 text-slate-800' : 'text-blue-200 hover:bg-white hover:bg-opacity-10'}`}
                         >
                             سجل التوريدات
                         </button>
                         <button
                             onClick={() => setActiveTab('payments')}
-                            className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'payments' ? 'bg-green-600 text-white' : 'text-green-200 hover:bg-white hover:bg-opacity-10'}`}
+                            className={`px-4 py-2 rounded-lg font-bold transition-all ${activeTab === 'payments' ? 'bg-green-600 text-slate-800' : 'text-green-200 hover:bg-white hover:bg-opacity-10'}`}
                         >
                             سجل المدفوعات (السداد)
                         </button>
@@ -370,7 +374,7 @@ const SupplierDetails = () => {
                                 soundManager.play('openWindow');
                                 setShowPaymentModal(true);
                             }}
-                            className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white flex items-center px-4 py-2 rounded-lg font-bold shadow-lg"
+                            className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-slate-800 flex items-center px-4 py-2 rounded-lg font-bold shadow-lg"
                         >
                             <CreditCard className="h-5 w-5 ml-2" />
                             سداد دفعة
@@ -386,27 +390,27 @@ const SupplierDetails = () => {
                                 <table className="w-full">
                                     <thead className="bg-gradient-to-r from-gray-800 to-gray-900">
                                         <tr>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">التاريخ</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">التاريخ</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-blue-300 uppercase tracking-wider">المنتج</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-orange-300 uppercase tracking-wider">الكمية</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-green-300 uppercase tracking-wider">السعر / الوحدة</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider">الإجمالي</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-800 uppercase tracking-wider">الإجمالي</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-emerald-300 uppercase tracking-wider">المدفوع</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-red-300 uppercase tracking-wider">المتبقي</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-purple-300 uppercase tracking-wider">الهالك</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">إجراء</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">إجراء</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white divide-opacity-20">
                                         {supplies.map(supply => (
                                             <tr key={supply.id} className="hover:bg-white hover:bg-opacity-10 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{supply.date}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{supply.date}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-300">{supply.productName}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-orange-300">{supply.quantity} كجم</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-300">${supply.unitPrice}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-white bg-white bg-opacity-5 rounded-md">${supply.totalPrice}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-emerald-300">${supply.paidAmount}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-300">${supply.remainingAmount}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-green-300">{supply.unitPrice.toLocaleString('en-US')} ج.م</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-slate-800 bg-white bg-opacity-5 rounded-md">{supply.totalPrice.toLocaleString('en-US')} ج.م</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-emerald-300">{supply.paidAmount.toLocaleString('en-US')} ج.م</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-red-300">{supply.remainingAmount.toLocaleString('en-US')} ج.م</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-red-400 bg-red-900 bg-opacity-20 rounded-md">
                                                     {supply.wasteQuantity || 0} كجم
                                                 </td>
@@ -423,7 +427,7 @@ const SupplierDetails = () => {
                                         ))}
                                         {supplies.length === 0 && (
                                             <tr>
-                                                <td colSpan="8" className="px-6 py-8 text-center text-gray-400">لا توجد توريدات مسجلة لهذا المورد بعد.</td>
+                                                <td colSpan="8" className="px-6 py-8 text-center text-slate-500">لا توجد توريدات مسجلة لهذا المورد بعد.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -438,21 +442,21 @@ const SupplierDetails = () => {
                                 <table className="w-full">
                                     <thead className="bg-gradient-to-r from-gray-800 to-gray-900">
                                         <tr>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">رقم العملية</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">التاريخ</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">رقم العملية</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">التاريخ</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-green-300 uppercase tracking-wider">المبلغ المسدد</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-blue-300 uppercase tracking-wider">طريقة الدفع</th>
                                             <th className="px-6 py-3 text-right text-xs font-medium text-purple-300 uppercase tracking-wider">ملاحظات</th>
-                                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">إجراء</th>
+                                            <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">إجراء</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-white divide-opacity-20">
                                         {payments.map(payment => (
                                             <tr key={payment.id} className="hover:bg-white hover:bg-opacity-10 transition-colors">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">#{payment.id.toString().slice(-6)}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{payment.date}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">#{payment.id.toString().slice(-6)}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{payment.date}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-400 bg-green-500 bg-opacity-10 rounded-md">
-                                                    ${payment.amount}
+                                                    {payment.amount.toLocaleString('en-US')} ج.م
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-300 bg-blue-500 bg-opacity-10 rounded-full inline-flex mt-2 ml-4">
                                                     {payment.paymentMethod}
@@ -471,7 +475,7 @@ const SupplierDetails = () => {
                                         ))}
                                         {payments.length === 0 && (
                                             <tr>
-                                                <td colSpan="6" className="px-6 py-8 text-center text-gray-400">لا توجد دفعات مالية مسجلة مسبقاً لهذا المورد.</td>
+                                                <td colSpan="6" className="px-6 py-8 text-center text-slate-500">لا توجد دفعات مالية مسجلة مسبقاً لهذا المورد.</td>
                                             </tr>
                                         )}
                                     </tbody>
@@ -485,15 +489,9 @@ const SupplierDetails = () => {
 
             {/* Add Supply Modal */}
             {showSupplyModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            soundManager.play('closeWindow');
-                            setShowSupplyModal(false);
-                        }
-                    }}>
+                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
                     <div className="glass-card p-6 w-full max-w-lg mx-4 animate-fadeInUp">
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
                             <Package className="h-6 w-6 ml-2 text-blue-400" />
                             إضافة توريدة جديدة
                         </h2>
@@ -534,8 +532,8 @@ const SupplierDetails = () => {
                             </div>
 
                             <div className="p-3 bg-white bg-opacity-5 rounded-lg border border-blue-500 border-opacity-30 flex justify-between items-center">
-                                <span className="text-gray-300 font-medium">الإجمالي المحسوب:</span>
-                                <span className="text-2xl font-bold text-white">${newSupplyTotal}</span>
+                                <span className="text-slate-600 font-medium">الإجمالي المحسوب:</span>
+                                <span className="text-2xl font-bold text-slate-800">{newSupplyTotal.toLocaleString('en-US')} ج.م</span>
                             </div>
 
                             <div>
@@ -553,7 +551,7 @@ const SupplierDetails = () => {
                             {newSupplyRemaining > 0 && (
                                 <div className="text-sm text-orange-300 flex items-center">
                                     <AlertTriangle className="h-4 w-4 ml-1" />
-                                    المتبقي الآجل سيضاف لمديونية المورد: <strong>${newSupplyRemaining}</strong>
+                                    المتبقي الآجل سيضاف لمديونية المورد: <strong>{newSupplyRemaining.toLocaleString('en-US')} ج.م</strong>
                                 </div>
                             )}
                         </div>
@@ -561,7 +559,7 @@ const SupplierDetails = () => {
                         <div className="flex justify-end space-x-3 rtl:space-x-reverse mt-6">
                             <button
                                 onClick={() => { soundManager.play('closeWindow'); setShowSupplyModal(false); }}
-                                className="px-4 py-2 text-purple-200 hover:text-white transition-colors"
+                                className="px-4 py-2 text-purple-200 hover:text-slate-800 transition-colors"
                             >
                                 إلغاء
                             </button>
@@ -578,22 +576,16 @@ const SupplierDetails = () => {
 
             {/* Record Payment Modal */}
             {showPaymentModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            soundManager.play('closeWindow');
-                            setShowPaymentModal(false);
-                        }
-                    }}>
+                <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
                     <div className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp">
-                        <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                        <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
                             <CreditCard className="h-6 w-6 ml-2 text-green-400" />
                             سداد دفعة مالية
                         </h2>
 
                         <div className="bg-red-500 bg-opacity-20 p-3 rounded-lg border border-red-500 mb-4 flex justify-between">
                             <span className="text-red-200">المديونية الحالية المستحقة:</span>
-                            <span className="text-red-400 font-bold">${totalRemaining}</span>
+                            <span className="text-red-400 font-bold">{totalRemaining.toLocaleString('en-US')} ج.م</span>
                         </div>
 
                         <div className="space-y-4">
@@ -636,13 +628,13 @@ const SupplierDetails = () => {
                         <div className="flex justify-end space-x-3 rtl:space-x-reverse mt-6">
                             <button
                                 onClick={() => { soundManager.play('closeWindow'); setShowPaymentModal(false); }}
-                                className="px-4 py-2 text-purple-200 hover:text-white transition-colors"
+                                className="px-4 py-2 text-purple-200 hover:text-slate-800 transition-colors"
                             >
                                 إلغاء
                             </button>
                             <button
                                 onClick={handleAddPayment}
-                                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white px-4 py-2 rounded-lg font-bold"
+                                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-slate-800 px-4 py-2 rounded-lg font-bold"
                             >
                                 حفظ الدفعة
                             </button>

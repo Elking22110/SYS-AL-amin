@@ -1025,7 +1025,7 @@ const ShiftManager = () => {
           
           <div class="footer">
             <p><strong>📅 تم إنشاء التقرير في:</strong> ${formatDateTime(getCurrentDate())}</p>
-            <p><strong>🏪 MS GROUP</strong> - مصنع شنط بلاستيك</p>
+            <p><strong>🏪 متجر الأمين</strong> - أدوات صحية وسباكة</p>
             <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">جميع المبالغ بالجنيه المصري (EGP)</p>
           </div>
         </div>
@@ -1158,11 +1158,11 @@ const ShiftManager = () => {
     <div className="space-y-6">
       <div className="flex items-center space-x-3 mb-6">
         <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
-          <Clock className="h-6 w-6 text-white" />
+          <Clock className="h-6 w-6 text-slate-800" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">إدارة الورديات</h2>
-          <p className="text-gray-300 text-sm">إدارة ورديات العمل والمبيعات</p>
+          <h2 className="text-xl font-bold text-slate-800">إدارة الورديات</h2>
+          <p className="text-slate-600 text-sm">إدارة ورديات العمل والمبيعات</p>
         </div>
       </div>
 
@@ -1177,14 +1177,14 @@ const ShiftManager = () => {
       {currentShift ? (
         <div className="glass-card p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-white flex items-center">
+            <h3 className="text-lg font-semibold text-slate-800 flex items-center">
               <Play className="h-5 w-5 text-green-400 mr-2" />
               وردية نشطة
             </h3>
             <div className="flex space-x-2">
               <button
                 onClick={() => { soundManager.play('endShift'); endShift(); }}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-slate-800 rounded-lg transition-colors"
               >
                 <Square className="h-4 w-4" />
                 <span>إنهاء الوردية</span>
@@ -1196,9 +1196,9 @@ const ShiftManager = () => {
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <Clock className="h-4 w-4 text-blue-400" />
-                <span className="text-sm text-gray-300">وقت البداية</span>
+                <span className="text-sm text-slate-600">وقت البداية</span>
               </div>
-              <p className="text-white font-semibold">
+              <p className="text-slate-800 font-semibold">
                 {formatDateTime(currentShift.startTime)}
               </p>
             </div>
@@ -1206,23 +1206,23 @@ const ShiftManager = () => {
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <DollarSign className="h-4 w-4 text-green-400" />
-                <span className="text-sm text-gray-300">إجمالي المبيعات</span>
+                <span className="text-sm text-slate-600">إجمالي المبيعات</span>
               </div>
-              <p className="text-white font-semibold">${(((activeDetails?.totalSales || 0) - (activeDetails?.totalRefunds || 0)) || 0).toFixed(2)}</p>
+              <p className="text-slate-800 font-semibold">${(((activeDetails?.totalSales || 0) - (activeDetails?.totalRefunds || 0)) || 0).toFixed(2)}</p>
             </div>
 
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <TrendingUp className="h-4 w-4 text-purple-400" />
-                <span className="text-sm text-gray-300">عدد الطلبات</span>
+                <span className="text-sm text-slate-600">عدد الطلبات</span>
               </div>
-              <p className="text-white font-semibold">{activeSalesList?.length || currentShift.sales?.length || 0}</p>
+              <p className="text-slate-800 font-semibold">{activeSalesList?.length || currentShift.sales?.length || 0}</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 مبلغ الصندوق الافتتاحي
               </label>
               <input
@@ -1236,7 +1236,7 @@ const ShiftManager = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-slate-600 mb-2">
                 ملاحظات الوردية
               </label>
               <textarea
@@ -1250,12 +1250,12 @@ const ShiftManager = () => {
         </div>
       ) : (
         <div className="glass-card p-6 text-center">
-          <Clock className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-white mb-2">لا توجد وردية نشطة</h3>
-          <p className="text-gray-300 mb-4">ابدأ وردية جديدة لبدء تتبع المبيعات</p>
+          <Clock className="h-16 w-16 text-slate-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-slate-800 mb-2">لا توجد وردية نشطة</h3>
+          <p className="text-slate-600 mb-4">ابدأ وردية جديدة لبدء تتبع المبيعات</p>
           <button
             onClick={() => { soundManager.play('startShift'); startShift(); }}
-            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-lg transition-all mx-auto"
+            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-slate-800 rounded-lg transition-all mx-auto"
           >
             <Play className="h-5 w-5" />
             <span>بدء وردية جديدة</span>
@@ -1266,13 +1266,13 @@ const ShiftManager = () => {
       {/* تاريخ الورديات */}
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-white flex items-center">
+          <h3 className="text-lg font-semibold text-slate-800 flex items-center">
             <Calendar className="h-5 w-5 text-blue-400 mr-2" />
             تاريخ الورديات
           </h3>
           <button
             onClick={() => { soundManager.play('save'); exportShiftsReport(); }}
-            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-slate-800 rounded-lg transition-colors"
           >
             <RefreshCw className="h-4 w-4" />
             <span>تصدير التقرير</span>
@@ -1282,19 +1282,19 @@ const ShiftManager = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-600">
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">التاريخ</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">المستخدم</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">المبيعات</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">الطلبات</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">الحالة</th>
-                <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">الإجراءات</th>
+              <tr className="border-b border-slate-400">
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">التاريخ</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">المستخدم</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">المبيعات</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">الطلبات</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">الحالة</th>
+                <th className="text-right py-3 px-4 text-sm font-medium text-slate-600">الإجراءات</th>
               </tr>
             </thead>
             <tbody>
               {shifts.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-8 text-gray-400">
+                  <td colSpan="6" className="text-center py-8 text-slate-500">
                     لا توجد ورديات مسجلة
                   </td>
                 </tr>
@@ -1306,15 +1306,15 @@ const ShiftManager = () => {
                   )
                   .sort((a, b) => new Date(a.startTime) - new Date(b.startTime))
                   .map((shift) => (
-                    <tr key={shift.id} className="border-b border-gray-700 hover:bg-white hover:bg-opacity-5">
-                      <td className="py-3 px-4 text-sm text-white">
+                    <tr key={shift.id} className="border-b border-slate-300 hover:bg-white hover:bg-opacity-5">
+                      <td className="py-3 px-4 text-sm text-slate-800">
                         {formatDateOnly(shift.startTime)}
                       </td>
-                      <td className="py-3 px-4 text-sm text-white">{shift.userName}</td>
+                      <td className="py-3 px-4 text-sm text-slate-800">{shift.userName}</td>
                       <td className="py-3 px-4 text-sm text-green-400 font-semibold">
                         ${(shift.totalSales || 0).toFixed(2)}
                       </td>
-                      <td className="py-3 px-4 text-sm text-white">{shift.totalOrders}</td>
+                      <td className="py-3 px-4 text-sm text-slate-800">{shift.totalOrders}</td>
                       <td className="py-3 px-4 text-sm">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${shift.status === 'active'
                           ? 'bg-green-500 bg-opacity-20 text-green-300'

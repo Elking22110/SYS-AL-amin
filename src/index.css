@@ -1,18 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900;1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 /* متغيرات CSS للمظهر */
 :root {
   --primary-color: #8B5CF6;
   --primary-500: #8B5CF6;
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
 }
 
 /* الوضع الفاتح */
@@ -54,6 +55,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 * {
@@ -63,20 +65,22 @@ input[type="number"] {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+  font-family: 'Cairo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: var(--bg-primary);
+  /* خلفية متغيرة حسب المظهر */
   background-attachment: fixed;
   min-height: 100vh;
   overflow-x: hidden;
   font-weight: 400;
   line-height: 1.6;
-  color: #ffffff;
+  color: var(--text-primary);
+  /* لون نص متغير حسب المظهر */
   width: 100%;
   max-width: 100vw;
   position: relative;
 }
 
-/* تأثير الجسيمات المتحركة في الخلفية */
+/* تأثيرات خلفية خفيفة جداً للوضع الفاتح */
 body::before {
   content: '';
   position: fixed;
@@ -84,39 +88,37 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
-    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-  animation: backgroundShift 20s ease-in-out infinite;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
-}
-
-@keyframes backgroundShift {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.1); }
 }
 
 /* تنسيق منتجات نقطة البيع - أحجام ثابتة وحدود واضحة */
 .pos-product-card {
   display: flex;
   flex-direction: column;
-  height: 190px; /* زيادة الارتفاع الأساسي */
-  width: 100%; /* عرض كامل */
-  border: 2px solid rgba(75, 85, 99, 0.3); /* حدود واضحة */
+  height: 190px;
+  /* زيادة الارتفاع الأساسي */
+  width: 100%;
+  /* عرض كامل */
+  border: 2px solid rgba(75, 85, 99, 0.3);
+  /* حدود واضحة */
   border-radius: 12px;
   padding: 12px;
-  margin: 0; /* إزالة الهوامش */
+  margin: 0;
+  /* إزالة الهوامش */
   transition: all 0.3s ease;
-  overflow: hidden; /* منع تجاوز المحتوى */
+  overflow: hidden;
+  /* منع تجاوز المحتوى */
   position: relative;
 }
 
 .pos-product-card:hover {
   border-color: rgba(59, 130, 246, 0.5);
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.4),
     0 0 20px rgba(59, 130, 246, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -125,8 +127,13 @@ body::before {
 }
 
 @keyframes cardGlow {
-  0% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.3); }
-  100% { box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.5); }
+  0% {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.3);
+  }
+
+  100% {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(59, 130, 246, 0.5);
+  }
 }
 
 .pos-product-card .product-icon {
@@ -140,12 +147,15 @@ body::before {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: calc(100% - 56px); /* ارتفاع المحتوى = الارتفاع الكلي - الأيقونة */
-  min-height: 120px; /* ارتفاع أدنى للمحتوى */
+  height: calc(100% - 56px);
+  /* ارتفاع المحتوى = الارتفاع الكلي - الأيقونة */
+  min-height: 120px;
+  /* ارتفاع أدنى للمحتوى */
 }
 
 .pos-product-card .product-title {
-  height: 40px; /* ارتفاع ثابت للعنوان */
+  height: 40px;
+  /* ارتفاع ثابت للعنوان */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,20 +167,25 @@ body::before {
 
 .pos-product-card .product-details {
   margin-top: auto;
-  height: 70px; /* زيادة الارتفاع لضمان عدم التداخل */
+  height: 70px;
+  /* زيادة الارتفاع لضمان عدم التداخل */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 4px; /* مسافة بين العناصر */
+  gap: 4px;
+  /* مسافة بين العناصر */
 }
 
 .pos-product-card .product-details p {
-  margin: 0; /* إزالة الهوامش */
-  padding: 2px 0; /* إضافة padding بدلاً من margin */
+  margin: 0;
+  /* إزالة الهوامش */
+  padding: 2px 0;
+  /* إضافة padding بدلاً من margin */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 16px; /* ارتفاع أدنى لكل عنصر */
+  min-height: 16px;
+  /* ارتفاع أدنى لكل عنصر */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,12 +195,13 @@ body::before {
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
-  min-height: 20px; /* ارتفاع أكبر للسعر */
+  min-height: 20px;
+  /* ارتفاع أكبر للسعر */
   font-weight: bold;
 }
 
 /* ضمان عدم تداخل البطاقات */
-.pos-product-card + .pos-product-card {
+.pos-product-card+.pos-product-card {
   margin-top: 0;
 }
 
@@ -205,35 +221,38 @@ body::before {
 /* تحسين التخطيط للشاشات المختلفة */
 @media (max-width: 640px) {
   .pos-product-card {
-    height: 170px; /* زيادة الارتفاع */
+    height: 170px;
+    /* زيادة الارتفاع */
   }
-  
+
   .pos-product-card .product-title {
     height: 35px;
     font-size: 0.75rem;
   }
-  
+
   .pos-product-card .product-details {
-    height: 65px; /* زيادة الارتفاع */
+    height: 65px;
+    /* زيادة الارتفاع */
   }
 }
 
 /* تحسينات خاصة بالآيباد */
 @media (min-width: 768px) and (max-width: 1024px) {
   .pos-product-card {
-    height: 220px; /* ارتفاع أكبر للآيباد */
+    height: 220px;
+    /* ارتفاع أكبر للآيباد */
     padding: 16px;
   }
-  
+
   .pos-product-card .product-title {
     height: 50px;
     font-size: 0.9rem;
   }
-  
+
   .pos-product-card .product-details {
     height: 85px;
   }
-  
+
   .pos-product-card .product-icon {
     width: 56px;
     height: 56px;
@@ -243,19 +262,20 @@ body::before {
 /* تحسينات خاصة بالآيباد برو */
 @media (min-width: 1024px) and (max-width: 1366px) {
   .pos-product-card {
-    height: 240px; /* ارتفاع أكبر للآيباد برو */
+    height: 240px;
+    /* ارتفاع أكبر للآيباد برو */
     padding: 20px;
   }
-  
+
   .pos-product-card .product-title {
     height: 55px;
     font-size: 1rem;
   }
-  
+
   .pos-product-card .product-details {
     height: 95px;
   }
-  
+
   .pos-product-card .product-icon {
     width: 64px;
     height: 64px;
@@ -264,16 +284,18 @@ body::before {
 
 @media (min-width: 1366px) {
   .pos-product-card {
-    height: 200px; /* زيادة الارتفاع */
+    height: 200px;
+    /* زيادة الارتفاع */
   }
-  
+
   .pos-product-card .product-title {
     height: 45px;
     font-size: 0.875rem;
   }
-  
+
   .pos-product-card .product-details {
-    height: 75px; /* زيادة الارتفاع */
+    height: 75px;
+    /* زيادة الارتفاع */
   }
 }
 
@@ -283,6 +305,7 @@ body::before {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -294,6 +317,7 @@ body::before {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -305,6 +329,7 @@ body::before {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -316,6 +341,7 @@ body::before {
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -327,6 +353,7 @@ body::before {
     opacity: 0;
     transform: translateY(-100%);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -334,29 +361,41 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
 }
 
 @keyframes bounce {
-  0%, 20%, 53%, 80%, 100% {
+
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
     animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    transform: translate3d(0,0,0);
+    transform: translate3d(0, 0, 0);
   }
-  40%, 43% {
+
+  40%,
+  43% {
     animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
     transform: translate3d(0, -30px, 0);
   }
+
   70% {
     animation-timing-function: cubic-bezier(0.755, 0.050, 0.855, 0.060);
     transform: translate3d(0, -15px, 0);
   }
+
   90% {
-    transform: translate3d(0,-4px,0);
+    transform: translate3d(0, -4px, 0);
   }
 }
 
@@ -364,48 +403,63 @@ body::before {
   0% {
     background-position: -200px 0;
   }
+
   100% {
     background-position: calc(200px + 100%) 0;
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
 }
 
 @keyframes glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), 0 0 30px rgba(0, 255, 255, 0.2), 0 0 45px rgba(0, 255, 255, 0.1);
   }
+
   50% {
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.7), 0 0 50px rgba(0, 255, 255, 0.4), 0 0 75px rgba(0, 255, 255, 0.2);
   }
 }
 
 @keyframes pulse-custom {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.1;
   }
+
   50% {
     opacity: 0.3;
   }
 }
 
 @keyframes phosphorescent-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3), 0 0 20px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.05);
   }
+
   25% {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.2), 0 0 45px rgba(0, 255, 255, 0.1);
   }
+
   50% {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.7), 0 0 40px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.15);
   }
+
   75% {
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.5), 0 0 30px rgba(0, 255, 255, 0.2), 0 0 45px rgba(0, 255, 255, 0.1);
   }
@@ -455,16 +509,16 @@ body::before {
     max-width: 1600px;
     margin: 0 auto;
   }
-  
+
   .large-screen-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
   }
-  
+
   .large-screen-text {
     font-size: 1.25rem;
   }
-  
+
   .large-screen-button {
     padding: 1rem 2rem;
     font-size: 1.125rem;
@@ -519,88 +573,84 @@ body::before {
   transform: rotate(5deg);
 }
 
-/* تأثيرات الزجاج - مطابقة للصورة */
+/* تأثيرات الزجاج الفاتح */
 .glass-card {
-  background: rgba(30, 30, 30, 0.4);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  border: 1px solid rgba(147, 51, 234, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(147, 51, 234, 0.3), 0 0 40px rgba(147, 51, 234, 0.1);
-  animation: phosphorescent-glow 1.5s ease-in-out infinite;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 20px rgba(139, 92, 246, 0.1);
 }
 
 .glass-card-dark {
-  background: rgba(20, 20, 20, 0.5);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(248, 250, 252, 0.8);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
 .glass-card-dark:hover {
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.1);
-  animation: phosphorescent-glow 1.5s ease-in-out infinite;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 20px rgba(59, 130, 246, 0.1);
 }
 
 /* أزرار محسنة */
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  padding: 12px 24px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  border: 1px solid rgba(0, 255, 255, 0.5);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6), 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
-  animation: phosphorescent-glow 1.5s ease-in-out infinite;
-}
-
-.btn-secondary {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   border: none;
   border-radius: 12px;
   color: white;
   font-weight: 600;
   padding: 12px 24px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
 
 .btn-secondary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+  box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
 }
 
-/* حقول الإدخال المحسنة */
+/* حقول الإدخال المحسنة لتناسب الوضع الفاتح */
 .input-modern {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(203, 213, 225, 0.8);
   border-radius: 12px;
-  color: white;
+  color: #1e293b;
   padding: 12px 16px;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .input-modern:focus {
   outline: none;
-  border-color: rgba(0, 255, 255, 0.6);
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
-  animation: phosphorescent-glow 1.5s ease-in-out infinite;
+  border-color: rgba(99, 102, 241, 0.8);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 .input-modern::placeholder {
@@ -685,7 +735,7 @@ body::before {
   .glass-card {
     border-radius: 18px;
   }
-  
+
   .glass-card-dark {
     border-radius: 18px;
   }
@@ -695,16 +745,16 @@ body::before {
   .glass-card {
     border-radius: 16px;
   }
-  
+
   .glass-card-dark {
     border-radius: 16px;
   }
-  
+
   .btn-primary {
     padding: 12px 20px;
     font-size: 14px;
   }
-  
+
   .input-modern {
     padding: 12px 16px;
     font-size: 14px;
@@ -715,16 +765,16 @@ body::before {
   .glass-card {
     border-radius: 14px;
   }
-  
+
   .glass-card-dark {
     border-radius: 14px;
   }
-  
+
   .btn-primary {
     padding: 10px 18px;
     font-size: 13px;
   }
-  
+
   .input-modern {
     padding: 10px 14px;
     font-size: 13px;
@@ -735,16 +785,16 @@ body::before {
   .glass-card {
     border-radius: 12px;
   }
-  
+
   .glass-card-dark {
     border-radius: 12px;
   }
-  
+
   .btn-primary {
     padding: 8px 16px;
     font-size: 12px;
   }
-  
+
   .input-modern {
     padding: 8px 12px;
     font-size: 12px;
@@ -755,16 +805,16 @@ body::before {
   .glass-card {
     border-radius: 10px;
   }
-  
+
   .glass-card-dark {
     border-radius: 10px;
   }
-  
+
   .btn-primary {
     padding: 6px 14px;
     font-size: 11px;
   }
-  
+
   .input-modern {
     padding: 6px 10px;
     font-size: 11px;
@@ -802,11 +852,11 @@ body::before {
   .mobile-responsive {
     padding: 8px;
   }
-  
+
   .mobile-text {
     font-size: 14px;
   }
-  
+
   .mobile-button {
     min-height: 44px;
     padding: 8px 12px;
@@ -815,35 +865,36 @@ body::before {
 
 /* تحسينات خاصة بالآيباد */
 @media (min-width: 768px) and (max-width: 1024px) {
+
   /* تحسينات للآيباد العادي */
   .ipad-responsive {
     padding: 12px;
   }
-  
+
   .ipad-text {
     font-size: 16px;
   }
-  
+
   .ipad-button {
     min-height: 48px;
     padding: 12px 20px;
     font-size: 16px;
   }
-  
+
   .ipad-card {
     border-radius: 16px;
     padding: 20px;
   }
-  
+
   .ipad-grid {
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 16px;
   }
-  
+
   .ipad-sidebar {
     width: 280px;
   }
-  
+
   .ipad-main-content {
     margin-left: 280px;
     padding: 20px;
@@ -855,31 +906,31 @@ body::before {
   .ipad-pro-responsive {
     padding: 16px;
   }
-  
+
   .ipad-pro-text {
     font-size: 18px;
   }
-  
+
   .ipad-pro-button {
     min-height: 52px;
     padding: 16px 24px;
     font-size: 18px;
   }
-  
+
   .ipad-pro-card {
     border-radius: 20px;
     padding: 24px;
   }
-  
+
   .ipad-pro-grid {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
   }
-  
+
   .ipad-pro-sidebar {
     width: 300px;
   }
-  
+
   .ipad-pro-main-content {
     margin-left: 300px;
     padding: 24px;
@@ -891,16 +942,16 @@ body::before {
   .ipad-landscape-responsive {
     padding: 12px;
   }
-  
+
   .ipad-landscape-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 12px;
   }
-  
+
   .ipad-landscape-sidebar {
     width: 250px;
   }
-  
+
   .ipad-landscape-main-content {
     margin-left: 250px;
     padding: 16px;
@@ -912,16 +963,16 @@ body::before {
   .ipad-portrait-responsive {
     padding: 16px;
   }
-  
+
   .ipad-portrait-grid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 16px;
   }
-  
+
   .ipad-portrait-sidebar {
     width: 280px;
   }
-  
+
   .ipad-portrait-main-content {
     margin-left: 280px;
     padding: 20px;
@@ -946,7 +997,8 @@ body::before {
 .touch-input {
   min-height: 44px;
   padding: 12px 16px;
-  font-size: 16px; /* منع التكبير في iOS */
+  font-size: 16px;
+  /* منع التكبير في iOS */
   touch-action: manipulation;
 }
 
@@ -958,13 +1010,13 @@ body::before {
     padding: 14px 18px;
     font-size: 16px;
   }
-  
+
   .touch-input {
     min-height: 48px;
     padding: 14px 18px;
     font-size: 16px;
   }
-  
+
   .touch-friendly {
     min-height: 48px;
     min-width: 48px;
@@ -979,13 +1031,13 @@ body::before {
     padding: 16px 20px;
     font-size: 18px;
   }
-  
+
   .touch-input {
     min-height: 52px;
     padding: 16px 20px;
     font-size: 18px;
   }
-  
+
   .touch-friendly {
     min-height: 52px;
     min-width: 52px;
@@ -998,17 +1050,17 @@ body::before {
     transform: none;
     box-shadow: none;
   }
-  
+
   .pos-product-card:active {
     transform: scale(0.98);
     transition: transform 0.1s ease;
   }
-  
+
   .btn-primary:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;
   }
-  
+
   .glass-card:active {
     transform: scale(0.98);
     transition: transform 0.1s ease;
@@ -1020,11 +1072,11 @@ body::before {
   .mobile-responsive {
     padding: 8px;
   }
-  
+
   .mobile-text {
     font-size: 14px;
   }
-  
+
   .mobile-button {
     min-height: 44px;
     padding: 8px 12px;
@@ -1044,7 +1096,7 @@ body::before {
   .no-print {
     display: none !important;
   }
-  
+
   .print-friendly {
     background: white !important;
     color: black !important;
@@ -1248,16 +1300,16 @@ body::before {
     max-width: 1600px;
     margin: 0 auto;
   }
-  
+
   .large-screen-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 2rem;
   }
-  
+
   .large-screen-text {
     font-size: 1.25rem;
   }
-  
+
   .large-screen-button {
     padding: 1rem 2rem;
     font-size: 1.125rem;
@@ -1304,22 +1356,22 @@ body::before {
   .mobile-responsive {
     padding: 4px;
   }
-  
+
   .mobile-text {
     font-size: 12px;
   }
-  
+
   .mobile-button {
     min-height: 40px;
     padding: 6px 10px;
     font-size: 12px;
   }
-  
+
   .mobile-card {
     padding: 8px;
     border-radius: 8px;
   }
-  
+
   .mobile-grid {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -1331,22 +1383,22 @@ body::before {
   .tablet-responsive {
     padding: 12px;
   }
-  
+
   .tablet-text {
     font-size: 14px;
   }
-  
+
   .tablet-button {
     min-height: 44px;
     padding: 10px 16px;
     font-size: 14px;
   }
-  
+
   .tablet-card {
     padding: 16px;
     border-radius: 12px;
   }
-  
+
   .tablet-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 12px;
@@ -1360,22 +1412,22 @@ body::before {
     max-width: 1400px;
     margin: 0 auto;
   }
-  
+
   .desktop-text {
     font-size: 16px;
   }
-  
+
   .desktop-button {
     min-height: 48px;
     padding: 12px 24px;
     font-size: 16px;
   }
-  
+
   .desktop-card {
     padding: 24px;
     border-radius: 16px;
   }
-  
+
   .desktop-grid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
@@ -1389,22 +1441,22 @@ body::before {
     max-width: 1800px;
     margin: 0 auto;
   }
-  
+
   .ultra-wide-text {
     font-size: 18px;
   }
-  
+
   .ultra-wide-button {
     min-height: 52px;
     padding: 16px 32px;
     font-size: 18px;
   }
-  
+
   .ultra-wide-card {
     padding: 32px;
     border-radius: 20px;
   }
-  
+
   .ultra-wide-grid {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 24px;
@@ -1425,6 +1477,7 @@ body::before {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1436,6 +1489,7 @@ body::before {
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1447,6 +1501,7 @@ body::before {
     opacity: 0;
     transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1458,6 +1513,7 @@ body::before {
     opacity: 0;
     transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -1468,6 +1524,7 @@ body::before {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -1477,6 +1534,7 @@ body::before {
   from {
     transform: translateY(-100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -1487,6 +1545,7 @@ body::before {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -1498,13 +1557,16 @@ body::before {
     opacity: 0;
     transform: scale(0.3);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.05);
   }
+
   70% {
     transform: scale(0.9);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -1512,9 +1574,12 @@ body::before {
 }
 
 @keyframes pulseCustom {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -1524,15 +1589,19 @@ body::before {
   from {
     box-shadow: 0 0 5px rgba(139, 92, 246, 0.5);
   }
+
   to {
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6);
   }
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -1547,7 +1616,7 @@ body::before {
 }
 
 .neon-effect {
-  box-shadow: 
+  box-shadow:
     0 0 5px var(--color-primary),
     0 0 10px var(--color-primary),
     0 0 15px var(--color-primary),
@@ -1555,19 +1624,27 @@ body::before {
 }
 
 .holographic-effect {
-  background: linear-gradient(45deg, 
-    var(--color-primary), 
-    var(--color-secondary), 
-    var(--color-accent), 
-    var(--color-primary));
+  background: linear-gradient(45deg,
+      var(--color-primary),
+      var(--color-secondary),
+      var(--color-accent),
+      var(--color-primary));
   background-size: 400% 400%;
   animation: holographic 3s ease infinite;
 }
 
 @keyframes holographic {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .particle-effect {
@@ -1582,16 +1659,21 @@ body::before {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.2), 
-    transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
   animation: particle 2s linear infinite;
 }
 
 @keyframes particle {
-  0% { left: -100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 /* تحسينات الخطوط */
@@ -1628,19 +1710,27 @@ body::before {
 }
 
 @keyframes iconPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* تحسينات الاستجابة */
 @media (max-width: 768px) {
+
   .animate-fadeInUp,
   .animate-fadeInDown,
   .animate-fadeInLeft,
   .animate-fadeInRight {
     animation-duration: 0.4s;
   }
-  
+
   .glass-effect {
     backdrop-filter: blur(10px);
   }
@@ -1688,7 +1778,7 @@ body::before {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1713,7 +1803,7 @@ body::before {
 
 .glass-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 
+  box-shadow:
     0 20px 60px rgba(0, 0, 0, 0.4),
     0 0 30px rgba(139, 92, 246, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -1773,7 +1863,7 @@ body::before {
 .input-enhanced:focus {
   outline: none;
   border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 
+  box-shadow:
     0 0 0 3px rgba(139, 92, 246, 0.1),
     0 0 20px rgba(139, 92, 246, 0.2);
   background: rgba(255, 255, 255, 0.08);
@@ -1888,6 +1978,7 @@ body::before {
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1912,8 +2003,13 @@ body::before {
 }
 
 @keyframes loadingShimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 
 /* إيقاف active effects */
@@ -1925,14 +2021,14 @@ body::before {
 
 /* تحسين تصميم القوائم المنسدلة */
 select {
-  background-color: #1f2937 !important;
-  border-color: #4b5563 !important;
-  color: #ffffff !important;
+  background-color: var(--bg-secondary) !important;
+  border-color: rgba(139, 92, 246, 0.2) !important;
+  color: var(--text-primary) !important;
 }
 
 select option {
-  background-color: #1f2937 !important;
-  color: #ffffff !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
 }
 
 select:focus {
@@ -2232,7 +2328,7 @@ select.input-modern {
     width: 0;
     overflow: hidden;
   }
-  
+
   .responsive-main-content {
     margin-left: 0;
     padding: 1rem;
@@ -2241,7 +2337,8 @@ select.input-modern {
 
 /* تحسينات إضافية للتصميم الثابت */
 .fixed-layout {
-  min-width: 1200px; /* عرض أدنى ثابت */
+  min-width: 1200px;
+  /* عرض أدنى ثابت */
   max-width: 100%;
   margin: 0 auto;
 }
@@ -2250,7 +2347,8 @@ select.input-modern {
 @media (min-width: 1201px) {
   .fixed-layout {
     min-width: 1200px;
-    max-width: 1600px; /* عرض أقصى للشاشات الكبيرة جداً */
+    max-width: 1600px;
+    /* عرض أقصى للشاشات الكبيرة جداً */
   }
 }
 
@@ -2308,7 +2406,7 @@ select.input-modern {
     min-width: 44px;
     touch-action: manipulation;
   }
-  
+
   .touch-optimized-button {
     min-height: 48px;
     min-width: 48px;
@@ -2316,7 +2414,7 @@ select.input-modern {
     touch-action: manipulation;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
-  
+
   .touch-optimized-input {
     min-height: 44px;
     padding: 12px 16px;
@@ -2330,21 +2428,21 @@ select.input-modern {
   .print-hidden {
     display: none !important;
   }
-  
+
   .print-visible {
     display: block !important;
   }
-  
+
   .print-friendly {
     background: white !important;
     color: black !important;
     box-shadow: none !important;
   }
-  
+
   .print-page-break {
     page-break-before: always;
   }
-  
+
   .print-no-break {
     page-break-inside: avoid;
   }
@@ -2356,7 +2454,7 @@ select.input-modern {
     background-color: #1a1a1a;
     color: #ffffff;
   }
-  
+
   .auto-dark-card {
     background-color: #2a2a2a;
     border-color: #3a3a3a;
@@ -2369,7 +2467,7 @@ select.input-modern {
     background-color: #ffffff;
     color: #000000;
   }
-  
+
   .auto-light-card {
     background-color: #f8f9fa;
     border-color: #dee2e6;
@@ -2382,7 +2480,7 @@ select.input-modern {
     animation: none !important;
     transition: none !important;
   }
-  
+
   .motion-reduced * {
     animation: none !important;
     transition: none !important;
@@ -2394,14 +2492,23 @@ select.input-modern {
   .high-contrast {
     border: 2px solid currentColor;
   }
-  
+
   .high-contrast-button {
     border: 2px solid currentColor;
     background-color: transparent;
   }
-  
+
   .high-contrast-button:hover {
     background-color: currentColor;
     color: white;
   }
+}
+
+/* إخفاء شريط التمرير */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

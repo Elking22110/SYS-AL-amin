@@ -116,7 +116,7 @@ const LoginSignupForm = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
       {/* Background Animation */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"></div>
@@ -134,9 +134,9 @@ const LoginSignupForm = () => {
                   {/* Header */}
                   <div className="text-center mb-8">
                     <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse-custom">
-                      <Shield className="h-10 w-10 text-white" />
+                      <Shield className="h-10 w-10 text-slate-800" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-white via-purple-200 to-blue-300 bg-clip-text text-transparent">
+                    <h1 className="text-2xl font-bold text-slate-800 mb-2 bg-gradient-to-r from-white via-purple-200 to-blue-300 bg-clip-text text-transparent">
                       تسجيل الدخول
                     </h1>
                     <p className="text-purple-200 text-sm">
@@ -196,7 +196,7 @@ const LoginSignupForm = () => {
                       <button
                         type="button"
                         onClick={() => { soundManager.play('click'); setShowPassword(!showPassword); }}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-white transition-colors"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-slate-800 transition-colors"
                         disabled={loading}
                       >
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -226,7 +226,7 @@ const LoginSignupForm = () => {
 
                   {/* Switch to Signup */}
                   <div className="mt-6 text-center">
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-slate-500 text-sm">
                       ليس لديك حساب؟{' '}
                       <button
                         type="button"
@@ -248,9 +248,9 @@ const LoginSignupForm = () => {
                   {/* Header */}
                   <div className="text-center mb-8">
                     <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse-custom">
-                      <User className="h-10 w-10 text-white" />
+                      <User className="h-10 w-10 text-slate-800" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2 bg-gradient-to-r from-white via-pink-200 to-purple-300 bg-clip-text text-transparent">
+                    <h1 className="text-2xl font-bold text-slate-800 mb-2 bg-gradient-to-r from-white via-pink-200 to-purple-300 bg-clip-text text-transparent">
                       إنشاء حساب جديد
                     </h1>
                     <p className="text-pink-200 text-sm">
@@ -325,7 +325,7 @@ const LoginSignupForm = () => {
                       <button
                         type="button"
                         onClick={() => { soundManager.play('click'); setShowPassword(!showPassword); }}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-300 hover:text-white transition-colors"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-300 hover:text-slate-800 transition-colors"
                         disabled={loading}
                       >
                         {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -348,7 +348,7 @@ const LoginSignupForm = () => {
                       <button
                         type="button"
                         onClick={() => { soundManager.play('click'); setShowConfirmPassword(!showConfirmPassword); }}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-300 hover:text-white transition-colors"
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pink-300 hover:text-slate-800 transition-colors"
                         disabled={loading}
                       >
                         {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -378,7 +378,7 @@ const LoginSignupForm = () => {
 
                   {/* Switch to Login */}
                   <div className="mt-6 text-center">
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-slate-500 text-sm">
                       لديك حساب بالفعل؟{' '}
                       <button
                         type="button"

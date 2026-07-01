@@ -61,19 +61,19 @@ const LazyImage = ({
       {!isInView ? (
         // Placeholder قبل دخول العنصر للشاشة
         <div className="w-full h-full bg-gray-600 flex items-center justify-center">
-          {placeholder || <Package className="h-8 w-8 text-gray-400" />}
+          {placeholder || <Package className="h-8 w-8 text-slate-500" />}
         </div>
       ) : !isLoaded ? (
         // Loading state
         <div className="w-full h-full bg-gray-600 flex items-center justify-center">
           <div className="animate-pulse">
-            <Package className="h-8 w-8 text-gray-400" />
+            <Package className="h-8 w-8 text-slate-500" />
           </div>
         </div>
       ) : hasError ? (
         // Error state
         <div className="w-full h-full bg-gray-600 flex items-center justify-center">
-          {fallback || <Package className="h-8 w-8 text-gray-400" />}
+          {fallback || <Package className="h-8 w-8 text-slate-500" />}
         </div>
       ) : (
         // الصورة المحملة

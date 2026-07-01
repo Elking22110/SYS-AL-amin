@@ -24,80 +24,80 @@ class SoundManager {
 
   // إنشاء الأصوات باستخدام Web Audio API
   createSounds() {
-    // صوت النقر
-    this.sounds.click = this.createTone(800, 0.1, 'sine');
+    // صوت النقر (أنعم وأقصر)
+    this.sounds.click = this.createTone(800, 0.05, 'sine');
 
-    // صوت النجاح
-    this.sounds.success = this.createChord([523, 659, 784], 0.3, 'sine');
+    // صوت النجاح (تآلف هادئ ومريح)
+    this.sounds.success = this.createChord([440, 554, 659], 0.4, 'sine');
 
-    // صوت الخطأ
-    this.sounds.error = this.createTone(200, 0.5, 'sawtooth');
+    // صوت الخطأ (معدل ليكون تنبيهاً بدلاً من إزعاج)
+    this.sounds.error = this.createTone(150, 0.3, 'triangle');
 
-    // صوت إضافة منتج
-    this.sounds.addProduct = this.createTone(600, 0.15, 'square');
+    // صوت إضافة منتج (أسرع وأنعم)
+    this.sounds.addProduct = this.createTone(700, 0.1, 'sine');
 
     // صوت حذف منتج
-    this.sounds.removeProduct = this.createTone(400, 0.2, 'triangle');
+    this.sounds.removeProduct = this.createTone(300, 0.15, 'triangle');
 
     // صوت بدء الوردية
-    this.sounds.startShift = this.createChord([440, 554, 659], 0.4, 'sine');
+    this.sounds.startShift = this.createChord([523, 659, 784], 0.5, 'sine');
 
     // صوت إنهاء الوردية
-    this.sounds.endShift = this.createChord([659, 523, 392], 0.5, 'sine');
+    this.sounds.endShift = this.createChord([784, 659, 523], 0.5, 'sine');
 
     // صوت طباعة
-    this.sounds.print = this.createTone(1000, 0.1, 'square');
+    this.sounds.print = this.createTone(800, 0.1, 'triangle');
 
     // صوت فتح نافذة
-    this.sounds.openWindow = this.createTone(700, 0.2, 'sine');
+    this.sounds.openWindow = this.createTone(600, 0.15, 'sine');
 
     // صوت إغلاق نافذة
-    this.sounds.closeWindow = this.createTone(500, 0.2, 'sine');
+    this.sounds.closeWindow = this.createTone(400, 0.15, 'sine');
 
     // صوت حفظ
-    this.sounds.save = this.createChord([523, 659], 0.25, 'sine');
+    this.sounds.save = this.createChord([659, 880], 0.2, 'sine');
 
     // صوت تحديث
-    this.sounds.update = this.createTone(800, 0.15, 'triangle');
+    this.sounds.update = this.createTone(900, 0.1, 'sine');
 
     // صوت حذف
-    this.sounds.delete = this.createTone(300, 0.3, 'sawtooth');
+    this.sounds.delete = this.createTone(250, 0.2, 'triangle');
 
-    // صوت تنبيه
-    this.sounds.notification = this.createChord([880, 1108], 0.2, 'sine');
+    // صوت تنبيه (إشعار ناعم)
+    this.sounds.notification = this.createChord([659, 880], 0.25, 'sine');
 
     // صوت تحذير
-    this.sounds.warning = this.createTone(400, 0.4, 'sawtooth');
+    this.sounds.warning = this.createTone(350, 0.3, 'triangle');
 
     // صوت نقدي
-    this.sounds.cash = this.createChord([523, 659, 784, 1047], 0.3, 'sine');
+    this.sounds.cash = this.createChord([587, 740, 880, 1175], 0.35, 'sine');
 
-    // صوت بطاقة
-    this.sounds.card = this.createTone(1000, 0.2, 'square');
+    // صوت بطاقة (دفع إلكتروني ناعم)
+    this.sounds.card = this.createTone(1200, 0.15, 'sine');
 
     // صوت خصم
-    this.sounds.discount = this.createTone(600, 0.25, 'triangle');
+    this.sounds.discount = this.createTone(550, 0.2, 'sine');
 
     // صوت عربون
-    this.sounds.downPayment = this.createChord([440, 554], 0.3, 'sine');
+    this.sounds.downPayment = this.createChord([523, 659], 0.25, 'sine');
 
     // صوت المرتجع
-    this.sounds.return = this.createTone(400, 0.3, 'sawtooth');
+    this.sounds.return = this.createTone(350, 0.25, 'triangle');
 
     // صوت مرتجع
-    this.sounds.refund = this.createTone(200, 0.4, 'sawtooth');
+    this.sounds.refund = this.createTone(250, 0.3, 'triangle');
 
     // صوت تسجيل دخول
-    this.sounds.login = this.createChord([523, 659, 784], 0.4, 'sine');
+    this.sounds.login = this.createChord([440, 554, 659, 880], 0.5, 'sine');
 
     // صوت تسجيل خروج
-    this.sounds.logout = this.createChord([784, 659, 523], 0.4, 'sine');
+    this.sounds.logout = this.createChord([880, 659, 554, 440], 0.5, 'sine');
 
     // صوت تحميل
-    this.sounds.loading = this.createTone(800, 0.1, 'sine');
+    this.sounds.loading = this.createTone(900, 0.05, 'sine');
 
     // صوت اكتمال
-    this.sounds.complete = this.createChord([523, 659, 784, 1047], 0.5, 'sine');
+    this.sounds.complete = this.createChord([523, 659, 784, 1047], 0.6, 'sine');
   }
 
   // إنشاء نغمة واحدة

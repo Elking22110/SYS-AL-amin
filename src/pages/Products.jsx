@@ -24,6 +24,57 @@ import { formatDate, formatTimeOnly } from '../utils/dateUtils.js';
 import { useAuth } from '../components/AuthProvider';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
+import databaseManager from '../utils/database';
+
+// دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
+const renderProductTitleAndSize = (name) => {
+  if (!name) return null;
+
+  // 1. تصحيح الكسور العكسية في الأنظمة القديمة
+  let cleanName = name;
+  cleanName = cleanName.replace(/\b2\/1\b/g, '1/2');
+  cleanName = cleanName.replace(/\b4\/3\b/g, '3/4');
+  cleanName = cleanName.replace(/\b8\/1\b/g, '1/8');
+  cleanName = cleanName.replace(/\b8\/3\b/g, '3/8');
+  cleanName = cleanName.replace(/\b8\/5\b/g, '5/8');
+  cleanName = cleanName.replace(/\b4\/1\b/g, '1/4');
+
+  // 2. استخراج الأرقام والكسور التي تمثل المقاسات
+  const regex = /([0-9\/\.\-*+xX×"”']+)/g;
+  const matches = cleanName.match(regex) || [];
+  const sizes = matches.filter(m => /[0-9]/.test(m));
+
+  // 3. حذف المقاسات من العنوان الأساسي ليبقى اسم القطعة نظيفاً ومنسقاً
+  let title = cleanName;
+  sizes.forEach(size => {
+    title = title.replace(size, '');
+  });
+  // تنظيف أي مسافات زائدة أو شرطات معلقة في النهاية
+  title = title.replace(/\s+/g, ' ').replace(/-\s*$/, '').trim();
+
+  return (
+    <div className="flex flex-col text-right" style={{ direction: 'rtl' }}>
+      {/* اسم القطعة بالكامل */}
+      <span className="font-bold text-slate-800 text-sm md:text-base leading-snug">
+        {title}
+      </span>
+      {/* المقاسات في الأسفل على سطر منفصل تماماً */}
+      {sizes.length > 0 && (
+        <div className="mt-1 flex flex-wrap gap-1 justify-start shrink-0">
+          {sizes.map((size, idx) => (
+            <span
+              key={idx}
+              className="inline-block font-mono font-black text-[11px] md:text-[13px] text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded border border-blue-300 shadow-xs"
+              style={{ direction: 'ltr', unicodeBidi: 'embed' }}
+            >
+              {size}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Products = () => {
   const { user, hasPermission } = useAuth();
@@ -41,16 +92,16 @@ const Products = () => {
   // فحص الصلاحيات (استثناء للمدير العام)
   if (user?.role !== 'admin' && !hasPermission('manage_products')) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center">
         <div className="glass-card p-8 text-center max-w-md mx-4">
           <div className="w-20 h-20 bg-red-500 bg-opacity-20 rounded-full mx-auto mb-6 flex items-center justify-center">
             <Shield className="h-10 w-10 text-red-400" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-4">غير مصرح لك</h2>
+          <h2 className="text-2xl font-bold text-slate-800 mb-4">غير مصرح لك</h2>
           <p className="text-purple-200 mb-6">
             ليس لديك صلاحية للوصول إلى صفحة المنتجات. يرجى التواصل مع المدير.
           </p>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-slate-500">
             دورك الحالي: {user?.role === 'admin' ? 'مدير عام' : user?.role === 'manager' ? 'مدير' : 'كاشير'}
           </div>
         </div>
@@ -67,7 +118,7 @@ const Products = () => {
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
-    category: 'نايلون بيور',
+    category: 'خلاطات وصنابير',
     stock: '',
     minStock: ''
   });
@@ -185,8 +236,15 @@ const Products = () => {
       const have = new Set(catsArr.map(c => c && c.name));
       const missing = productCategoryNames.filter(n => !have.has(n)).map(name => ({ name, description: '' }));
       const merged = missing.length > 0 ? [...catsArr, ...missing] : catsArr;
+
+      // Ensure 'خامات توريد' always exists
+      const hasSupplyCategory = merged.some(c => c.name === 'خامات توريد');
+      if (!hasSupplyCategory) {
+        merged.push({ name: 'خامات توريد', description: 'مواد التوريد المرتبطة بالموردين (ثابتة)' });
+      }
+
       setCategories(merged);
-      if (missing.length > 0) {
+      if (missing.length > 0 || !hasSupplyCategory) {
         try { localStorage.setItem('productCategories', JSON.stringify(merged)); } catch (_) { }
       }
     } catch (_) {
@@ -194,148 +252,101 @@ const Products = () => {
     }
   }, []);
 
-  // بذرة بيانات أساسية (حقيقية) مرة واحدة فقط إذا كانت القوائم فارغة ولم تُستورد بيانات
+  // مسح كل البيانات القديمة وتحويل النظام لمتجر أدوات صحية مع استيراد كافة البيانات المستخرجة
+  useEffect(() => {
+    const runMigration = async () => {
+      try {
+        const migrationDone = localStorage.getItem('migration_sanitary_alamin_v3') === 'true';
+        if (migrationDone) return;
+
+        console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لمتجر الأمين...');
+        const response = await fetch('/products_seed.json');
+        if (!response.ok) {
+          throw new Error('فشل تحميل ملف البيانات الأولية للمنتجات');
+        }
+        const seedData = await response.json();
+        const categories = seedData.categories || [];
+        const products = seedData.products || [];
+
+        // مسح كل البيانات القديمة
+        const keysToClear = [
+          'products', 'productCategories', 'sales', 'customers',
+          'suppliers', 'supplier_supplies', 'supplier_payments',
+          'shifts', 'activeShift', 'notifications',
+          'reseed_done_msgroupplast_v3', 'reseed_done_msgroupplast_v2',
+          'reseed_done_msgroupplast_v1', 'pos-settings', 
+          'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2'
+        ];
+        keysToClear.forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+
+        // مسح IndexedDB القديمة وإعادة تهيئتها بالبيانات الكاملة
+        try {
+          await databaseManager.importData({
+            products: products,
+            categories: categories,
+            users: [
+              {
+                id: 'admin',
+                username: 'admin',
+                email: 'admin@alaminstore.com',
+                role: 'admin',
+                name: 'المدير العام'
+              }
+            ]
+          });
+          console.log('تم استيراد البيانات إلى IndexedDB بنجاح');
+        } catch (dbErr) {
+          console.error('خطأ أثناء تهيئة قاعدة البيانات:', dbErr);
+        }
+
+        localStorage.setItem('productCategories', JSON.stringify(categories));
+        localStorage.setItem('products', JSON.stringify(products));
+        localStorage.setItem('migration_sanitary_alamin_v3', 'true');
+
+        setCategories(categories);
+        setProducts(products);
+
+        try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'migration_seed', count: categories.length }); } catch (_) {}
+        try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'migration_seed', count: products.length }); } catch (_) {}
+        console.log('اكتملت هجرة البيانات بنجاح لعدد ' + products.length + ' منتج!');
+      } catch (err) {
+        console.error('حدث خطأ أثناء استيراد البيانات الأولية:', err);
+      }
+    };
+
+    runMigration();
+  }, []);
+
+  // بذرة بيانات أساسية - أدوات صحية (مرة واحدة فقط إذا كانت القوائم فارغة)
   useEffect(() => {
     try {
       const savedProducts = JSON.parse(localStorage.getItem('products') || '[]');
       const savedCategories = JSON.parse(localStorage.getItem('productCategories') || '[]');
-      // ازرع البيانات فقط إذا كانت المنتجات والفئات معاً فارغة
       if ((Array.isArray(savedProducts) && savedProducts.length > 0) || (Array.isArray(savedCategories) && savedCategories.length > 0)) {
         return;
       }
 
-      const seedCategories = [
-        { name: 'نايلون بيور', description: 'شنط ورولات نايلون بيور' },
-        { name: 'نايلون مميز مطبوع', description: 'نايلون مميز مطبوع 1-2 لون' },
-        { name: 'نايلون عادي مطبوع', description: 'نايلون عادي مطبوع 1-2 لون' },
-        { name: 'مطبوع درجة أولي مميزه', description: 'درجة أولي مميزة مطبوع' },
-        { name: 'مطبوع درجة أولي عالي', description: 'درجة أولي عالي مطبوع' },
-        { name: 'مطبوع درجة أولي هاي', description: 'درجة أولي هاي مطبوع' },
-        { name: 'مطبوع كسر بيور', description: 'كسر بيور مطبوع' },
-        { name: 'مطبوع بيور 100%', description: 'بيور 100% مطبوع' },
-        { name: 'إضافات تصنيع', description: 'إضافات مثل اليد الخارجية والأكلاشية' }
+      const sanitaryCategories = [
+        { name: 'خلاطات وصنابير', description: 'خلاطات حمام ومطبخ - جميع الماركات والأحجام' },
+        { name: 'أطباق توواليت', description: 'أطباق توواليت صيني وأوروبي' },
+        { name: 'أحواض', description: 'أحواض حمام وغسيل' },
+        { name: 'شاور وكابينات', description: 'وحدات استحمام وكابينات زجاجية' },
+        { name: 'أنابيب وتوصيلات', description: 'مواسير PVC وتوصيلات' },
+        { name: 'عدد ومستلزمات', description: 'أدوات سباكة وعدد صيانة' },
+        { name: 'أطقم حمام', description: 'أطقم حمام كاملة صيني وأوروبي' },
+        { name: 'خزانات مياه', description: 'خزانات مياه أرضية وعلوية' },
+        { name: 'خامات توريد', description: 'مواد التوريد المرتبطة بالموردين (ثابتة)' }
       ];
 
-      const seedProducts = [
-        // نايلون بيور
-        { id: Date.now() + 1, name: 'نايلون بيور - 1 لون (للكيلو)', price: 96, category: 'نايلون بيور', stock: 500, minStock: 50 },
-        { id: Date.now() + 2, name: 'نايلون بيور - 2 لون (للكيلو)', price: 98, category: 'نايلون بيور', stock: 500, minStock: 50 },
-
-        // نايلون مميز مطبوع
-        { id: Date.now() + 3, name: 'نايلون مميز مطبوع - 1 لون (للكيلو)', price: 86, category: 'نايلون مميز مطبوع', stock: 500, minStock: 50 },
-        { id: Date.now() + 4, name: 'نايلون مميز مطبوع - 2 لون (للكيلو)', price: 89, category: 'نايلون مميز مطبوع', stock: 500, minStock: 50 },
-
-        // نايلون عادي مطبوع
-        { id: Date.now() + 5, name: 'نايلون عادي مطبوع - 1 لون (للكيلو)', price: 76, category: 'نايلون عادي مطبوع', stock: 500, minStock: 50 },
-        { id: Date.now() + 6, name: 'نايلون عادي مطبوع - 2 لون (للكيلو)', price: 79, category: 'نايلون عادي مطبوع', stock: 500, minStock: 50 },
-
-        // مطبوع درجة أولي مميزه
-        { id: Date.now() + 7, name: 'مطبوع درجة أولي مميزه - 1 لون (للكيلو)', price: 65.5, category: 'مطبوع درجة أولي مميزه', stock: 500, minStock: 50 },
-        { id: Date.now() + 8, name: 'مطبوع درجة أولي مميزه - 2 لون (للكيلو)', price: 69.5, category: 'مطبوع درجة أولي مميزه', stock: 500, minStock: 50 },
-
-        // مطبوع درجة أولي عالي
-        { id: Date.now() + 9, name: 'مطبوع درجة أولي عالي - 1 لون (للكيلو)', price: 55.5, category: 'مطبوع درجة أولي عالي', stock: 500, minStock: 50 },
-        { id: Date.now() + 10, name: 'مطبوع درجة أولي عالي - 2 لون (للكيلو)', price: 59.5, category: 'مطبوع درجة أولي عالي', stock: 500, minStock: 50 },
-
-        // مطبوع درجة أولي هاي
-        { id: Date.now() + 11, name: 'مطبوع درجة أولي هاي - 1 لون (للكيلو)', price: 49.5, category: 'مطبوع درجة أولي هاي', stock: 500, minStock: 50 },
-        { id: Date.now() + 12, name: 'مطبوع درجة أولي هاي - 2 لون (للكيلو)', price: 52.5, category: 'مطبوع درجة أولي هاي', stock: 500, minStock: 50 },
-
-        // مطبوع كسر بيور
-        { id: Date.now() + 13, name: 'مطبوع كسر بيور - 1 لون (للكيلو)', price: 75, category: 'مطبوع كسر بيور', stock: 500, minStock: 50 },
-        { id: Date.now() + 14, name: 'مطبوع كسر بيور - 2 لون (للكيلو)', price: 79, category: 'مطبوع كسر بيور', stock: 500, minStock: 50 },
-
-        // مطبوع بيور 100%
-        { id: Date.now() + 15, name: 'مطبوع بيور 100% - 1 لون (للكيلو)', price: 88, category: 'مطبوع بيور 100%', stock: 500, minStock: 50 },
-        { id: Date.now() + 16, name: 'مطبوع بيور 100% - 2 لون (للكيلو)', price: 92, category: 'مطبوع بيور 100%', stock: 500, minStock: 50 },
-
-        // إضافات
-        { id: Date.now() + 17, name: 'يد خارجية (زيادة للكيلو)', price: 4, category: 'إضافات تصنيع', stock: 1000, minStock: 0 },
-        { id: Date.now() + 18, name: 'أكلاشية (حسب المقاس)', price: 0, category: 'إضافات تصنيع', stock: 1000, minStock: 0 }
-      ];
-
-      localStorage.setItem('productCategories', JSON.stringify(seedCategories));
-      localStorage.setItem('products', JSON.stringify(seedProducts));
-
-      setCategories(seedCategories);
-      setProducts(seedProducts);
-      try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'seed', count: seedCategories.length }); } catch (_) { }
-      try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'seed', count: seedProducts.length }); } catch (_) { }
-    } catch (_) { }
+      localStorage.setItem('productCategories', JSON.stringify(sanitaryCategories));
+      localStorage.setItem('products', JSON.stringify([]));
+      setCategories(sanitaryCategories);
+      setProducts([]);
+      try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'seed', count: sanitaryCategories.length }); } catch (_) {}
+    } catch (_) {}
   }, [setProducts, setCategories]);
 
-  // إعادة تهيئة كاملة: مسح البيانات الحالية وزراعة البيانات الجديدة بدون مقاسات (مرة واحدة)
-  useEffect(() => {
-    try {
-      const reseedDone = localStorage.getItem('reseed_done_msgroupplast_v3') === 'true';
-      if (reseedDone) return;
-
-      // مسح
-      localStorage.removeItem('products');
-      localStorage.removeItem('productCategories');
-
-      // فئات
-      const freshCategories = [
-        { name: 'نايلون بيور', description: 'شنط ورولات نايلون بيور' },
-        { name: 'نايلون مميز مطبوع', description: 'نايلون مميز مطبوع 1-2 لون' },
-        { name: 'نايلون عادي مطبوع', description: 'نايلون عادي مطبوع 1-2 لون' },
-        { name: 'مطبوع درجة أولي مميزه', description: 'درجة أولي مميزة مطبوع' },
-        { name: 'مطبوع درجة أولي عالي', description: 'درجة أولي عالي مطبوع' },
-        { name: 'مطبوع درجة أولي هاي', description: 'درجة أولي هاي مطبوع' },
-        { name: 'مطبوع كسر بيور', description: 'كسر بيور مطبوع' },
-        { name: 'مطبوع بيور 100%', description: 'بيور 100% مطبوع' },
-        { name: 'إضافات تصنيع', description: 'إضافات مثل اليد الخارجية والأكلاشية' }
-      ];
-
-      // منتجات بدون مقاسات داخل الاسم
-      let idc = Date.now();
-      const freshProducts = [
-        // نايلون بيور
-        { name: 'نايلون بيور - 1 لون (للكيلو)', price: 96, category: 'نايلون بيور' },
-        { name: 'نايلون بيور - 2 لون (للكيلو)', price: 98, category: 'نايلون بيور' },
-
-        // نايلون مميز مطبوع
-        { name: 'نايلون مميز مطبوع - 1 لون (للكيلو)', price: 86, category: 'نايلون مميز مطبوع' },
-        { name: 'نايلون مميز مطبوع - 2 لون (للكيلو)', price: 89, category: 'نايلون مميز مطبوع' },
-
-        // نايلون عادي مطبوع
-        { name: 'نايلون عادي مطبوع - 1 لون (للكيلو)', price: 76, category: 'نايلون عادي مطبوع' },
-        { name: 'نايلون عادي مطبوع - 2 لون (للكيلو)', price: 79, category: 'نايلون عادي مطبوع' },
-
-        // مطبوع درجة أولي مميزه
-        { name: 'مطبوع درجة أولي مميزه - 1 لون (للكيلو)', price: 65.5, category: 'مطبوع درجة أولي مميزه' },
-        { name: 'مطبوع درجة أولي مميزه - 2 لون (للكيلو)', price: 69.5, category: 'مطبوع درجة أولي مميزه' },
-
-        // مطبوع درجة أولي عالي
-        { name: 'مطبوع درجة أولي عالي - 1 لون (للكيلو)', price: 55.5, category: 'مطبوع درجة أولي عالي' },
-        { name: 'مطبوع درجة أولي عالي - 2 لون (للكيلو)', price: 59.5, category: 'مطبوع درجة أولي عالي' },
-
-        // مطبوع درجة أولي هاي
-        { name: 'مطبوع درجة أولي هاي - 1 لون (للكيلو)', price: 49.5, category: 'مطبوع درجة أولي هاي' },
-        { name: 'مطبوع درجة أولي هاي - 2 لون (للكيلو)', price: 52.5, category: 'مطبوع درجة أولي هاي' },
-
-        // مطبوع كسر بيور
-        { name: 'مطبوع كسر بيور - 1 لون (للكيلو)', price: 75, category: 'مطبوع كسر بيور' },
-        { name: 'مطبوع كسر بيور - 2 لون (للكيلو)', price: 79, category: 'مطبوع كسر بيور' },
-
-        // مطبوع بيور 100%
-        { name: 'مطبوع بيور 100% - 1 لون (للكيلو)', price: 88, category: 'مطبوع بيور 100%' },
-        { name: 'مطبوع بيور 100% - 2 لون (للكيلو)', price: 92, category: 'مطبوع بيور 100%' },
-
-        // إضافات
-        { name: 'يد خارجية (زيادة للكيلو)', price: 4, category: 'إضافات تصنيع' },
-        { name: 'أكلاشية (حسب المقاس)', price: 0, category: 'إضافات تصنيع' }
-      ].map(p => ({ id: idc++, stock: 500, minStock: 50, ...p }));
-
-      localStorage.setItem('productCategories', JSON.stringify(freshCategories));
-      localStorage.setItem('products', JSON.stringify(freshProducts));
-      setCategories(freshCategories);
-      setProducts(freshProducts);
-      localStorage.setItem('reseed_done_msgroupplast_v3', 'true');
-      try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'reset_seed', count: freshCategories.length }); } catch (_) { }
-      try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'reset_seed', count: freshProducts.length }); } catch (_) { }
-    } catch (_) { }
-  }, []);
+  // (تم استبدال seed النايلون القديم بـ seed أدوات صحية في الـ useEffect أعلاه)
 
   // مزامنة الفئات مع فئات المنتجات: إضافة أي فئة تظهر داخل المنتجات وغير موجودة في قائمة الفئات
   useEffect(() => {
@@ -446,6 +457,11 @@ const Products = () => {
       return;
     }
 
+    if (categoryName === 'خامات توريد') {
+      alert('لا يمكن حذف الفئة الثابتة "خامات توريد"');
+      return;
+    }
+
     // التحقق من وجود منتجات في هذه الفئة
     const productsInCategory = products.filter(product => product.category === categoryName);
     if (productsInCategory.length > 0) {
@@ -482,11 +498,19 @@ const Products = () => {
     }
   }, []);
 
+  const [visibleCount, setVisibleCount] = useState(30);
+
+  useEffect(() => {
+    setVisibleCount(30);
+  }, [searchTerm, selectedCategory]);
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'الكل' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const displayedProducts = filteredProducts.slice(0, visibleCount);
 
   // الحصول على قائمة أسماء الفئات للفلترة
   const categoryNames = ['الكل', ...categories.map(cat => cat.name)];
@@ -549,7 +573,7 @@ const Products = () => {
     setNewProduct({
       name: '',
       price: '',
-      category: categories.length > 0 ? categories[0].name : 'نايلون بيور',
+      category: categories.length > 0 ? categories[0].name : 'خلاطات وصنابير',
       stock: '',
       minStock: ''
     });
@@ -600,7 +624,7 @@ const Products = () => {
       setNewProduct({
         name: '',
         price: '',
-        category: categories.length > 0 ? categories[0].name : 'نايلون بيور',
+        category: categories.length > 0 ? categories[0].name : 'خلاطات وصنابير',
         stock: '',
         minStock: ''
       });
@@ -743,10 +767,10 @@ const Products = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
           <div className="flex-1">
-            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-white mb-2 md:mb-3 bg-gradient-to-r from-white via-blue-200 to-indigo-300 bg-clip-text text-transparent">
+            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-slate-900 mb-2 md:mb-3">
               إدارة المنتجات
             </h1>
-            <p className="text-blue-200 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة مخزون الملابس الرجالية</p>
+            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة مخزون الأدوات الصحية - متجر الأمين</p>
           </div>
           <div className="flex space-x-2">
             <button
@@ -772,7 +796,7 @@ const Products = () => {
                 e.stopPropagation();
                 setShowAddCategoryModal(true);
               }}
-              className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-xs lg:text-sm font-semibold transition-all duration-300 flex items-center min-h-[40px] cursor-pointer"
+              className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-slate-800 px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-xs lg:text-sm font-semibold transition-all duration-300 flex items-center min-h-[40px] cursor-pointer"
               style={{
                 pointerEvents: 'auto',
                 zIndex: 10,
@@ -790,14 +814,14 @@ const Products = () => {
           <div className="glass-card hover-lift group cursor-pointer p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs font-medium text-purple-200 mb-1 uppercase tracking-wide">إجمالي المنتجات</p>
-                <p className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-2">{products.length}</p>
+                <p className="text-xs font-medium text-slate-600 mb-1 uppercase tracking-wide">إجمالي المنتجات</p>
+                <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-800 mb-2">{products.length}</p>
                 <div className="flex items-center text-xs">
                   <span className="text-blue-300 font-medium">منتجات متاحة</span>
                 </div>
               </div>
               <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Package className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-white" />
+                <Package className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-slate-800" />
               </div>
             </div>
           </div>
@@ -805,8 +829,8 @@ const Products = () => {
           <div className="glass-card hover-lift group cursor-pointer p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs font-medium text-purple-200 mb-1 uppercase tracking-wide">قيمة المخزون</p>
-                <p className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-2">
+                <p className="text-xs font-medium text-slate-600 mb-1 uppercase tracking-wide">قيمة المخزون</p>
+                <p className="text-lg md:text-xl lg:text-2xl font-bold text-slate-800 mb-2">
                   ${products.reduce((total, p) => safeMath.add(total, safeMath.multiply(p.price, p.stock)), 0).toLocaleString('en-US')}
                 </p>
                 <div className="flex items-center text-xs">
@@ -814,7 +838,7 @@ const Products = () => {
                 </div>
               </div>
               <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Tag className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-white" />
+                <Tag className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-slate-800" />
               </div>
             </div>
           </div>
@@ -822,8 +846,8 @@ const Products = () => {
           <div className="glass-card hover-lift group cursor-pointer p-6 md:p-8 lg:p-10 xl:p-12 col-span-2">
             <div className="flex items-center justify-between mb-6 md:mb-8">
               <div className="flex-1">
-                <p className="text-sm md:text-base font-medium text-purple-200 mb-2 uppercase tracking-wide">منخفضة المخزون</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4">{lowStockProducts.length}</p>
+                <p className="text-sm md:text-base font-medium text-slate-600 mb-2 uppercase tracking-wide">منخفضة المخزون</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-800 mb-4">{lowStockProducts.length}</p>
                 {console.log('لوحة التحكم - عدد المنتجات منخفضة المخزون:', lowStockProducts.length)}
                 <div className="flex items-center text-sm md:text-base">
                   <span className="text-orange-300 font-medium">تحتاج إعادة تموين</span>
@@ -839,7 +863,7 @@ const Products = () => {
                 )}
               </div>
               <div className="p-4 md:p-5 lg:p-6 xl:p-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12 text-white" />
+                <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12 text-slate-800" />
               </div>
             </div>
           </div>
@@ -865,11 +889,11 @@ const Products = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-gray-800 border-gray-600 text-white"
+                className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
               >
 
                 {categoryNames.map(category => (
-                  <option key={category} value={category} className="bg-gray-800 text-white">{category}</option>
+                  <option key={category} value={category} className="bg-white text-slate-800">{category}</option>
                 ))}
               </select>
             </div>
@@ -939,7 +963,7 @@ const Products = () => {
                 setSelectedCategory('الكل');
               }}
               disabled={selectedCategory === 'الكل' || !selectedCategory}
-              className={`bg-gradient-to-r from-red-600 to-pink-600 text-white px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl hover:from-red-700 hover:to-pink-700 transition-all duration-300 flex items-center text-sm md:text-base font-semibold shadow-lg min-h-[50px] cursor-pointer ${selectedCategory === 'الكل' || !selectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-gradient-to-r from-red-600 to-pink-600 text-slate-800 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl hover:from-red-700 hover:to-pink-700 transition-all duration-300 flex items-center text-sm md:text-base font-semibold shadow-lg min-h-[50px] cursor-pointer ${selectedCategory === 'الكل' || !selectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
               style={{
                 pointerEvents: selectedCategory === 'الكل' || !selectedCategory ? 'none' : 'auto',
                 zIndex: 10,
@@ -958,12 +982,12 @@ const Products = () => {
             <table className="w-full">
               <thead className="bg-white bg-opacity-10">
                 <tr>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">الصورة</th>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">المنتج</th>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">السعر</th>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">المخزون</th>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">التصنيف</th>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-purple-200 uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">الصورة</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">المنتج</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">السعر</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">المخزون</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">التصنيف</th>
+                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-10">
@@ -974,12 +998,12 @@ const Products = () => {
                     </td>
                   </tr>
                 )}
-                {filteredProducts.map((product, index) => (
+                {displayedProducts.map((product, index) => (
                   <tr key={product.id} className="hover:bg-white hover:bg-opacity-5 transition-all duration-300">
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                       <div className="flex items-center justify-center">
                         <div className="relative group">
-                          <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden border-2 border-gray-600 hover:border-blue-500 transition-colors duration-300">
+                          <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden border-2 border-slate-400 hover:border-blue-500 transition-colors duration-300">
                             {productImages[product.id] ? (
                               <img
                                 src={productImages[product.id]}
@@ -1012,7 +1036,7 @@ const Products = () => {
                                   position: 'relative'
                                 }}
                               >
-                                <Camera className="h-3 w-3 text-white" />
+                                <Camera className="h-3 w-3 text-slate-800" />
                               </button>
                               {productImages[product.id] && (
                                 <button
@@ -1029,7 +1053,7 @@ const Products = () => {
                                     position: 'relative'
                                   }}
                                 >
-                                  <X className="h-3 w-3 text-white" />
+                                  <X className="h-3 w-3 text-slate-800" />
                                 </button>
                               )}
                             </div>
@@ -1049,13 +1073,14 @@ const Products = () => {
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm md:text-base font-medium text-white">{emojiManager.getProductEmoji(product)} {product.name}</div>
-                        </div>
-                      </div>
+                          <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
+                            <div className="flex items-center">
+                              <span className="ml-2 shrink-0">{emojiManager.getProductEmoji(product)}</span>
+                              {renderProductTitleAndSize(product.name)}
+                            </div>
+                          </div>
                     </td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-white font-semibold">${product.price}</td>
+                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-slate-800 font-semibold">${product.price}</td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm font-semibold rounded-full ${product.stock <= product.minStock
                         ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500 border-opacity-30'
@@ -1106,21 +1131,35 @@ const Products = () => {
               </tbody>
             </table>
           </div>
+          {filteredProducts.length > visibleCount && (
+            <div className="flex justify-center p-4 border-t border-white border-opacity-10">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setVisibleCount(prev => prev + 50);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 cursor-pointer"
+              >
+                عرض المزيد (+50 منتج) — المعروض حالياً {visibleCount} من أصل {filteredProducts.length}
+              </button>
+            </div>
+          )}
         </div>
 
 
         {/* نافذة إضافة فئة جديدة */}
         {showAddCategoryModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md">
+            <div className="bg-white rounded-xl p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-bold text-white">إضافة فئة جديدة</h3>
+                <h3 className="text-lg font-bold text-slate-800">إضافة فئة جديدة</h3>
                 <button
                   onClick={() => {
                     setShowAddCategoryModal(false);
                     setNewCategory({ name: '', description: '' });
                   }}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-slate-500 hover:text-slate-800 transition-colors"
                 >
                   ✕
                 </button>
@@ -1128,7 +1167,7 @@ const Products = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-600 mb-2">
                     اسم الفئة *
                   </label>
                   <input
@@ -1142,7 +1181,7 @@ const Products = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-slate-600 mb-2">
                     وصف الفئة
                   </label>
                   <textarea
@@ -1155,14 +1194,14 @@ const Products = () => {
 
                 {/* معاينة الفئة */}
                 <div className="bg-gray-700 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-gray-300 mb-2">معاينة الفئة:</h4>
+                  <h4 className="text-sm font-medium text-slate-600 mb-2">معاينة الفئة:</h4>
                   <div className="flex items-center space-x-2">
-                    <span className="text-white font-medium">
+                    <span className="text-slate-800 font-medium">
                       {newCategory.name || 'اسم الفئة'}
                     </span>
                   </div>
                   {newCategory.description && (
-                    <p className="text-sm text-gray-400 mt-1">{newCategory.description}</p>
+                    <p className="text-sm text-slate-500 mt-1">{newCategory.description}</p>
                   )}
                 </div>
               </div>
@@ -1175,7 +1214,7 @@ const Products = () => {
                     setShowAddCategoryModal(false);
                     setNewCategory({ name: '', description: '' });
                   }}
-                  className="px-4 py-2 text-gray-300 hover:text-white transition-colors min-h-[40px] cursor-pointer"
+                  className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors min-h-[40px] cursor-pointer"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
@@ -1190,7 +1229,7 @@ const Products = () => {
                     e.stopPropagation();
                     handleAddCategory();
                   }}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-white rounded-lg transition-all min-h-[40px] cursor-pointer"
+                  className="px-6 py-2 bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-slate-800 rounded-lg transition-all min-h-[40px] cursor-pointer"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
@@ -1209,21 +1248,21 @@ const Products = () => {
           <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
             <div className="glass-card p-6 w-full max-w-2xl mx-4 animate-fadeInUp">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-white">صورة المنتج</h2>
+                <h2 className="text-xl font-bold text-slate-800">صورة المنتج</h2>
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     closeImageModal();
                   }}
-                  className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors duration-300 min-w-[40px] min-h-[40px] cursor-pointer"
+                  className="p-2 bg-gray-600 rounded-full hover:bg-slate-200 transition-colors duration-300 min-w-[40px] min-h-[40px] cursor-pointer"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
                     position: 'relative'
                   }}
                 >
-                  <X className="h-5 w-5 text-white" />
+                  <X className="h-5 w-5 text-slate-800" />
                 </button>
               </div>
 
@@ -1259,20 +1298,7 @@ const Products = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowAddModal(false);
-              setEditingProduct(null);
-              setNewProduct({
-                name: '',
-                price: '',
-                category: categories.length > 0 ? categories[0].name : 'أحذية',
-                stock: '',
-                minStock: ''
-              });
-            }
-          }}
+
         >
           <div
             className="glass-card p-6 md:p-8 w-full max-w-md mx-4 animate-fadeInUp"
@@ -1288,7 +1314,7 @@ const Products = () => {
               overflowY: 'auto'
             }}
           >
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6 bg-gradient-to-r from-white via-blue-200 to-indigo-300 bg-clip-text text-transparent">
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800 mb-4 md:mb-6 bg-gradient-to-r from-white via-blue-200 to-indigo-300 bg-clip-text text-transparent">
               {editingProduct ? 'تعديل المنتج' : 'إضافة منتج جديد'}
             </h2>
 
@@ -1322,10 +1348,10 @@ const Products = () => {
                 <select
                   value={newProduct.category}
                   onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                  className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-gray-800 border-gray-600 text-white"
+                  className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
                 >
                   {categories.map(category => (
-                    <option key={category.name} value={category.name} className="bg-gray-800 text-white">{category.name}</option>
+                    <option key={category.name} value={category.name} className="bg-white text-slate-800">{category.name}</option>
                   ))}
                 </select>
               </div>
@@ -1402,13 +1428,7 @@ const Products = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowAddCategoryModal(false);
-              setNewCategory({ name: '', description: '' });
-            }
-          }}
+
         >
           <div
             className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
@@ -1425,14 +1445,14 @@ const Products = () => {
             }}
           >
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-bold text-white">إضافة فئة جديدة</h3>
+              <h3 className="text-lg font-bold text-slate-800">إضافة فئة جديدة</h3>
               <button
                 onClick={() => {
                   soundManager.play('closeWindow');
                   setShowAddCategoryModal(false);
                   setNewCategory({ name: '', description: '' });
                 }}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-500 hover:text-slate-800 transition-colors"
               >
                 ✕
               </button>
@@ -1440,7 +1460,7 @@ const Products = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-slate-600 mb-2">
                   اسم الفئة *
                 </label>
                 <input
@@ -1454,7 +1474,7 @@ const Products = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-slate-600 mb-2">
                   وصف الفئة
                 </label>
                 <textarea
@@ -1467,10 +1487,10 @@ const Products = () => {
 
               {/* معاينة الفئة */}
               <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-300 mb-2">معاينة الفئة:</h4>
+                <h4 className="text-sm font-medium text-slate-600 mb-2">معاينة الفئة:</h4>
                 <div className="flex items-center space-x-2 space-x-reverse">
                   <span className="text-blue-400 font-medium">{newCategory.name || 'اسم الفئة'}</span>
-                  <span className="text-gray-400 text-sm">({newCategory.description || 'وصف الفئة'})</span>
+                  <span className="text-slate-500 text-sm">({newCategory.description || 'وصف الفئة'})</span>
                 </div>
               </div>
             </div>
@@ -1482,7 +1502,7 @@ const Products = () => {
                   setShowAddCategoryModal(false);
                   setNewCategory({ name: '', description: '' });
                 }}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-slate-500 hover:text-slate-800 transition-colors"
               >
                 إلغاء
               </button>
@@ -1491,7 +1511,7 @@ const Products = () => {
                   soundManager.play('save');
                   handleAddCategory();
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-slate-800 px-4 py-2 rounded-lg transition-colors"
               >
                 إضافة الفئة
               </button>
@@ -1512,12 +1532,7 @@ const Products = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              closeImageModal();
-            }
-          }}
+
         >
           <div
             className="glass-card p-6 w-full max-w-2xl mx-4 animate-fadeInUp"
@@ -1534,7 +1549,7 @@ const Products = () => {
             }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-white">صورة المنتج</h2>
+              <h2 className="text-xl font-bold text-slate-800">صورة المنتج</h2>
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -1542,9 +1557,9 @@ const Products = () => {
                   soundManager.play('closeWindow');
                   closeImageModal();
                 }}
-                className="p-2 bg-gray-600 rounded-full hover:bg-gray-700 transition-colors duration-300 min-w-[40px] min-h-[40px] cursor-pointer"
+                className="p-2 bg-gray-600 rounded-full hover:bg-slate-200 transition-colors duration-300 min-w-[40px] min-h-[40px] cursor-pointer"
               >
-                <X className="h-5 w-5 text-white" />
+                <X className="h-5 w-5 text-slate-800" />
               </button>
             </div>
 

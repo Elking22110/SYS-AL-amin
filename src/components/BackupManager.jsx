@@ -154,11 +154,11 @@ const BackupManager = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <div className="p-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg">
-              <Database className="h-6 w-6 text-white" />
+              <Database className="h-6 w-6 text-slate-800" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">إدارة النسخ الاحتياطية</h2>
-              <p className="text-gray-300">إدارة وحماية بيانات النظام</p>
+              <h2 className="text-xl font-bold text-slate-800">إدارة النسخ الاحتياطية</h2>
+              <p className="text-slate-600">إدارة وحماية بيانات النظام</p>
             </div>
           </div>
           <button
@@ -166,7 +166,7 @@ const BackupManager = () => {
             className="p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-colors"
             title="إعدادات النسخ الاحتياطية"
           >
-            <Settings className="h-5 w-5 text-white" />
+            <Settings className="h-5 w-5 text-slate-800" />
           </button>
         </div>
 
@@ -177,8 +177,8 @@ const BackupManager = () => {
               <div className="flex items-center space-x-3">
                 <HardDrive className="h-5 w-5 text-blue-400" />
                 <div>
-                  <p className="text-sm text-gray-300">إجمالي النسخ</p>
-                  <p className="text-lg font-bold text-white">{stats.totalBackups}</p>
+                  <p className="text-sm text-slate-600">إجمالي النسخ</p>
+                  <p className="text-lg font-bold text-slate-800">{stats.totalBackups}</p>
                 </div>
               </div>
             </div>
@@ -186,8 +186,8 @@ const BackupManager = () => {
               <div className="flex items-center space-x-3">
                 <Shield className="h-5 w-5 text-green-400" />
                 <div>
-                  <p className="text-sm text-gray-300">الحجم الإجمالي</p>
-                  <p className="text-lg font-bold text-white">{formatSize(stats.totalSize)}</p>
+                  <p className="text-sm text-slate-600">الحجم الإجمالي</p>
+                  <p className="text-lg font-bold text-slate-800">{formatSize(stats.totalSize)}</p>
                 </div>
               </div>
             </div>
@@ -195,8 +195,8 @@ const BackupManager = () => {
               <div className="flex items-center space-x-3">
                 <Clock className="h-5 w-5 text-orange-400" />
                 <div>
-                  <p className="text-sm text-gray-300">آخر نسخة</p>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm text-slate-600">آخر نسخة</p>
+                  <p className="text-sm font-medium text-slate-800">
                     {stats.lastBackup ? formatDate(stats.lastBackup) : 'لا توجد'}
                   </p>
                 </div>
@@ -206,8 +206,8 @@ const BackupManager = () => {
               <div className="flex items-center space-x-3">
                 <RefreshCw className="h-5 w-5 text-purple-400" />
                 <div>
-                  <p className="text-sm text-gray-300">النسخ التلقائية</p>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm text-slate-600">النسخ التلقائية</p>
+                  <p className="text-sm font-medium text-slate-800">
                     {stats.autoBackupEnabled ? 'مفعلة' : 'معطلة'}
                   </p>
                 </div>
@@ -220,10 +220,10 @@ const BackupManager = () => {
       {/* إعدادات النسخ الاحتياطية */}
       {showSettings && (
         <div className="glass-card hover-lift animate-fadeInUp">
-          <h3 className="text-lg font-bold text-white mb-4">إعدادات النسخ الاحتياطية</h3>
+          <h3 className="text-lg font-bold text-slate-800 mb-4">إعدادات النسخ الاحتياطية</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="text-white">النسخ التلقائية</label>
+              <label className="text-slate-800">النسخ التلقائية</label>
               <button
                 onClick={() => setSettings({...settings, autoBackupEnabled: !settings.autoBackupEnabled})}
                 className={`w-12 h-6 rounded-full transition-colors ${
@@ -236,23 +236,23 @@ const BackupManager = () => {
               </button>
             </div>
             <div>
-              <label className="block text-white mb-2">تكرار النسخ (دقيقة)</label>
+              <label className="block text-slate-800 mb-2">تكرار النسخ (دقيقة)</label>
               <input
                 type="number"
                 value={settings.backupFrequency}
                 onChange={(e) => setSettings({...settings, backupFrequency: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-slate-800"
                 min="5"
                 max="1440"
               />
             </div>
             <div>
-              <label className="block text-white mb-2">أقصى عدد نسخ</label>
+              <label className="block text-slate-800 mb-2">أقصى عدد نسخ</label>
               <input
                 type="number"
                 value={settings.maxBackups}
                 onChange={(e) => setSettings({...settings, maxBackups: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white"
+                className="w-full px-3 py-2 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-slate-800"
                 min="1"
                 max="50"
               />
@@ -260,13 +260,13 @@ const BackupManager = () => {
             <div className="flex space-x-3">
               <button
                 onClick={updateSettings}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 bg-blue-500 text-slate-800 rounded-lg hover:bg-blue-600 transition-colors"
               >
                 حفظ الإعدادات
               </button>
               <button
                 onClick={() => setShowSettings(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 bg-gray-500 text-slate-800 rounded-lg hover:bg-gray-600 transition-colors"
               >
                 إلغاء
               </button>
@@ -285,7 +285,7 @@ const BackupManager = () => {
               createManualBackup();
             }}
             disabled={isLoading}
-            className="flex items-center space-x-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors min-h-[50px] cursor-pointer"
+            className="flex items-center space-x-2 px-6 py-3 bg-green-500 text-slate-800 rounded-lg hover:bg-green-600 disabled:opacity-50 transition-colors min-h-[50px] cursor-pointer"
             style={{ 
               pointerEvents: 'auto',
               zIndex: 10,
@@ -296,7 +296,7 @@ const BackupManager = () => {
             <span className="font-semibold">إنشاء نسخة احتياطية</span>
           </button>
           <label 
-            className="flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors cursor-pointer min-h-[50px]"
+            className="flex items-center space-x-2 px-6 py-3 bg-blue-500 text-slate-800 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer min-h-[50px]"
             style={{ 
               pointerEvents: 'auto',
               zIndex: 10,
@@ -319,7 +319,7 @@ const BackupManager = () => {
               loadData();
             }}
             disabled={isLoading}
-            className="flex items-center space-x-2 px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 transition-colors min-h-[50px] cursor-pointer"
+            className="flex items-center space-x-2 px-6 py-3 bg-purple-500 text-slate-800 rounded-lg hover:bg-purple-600 disabled:opacity-50 transition-colors min-h-[50px] cursor-pointer"
             style={{ 
               pointerEvents: 'auto',
               zIndex: 10,
@@ -334,14 +334,14 @@ const BackupManager = () => {
 
       {/* قائمة النسخ الاحتياطية */}
       <div className="glass-card hover-lift animate-fadeInUp">
-        <h3 className="text-lg font-bold text-white mb-4">النسخ الاحتياطية</h3>
+        <h3 className="text-lg font-bold text-slate-800 mb-4">النسخ الاحتياطية</h3>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <RefreshCw className="h-8 w-8 text-white animate-spin" />
-            <span className="mr-3 text-white">جاري التحميل...</span>
+            <RefreshCw className="h-8 w-8 text-slate-800 animate-spin" />
+            <span className="mr-3 text-slate-800">جاري التحميل...</span>
           </div>
         ) : backups.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-slate-500">
             <Database className="h-16 w-16 mx-auto mb-4 opacity-50" />
             <p>لا توجد نسخ احتياطية</p>
           </div>
@@ -356,15 +356,15 @@ const BackupManager = () => {
                         <Database className="h-4 w-4 text-blue-400" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-white">
+                        <h4 className="font-semibold text-slate-800">
                           {backup.type === 'auto' ? 'نسخة تلقائية' : 
                            backup.type === 'manual' ? 'نسخة يدوية' : 
                            backup.type === 'imported' ? 'نسخة مستوردة' : 'نسخة احتياطية'}
                         </h4>
-                        <p className="text-sm text-gray-300">{formatDate(backup.date)}</p>
+                        <p className="text-sm text-slate-600">{formatDate(backup.date)}</p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-400">
+                    <div className="flex items-center space-x-4 text-sm text-slate-500">
                       <span>الحجم: {formatSize(backup.encryptedData ? backup.encryptedData.length : 0)}</span>
                       <span>مشفرة: {backup.encrypted ? 'نعم' : 'لا'}</span>
                     </div>

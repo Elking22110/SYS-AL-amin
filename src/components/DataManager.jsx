@@ -311,10 +311,10 @@ const DataManager = () => {
     <div className="glass-card hover-lift animate-fadeInUp p-6">
       <div className="flex items-center mb-6">
         <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
-          <Database className="h-6 w-6 text-white" />
+          <Database className="h-6 w-6 text-slate-800" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-white">إدارة البيانات</h2>
+          <h2 className="text-xl font-bold text-slate-800">إدارة البيانات</h2>
           <p className="text-purple-200 text-sm">نسخ احتياطي، استيراد، تصدير، وإحصائيات</p>
         </div>
       </div>
@@ -330,7 +330,7 @@ const DataManager = () => {
           className={`px-6 py-3 rounded-lg font-semibold transition-colors min-h-[50px] cursor-pointer ${
             activeTab === 'backup' 
               ? 'bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-30' 
-              : 'text-white hover:bg-white hover:bg-opacity-10'
+              : 'text-slate-800 hover:bg-white hover:bg-opacity-10'
           }`}
           style={{ 
             pointerEvents: 'auto',
@@ -350,7 +350,7 @@ const DataManager = () => {
           className={`px-6 py-3 rounded-lg font-semibold transition-colors min-h-[50px] cursor-pointer ${
             activeTab === 'import' 
               ? 'bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-30' 
-              : 'text-white hover:bg-white hover:bg-opacity-10'
+              : 'text-slate-800 hover:bg-white hover:bg-opacity-10'
           }`}
           style={{ 
             pointerEvents: 'auto',
@@ -370,7 +370,7 @@ const DataManager = () => {
           className={`px-6 py-3 rounded-lg font-semibold transition-colors min-h-[50px] cursor-pointer ${
             activeTab === 'stats' 
               ? 'bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-30' 
-              : 'text-white hover:bg-white hover:bg-opacity-10'
+              : 'text-slate-800 hover:bg-white hover:bg-opacity-10'
           }`}
           style={{ 
             pointerEvents: 'auto',
@@ -390,7 +390,7 @@ const DataManager = () => {
           className={`px-6 py-3 rounded-lg font-semibold transition-colors min-h-[50px] cursor-pointer ${
             activeTab === 'cleanup' 
               ? 'bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-30' 
-              : 'text-white hover:bg-white hover:bg-opacity-10'
+              : 'text-slate-800 hover:bg-white hover:bg-opacity-10'
           }`}
           style={{ 
             pointerEvents: 'auto',
@@ -429,7 +429,7 @@ const DataManager = () => {
       {activeTab === 'backup' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-white">النسخ الاحتياطية</h3>
+            <h3 className="text-lg font-semibold text-slate-800">النسخ الاحتياطية</h3>
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -461,7 +461,7 @@ const DataManager = () => {
                   <div className="flex items-center">
                     <Database className="h-5 w-5 text-purple-300 mr-3" />
                     <div>
-                      <div className="text-white font-medium">نسخة احتياطية #{backup.index + 1}</div>
+                      <div className="text-slate-800 font-medium">نسخة احتياطية #{backup.index + 1}</div>
                       <div className="text-purple-200 text-sm">
                         {formatDate(backup.timestamp)} • {formatBytes(backup.size)}
                       </div>
@@ -494,7 +494,7 @@ const DataManager = () => {
       {activeTab === 'import' && (
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">التصدير</h3>
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">التصدير</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={(e) => {
@@ -534,7 +534,7 @@ const DataManager = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">الاستيراد</h3>
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">الاستيراد</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="relative">
                 <input
@@ -585,7 +585,7 @@ const DataManager = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold text-white mb-4">تصدير الإعدادات</h3>
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">تصدير الإعدادات</h3>
             <div className="relative">
               <button
                 onClick={(e) => {
@@ -612,31 +612,31 @@ const DataManager = () => {
       {/* Stats Tab */}
       {activeTab === 'stats' && stats && (
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-white">إحصائيات النظام</h3>
+          <h3 className="text-lg font-semibold text-slate-800">إحصائيات النظام</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Database Stats */}
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <Database className="h-5 w-5 text-blue-300 mr-2" />
-                <h4 className="text-white font-semibold">قاعدة البيانات</h4>
+                <h4 className="text-slate-800 font-semibold">قاعدة البيانات</h4>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-purple-200">إجمالي السجلات:</span>
-                  <span className="text-white">{Object.values(stats.database).reduce((sum, count) => sum + count, 0)}</span>
+                  <span className="text-slate-800">{Object.values(stats.database).reduce((sum, count) => sum + count, 0)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">المنتجات:</span>
-                  <span className="text-white">{stats.database.products || 0}</span>
+                  <span className="text-slate-800">{stats.database.products || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">العملاء:</span>
-                  <span className="text-white">{stats.database.customers || 0}</span>
+                  <span className="text-slate-800">{stats.database.customers || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">المبيعات:</span>
-                  <span className="text-white">{stats.database.sales || 0}</span>
+                  <span className="text-slate-800">{stats.database.sales || 0}</span>
                 </div>
               </div>
             </div>
@@ -645,24 +645,24 @@ const DataManager = () => {
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <BarChart3 className="h-5 w-5 text-green-300 mr-2" />
-                <h4 className="text-white font-semibold">الأداء</h4>
+                <h4 className="text-slate-800 font-semibold">الأداء</h4>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-purple-200">الكاش:</span>
-                  <span className="text-white">{stats.performance.cache.size}</span>
+                  <span className="text-slate-800">{stats.performance.cache.size}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">كاش الصور:</span>
-                  <span className="text-white">{stats.performance.cache.imageCache}</span>
+                  <span className="text-slate-800">{stats.performance.cache.imageCache}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">المؤقتات:</span>
-                  <span className="text-white">{stats.performance.timers.debounce + stats.performance.timers.throttle}</span>
+                  <span className="text-slate-800">{stats.performance.timers.debounce + stats.performance.timers.throttle}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">الذاكرة:</span>
-                  <span className="text-white">
+                  <span className="text-slate-800">
                     {stats.performance.performance.memory ? 
                       formatBytes(stats.performance.performance.memory.used) : 'غير متاح'}
                   </span>
@@ -674,24 +674,24 @@ const DataManager = () => {
             <div className="bg-white bg-opacity-10 rounded-lg p-4">
               <div className="flex items-center mb-3">
                 <Settings className="h-5 w-5 text-purple-300 mr-2" />
-                <h4 className="text-white font-semibold">التصميم</h4>
+                <h4 className="text-slate-800 font-semibold">التصميم</h4>
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-purple-200">الثيم الحالي:</span>
-                  <span className="text-white">{stats.design.currentTheme}</span>
+                  <span className="text-slate-800">{stats.design.currentTheme}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">الثيمات المتاحة:</span>
-                  <span className="text-white">{stats.design.availableThemes.length}</span>
+                  <span className="text-slate-800">{stats.design.availableThemes.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">الأنيميشن:</span>
-                  <span className="text-white">{stats.design.animations.length}</span>
+                  <span className="text-slate-800">{stats.design.animations.length}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-purple-200">الألوان:</span>
-                  <span className="text-white">{Object.keys(stats.design.colorPalette).length}</span>
+                  <span className="text-slate-800">{Object.keys(stats.design.colorPalette).length}</span>
                 </div>
               </div>
             </div>
@@ -702,7 +702,7 @@ const DataManager = () => {
       {/* Cleanup Tab */}
       {activeTab === 'cleanup' && (
         <div className="space-y-6">
-          <h3 className="text-lg font-semibold text-white">تنظيف البيانات</h3>
+          <h3 className="text-lg font-semibold text-slate-800">تنظيف البيانات</h3>
           
           <div className="bg-yellow-500 bg-opacity-20 border border-yellow-500 border-opacity-30 rounded-lg p-4">
             <div className="flex items-center mb-2">

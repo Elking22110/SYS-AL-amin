@@ -35,6 +35,7 @@ import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.j
 import StoreSettings from '../components/StoreSettings';
 import ShiftManager from '../components/ShiftManager';
 import BackupManager from '../components/BackupManager';
+import { applyTheme, applyPrimaryColor, adjustColor } from '../utils/themeUtils';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('store');
@@ -97,7 +98,7 @@ const Settings = () => {
 
     return {
       // إعدادات عامة
-      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'MS GROUP',
+      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'متجر الأمين',
       companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
       companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
       companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
@@ -133,7 +134,7 @@ const Settings = () => {
       salesReports: savedSettings.salesReports !== undefined ? savedSettings.salesReports : true,
 
       // إعدادات المظهر
-      theme: savedSettings.theme || 'dark',
+      theme: savedSettings.theme || 'light',
       primaryColor: savedSettings.primaryColor || '#8B5CF6',
       sidebarCollapsed: savedSettings.sidebarCollapsed !== undefined ? savedSettings.sidebarCollapsed : false,
 
@@ -205,7 +206,7 @@ const Settings = () => {
 
       // حفظ الإعدادات في localStorage فوراً
       const updatedSettings = { ...settings, [key]: value };
-      localStorage.setItem('system-settings', JSON.stringify(updatedSettings));
+      localStorage.setItem('pos-settings', JSON.stringify(updatedSettings));
       // عند تغيير المخزون: احفظ في storeInfo أيضاً لضمان عمل نقطة البيع
       if (key === 'inventoryEnabled') {
         try {
@@ -224,81 +225,7 @@ const Settings = () => {
     }
   };
 
-  // تطبيق المظهر
-  const applyTheme = (theme) => {
-    const root = document.documentElement;
 
-    if (theme === 'light') {
-      root.classList.remove('dark');
-      root.classList.add('light');
-      // تطبيق متغيرات CSS للوضع الفاتح
-      root.style.setProperty('--bg-primary', '#ffffff');
-      root.style.setProperty('--bg-secondary', '#f8fafc');
-      root.style.setProperty('--text-primary', '#1f2937');
-      root.style.setProperty('--text-secondary', '#6b7280');
-    } else {
-      root.classList.remove('light');
-      root.classList.add('dark');
-      // تطبيق متغيرات CSS للوضع الداكن
-      root.style.setProperty('--bg-primary', '#0f172a');
-      root.style.setProperty('--bg-secondary', '#1e293b');
-      root.style.setProperty('--text-primary', '#f1f5f9');
-      root.style.setProperty('--text-secondary', '#94a3b8');
-    }
-  };
-
-  // تطبيق اللون الأساسي
-  const applyPrimaryColor = (color) => {
-    const root = document.documentElement;
-
-    // تطبيق متغيرات CSS الجذرية
-    root.style.setProperty('--primary-color', color);
-    root.style.setProperty('--primary-500', color);
-    root.style.setProperty('--primary-600', adjustColor(color, -20));
-    root.style.setProperty('--primary-400', adjustColor(color, 20));
-    root.style.setProperty('--primary-300', adjustColor(color, 40));
-    root.style.setProperty('--primary-200', adjustColor(color, 60));
-    root.style.setProperty('--primary-100', adjustColor(color, 80));
-
-    // تطبيق اللون على العناصر المختلفة
-    const primaryElements = document.querySelectorAll('.bg-purple-500, .text-purple-500, .border-purple-500, .bg-purple-600, .text-purple-600, .border-purple-600');
-    primaryElements.forEach(element => {
-      if (element.classList.contains('bg-purple-500') || element.classList.contains('bg-purple-600')) {
-        element.style.setProperty('background-color', color);
-      }
-      if (element.classList.contains('text-purple-500') || element.classList.contains('text-purple-600')) {
-        element.style.setProperty('color', color);
-      }
-      if (element.classList.contains('border-purple-500') || element.classList.contains('border-purple-600')) {
-        element.style.setProperty('border-color', color);
-      }
-    });
-
-    // تطبيق اللون على الأزرار
-    const buttons = document.querySelectorAll('.btn-primary, .bg-purple-500, .bg-purple-600');
-    buttons.forEach(button => {
-      button.style.setProperty('background-color', color);
-      button.style.setProperty('border-color', color);
-    });
-
-    // تطبيق اللون على الروابط
-    const links = document.querySelectorAll('.text-purple-500, .text-purple-600');
-    links.forEach(link => {
-      link.style.setProperty('color', color);
-    });
-  };
-
-  // دالة لتعديل اللون (تفتيح أو تظليل)
-  const adjustColor = (color, amount) => {
-    const num = parseInt(color.replace("#", ""), 16);
-    const amt = Math.round(2.55 * amount);
-    const R = (num >> 16) + amt;
-    const G = (num >> 8 & 0x00FF) + amt;
-    const B = (num & 0x0000FF) + amt;
-    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-      (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-      (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
-  };
 
   // تطبيق طي القائمة الجانبية
   const applySidebarCollapse = (collapsed) => {
@@ -678,7 +605,7 @@ const Settings = () => {
   const resetSettings = () => {
     if (window.confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
       const defaultSettings = {
-        companyName: 'MS GROUP',
+        companyName: 'متجر الأمين',
         companyAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
         companyPhone: '01029022006',
         companyEmail: 'info@msgroupplast.com',
@@ -743,7 +670,7 @@ const Settings = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">اسم الشركة</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">اسم الشركة</label>
           <input
             type="text"
             value={settings.companyName}
@@ -752,7 +679,7 @@ const Settings = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">هاتف الشركة</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">هاتف الشركة</label>
           <input
             type="tel"
             value={settings.companyPhone}
@@ -763,7 +690,7 @@ const Settings = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">عنوان الشركة</label>
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">عنوان الشركة</label>
         <textarea
           value={settings.companyAddress}
           onChange={(e) => handleSettingChange('companyAddress', e.target.value)}
@@ -774,7 +701,7 @@ const Settings = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">العملة</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">العملة</label>
           <select
             value={settings.currency}
             onChange={(e) => handleSettingChange('currency', e.target.value)}
@@ -788,7 +715,7 @@ const Settings = () => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">اللغة</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">اللغة</label>
           <select
             value={settings.language}
             onChange={(e) => handleSettingChange('language', e.target.value)}
@@ -799,7 +726,7 @@ const Settings = () => {
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">المنطقة الزمنية</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">المنطقة الزمنية</label>
           <select
             value={settings.timezone}
             onChange={(e) => handleSettingChange('timezone', e.target.value)}
@@ -820,7 +747,7 @@ const Settings = () => {
   const renderPrinterSettings = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">اسم الطابعة</label>
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">اسم الطابعة</label>
         <input
           type="text"
           value={settings.printerName}
@@ -831,7 +758,7 @@ const Settings = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-purple-200 mb-2">حجم الورق</label>
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">حجم الورق</label>
           <select
             value={settings.paperSize}
             onChange={(e) => handleSettingChange('paperSize', e.target.value)}
@@ -847,8 +774,8 @@ const Settings = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
           <div>
-            <h4 className="font-medium text-white">طباعة الشعار</h4>
-            <p className="text-sm text-purple-200">طباعة شعار الشركة على الإيصالات</p>
+            <h4 className="font-medium text-[var(--text-primary)]">طباعة الشعار</h4>
+            <p className="text-sm text-[var(--text-secondary)]">طباعة شعار الشركة على الإيصالات</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -863,8 +790,8 @@ const Settings = () => {
 
         <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
           <div>
-            <h4 className="font-medium text-white">طباعة التذييل</h4>
-            <p className="text-sm text-purple-200">طباعة معلومات إضافية في أسفل الإيصال</p>
+            <h4 className="font-medium text-[var(--text-primary)]">طباعة التذييل</h4>
+            <p className="text-sm text-[var(--text-secondary)]">طباعة معلومات إضافية في أسفل الإيصال</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
             <input
@@ -891,7 +818,7 @@ const Settings = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">إدارة المستخدمين</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">إدارة المستخدمين</h2>
           <div className="flex space-x-3">
             <button
               onClick={(e) => {
@@ -900,7 +827,7 @@ const Settings = () => {
                 soundManager.play('delete');
                 clearAndResetUsers();
               }}
-              className="bg-red-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-red-500 border-opacity-30 min-h-[40px] cursor-pointer"
+              className="bg-red-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-red-500 border-opacity-30 min-h-[40px] cursor-pointer"
               style={{
                 pointerEvents: 'auto',
                 zIndex: 10,
@@ -918,7 +845,7 @@ const Settings = () => {
                 soundManager.play('refresh');
                 resetToDefaultUsers();
               }}
-              className="bg-orange-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-orange-500 border-opacity-30 min-h-[40px] cursor-pointer"
+              className="bg-orange-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-orange-500 border-opacity-30 min-h-[40px] cursor-pointer"
               style={{
                 pointerEvents: 'auto',
                 zIndex: 10,
@@ -936,7 +863,7 @@ const Settings = () => {
                 soundManager.play('openWindow');
                 setShowAddUserModal(true);
               }}
-              className="bg-green-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-green-500 border-opacity-30 min-h-[40px] cursor-pointer"
+              className="bg-green-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center border border-green-500 border-opacity-30 min-h-[40px] cursor-pointer"
               style={{
                 pointerEvents: 'auto',
                 zIndex: 10,
@@ -952,24 +879,24 @@ const Settings = () => {
         {/* User Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="glass-card p-4 text-center">
-            <div className="text-2xl font-bold text-white">{users.length}</div>
-            <div className="text-sm text-purple-200">إجمالي المستخدمين</div>
+            <div className="text-2xl font-bold text-[var(--text-primary)]">{users.length}</div>
+            <div className="text-sm text-[var(--text-secondary)]">إجمالي المستخدمين</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-2xl font-bold text-green-400">{activeUsers}</div>
-            <div className="text-sm text-purple-200">نشط</div>
+            <div className="text-sm text-[var(--text-secondary)]">نشط</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-2xl font-bold text-red-400">{inactiveUsers}</div>
-            <div className="text-sm text-purple-200">غير نشط</div>
+            <div className="text-sm text-[var(--text-secondary)]">غير نشط</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-2xl font-bold text-yellow-400">{managerUsers}</div>
-            <div className="text-sm text-purple-200">مدير</div>
+            <div className="text-sm text-[var(--text-secondary)]">مدير</div>
           </div>
           <div className="glass-card p-4 text-center">
             <div className="text-2xl font-bold text-blue-400">{cashierUsers}</div>
-            <div className="text-sm text-purple-200">كاشير</div>
+            <div className="text-sm text-[var(--text-secondary)]">كاشير</div>
           </div>
         </div>
 
@@ -979,13 +906,13 @@ const Settings = () => {
             <table className="w-full">
               <thead className="bg-white bg-opacity-10">
                 <tr>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">المستخدم</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">البريد الإلكتروني</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">الهاتف</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">الدور</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">الحالة</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">آخر دخول</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-purple-200 uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">المستخدم</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">البريد الإلكتروني</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">الهاتف</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">الدور</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">الحالة</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">آخر دخول</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-10">
@@ -998,33 +925,33 @@ const Settings = () => {
                             ? 'bg-gradient-to-r from-red-500 to-pink-500'
                             : 'bg-gradient-to-r from-purple-500 to-blue-500'
                             }`}>
-                            <User className="h-5 w-5 text-white" />
+                            <User className="h-5 w-5 text-[var(--text-primary)]" />
                           </div>
                         </div>
                         <div className="mr-4">
                           <div className={`text-sm font-medium ${user.name === 'admin' && user.role === 'admin'
                             ? 'text-red-300 font-bold'
-                            : 'text-white'
+                            : 'text-[var(--text-primary)]'
                             }`}>
                             {user.name}
                             {user.name === 'admin' && user.role === 'admin' && (
                               <span className="ml-2 text-xs bg-red-500 bg-opacity-30 px-2 py-1 rounded-full">رئيسي</span>
                             )}
                           </div>
-                          <div className="text-sm text-purple-200">ID: {user.id}</div>
+                          <div className="text-sm text-[var(--text-secondary)]">ID: {user.id}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Mail className="h-4 w-4 text-purple-200 mr-2" />
-                        <div className="text-sm text-white">{user.email}</div>
+                        <Mail className="h-4 w-4 text-[var(--text-secondary)] mr-2" />
+                        <div className="text-sm text-[var(--text-primary)]">{user.email}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Phone className="h-4 w-4 text-purple-200 mr-2" />
-                        <div className="text-sm text-white">{user.phone}</div>
+                        <Phone className="h-4 w-4 text-[var(--text-secondary)] mr-2" />
+                        <div className="text-sm text-[var(--text-primary)]">{user.phone}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -1058,7 +985,7 @@ const Settings = () => {
                         {user.status === 'active' ? 'نشط' : 'غير نشط'}
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-200">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[var(--text-secondary)]">
                       {user.lastLogin ? formatDate(user.lastLogin) : 'لم يسجل دخول'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -1124,8 +1051,8 @@ const Settings = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">إشعارات البريد الإلكتروني</h4>
-          <p className="text-sm text-purple-200">إرسال إشعارات عبر البريد الإلكتروني</p>
+          <h4 className="font-medium text-[var(--text-primary)]">إشعارات البريد الإلكتروني</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إرسال إشعارات عبر البريد الإلكتروني</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1140,8 +1067,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">إشعارات الرسائل النصية</h4>
-          <p className="text-sm text-purple-200">إرسال إشعارات عبر الرسائل النصية</p>
+          <h4 className="font-medium text-[var(--text-primary)]">إشعارات الرسائل النصية</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إرسال إشعارات عبر الرسائل النصية</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1156,8 +1083,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">تنبيهات المخزون المنخفض</h4>
-          <p className="text-sm text-purple-200">إشعار عند انخفاض مخزون المنتجات</p>
+          <h4 className="font-medium text-[var(--text-primary)]">تنبيهات المخزون المنخفض</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إشعار عند انخفاض مخزون المنتجات</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1172,8 +1099,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">تقارير المبيعات</h4>
-          <p className="text-sm text-purple-200">إرسال تقارير المبيعات الدورية</p>
+          <h4 className="font-medium text-[var(--text-primary)]">تقارير المبيعات</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إرسال تقارير المبيعات الدورية</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1191,13 +1118,13 @@ const Settings = () => {
   const renderAppearanceSettings = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">المظهر</label>
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">المظهر</label>
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => { soundManager.play('click'); handleSettingChange('theme', 'light'); }}
-            className={`p-4 rounded-lg border-2 flex flex-col items-center ${settings.theme === 'light'
-              ? 'border-purple-500 bg-purple-500 bg-opacity-20 text-purple-300'
-              : 'border-white border-opacity-20 bg-white bg-opacity-10 text-white hover:bg-opacity-20'
+            className={`p-4 rounded-lg border-2 flex flex-col items-center transition-all ${settings.theme === 'light'
+              ? 'border-purple-600 bg-purple-600 text-white shadow-md'
+              : 'border-slate-200 border-opacity-50 bg-white bg-opacity-5 text-slate-500 hover:bg-opacity-10'
               }`}
           >
             <Monitor className="h-6 w-6 mb-2" />
@@ -1205,9 +1132,9 @@ const Settings = () => {
           </button>
           <button
             onClick={() => { soundManager.play('click'); handleSettingChange('theme', 'dark'); }}
-            className={`p-4 rounded-lg border-2 flex flex-col items-center ${settings.theme === 'dark'
-              ? 'border-purple-500 bg-purple-500 bg-opacity-20 text-purple-300'
-              : 'border-white border-opacity-20 bg-white bg-opacity-10 text-white hover:bg-opacity-20'
+            className={`p-4 rounded-lg border-2 flex flex-col items-center transition-all ${settings.theme === 'dark'
+              ? 'border-purple-600 bg-purple-600 text-white shadow-md'
+              : 'border-slate-200 border-opacity-50 bg-white bg-opacity-5 text-slate-500 hover:bg-opacity-10'
               }`}
           >
             <Monitor className="h-6 w-6 mb-2" />
@@ -1217,7 +1144,7 @@ const Settings = () => {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-purple-200 mb-2">اللون الأساسي</label>
+        <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">اللون الأساسي</label>
         <div className="flex space-x-3 mb-4">
           {['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'].map(color => (
             <button
@@ -1236,7 +1163,7 @@ const Settings = () => {
             soundManager.play('click');
             resetAppearanceToDefault();
           }}
-          className="w-full p-3 bg-gray-600 bg-opacity-20 hover:bg-opacity-30 text-white rounded-lg border border-gray-500 border-opacity-30 flex items-center justify-center space-x-2 transition-all duration-200"
+          className="w-full p-3 bg-gray-600 bg-opacity-20 hover:bg-opacity-30 text-[var(--text-primary)] rounded-lg border border-gray-500 border-opacity-30 flex items-center justify-center space-x-2 transition-all duration-200"
         >
           <RefreshCw className="h-4 w-4" />
           <span className="text-sm font-medium">إعادة تعيين المظهر للألوان الأساسية</span>
@@ -1245,8 +1172,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">طي القائمة الجانبية</h4>
-          <p className="text-sm text-purple-200">إخفاء القائمة الجانبية افتراضياً</p>
+          <h4 className="font-medium text-[var(--text-primary)]">طي القائمة الجانبية</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إخفاء القائمة الجانبية افتراضياً</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1265,8 +1192,8 @@ const Settings = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">تفعيل الأصوات</h4>
-          <p className="text-sm text-purple-200">تشغيل الأصوات في جميع العمليات</p>
+          <h4 className="font-medium text-[var(--text-primary)]">تفعيل الأصوات</h4>
+          <p className="text-sm text-[var(--text-secondary)]">تشغيل الأصوات في جميع العمليات</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1282,7 +1209,7 @@ const Settings = () => {
       {settings.soundsEnabled && (
         <>
           <div>
-            <label className="block text-sm font-medium text-purple-200 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
               مستوى الصوت: {Math.round(settings.soundVolume * 100)}%
             </label>
             <input
@@ -1298,8 +1225,8 @@ const Settings = () => {
 
           <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
             <div>
-              <h4 className="font-medium text-white">أصوات النقر</h4>
-              <p className="text-sm text-purple-200">أصوات النقر على الأزرار والحقول</p>
+              <h4 className="font-medium text-[var(--text-primary)]">أصوات النقر</h4>
+              <p className="text-sm text-[var(--text-secondary)]">أصوات النقر على الأزرار والحقول</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -1314,8 +1241,8 @@ const Settings = () => {
 
           <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
             <div>
-              <h4 className="font-medium text-white">أصوات الإشعارات</h4>
-              <p className="text-sm text-purple-200">أصوات النجاح والخطأ والإشعارات</p>
+              <h4 className="font-medium text-[var(--text-primary)]">أصوات الإشعارات</h4>
+              <p className="text-sm text-[var(--text-secondary)]">أصوات النجاح والخطأ والإشعارات</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -1330,8 +1257,8 @@ const Settings = () => {
 
           <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
             <div>
-              <h4 className="font-medium text-white">أصوات النظام</h4>
-              <p className="text-sm text-purple-200">أصوات بدء وإنهاء الورديات والعمليات</p>
+              <h4 className="font-medium text-[var(--text-primary)]">أصوات النظام</h4>
+              <p className="text-sm text-[var(--text-secondary)]">أصوات بدء وإنهاء الورديات والعمليات</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -1349,19 +1276,19 @@ const Settings = () => {
             <div className="flex space-x-2">
               <button
                 onClick={() => soundManager.play('click')}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-[var(--text-primary)] rounded text-sm"
               >
                 نقر
               </button>
               <button
                 onClick={() => soundManager.play('success')}
-                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm"
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-[var(--text-primary)] rounded text-sm"
               >
                 نجاح
               </button>
               <button
                 onClick={() => soundManager.play('error')}
-                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm"
+                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-[var(--text-primary)] rounded text-sm"
               >
                 خطأ
               </button>
@@ -1376,8 +1303,8 @@ const Settings = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">تفعيل إدارة المخزون</h4>
-          <p className="text-sm text-purple-200">عند الإلغاء يمكن البيع دون قيود المخزون</p>
+          <h4 className="font-medium text-[var(--text-primary)]">تفعيل إدارة المخزون</h4>
+          <p className="text-sm text-[var(--text-secondary)]">عند الإلغاء يمكن البيع دون قيود المخزون</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1391,8 +1318,8 @@ const Settings = () => {
       </div>
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">وضع الصيانة</h4>
-          <p className="text-sm text-purple-200">إيقاف النظام مؤقتاً للصيانة</p>
+          <h4 className="font-medium text-[var(--text-primary)]">وضع الصيانة</h4>
+          <p className="text-sm text-[var(--text-secondary)]">إيقاف النظام مؤقتاً للصيانة</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1407,8 +1334,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">وضع التطوير</h4>
-          <p className="text-sm text-purple-200">عرض معلومات إضافية للمطورين</p>
+          <h4 className="font-medium text-[var(--text-primary)]">وضع التطوير</h4>
+          <p className="text-sm text-[var(--text-secondary)]">عرض معلومات إضافية للمطورين</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1423,8 +1350,8 @@ const Settings = () => {
 
       <div className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg">
         <div>
-          <h4 className="font-medium text-white">التحليلات</h4>
-          <p className="text-sm text-purple-200">جمع بيانات الاستخدام لتحسين النظام</p>
+          <h4 className="font-medium text-[var(--text-primary)]">التحليلات</h4>
+          <p className="text-sm text-[var(--text-secondary)]">جمع بيانات الاستخدام لتحسين النظام</p>
         </div>
         <label className="relative inline-flex items-center cursor-pointer">
           <input
@@ -1480,10 +1407,10 @@ const Settings = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center animate-fadeInDown space-y-4 md:space-y-0">
           <div className="flex-1">
-            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-white mb-2 md:mb-3 bg-gradient-to-r from-white via-purple-200 to-purple-300 bg-clip-text text-transparent">
+            <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-[var(--text-primary)] mb-2 md:mb-3">
               الإعدادات
             </h1>
-            <p className="text-purple-200 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة إعدادات مصنع MS GROUP Plast</p>
+            <p className="text-[var(--text-secondary)] text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة إعدادات متجر الأمين للأدوات الصحية</p>
           </div>
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <button
@@ -1523,8 +1450,8 @@ const Settings = () => {
                         setActiveTab(tab.id);
                       }}
                       className={`w-full flex items-center p-3 rounded-lg transition-all duration-200 min-h-[50px] cursor-pointer ${activeTab === tab.id
-                        ? 'bg-purple-500 bg-opacity-20 text-purple-300 border border-purple-500 border-opacity-30'
-                        : 'text-white hover:bg-white hover:bg-opacity-10'
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'text-[var(--text-secondary)] hover:bg-purple-50 hover:text-purple-600'
                         }`}
                       style={{
                         pointerEvents: 'auto',
@@ -1542,7 +1469,7 @@ const Settings = () => {
 
             {/* Import/Export */}
             <div className="glass-card hover-lift animate-fadeInLeft p-4 mt-4 md:mt-6" style={{ animationDelay: '0.2s' }}>
-              <h3 className="font-bold text-white mb-4">إدارة الإعدادات</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-4">إدارة الإعدادات</h3>
               <div className="space-y-3">
                 <button
                   onClick={(e) => {
@@ -1551,7 +1478,7 @@ const Settings = () => {
                     soundManager.play('save');
                     exportSettings();
                   }}
-                  className="w-full bg-blue-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center border border-blue-500 border-opacity-30 min-h-[40px] cursor-pointer"
+                  className="w-full bg-blue-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center border border-blue-500 border-opacity-30 min-h-[40px] cursor-pointer"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
@@ -1561,7 +1488,7 @@ const Settings = () => {
                   <Download className="h-4 w-4 mr-2" />
                   تصدير الإعدادات
                 </button>
-                <label className="w-full bg-green-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center cursor-pointer border border-green-500 border-opacity-30 min-h-[40px]"
+                <label className="w-full bg-green-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center cursor-pointer border border-green-500 border-opacity-30 min-h-[40px]"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
@@ -1584,7 +1511,7 @@ const Settings = () => {
                     soundManager.play('warning');
                     resetSettings();
                   }}
-                  className="w-full bg-red-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center border border-red-500 border-opacity-30 min-h-[40px] cursor-pointer"
+                  className="w-full bg-red-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center border border-red-500 border-opacity-30 min-h-[40px] cursor-pointer"
                   style={{
                     pointerEvents: 'auto',
                     zIndex: 10,
@@ -1619,12 +1546,6 @@ const Settings = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowAddUserModal(false);
-            }
-          }}
         >
           <div
             className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
@@ -1641,10 +1562,10 @@ const Settings = () => {
             }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-white">إضافة مستخدم جديد</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">إضافة مستخدم جديد</h3>
               <button
                 onClick={() => { soundManager.play('closeWindow'); setShowAddUserModal(false); }}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-500 hover:text-[var(--text-primary)] transition-colors"
               >
                 <XCircle className="h-6 w-6" />
               </button>
@@ -1652,7 +1573,7 @@ const Settings = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الاسم</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الاسم</label>
                 <input
                   type="text"
                   value={newUser.name}
@@ -1663,7 +1584,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">البريد الإلكتروني</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">البريد الإلكتروني</label>
                 <input
                   type="email"
                   value={newUser.email}
@@ -1674,7 +1595,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الهاتف</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الهاتف</label>
                 <input
                   type="tel"
                   value={newUser.phone}
@@ -1685,7 +1606,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">كلمة المرور</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">كلمة المرور</label>
                 <input
                   type="password"
                   value={newUser.password}
@@ -1724,7 +1645,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الدور</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الدور</label>
                 <select
                   value={newUser.role}
                   onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
@@ -1740,13 +1661,13 @@ const Settings = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => { soundManager.play('closeWindow'); setShowAddUserModal(false); }}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-slate-500 hover:text-[var(--text-primary)] transition-colors"
               >
                 إلغاء
               </button>
               <button
                 onClick={() => { soundManager.play('save'); addUser(); }}
-                className="bg-green-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors border border-green-500 border-opacity-30"
+                className="bg-green-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors border border-green-500 border-opacity-30"
               >
                 إضافة
               </button>
@@ -1767,12 +1688,6 @@ const Settings = () => {
             bottom: 0,
             zIndex: 9999
           }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              soundManager.play('closeWindow');
-              setShowEditUserModal(false);
-            }
-          }}
         >
           <div
             className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
@@ -1789,10 +1704,10 @@ const Settings = () => {
             }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-white">تعديل المستخدم</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">تعديل المستخدم</h3>
               <button
                 onClick={() => { soundManager.play('closeWindow'); setShowEditUserModal(false); }}
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-slate-500 hover:text-[var(--text-primary)] transition-colors"
               >
                 <XCircle className="h-6 w-6" />
               </button>
@@ -1800,7 +1715,7 @@ const Settings = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الاسم</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الاسم</label>
                 <input
                   type="text"
                   value={editingUser.name}
@@ -1810,7 +1725,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">البريد الإلكتروني</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">البريد الإلكتروني</label>
                 <input
                   type="email"
                   value={editingUser.email}
@@ -1820,7 +1735,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الهاتف</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الهاتف</label>
                 <input
                   type="tel"
                   value={editingUser.phone}
@@ -1830,7 +1745,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">الدور</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">الدور</label>
                 <select
                   value={editingUser.role}
                   onChange={(e) => setEditingUser({ ...editingUser, role: e.target.value })}
@@ -1843,7 +1758,7 @@ const Settings = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-purple-200 mb-1">كلمة المرور الجديدة (اختياري)</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">كلمة المرور الجديدة (اختياري)</label>
                 <input
                   type="password"
                   value={editingUser.newPassword || ''}
@@ -1885,13 +1800,13 @@ const Settings = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => { soundManager.play('closeWindow'); setShowEditUserModal(false); }}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-slate-500 hover:text-[var(--text-primary)] transition-colors"
               >
                 إلغاء
               </button>
               <button
                 onClick={() => { soundManager.play('save'); editUser(); }}
-                className="bg-blue-600 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors border border-blue-500 border-opacity-30"
+                className="bg-blue-600 bg-opacity-20 text-[var(--text-primary)] px-4 py-2 rounded-lg hover:bg-opacity-30 transition-colors border border-blue-500 border-opacity-30"
               >
                 حفظ التغييرات
               </button>

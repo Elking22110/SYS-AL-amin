@@ -6,12 +6,12 @@ class ObserverManager {
     this.timeouts = new Map();
     this.isInitialized = false;
     this.isEnabled = true;
-    
+
     // Event Bus System
     this.subscribers = new Map();
     this.broadcastChannel = null;
     this.debounceTimers = new Map();
-    
+
     // Initialize broadcast channel if supported
     if (typeof BroadcastChannel !== 'undefined') {
       try {
@@ -24,7 +24,7 @@ class ObserverManager {
         console.warn('BroadcastChannel not available:', e);
       }
     }
-    
+
     // Listen to storage events for cross-tab sync
     window.addEventListener('storage', (e) => {
       if (e.key?.startsWith('__evt__:')) {
@@ -44,9 +44,9 @@ class ObserverManager {
   // تهيئة النظام
   init() {
     if (this.isInitialized) return;
-    
+
     console.log('🔧 تهيئة مدير المراقبين...');
-    
+
     // إيقاف جميع المراقبين نهائياً لتجنب المشاكل
     this.stopAll();
     this.isInitialized = true;
@@ -73,7 +73,7 @@ class ObserverManager {
     const mutationObserver = new MutationObserver((mutations) => {
       // تجميع جميع العقد الجديدة
       const newNodes = new Set();
-      
+
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
           if (node.nodeType === Node.ELEMENT_NODE) {
@@ -137,11 +137,11 @@ class ObserverManager {
       if (node.dataset.observerProcessed) return;
 
       // العناصر التي تحتاج أنيميشن
-      const animatedElements = node.querySelectorAll ? 
+      const animatedElements = node.querySelectorAll ?
         node.querySelectorAll('[data-animation]:not(.animation-applied)') : [];
-      
+
       // الصور الكسولة
-      const lazyImages = node.querySelectorAll ? 
+      const lazyImages = node.querySelectorAll ?
         node.querySelectorAll('img[data-src]:not([data-lazy-loaded])') : [];
 
       // العناصر التي تحتاج مراقبة
@@ -166,9 +166,9 @@ class ObserverManager {
   // إيقاف جميع المراقبين
   stopAll() {
     console.log('🛑 إيقاف جميع المراقبين...');
-    
+
     this.isEnabled = false;
-    
+
     // إيقاف المراقبين
     this.observers.forEach(observer => {
       observer.disconnect();
@@ -192,11 +192,11 @@ class ObserverManager {
   // إعادة تشغيل المراقبين
   restart() {
     console.log('🔄 إعادة تشغيل المراقبين...');
-    
+
     this.stopAll();
     this.isEnabled = true;
     this.isInitialized = false;
-    
+
     setTimeout(() => {
       this.init();
     }, 1000);
@@ -215,14 +215,14 @@ class ObserverManager {
   }
 
   // ============ Event Bus Methods ============
-  
+
   // Subscribe to an event topic
   subscribe(topic, handler) {
     if (!this.subscribers.has(topic)) {
       this.subscribers.set(topic, new Set());
     }
     this.subscribers.get(topic).add(handler);
-    
+
     // Return unsubscribe function
     return () => {
       const handlers = this.subscribers.get(topic);
@@ -234,7 +234,7 @@ class ObserverManager {
       }
     };
   }
-  
+
   // Unsubscribe from an event topic
   unsubscribe(topic, handler) {
     const handlers = this.subscribers.get(topic);
@@ -245,33 +245,33 @@ class ObserverManager {
       }
     }
   }
-  
+
   // Publish an event
   publish(topic, payload = {}, options = {}) {
     const { debounce = 0 } = options;
-    
+
     // Handle debouncing if specified
     if (debounce > 0) {
       if (this.debounceTimers.has(topic)) {
         clearTimeout(this.debounceTimers.get(topic));
       }
-      
+
       const timer = setTimeout(() => {
         this.debounceTimers.delete(topic);
         this.doPublish(topic, payload);
       }, debounce);
-      
+
       this.debounceTimers.set(topic, timer);
     } else {
       this.doPublish(topic, payload);
     }
   }
-  
+
   // Internal publish implementation
   doPublish(topic, payload) {
     // Notify local subscribers
     this.notifySubscribers(topic, payload, true);
-    
+
     // Broadcast to other tabs/windows
     if (this.broadcastChannel) {
       try {
@@ -280,17 +280,17 @@ class ObserverManager {
         console.warn('Failed to broadcast message:', e);
       }
     }
-    
+
     // Fallback to localStorage for cross-tab sync
     try {
       const eventKey = `__evt__:${topic}`;
-      const eventData = JSON.stringify({ 
-        payload, 
+      const eventData = JSON.stringify({
+        payload,
         timestamp: Date.now(),
         origin: window.location.href
       });
       localStorage.setItem(eventKey, eventData);
-      
+
       // Clean up old event keys after a short delay
       setTimeout(() => {
         localStorage.removeItem(eventKey);
@@ -299,7 +299,7 @@ class ObserverManager {
       console.warn('Failed to sync via localStorage:', e);
     }
   }
-  
+
   // Notify subscribers
   notifySubscribers(topic, payload, isLocal) {
     const handlers = this.subscribers.get(topic);
@@ -312,7 +312,7 @@ class ObserverManager {
         }
       });
     }
-    
+
     // Also notify wildcard subscribers
     const wildcardHandlers = this.subscribers.get('*');
     if (wildcardHandlers && wildcardHandlers.size > 0) {
@@ -325,12 +325,12 @@ class ObserverManager {
       });
     }
   }
-  
+
   // Clear all subscriptions for a topic
   clearTopic(topic) {
     this.subscribers.delete(topic);
   }
-  
+
   // Clear all subscriptions
   clearAllSubscriptions() {
     this.subscribers.clear();
@@ -349,7 +349,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (window.performanceManager) {
     window.performanceManager.cleanup?.();
   }
-  
+
   // بدء المدير الجديد
   observerManager.init();
 });
@@ -371,6 +371,7 @@ export const EVENTS = {
   PRODUCTS_CHANGED: 'products:changed',
   CATEGORIES_CHANGED: 'categories:changed',
   CUSTOMERS_CHANGED: 'customers:changed',
+  SUPPLIERS_CHANGED: 'suppliers:changed',
   SHIFTS_CHANGED: 'shifts:changed',
   SETTINGS_CHANGED: 'settings:changed',
   POS_CART_CHANGED: 'pos:cart:changed',

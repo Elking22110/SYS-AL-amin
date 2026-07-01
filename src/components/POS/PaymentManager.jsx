@@ -146,11 +146,11 @@ const PaymentManager = ({
             });
             setShowDatePicker(false);
           }}
-          className={`p-1 text-xs rounded hover:bg-blue-500 hover:text-white transition-colors ${isSelected
-              ? 'bg-blue-500 text-white'
-              : isToday
-                ? 'bg-gray-600 text-white'
-                : 'text-gray-300 hover:bg-gray-600'
+          className={`p-1 text-xs rounded hover:bg-blue-500 hover:text-slate-800 transition-colors ${isSelected
+            ? 'bg-blue-500 text-slate-800'
+            : isToday
+              ? 'bg-gray-600 text-slate-800'
+              : 'text-slate-600 hover:bg-gray-600'
             }`}
         >
           {day}
@@ -162,16 +162,16 @@ const PaymentManager = ({
   }, [downPayment, setDownPayment]);
 
   return (
-    <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl p-6">
-      <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-        <CreditCard className="h-6 w-6 text-blue-400" />
+    <div className="bg-white border border-slate-200 rounded-xl shadow-md p-4 text-right">
+      <h2 className="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+        <CreditCard className="h-5 w-5 text-blue-500" />
         إدارة الدفع
       </h2>
 
       {/* طريقة الدفع */}
-      <div className="mb-6">
-        <label className="block text-gray-300 mb-3">طريقة الدفع:</label>
-        <div className="grid grid-cols-2 gap-3">
+      <div className="mb-4">
+        <label className="block text-slate-700 text-xs font-bold mb-2">طريقة الدفع:</label>
+        <div className="grid grid-cols-2 gap-2">
           {[
             { value: 'cash', label: 'نقدي', icon: '💵' },
             { value: 'wallet', label: 'محفظة إلكترونية', icon: '📱' },
@@ -181,22 +181,22 @@ const PaymentManager = ({
             <button
               key={method.value}
               onClick={() => setPaymentMethod(method.value)}
-              className={`p-3 rounded-lg border-2 transition-all duration-200 ${paymentMethod === method.value
-                  ? 'border-blue-500 bg-blue-500 bg-opacity-20 text-blue-300'
-                  : 'border-gray-600 bg-gray-700 text-gray-300 hover:border-gray-500'
+              className={`p-2 rounded-xl border-2 transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${paymentMethod === method.value
+                ? 'border-blue-500 bg-blue-500 bg-opacity-20 text-blue-600 font-bold'
+                : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-blue-300 hover:bg-blue-50'
                 }`}
             >
-              <div className="text-2xl mb-1">{method.icon}</div>
-              <div className="text-sm font-medium">{method.label}</div>
+              <span className="text-base">{method.icon}</span>
+              <span className="text-xs font-bold">{method.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* العربون */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-gray-300">العربون:</label>
+      <div className="mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-slate-700 text-xs font-bold">العربون:</label>
           <button
             onClick={(e) => {
               e.preventDefault();
@@ -214,9 +214,9 @@ const PaymentManager = ({
                 deliveryDate: newEnabled ? getLocalDateString() : downPayment.deliveryDate
               });
             }}
-            className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 ${downPayment.enabled
-                ? 'bg-green-500 hover:bg-green-600 text-white'
-                : 'bg-gray-600 hover:bg-gray-700 text-gray-300'
+            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all duration-200 cursor-pointer ${downPayment.enabled
+              ? 'bg-green-500 hover:bg-green-600 text-white'
+              : 'bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300'
               }`}
           >
             {downPayment.enabled ? 'مفعل' : 'تفعيل العربون'}
@@ -224,69 +224,54 @@ const PaymentManager = ({
         </div>
 
         {downPayment.enabled && (
-          <div className="space-y-4">
+          <div className="space-y-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
             {/* مبلغ العربون */}
             <div>
-              <label className="block text-[11px] text-blue-200 mb-1">
+              <label className="block text-[10px] font-bold text-slate-500 mb-1">
                 مبلغ العربون (جنيه)
                 {(!downPayment.amount || parseFloat(downPayment.amount) <= 0) && (
-                  <span className="text-red-400 text-xs block">⚠️ يرجى إدخال مبلغ العربون</span>
+                  <span className="text-red-500 text-[10px] block">⚠️ يرجى إدخال مبلغ العربون</span>
                 )}
               </label>
               <input
                 type="number"
                 value={downPayment.amount}
                 onChange={(e) => updateDownPaymentAmount(e.target.value)}
-                className={`input-modern w-full px-2 py-1.5 text-xs text-right ${(!downPayment.amount || parseFloat(downPayment.amount) <= 0)
-                    ? 'border-red-500 bg-red-900 bg-opacity-20'
-                    : ''
+                className={`input-modern w-full px-2.5 py-1 text-xs text-right border border-slate-300 rounded-lg ${(!downPayment.amount || parseFloat(downPayment.amount) <= 0)
+                  ? 'border-red-500 bg-red-50'
+                  : ''
                   }`}
                 placeholder="0"
                 min="0"
                 step="0.01"
-                style={{
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'textfield'
-                }}
               />
 
               {/* أزرار النسب السريعة */}
-              <div className="flex gap-2 mt-2">
-                <button
-                  type="button"
-                  onClick={() => applyQuickPercentage(25)}
-                  className="text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                >
-                  25%
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyQuickPercentage(50)}
-                  className="text-xs bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
-                >
-                  50%
-                </button>
-                <button
-                  type="button"
-                  onClick={() => applyQuickPercentage(75)}
-                  className="text-xs bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
-                >
-                  75%
-                </button>
+              <div className="flex gap-1.5 mt-1.5">
+                {[25, 50, 75].map(pct => (
+                  <button
+                    key={pct}
+                    type="button"
+                    onClick={() => applyQuickPercentage(pct)}
+                    className="text-[10px] bg-white hover:bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-300 font-bold cursor-pointer"
+                  >
+                    {pct}%
+                  </button>
+                ))}
               </div>
             </div>
 
             {/* تاريخ الاستلام */}
             <div>
-              <label className="block text-[11px] text-blue-200 mb-1">
+              <label className="block text-[10px] font-bold text-slate-500 mb-1">
                 تاريخ الاستلام
-                <span className="text-gray-500 text-xs block">
+                <span className="text-slate-400 text-[10px] block">
                   اليوم: {getLocalDateFormatted()} (ميلادي)
                 </span>
               </label>
 
               <div className="relative">
-                <div className="flex gap-1">
+                <div className="flex gap-1 items-center">
                   <input
                     type="number"
                     placeholder="يوم"
@@ -294,9 +279,9 @@ const PaymentManager = ({
                     max="31"
                     value={downPayment.deliveryDate ? parseInt(downPayment.deliveryDate.split('-')[2]) : ''}
                     onChange={(e) => updateDeliveryDate('day', e.target.value)}
-                    className="input-modern w-1/3 px-2 py-1.5 text-xs text-center"
+                    className="input-modern w-1/3 px-2 py-1 text-xs text-center border border-slate-300 rounded-lg"
                   />
-                  <span className="text-white text-xs flex items-center">/</span>
+                  <span className="text-slate-400 text-xs">/</span>
                   <input
                     type="number"
                     placeholder="شهر"
@@ -304,9 +289,9 @@ const PaymentManager = ({
                     max="12"
                     value={downPayment.deliveryDate ? parseInt(downPayment.deliveryDate.split('-')[1]) : ''}
                     onChange={(e) => updateDeliveryDate('month', e.target.value)}
-                    className="input-modern w-1/3 px-2 py-1.5 text-xs text-center"
+                    className="input-modern w-1/3 px-2 py-1 text-xs text-center border border-slate-300 rounded-lg"
                   />
-                  <span className="text-white text-xs flex items-center">/</span>
+                  <span className="text-slate-400 text-xs">/</span>
                   <input
                     type="number"
                     placeholder="سنة"
@@ -314,12 +299,12 @@ const PaymentManager = ({
                     max="2030"
                     value={downPayment.deliveryDate ? downPayment.deliveryDate.split('-')[0] : ''}
                     onChange={(e) => updateDeliveryDate('year', e.target.value)}
-                    className="input-modern w-1/3 px-2 py-1.5 text-xs text-center"
+                    className="input-modern w-1/3 px-2 py-1 text-xs text-center border border-slate-300 rounded-lg"
                   />
                   <button
                     type="button"
                     onClick={() => setShowDatePicker(!showDatePicker)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1.5 rounded text-xs"
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-2 py-1.5 rounded-lg text-xs cursor-pointer"
                     title="اختيار من التقويم"
                   >
                     📅
@@ -329,7 +314,7 @@ const PaymentManager = ({
                 {/* التقويم */}
                 {showDatePicker && (
                   <div
-                    className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 mt-1 shadow-lg date-picker-container"
+                    className="absolute z-50 bg-white border border-slate-300 rounded-xl p-3 mt-1.5 shadow-xl date-picker-container right-0"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="text-center mb-2">
@@ -343,11 +328,11 @@ const PaymentManager = ({
                               deliveryDate: currentDate.toISOString().split('T')[0]
                             });
                           }}
-                          className="text-white hover:text-blue-300"
+                          className="text-slate-600 hover:text-slate-800"
                         >
                           ‹
                         </button>
-                        <span className="text-white text-sm font-medium">
+                        <span className="text-slate-800 text-xs font-bold">
                           {new Date(downPayment.deliveryDate).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long'
@@ -362,7 +347,7 @@ const PaymentManager = ({
                               deliveryDate: currentDate.toISOString().split('T')[0]
                             });
                           }}
-                          className="text-white hover:text-blue-300"
+                          className="text-slate-600 hover:text-slate-800"
                         >
                           ›
                         </button>
@@ -370,26 +355,23 @@ const PaymentManager = ({
                     </div>
 
                     {/* أيام الأسبوع */}
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                        <div key={day} className="text-xs text-gray-400 text-center p-1">
+                    <div className="grid grid-cols-7 gap-1 mb-1">
+                      {['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'].map(day => (
+                        <div key={day} className="text-[10px] text-slate-400 font-bold text-center p-0.5">
                           {day}
                         </div>
                       ))}
                     </div>
 
                     {/* أيام الشهر */}
-                    <div className="grid grid-cols-7 gap-1">
+                    <div className="grid grid-cols-7 gap-1 text-[11px]">
                       {renderCalendar()}
                     </div>
 
-                    <div className="mt-2 pt-2 border-t border-gray-600">
-                      <div className="text-xs text-gray-500 text-center mb-2">
-                        التقويم الميلادي
-                      </div>
+                    <div className="mt-2 pt-2 border-t border-slate-200">
                       <button
                         onClick={() => setShowDatePicker(false)}
-                        className="w-full text-xs text-gray-400 hover:text-white"
+                        className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-800"
                       >
                         إغلاق
                       </button>
@@ -399,25 +381,25 @@ const PaymentManager = ({
               </div>
 
               {/* أزرار سريعة للتاريخ */}
-              <div className="flex justify-between items-center mt-2">
+              <div className="flex justify-between items-center mt-2 text-[10px]">
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={setToday}
-                    className="text-xs text-blue-300 hover:text-blue-200 underline"
+                    className="text-blue-600 hover:text-blue-800 font-bold cursor-pointer"
                   >
                     اليوم
                   </button>
                   <button
                     type="button"
                     onClick={setTomorrow}
-                    className="text-xs text-green-300 hover:text-green-200 underline"
+                    className="text-green-600 hover:text-green-800 font-bold cursor-pointer"
                   >
                     غداً
                   </button>
                 </div>
-                <div className="text-xs text-gray-500">
-                  تنسيق: يوم/شهر/سنة (ميلادي)
+                <div className="text-slate-400">
+                  تنسيق: يوم/شهر/سنة
                 </div>
               </div>
             </div>
@@ -426,36 +408,36 @@ const PaymentManager = ({
       </div>
 
       {/* ملخص الدفع */}
-      <div className="bg-gray-700 rounded-lg p-4 mb-6">
-        <h3 className="text-lg font-semibold text-white mb-3">ملخص الدفع</h3>
+      <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-4 text-xs space-y-2">
+        <h3 className="text-slate-700 font-bold border-b border-slate-200 pb-1 mb-1">ملخص الحساب:</h3>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <div className="flex justify-between">
-            <span className="text-gray-300">إجمالي الفاتورة:</span>
-            <span className="text-white font-semibold">
-              {(getTotal || 0).toLocaleString('en-US')} جنيه
+            <span className="text-slate-500">إجمالي الفاتورة:</span>
+            <span className="text-slate-800 font-bold">
+              {(getTotal || 0).toLocaleString('en-US')} ج.م
             </span>
           </div>
 
           {downPayment.enabled && (
             <>
               <div className="flex justify-between">
-                <span className="text-gray-300">العربون:</span>
-                <span className="text-blue-400 font-semibold">
-                  {(downPayment.amount || 0).toLocaleString('en-US')} جنيه
+                <span className="text-slate-500">العربون المدفوع:</span>
+                <span className="text-green-600 font-bold">
+                  {(downPayment.amount || 0).toLocaleString('en-US')} ج.م
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-300">المتبقي:</span>
-                <span className="text-yellow-300 font-semibold">
-                  {(getRemainingAmount || 0).toLocaleString('en-US')} جنيه
+                <span className="text-red-500">المبلغ المتبقي:</span>
+                <span className="text-red-600 font-bold">
+                  {(getRemainingAmount || 0).toLocaleString('en-US')} ج.م
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-300">تاريخ الاستلام:</span>
-                <span className="text-green-400 font-semibold">
+                <span className="text-slate-500">تاريخ الاستلام:</span>
+                <span className="text-slate-700 font-bold">
                   {formatDateToDDMMYYYY(downPayment.deliveryDate)}
                 </span>
               </div>
@@ -468,19 +450,19 @@ const PaymentManager = ({
       <button
         onClick={() => onConfirmSale(paymentMethod)}
         disabled={!isDownPaymentValid}
-        className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 ${isDownPaymentValid
-            ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:scale-105 shadow-lg'
-            : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+        className={`w-full py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-300 cursor-pointer ${isDownPaymentValid
+          ? 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-slate-800 hover:scale-[1.02] shadow-md'
+          : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
           }`}
       >
         {isDownPaymentValid ? (
           <div className="flex items-center justify-center gap-2">
-            <CheckCircle className="h-6 w-6" />
+            <CheckCircle className="h-5 w-5" />
             إتمام البيع
           </div>
         ) : (
           <div className="flex items-center justify-center gap-2">
-            <AlertCircle className="h-6 w-6" />
+            <AlertCircle className="h-5 w-5" />
             يرجى إكمال بيانات العربون
           </div>
         )}

@@ -30,11 +30,11 @@ const POS = () => {
 
   if (!activeShift) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-        <div className="glass-card p-8 text-center max-w-md">
-          <h1 className="text-2xl font-bold text-white mb-3">نقطة البيع غير مفعّلة</h1>
-          <p className="text-purple-200 mb-4">الرجاء بدء وردية نشطة لتفعيل نقطة البيع.</p>
-          <p className="text-xs text-purple-300">انتقل إلى قسم الوردية لبدء وردية جديدة.</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <div className="glass-card p-8 text-center max-w-md border border-slate-200">
+          <h1 className="text-2xl font-bold text-slate-800 mb-3">نقطة البيع غير مفعّلة</h1>
+          <p className="text-slate-600 mb-4">الرجاء بدء وردية نشطة لتفعيل نقطة البيع.</p>
+          <p className="text-xs text-slate-500">انتقل إلى قسم الوردية لبدء وردية جديدة.</p>
         </div>
       </div>
     );

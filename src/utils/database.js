@@ -26,7 +26,7 @@ class DatabaseManager {
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        
+
         // إنشاء جداول البيانات
         this.createStores(db);
       };
@@ -109,7 +109,7 @@ class DatabaseManager {
 
     const requiredStores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users', 'settings', 'backups'];
     const missingStores = requiredStores.filter(storeName => !this.db.objectStoreNames.contains(storeName));
-    
+
     if (missingStores.length > 0) {
       console.log('جداول مفقودة:', missingStores);
       // إعادة تهيئة قاعدة البيانات لإنشاء الجداول المفقودة
@@ -123,13 +123,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.add(data);
@@ -145,13 +145,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.put(data);
@@ -167,13 +167,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.delete(id);
@@ -189,13 +189,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.get(id);
@@ -211,13 +211,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAll();
@@ -233,13 +233,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const index = store.index(indexName);
@@ -256,13 +256,13 @@ class DatabaseManager {
     if (!this.db) {
       await this.init();
     }
-    
+
     return new Promise((resolve, reject) => {
       if (!this.db) {
         reject(new Error('قاعدة البيانات غير مهيأة'));
         return;
       }
-      
+
       const transaction = this.db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const index = store.index(indexName);
@@ -285,7 +285,7 @@ class DatabaseManager {
 
       // نسخ جميع الجداول من IndexedDB
       const stores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users', 'settings'];
-      
+
       for (const store of stores) {
         try {
           backupData.data[store] = await this.getAll(store);
@@ -303,6 +303,9 @@ class DatabaseManager {
         products: JSON.parse(localStorage.getItem('products') || '[]'),
         sales: JSON.parse(localStorage.getItem('sales') || '[]'),
         customers: JSON.parse(localStorage.getItem('customers') || '[]'),
+        suppliers: JSON.parse(localStorage.getItem('suppliers') || '[]'),
+        supplier_supplies: JSON.parse(localStorage.getItem('supplier_supplies') || '[]'),
+        supplier_payments: JSON.parse(localStorage.getItem('supplier_payments') || '[]'),
         shifts: JSON.parse(localStorage.getItem('shifts') || '[]'),
         users: JSON.parse(localStorage.getItem('users') || '[]'),
         notifications: JSON.parse(localStorage.getItem('notifications') || '[]'),
@@ -311,7 +314,7 @@ class DatabaseManager {
 
       // حفظ النسخة الاحتياطية
       await this.add('backups', backupData);
-      
+
       console.log('تم إنشاء نسخة احتياطية شاملة:', backupData.id);
       return backupData;
     } catch (error) {
@@ -338,7 +341,7 @@ class DatabaseManager {
         if (data && data.length > 0) {
           const transaction = this.db.transaction([storeName], 'readwrite');
           const store = transaction.objectStore(storeName);
-          
+
           // مسح البيانات الموجودة
           await new Promise((resolve, reject) => {
             const clearRequest = store.clear();
@@ -397,10 +400,10 @@ class DatabaseManager {
         system: 'POS System'
       }
     };
-    
+
     // تصدير بيانات IndexedDB
     const stores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users', 'settings'];
-    
+
     for (const store of stores) {
       try {
         exportData[store] = await this.getAll(store);
@@ -418,6 +421,9 @@ class DatabaseManager {
       products: JSON.parse(localStorage.getItem('products') || '[]'),
       sales: JSON.parse(localStorage.getItem('sales') || '[]'),
       customers: JSON.parse(localStorage.getItem('customers') || '[]'),
+      suppliers: JSON.parse(localStorage.getItem('suppliers') || '[]'),
+      supplier_supplies: JSON.parse(localStorage.getItem('supplier_supplies') || '[]'),
+      supplier_payments: JSON.parse(localStorage.getItem('supplier_payments') || '[]'),
       shifts: JSON.parse(localStorage.getItem('shifts') || '[]'),
       users: JSON.parse(localStorage.getItem('users') || '[]'),
       notifications: JSON.parse(localStorage.getItem('notifications') || '[]'),
@@ -459,14 +465,14 @@ class DatabaseManager {
       if (data.settings && data.settings.length > 0) {
         const transaction = this.db.transaction(['settings'], 'readwrite');
         const store = transaction.objectStore('settings');
-        
+
         // مسح الإعدادات الموجودة
         await new Promise((resolve, reject) => {
           const clearRequest = store.clear();
           clearRequest.onsuccess = () => resolve();
           clearRequest.onerror = () => reject(clearRequest.error);
         });
-        
+
         // إضافة الإعدادات الجديدة
         for (const setting of data.settings) {
           await new Promise((resolve, reject) => {
@@ -524,14 +530,14 @@ class DatabaseManager {
         if (items && items.length > 0) {
           const transaction = this.db.transaction([storeName], 'readwrite');
           const store = transaction.objectStore(storeName);
-          
+
           // مسح البيانات الموجودة أولاً
           await new Promise((resolve, reject) => {
             const clearRequest = store.clear();
             clearRequest.onsuccess = () => resolve();
             clearRequest.onerror = () => reject(clearRequest.error);
           });
-          
+
           for (const item of items) {
             await new Promise((resolve, reject) => {
               const request = store.put(item);
@@ -567,7 +573,7 @@ class DatabaseManager {
   async getStats() {
     const stats = {};
     const stores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
-    
+
     for (const store of stores) {
       try {
         const data = await this.getAll(store);
