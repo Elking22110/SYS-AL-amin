@@ -24,6 +24,7 @@ import { getCurrentDate, cleanExistingData } from './utils/dateUtils.js';
 import { subscribe, EVENTS } from "./utils/observerManager";
 import { hashPassword } from './utils/security.js';
 import { initTheme } from "./utils/themeUtils";
+import { runCategoryMigration } from "./utils/categoryMigration";
 
 function App() {
   const navigate = useNavigate();
@@ -38,6 +39,9 @@ function App() {
 
         // تنظيف البيانات الموجودة من التواريخ الهجرية
         cleanExistingData();
+        
+        // تشغيل هجرة الفئات الهرمية
+        runCategoryMigration();
         // تم تهيئة قاعدة البيانات بنجاح
       } catch (error) {
         console.error('❌ خطأ في تهيئة قاعدة البيانات:', error);

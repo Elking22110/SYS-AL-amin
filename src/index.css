@@ -99,20 +99,43 @@ body::before {
 .pos-product-card {
   display: flex;
   flex-direction: column;
-  height: 190px;
-  /* زيادة الارتفاع الأساسي */
+  min-height: 220px;
+  height: auto;
   width: 100%;
-  /* عرض كامل */
   border: 2px solid rgba(75, 85, 99, 0.3);
-  /* حدود واضحة */
   border-radius: 12px;
   padding: 12px;
+  padding-bottom: 52px; /* مساحة ثابتة لصف السعر */
   margin: 0;
-  /* إزالة الهوامش */
   transition: all 0.3s ease;
   overflow: hidden;
-  /* منع تجاوز المحتوى */
   position: relative;
+}
+
+.pos-product-card .price-row {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px 12px;
+  background: linear-gradient(to top, rgba(255,255,255,1) 80%, rgba(255,255,255,0));
+  border-top: 1px solid rgba(226, 232, 240, 0.6);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  min-height: 44px;
+  z-index: 2;
+}
+
+.pos-product-card .product-title-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 40px;
+  line-height: 1.3;
 }
 
 .pos-product-card:hover {
@@ -221,8 +244,7 @@ body::before {
 /* تحسين التخطيط للشاشات المختلفة */
 @media (max-width: 640px) {
   .pos-product-card {
-    height: 170px;
-    /* زيادة الارتفاع */
+    height: 215px;
   }
 
   .pos-product-card .product-title {
@@ -239,8 +261,7 @@ body::before {
 /* تحسينات خاصة بالآيباد */
 @media (min-width: 768px) and (max-width: 1024px) {
   .pos-product-card {
-    height: 220px;
-    /* ارتفاع أكبر للآيباد */
+    height: 215px;
     padding: 16px;
   }
 
@@ -262,8 +283,7 @@ body::before {
 /* تحسينات خاصة بالآيباد برو */
 @media (min-width: 1024px) and (max-width: 1366px) {
   .pos-product-card {
-    height: 240px;
-    /* ارتفاع أكبر للآيباد برو */
+    height: 215px;
     padding: 20px;
   }
 
@@ -284,8 +304,7 @@ body::before {
 
 @media (min-width: 1366px) {
   .pos-product-card {
-    height: 200px;
-    /* زيادة الارتفاع */
+    height: 215px;
   }
 
   .pos-product-card .product-title {

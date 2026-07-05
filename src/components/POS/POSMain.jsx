@@ -948,7 +948,7 @@ const POSMain = () => {
   }, [products]);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50" dir="rtl">
       <div className="container mx-auto px-4 py-6">
         {/* العنوان */}
         <div className="mb-6">
@@ -962,22 +962,9 @@ const POSMain = () => {
         </div>
 
         {/* المحتوى الرئيسي */}
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-start">
-          {/* شبكة المنتجات */}
-          <ProductGrid
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            onAddToCart={handleProductSelect}
-            categories={categories}
-            setCategories={setCategories}
-            products={filteredProducts} // Pass filtered products
-            setProducts={setProducts}
-            productImages={productImages}
-            setProductImages={setProductImages}
-          />
-
-          {/* إدارة السلة والدفع */}
-          <div className="flex flex-col gap-4 lg:gap-6 lg:w-96 lg:sticky lg:top-6 lg:h-[calc(100vh-120px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
+        <div className="flex flex-row gap-4 lg:gap-6 items-start w-full" dir="rtl">
+          {/* إدارة السلة والدفع - تظهر على اليمين في RTL لأنها الأولى في JSX */}
+          <div className="flex flex-col gap-4 lg:gap-6 w-80 xl:w-96 sticky top-6 h-[calc(100vh-120px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
             <CartManager
               cart={cart}
               setCart={setCart}
@@ -1005,6 +992,21 @@ const POSMain = () => {
               onConfirmSale={confirmSale}
               paymentMethod={paymentMethod}
               setPaymentMethod={handlePaymentMethodChange}
+            />
+          </div>
+
+          {/* شبكة المنتجات - تظهر على اليسار في RTL لأنها الثانية في JSX */}
+          <div className="flex-1 min-w-0">
+            <ProductGrid
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
+              onAddToCart={handleProductSelect}
+              categories={categories}
+              setCategories={setCategories}
+              products={filteredProducts} // Pass filtered products
+              setProducts={setProducts}
+              productImages={productImages}
+              setProductImages={setProductImages}
             />
           </div>
         </div>

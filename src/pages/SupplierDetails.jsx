@@ -131,7 +131,8 @@ const SupplierDetails = () => {
             price: price, // Base raw price
             costPrice: price, // For profit calc
             stock: qty,
-            category: 'خامات توريد', // default category
+            category: 'أخرى', // default category
+            mainCategoryId: 'أخرى',
             isSupplyProduct: true,
             supplyId: supply.id,
             supplierId: id,

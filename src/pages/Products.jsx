@@ -14,7 +14,8 @@ import {
   Image,
   Camera,
   X,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react';
 import { useNotifications } from '../components/NotificationSystem';
 import { ImageManager } from '../utils/imageManager';
@@ -114,11 +115,17 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [showManageCategoriesModal, setShowManageCategoriesModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [editCategoryForm, setEditCategoryForm] = useState({ name: '', parentId: '' });
+  const [newCategoryType, setNewCategoryType] = useState('main'); // 'main' or 'sub'
   const [editingProduct, setEditingProduct] = useState(null);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
-    category: 'خلاطات وصنابير',
+    category: '',
+    mainCategoryId: '',
+    subCategoryId: '',
     stock: '',
     minStock: ''
   });
@@ -214,7 +221,8 @@ const Products = () => {
   };
   const [newCategory, setNewCategory] = useState({
     name: '',
-    description: ''
+    description: '',
+    parentId: ''
   });
 
 
@@ -237,14 +245,8 @@ const Products = () => {
       const missing = productCategoryNames.filter(n => !have.has(n)).map(name => ({ name, description: '' }));
       const merged = missing.length > 0 ? [...catsArr, ...missing] : catsArr;
 
-      // Ensure 'خامات توريد' always exists
-      const hasSupplyCategory = merged.some(c => c.name === 'خامات توريد');
-      if (!hasSupplyCategory) {
-        merged.push({ name: 'خامات توريد', description: 'مواد التوريد المرتبطة بالموردين (ثابتة)' });
-      }
-
       setCategories(merged);
-      if (missing.length > 0 || !hasSupplyCategory) {
+      if (missing.length > 0) {
         try { localStorage.setItem('productCategories', JSON.stringify(merged)); } catch (_) { }
       }
     } catch (_) {
@@ -256,7 +258,7 @@ const Products = () => {
   useEffect(() => {
     const runMigration = async () => {
       try {
-        const migrationDone = localStorage.getItem('migration_sanitary_alamin_v3') === 'true';
+        const migrationDone = localStorage.getItem('migration_sanitary_alamin_v5') === 'true';
         if (migrationDone) return;
 
         console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لمتجر الأمين...');
@@ -275,7 +277,9 @@ const Products = () => {
           'shifts', 'activeShift', 'notifications',
           'reseed_done_msgroupplast_v3', 'reseed_done_msgroupplast_v2',
           'reseed_done_msgroupplast_v1', 'pos-settings', 
-          'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2'
+          'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2',
+          'migration_sanitary_alamin_v3', 'migration_sanitary_alamin_v4',
+          'categories_hierarchical_migration_v6', 'categories_hierarchical_migration_v7'
         ];
         keysToClear.forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
 
@@ -301,7 +305,7 @@ const Products = () => {
 
         localStorage.setItem('productCategories', JSON.stringify(categories));
         localStorage.setItem('products', JSON.stringify(products));
-        localStorage.setItem('migration_sanitary_alamin_v3', 'true');
+        localStorage.setItem('migration_sanitary_alamin_v5', 'true');
 
         setCategories(categories);
         setProducts(products);
@@ -334,8 +338,7 @@ const Products = () => {
         { name: 'أنابيب وتوصيلات', description: 'مواسير PVC وتوصيلات' },
         { name: 'عدد ومستلزمات', description: 'أدوات سباكة وعدد صيانة' },
         { name: 'أطقم حمام', description: 'أطقم حمام كاملة صيني وأوروبي' },
-        { name: 'خزانات مياه', description: 'خزانات مياه أرضية وعلوية' },
-        { name: 'خامات توريد', description: 'مواد التوريد المرتبطة بالموردين (ثابتة)' }
+        { name: 'خزانات مياه', description: 'خزانات مياه أرضية وعلوية' }
       ];
 
       localStorage.setItem('productCategories', JSON.stringify(sanitaryCategories));
@@ -420,7 +423,20 @@ const Products = () => {
       return;
     }
 
-    const updatedCategories = [...categories, { ...newCategory }];
+    if (newCategoryType === 'sub' && !newCategory.parentId) {
+      notifyValidationError('المجموعة الرئيسية', 'يرجى اختيار المجموعة الرئيسية لهذه المجموعة الفرعية');
+      return;
+    }
+
+    const catId = Date.now().toString();
+    const categoryToAdd = {
+      id: catId,
+      name: newCategory.name,
+      description: newCategory.description || '',
+      parentId: newCategoryType === 'sub' ? newCategory.parentId : null
+    };
+
+    const updatedCategories = [...categories, categoryToAdd];
     setCategories(updatedCategories);
 
     // حفظ الفئات في localStorage
@@ -430,7 +446,7 @@ const Products = () => {
     window.dispatchEvent(new CustomEvent('categoriesUpdated', {
       detail: {
         action: 'added',
-        category: newCategory,
+        category: categoryToAdd,
         categories: updatedCategories
       }
     }));
@@ -438,12 +454,13 @@ const Products = () => {
     // نشر حدث تغيير الفئات
     publish(EVENTS.CATEGORIES_CHANGED, {
       type: 'create',
-      category: newCategory,
+      category: categoryToAdd,
       categories: updatedCategories
     });
 
     // إعادة تعيين النموذج
-    setNewCategory({ name: '', description: '' });
+    setNewCategory({ name: '', description: '', parentId: '' });
+    setNewCategoryType('main');
     setShowAddCategoryModal(false);
 
     // إشعار نجاح إضافة الفئة
@@ -457,10 +474,6 @@ const Products = () => {
       return;
     }
 
-    if (categoryName === 'خامات توريد') {
-      alert('لا يمكن حذف الفئة الثابتة "خامات توريد"');
-      return;
-    }
 
     // التحقق من وجود منتجات في هذه الفئة
     const productsInCategory = products.filter(product => product.category === categoryName);
@@ -488,6 +501,81 @@ const Products = () => {
     }
   };
 
+  const handleUpdateCategorySubmit = () => {
+    if (!editCategoryForm.name.trim()) {
+      alert('اسم الفئة مطلوب');
+      return;
+    }
+    
+    // التحقق من عدم التكرار
+    const duplicate = categories.some(c => c.id !== editingCategory.id && c.name === editCategoryForm.name.trim());
+    if (duplicate) {
+      alert('هناك فئة أخرى تحمل هذا الاسم بالفعل');
+      return;
+    }
+    
+    const oldName = editingCategory.name;
+    const newName = editCategoryForm.name.trim();
+    const updatedCategories = categories.map(c => {
+      if (c.id === editingCategory.id) {
+        return {
+          ...c,
+          name: newName,
+          parentId: editCategoryForm.parentId || null
+        };
+      }
+      if (String(c.parentId) === String(editingCategory.id) || c.parentId === oldName) {
+        return { ...c, parentId: editingCategory.id || newName };
+      }
+      return c;
+    });
+
+    let updatedProducts = products;
+    if (oldName !== newName || editingCategory.id) {
+      updatedProducts = products.map(p => {
+        let isMain = p.mainCategoryId === editingCategory.id || p.mainCategoryId === oldName;
+        let isSub = p.subCategoryId === editingCategory.id || p.subCategoryId === oldName;
+        let matchesName = p.category === oldName;
+
+        let mainId = p.mainCategoryId;
+        let subId = p.subCategoryId;
+        let catName = p.category;
+
+        if (isMain) {
+          mainId = editingCategory.id;
+        }
+        if (isSub) {
+          subId = editingCategory.id;
+        }
+        if (matchesName || isSub) {
+          catName = newName;
+        }
+
+        return {
+          ...p,
+          mainCategoryId: mainId,
+          subCategoryId: subId,
+          category: catName
+        };
+      });
+    }
+
+    setCategories(updatedCategories);
+    localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
+
+    setProducts(updatedProducts);
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+
+    publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: oldName, to: newName, categories: updatedCategories });
+    publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: oldName, to: newName, products: updatedProducts });
+    
+    window.dispatchEvent(new CustomEvent('categoriesUpdated', { detail: { action: 'updated', categories: updatedCategories } }));
+    window.dispatchEvent(new CustomEvent('productsUpdated', { detail: { action: 'updated', products: updatedProducts } }));
+
+    setEditingCategory(null);
+    alert('تم تعديل الفئة بنجاح');
+  };
+
   // تحميل الفئات المحفوظة بدون إدخال بيانات افتراضية
   useEffect(() => {
     try {
@@ -512,8 +600,75 @@ const Products = () => {
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
 
-  // الحصول على قائمة أسماء الفئات للفلترة
-  const categoryNames = ['الكل', ...categories.map(cat => cat.name)];
+  const getProductCategoryDisplay = React.useCallback((product) => {
+    if (product.mainCategoryId) {
+      const mainCat = categories.find(c => String(c.id) === String(product.mainCategoryId) || c.name === product.mainCategoryId);
+      const subCat = product.subCategoryId ? categories.find(c => String(c.id) === String(product.subCategoryId) || c.name === product.subCategoryId) : null;
+      if (mainCat) {
+        return subCat ? `${mainCat.name} ➔ ${subCat.name}` : mainCat.name;
+      }
+    }
+
+    if (product.category) {
+      const cat = categories.find(c => c.name === product.category);
+      if (cat && cat.parentId) {
+        const parent = categories.find(c => String(c.id) === String(cat.parentId) || c.name === cat.parentId);
+        if (parent) {
+          return `${parent.name} ➔ ${cat.name}`;
+        }
+      }
+    }
+
+    return product.category || 'غير مصنف';
+  }, [categories]);
+
+  // الحصول على قائمة الفئات للفلترة بشكل هرمي
+  const hierarchicalCategoryOptions = React.useMemo(() => {
+    const options = [{ value: 'الكل', label: 'الكل' }];
+    const mainCats = categories.filter(c => !c.parentId);
+    const subCats = categories.filter(c => c.parentId);
+
+    mainCats.forEach(main => {
+      options.push({ value: main.name, label: main.name, isMain: true });
+      const subs = subCats.filter(sub => String(sub.parentId) === String(main.id) || String(sub.parentId) === String(main.name));
+      subs.forEach(sub => {
+        options.push({ value: sub.name, label: `  — ${sub.name}`, isMain: false });
+      });
+    });
+
+    const matchedNames = new Set(options.map(o => o.value));
+    categories.forEach(cat => {
+      if (!matchedNames.has(cat.name)) {
+        options.push({ value: cat.name, label: cat.parentId ? `  — ${cat.name}` : cat.name, isMain: !cat.parentId });
+      }
+    });
+
+    return options;
+  }, [categories]);
+
+  const orderedCategories = React.useMemo(() => {
+    const list = [];
+    const mainCats = categories.filter(c => !c.parentId);
+    const subCats = categories.filter(c => c.parentId);
+
+    mainCats.forEach(main => {
+      list.push({ ...main, isMain: true, parentName: null });
+      const subs = subCats.filter(sub => String(sub.parentId) === String(main.id) || String(sub.parentId) === String(main.name));
+      subs.forEach(sub => {
+        list.push({ ...sub, isMain: false, parentName: main.name });
+      });
+    });
+
+    const matchedIds = new Set(list.map(c => c.id));
+    categories.forEach(cat => {
+      if (!matchedIds.has(cat.id)) {
+        const parentName = cat.parentId ? (categories.find(c => String(c.id) === String(cat.parentId) || c.name === cat.parentId)?.name || cat.parentId) : null;
+        list.push({ ...cat, isMain: !cat.parentId, parentName });
+      }
+    });
+
+    return list;
+  }, [categories]);
 
   const handleAddProduct = () => {
     // التحقق من صحة البيانات
@@ -534,10 +689,9 @@ const Products = () => {
       return;
     }
 
-    // التحقق من صحة الفئة المختارة
-    const categoryExists = categories.some(cat => cat.name === newProduct.category);
-    if (!categoryExists) {
-      notifyValidationError('الفئة', 'يرجى اختيار فئة صحيحة من القائمة');
+    // التحقق من اختيار المجموعة الرئيسية
+    if (!newProduct.mainCategoryId) {
+      notifyValidationError('المجموعة الرئيسية', 'يرجى اختيار المجموعة الرئيسية');
       return;
     }
 
@@ -573,7 +727,9 @@ const Products = () => {
     setNewProduct({
       name: '',
       price: '',
-      category: categories.length > 0 ? categories[0].name : 'خلاطات وصنابير',
+      category: '',
+      mainCategoryId: '',
+      subCategoryId: '',
       stock: '',
       minStock: ''
     });
@@ -585,7 +741,27 @@ const Products = () => {
 
   const handleEditProduct = (product) => {
     setEditingProduct(product);
-    setNewProduct(product);
+    let mainId = product.mainCategoryId || '';
+    let subId = product.subCategoryId || '';
+
+    // Fallback لمنتجات seeded القديمة
+    if (!mainId && product.category) {
+      const matchedCat = categories.find(c => c.name === product.category);
+      if (matchedCat) {
+        if (matchedCat.parentId) {
+          subId = matchedCat.id || matchedCat.name;
+          mainId = matchedCat.parentId;
+        } else {
+          mainId = matchedCat.id || matchedCat.name;
+        }
+      }
+    }
+
+    setNewProduct({
+      ...product,
+      mainCategoryId: mainId,
+      subCategoryId: subId
+    });
     setShowAddModal(true);
   };
 
@@ -624,7 +800,9 @@ const Products = () => {
       setNewProduct({
         name: '',
         price: '',
-        category: categories.length > 0 ? categories[0].name : 'خلاطات وصنابير',
+        category: '',
+        mainCategoryId: '',
+        subCategoryId: '',
         stock: '',
         minStock: ''
       });
@@ -806,6 +984,22 @@ const Products = () => {
               <FolderPlus className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
               إضافة فئة جديدة
             </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowManageCategoriesModal(true);
+              }}
+              className="bg-gradient-to-r from-blue-600 to-indigo-500 hover:from-blue-700 hover:to-indigo-600 text-slate-800 px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-xs lg:text-sm font-semibold transition-all duration-300 flex items-center min-h-[40px] cursor-pointer"
+              style={{
+                pointerEvents: 'auto',
+                zIndex: 10,
+                position: 'relative'
+              }}
+            >
+              <Settings className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
+              إدارة الفئات
+            </button>
           </div>
         </div>
 
@@ -891,9 +1085,10 @@ const Products = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
               >
-
-                {categoryNames.map(category => (
-                  <option key={category} value={category} className="bg-white text-slate-800">{category}</option>
+                {hierarchicalCategoryOptions.map(opt => (
+                  <option key={opt.value} value={opt.value} className="bg-white text-slate-800">
+                    {opt.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -1089,7 +1284,7 @@ const Products = () => {
                         {product.stock}
                       </span>
                     </td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-blue-300 font-medium">{product.category}</td>
+                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-blue-300 font-medium">{getProductCategoryDisplay(product)}</td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2 md:space-x-3">
                         <button
@@ -1344,15 +1539,55 @@ const Products = () => {
               </div>
 
               <div>
-                <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">التصنيف</label>
+                <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">المجموعة الرئيسية</label>
                 <select
-                  value={newProduct.category}
-                  onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                  className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
+                  value={newProduct.mainCategoryId || ''}
+                  onChange={(e) => {
+                    const mId = e.target.value;
+                    const mainCat = categories.find(c => String(c.id) === String(mId) || c.name === mId);
+                    setNewProduct({
+                      ...newProduct,
+                      mainCategoryId: mId,
+                      subCategoryId: '', // Reset subcategory when main group changes
+                      category: mainCat ? mainCat.name : ''
+                    });
+                  }}
+                  className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800 font-bold"
                 >
-                  {categories.map(category => (
-                    <option key={category.name} value={category.name} className="bg-white text-slate-800">{category.name}</option>
+                  <option value="">-- اختر مجموعة رئيسية --</option>
+                  {categories.filter(c => !c.parentId).map(mainCat => (
+                    <option key={mainCat.id || mainCat.name} value={mainCat.id || mainCat.name} className="bg-white text-slate-800">
+                      {mainCat.name}
+                    </option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">المجموعة الفرعية (اختياري)</label>
+                <select
+                  value={newProduct.subCategoryId || ''}
+                  onChange={(e) => {
+                    const sId = e.target.value;
+                    const subCat = categories.find(c => String(c.id) === String(sId) || c.name === sId);
+                    setNewProduct({
+                      ...newProduct,
+                      subCategoryId: sId,
+                      category: subCat ? subCat.name : (categories.find(c => String(c.id) === String(newProduct.mainCategoryId))?.name || '')
+                    });
+                  }}
+                  disabled={!newProduct.mainCategoryId}
+                  className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="">-- بدون (مجموعة رئيسية فقط) --</option>
+                  {categories
+                    .filter(c => String(c.parentId) === String(newProduct.mainCategoryId))
+                    .map(subCat => (
+                      <option key={subCat.id || subCat.name} value={subCat.id || subCat.name} className="bg-white text-slate-800">
+                        {subCat.name}
+                      </option>
+                    ))
+                  }
                 </select>
               </div>
 
@@ -1450,7 +1685,7 @@ const Products = () => {
                 onClick={() => {
                   soundManager.play('closeWindow');
                   setShowAddCategoryModal(false);
-                  setNewCategory({ name: '', description: '' });
+                  setNewCategory({ name: '', description: '', parentId: '' });
                 }}
                 className="text-slate-500 hover:text-slate-800 transition-colors"
               >
@@ -1460,37 +1695,92 @@ const Products = () => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   اسم الفئة *
                 </label>
                 <input
                   type="text"
                   value={newCategory.name}
                   onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                  className="input-modern w-full"
+                  className="input-modern w-full font-bold"
                   placeholder="أدخل اسم الفئة"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
+                  نوع الفئة *
+                </label>
+                <div className="flex space-x-4 space-x-reverse mb-2">
+                  <label className="flex items-center text-slate-300 font-bold text-sm cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="categoryType"
+                      value="main"
+                      checked={newCategoryType === 'main'}
+                      onChange={() => {
+                        setNewCategoryType('main');
+                        setNewCategory({ ...newCategory, parentId: '' });
+                      }}
+                      className="ml-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    مجموعة رئيسية
+                  </label>
+                  <label className="flex items-center text-slate-300 font-bold text-sm cursor-pointer select-none">
+                    <input
+                      type="radio"
+                      name="categoryType"
+                      value="sub"
+                      checked={newCategoryType === 'sub'}
+                      onChange={() => setNewCategoryType('sub')}
+                      className="ml-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    مجموعة فرعية (داخل رئيسية)
+                  </label>
+                </div>
+              </div>
+
+              {newCategoryType === 'sub' && (
+                <div>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">
+                    المجموعة الرئيسية الأب *
+                  </label>
+                  <select
+                    value={newCategory.parentId || ''}
+                    onChange={(e) => setNewCategory({ ...newCategory, parentId: e.target.value })}
+                    className="input-modern w-full appearance-none bg-white border-slate-400 text-slate-800 font-bold"
+                  >
+                    <option value="">-- اختر مجموعة رئيسية --</option>
+                    {categories.filter(c => !c.parentId).map(mainCat => (
+                      <option key={mainCat.id || mainCat.name} value={mainCat.id || mainCat.name} className="bg-white text-slate-800">
+                        {mainCat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   وصف الفئة
                 </label>
                 <textarea
                   value={newCategory.description}
                   onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-                  className="input-modern w-full h-20 resize-none"
+                  className="input-modern w-full h-20 resize-none font-bold"
                   placeholder="وصف مختصر للفئة"
                 />
               </div>
 
               {/* معاينة الفئة */}
               <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-slate-600 mb-2">معاينة الفئة:</h4>
+                <h4 className="text-sm font-medium text-slate-400 mb-2">معاينة الفئة:</h4>
                 <div className="flex items-center space-x-2 space-x-reverse">
-                  <span className="text-blue-400 font-medium">{newCategory.name || 'اسم الفئة'}</span>
-                  <span className="text-slate-500 text-sm">({newCategory.description || 'وصف الفئة'})</span>
+                  <span className="text-blue-400 font-bold text-base">{newCategory.name || 'اسم الفئة'}</span>
+                  <span className="text-slate-400 text-sm">
+                    {newCategory.parentId ? `(تابعة لـ: ${categories.find(c => String(c.id) === String(newCategory.parentId) || c.name === newCategory.parentId)?.name || newCategory.parentId})` : '(مجموعة رئيسية)'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1500,7 +1790,7 @@ const Products = () => {
                 onClick={() => {
                   soundManager.play('closeWindow');
                   setShowAddCategoryModal(false);
-                  setNewCategory({ name: '', description: '' });
+                  setNewCategory({ name: '', description: '', parentId: '' });
                 }}
                 className="px-4 py-2 text-slate-500 hover:text-slate-800 transition-colors"
               >
@@ -1578,6 +1868,161 @@ const Products = () => {
                 />
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Categories Modal */}
+      {showManageCategoriesModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}
+        >
+          <div
+            className="glass-card p-6 w-full max-w-3xl mx-4 animate-fadeInUp"
+            style={{
+              position: 'relative',
+              zIndex: 10000,
+              backgroundColor: 'rgba(17, 24, 39, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '16px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+          >
+            <div className="flex items-center justify-between mb-6 border-b border-slate-700 pb-3">
+              <h3 className="text-xl font-bold text-slate-200">
+                إدارة وتعديل المجموعات (الفئات)
+              </h3>
+              <button
+                onClick={() => {
+                  soundManager.play('closeWindow');
+                  setShowManageCategoriesModal(false);
+                  setEditingCategory(null);
+                }}
+                className="text-slate-400 hover:text-white transition-colors text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {editingCategory ? (
+              /* تعديل فئة محددة */
+              <div className="space-y-4 p-4 bg-slate-800 rounded-xl border border-slate-700">
+                <h4 className="text-base font-bold text-blue-300 mb-2">تعديل الفئة: {editingCategory.name}</h4>
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">اسم الفئة الجديد *</label>
+                  <input
+                    type="text"
+                    value={editCategoryForm.name}
+                    onChange={(e) => setEditCategoryForm({ ...editCategoryForm, name: e.target.value })}
+                    className="input-modern w-full font-bold"
+                    placeholder="أدخل الاسم الجديد"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-2">المجموعة الرئيسية الأب</label>
+                  <select
+                    value={editCategoryForm.parentId || ''}
+                    onChange={(e) => setEditCategoryForm({ ...editCategoryForm, parentId: e.target.value })}
+                    className="input-modern w-full appearance-none bg-white border-slate-400 text-slate-800 font-bold"
+                  >
+                    <option value="">-- مجموعة رئيسية (بدون أب) --</option>
+                    {categories
+                      .filter(c => !c.parentId && c.id !== editingCategory.id) // Exclude self
+                      .map(mainCat => (
+                        <option key={mainCat.id || mainCat.name} value={mainCat.id || mainCat.name} className="bg-white text-slate-800">
+                          {mainCat.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div className="flex justify-end space-x-3 mt-6">
+                  <button
+                    onClick={() => {
+                      soundManager.play('closeWindow');
+                      setEditingCategory(null);
+                    }}
+                    className="px-4 py-2 text-slate-400 hover:text-slate-200 transition-colors"
+                  >
+                    إلغاء
+                  </button>
+                  <button
+                    onClick={() => {
+                      soundManager.play('save');
+                      handleUpdateCategorySubmit();
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-slate-800 px-4 py-2 rounded-lg font-bold transition-colors"
+                  >
+                    حفظ التعديلات
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* قائمة الفئات */
+              <div className="overflow-x-auto" style={{ maxHeight: '60vh' }}>
+                <table className="w-full text-right">
+                  <thead>
+                    <tr className="border-b border-slate-700 text-blue-300 text-sm font-bold">
+                      <th className="pb-3 pr-2">اسم الفئة</th>
+                      <th className="pb-3">النوع</th>
+                      <th className="pb-3">المجموعة الرئيسية</th>
+                      <th className="pb-3 pl-2 text-left">إجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 text-slate-300 text-sm">
+                    {orderedCategories.map((cat, index) => (
+                      <tr key={cat.id || cat.name || index} className="hover:bg-slate-800 hover:bg-opacity-50 transition-colors">
+                        <td className={`py-3 pr-2 font-bold ${!cat.isMain ? 'text-slate-400 pl-4' : 'text-white'}`}>
+                          {!cat.isMain ? `—  ${cat.name}` : cat.name}
+                        </td>
+                        <td className="py-3">
+                          <span className={`px-2 py-1 rounded text-xs font-semibold ${cat.isMain ? 'bg-blue-500 bg-opacity-20 text-blue-300' : 'bg-purple-500 bg-opacity-20 text-purple-300'}`}>
+                            {cat.isMain ? 'رئيسية' : 'فرعية'}
+                          </span>
+                        </td>
+                        <td className="py-3 text-slate-400 font-semibold">
+                          {cat.parentName || '-'}
+                        </td>
+                        <td className="py-3 pl-2 text-left">
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              onClick={() => {
+                                soundManager.play('openWindow');
+                                setEditingCategory(cat);
+                                setEditCategoryForm({ name: cat.name, parentId: cat.parentId || '' });
+                              }}
+                              className="p-1 bg-blue-500 bg-opacity-20 hover:bg-opacity-35 rounded text-blue-300 hover:text-blue-200 transition-colors min-w-[32px] min-h-[32px]"
+                            >
+                              <Edit className="h-4 w-4 mx-auto" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                soundManager.play('delete');
+                                handleDeleteCategory(cat.name);
+                              }}
+                              className="p-1 bg-red-500 bg-opacity-20 hover:bg-opacity-35 rounded text-red-300 hover:text-red-200 transition-colors min-w-[32px] min-h-[32px]"
+                            >
+                              <Trash2 className="h-4 w-4 mx-auto" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {categories.length === 0 && (
+                      <tr>
+                        <td colSpan="4" className="py-8 text-center text-slate-500">لا توجد فئات حالياً.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
