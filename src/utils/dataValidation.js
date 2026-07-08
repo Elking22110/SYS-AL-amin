@@ -12,7 +12,10 @@ export class DataValidator {
         errors.push('منتجات غير صحيحة');
       } else {
         products.forEach((product, index) => {
-          if (!product.id || !product.name || !product.price || !product.category) {
+          // price===0 مقبول، category أو subCategoryId مطلوب
+          const hasCategory = product.category || product.subCategoryId || product.mainCategoryId;
+          const hasPrice = product.price !== undefined && product.price !== null && product.price !== '';
+          if (!product.id || !product.name || !hasPrice || !hasCategory) {
             errors.push(`منتج ${index + 1} غير مكتمل`);
           }
         });
@@ -60,9 +63,12 @@ export class DataValidator {
       if (!Array.isArray(products)) {
         products = [];
       }
-      products = products.filter(product => 
-        product && product.id && product.name && product.price && product.category
-      );
+      products = products.filter(product => {
+        // قبول price===0، وقبول category أو subCategoryId أو mainCategoryId
+        const hasCategory = product && (product.category || product.subCategoryId || product.mainCategoryId);
+        const hasPrice = product && product.price !== undefined && product.price !== null && product.price !== '';
+        return product && product.id && product.name && hasPrice && hasCategory;
+      });
       localStorage.setItem('products', JSON.stringify(products));
 
       // إصلاح الفئات

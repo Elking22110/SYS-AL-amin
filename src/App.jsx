@@ -42,6 +42,7 @@ function App() {
         
         // تشغيل هجرة الفئات الهرمية
         runCategoryMigration();
+
         // تم تهيئة قاعدة البيانات بنجاح
       } catch (error) {
         console.error('❌ خطأ في تهيئة قاعدة البيانات:', error);
