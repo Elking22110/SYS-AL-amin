@@ -170,11 +170,11 @@ body::before {
 .pos-product-card {
   display: flex;
   flex-direction: column;
-  height: 220px;
+  height: 110px;
   width: 100%;
   border: 2px solid rgba(75, 85, 99, 0.3);
-  border-radius: 14px;
-  padding: 14px;
+  border-radius: 10px;
+  padding: 8px 10px;
   margin: 0;
   transition: all 0.2s ease;
   overflow: hidden;
@@ -275,76 +275,46 @@ body::before {
 /* تحسين التخطيط للشاشات المختلفة */
 @media (max-width: 640px) {
   .pos-product-card {
-    height: 200px;
-    padding: 12px;
+    height: 110px;
+    padding: 8px 10px;
   }
 
   .pos-product-card .product-title {
-    height: 40px;
     font-size: 0.8rem;
-  }
-
-  .pos-product-card .product-details {
-    height: 70px;
   }
 }
 
 /* تحسينات خاصة بالآيباد */
 @media (min-width: 768px) and (max-width: 1024px) {
   .pos-product-card {
-    height: 240px;
-    padding: 16px;
+    height: 110px;
+    padding: 8px 10px;
   }
 
   .pos-product-card .product-title {
-    height: 54px;
     font-size: 0.9rem;
-  }
-
-  .pos-product-card .product-details {
-    height: 90px;
-  }
-
-  .pos-product-card .product-icon {
-    width: 56px;
-    height: 56px;
   }
 }
 
 /* تحسينات خاصة بالآيباد برو */
 @media (min-width: 1024px) and (max-width: 1366px) {
   .pos-product-card {
-    height: 250px;
-    padding: 18px;
+    height: 110px;
+    padding: 8px 10px;
   }
 
   .pos-product-card .product-title {
-    height: 58px;
     font-size: 1rem;
-  }
-
-  .pos-product-card .product-details {
-    height: 100px;
-  }
-
-  .pos-product-card .product-icon {
-    width: 64px;
-    height: 64px;
   }
 }
 
 @media (min-width: 1366px) {
   .pos-product-card {
-    height: 230px;
+    height: 110px;
   }
 
   .pos-product-card .product-title {
-    height: 50px;
     font-size: 0.9rem;
-  }
-
-  .pos-product-card .product-details {
-    height: 80px;
   }
 }
 
@@ -2580,8 +2550,10 @@ select.input-modern {
   border: 1px solid rgba(124, 58, 237, 0.08) !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.005) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  padding: 16px !important;
-  border-radius: 16px !important;
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  height: 110px !important;
+  overflow: hidden !important;
 }
 
 .dark .pos-product-card {

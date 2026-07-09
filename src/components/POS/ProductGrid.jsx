@@ -31,25 +31,10 @@ const renderProductTitleAndSize = (name) => {
   title = title.replace(/\s+/g, ' ').replace(/-\s*$/, '').trim();
 
   return (
-    <div className="flex flex-col text-right" style={{ direction: 'rtl' }}>
-      {/* اسم القطعة بالكامل */}
-      <span className="font-bold text-slate-800 text-sm md:text-base leading-snug group-hover:text-blue-600 transition-colors">
-        {title}
+    <div className="text-right" style={{ direction: 'rtl' }}>
+      <span className="font-bold text-slate-800 text-sm md:text-base leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
+        {cleanName}
       </span>
-      {/* المقاسات في الأسفل على سطر منفصل تماماً */}
-      {sizes.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-1.5 justify-start shrink-0">
-          {sizes.map((size, idx) => (
-            <span
-              key={idx}
-              className="inline-block font-mono font-black text-sm md:text-base text-blue-700 bg-blue-50/85 px-3 py-1 rounded-lg border-2 border-blue-300 shadow-sm hover:scale-105 transition-transform"
-              style={{ direction: 'ltr', unicodeBidi: 'embed' }}
-            >
-              {size}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -856,45 +841,19 @@ const ProductGrid = ({
                 onClick={() => onAddToCart(product)}
                 className="pos-product-card bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 border-slate-200 flex flex-col rounded-xl group"
               >
-                {/* هيدر الكارت: الكود + الباركود */}
-                <div className="flex justify-between items-center pb-2 mb-2 border-b border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-mono bg-slate-50 px-1.5 py-0.5 rounded">
-                    {product.barcode || product.sku || '—'}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">
-                    {product.sku ? `SKU: ${product.sku}` : ''}
-                  </span>
-                </div>
-
                 {/* اسم المنتج */}
-                <div className="flex-1 mb-2">
-                  <div className="text-right leading-snug">
+                <div className="flex-1 overflow-hidden">
+                  <div className="text-right leading-tight">
                     {renderProductTitleAndSize(product.name)}
                   </div>
                 </div>
 
-                {/* الفئة والمخزون */}
-                <div className="flex justify-between items-center text-[11px] mb-2 gap-1">
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                    (product.stock ?? product.quantity ?? 0) > 5
-                      ? 'bg-green-100 text-green-700'
-                      : (product.stock ?? product.quantity ?? 0) > 0
-                      ? 'bg-orange-100 text-orange-700'
-                      : 'bg-red-100 text-red-600'
-                  }`}>
-                    مخزون: {product.stock ?? product.quantity ?? 0}
-                  </span>
-                  <span className="text-slate-400 text-[10px] truncate max-w-[80px] text-left" title={product.category}>
-                    {product.category || ''}
-                  </span>
-                </div>
-
                 {/* السعر */}
-                <div className="pt-2 border-t-2 border-emerald-100 flex justify-between items-center">
-                  <span className="text-slate-500 text-xs font-semibold">السعر</span>
-                  <span className="text-emerald-700 font-black text-lg leading-none">
+                <div className="pt-1 mt-1 border-t border-emerald-100 flex justify-between items-center">
+                  <span className="text-slate-400 text-xs font-semibold">السعر</span>
+                  <span className="text-emerald-700 font-black text-xl leading-none">
                     {Number(product.price || 0).toLocaleString('ar-EG')}
-                    <span className="text-xs font-bold text-emerald-600 mr-1">ج.م</span>
+                    <span className="text-sm font-bold text-emerald-600 mr-1">ج.م</span>
                   </span>
                 </div>
               </div>
