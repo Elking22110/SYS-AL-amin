@@ -98,6 +98,12 @@ class SyncManager {
     for (const storeName of stores) {
       await this.syncStore(storeName);
     }
+
+    // مزامنة جداول الـ LocalStorage المفقودة لضمان أمان وتزامن النظام بالكامل
+    const localStores = ['suppliers', 'supplier_supplies', 'supplier_payments', 'expenses'];
+    for (const storeName of localStores) {
+      await this.syncLocalStorageStore(storeName);
+    }
   }
 
   // مزامنة جدول فردي
@@ -284,6 +290,145 @@ class SyncManager {
 
     } catch (e) {
       console.error(`خطأ في مزامنة جدول ${storeName}:`, e);
+      throw e;
+    }
+  }
+
+  // مزامنة جداول الـ LocalStorage ثنائية الاتجاه مع معالجة الإضافات والمحذوفات والتعديلات
+  async syncLocalStorageStore(tableName) {
+    try {
+      const localData = JSON.parse(localStorage.getItem(tableName) || '[]');
+      let mutated = false;
+
+      // تهيئة المعرفات وتواقيت التعديل محلياً إذا لم تكن موجودة لمنع الضياع
+      localData.forEach(item => {
+        if (item && typeof item === 'object') {
+          if (!item.id) {
+            item.id = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            mutated = true;
+          }
+          if (!item.updated_at) {
+            item.updated_at = new Date().toISOString();
+            mutated = true;
+          }
+        }
+      });
+
+      if (mutated) {
+        localStorage.setItem(tableName, JSON.stringify(localData));
+      }
+
+      const localMap = new Map(localData.map(item => [String(item.id), item]));
+      const lastSyncKey = `last_sync_${tableName}`;
+      const lastSyncTime = localStorage.getItem(lastSyncKey) || new Date(0).toISOString();
+      const newSyncTime = new Date().toISOString();
+
+      // جلب السجلات من السحابة
+      const { data: cloudData, error: fetchError } = await supabase.from(tableName).select('*');
+      if (fetchError) throw fetchError;
+
+      const cloudMap = new Map((cloudData || []).map(item => [String(item.id), item]));
+      const updatedLocalData = [];
+      const pendingUpserts = [];
+      const pendingDeletes = [];
+
+      // 1. معالجة وتصنيف السجلات السحابية
+      for (const cloudItem of (cloudData || [])) {
+        const localItem = localMap.get(String(cloudItem.id));
+
+        if (!localItem) {
+          // السجل موجود في السحاب وغير موجود محلياً
+          if (new Date(cloudItem.updated_at).getTime() > new Date(lastSyncTime).getTime()) {
+            // تم إضافته حديثاً على جهاز آخر -> تحميل محلي
+            updatedLocalData.push(cloudItem);
+          } else {
+            // كان موجوداً محلياً وتم حذفه بواسطة هذا الجهاز -> حذف من السحاب
+            pendingDeletes.push(cloudItem.id);
+          }
+        } else {
+          // السجل موجود في الجهتين -> مقارنة التواقيت الزمنية للنسخ الأحدث
+          const localTime = new Date(localItem.updated_at || 0).getTime();
+          const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+
+          if (localTime > cloudTime) {
+            pendingUpserts.push(localItem);
+            updatedLocalData.push(localItem);
+          } else {
+            updatedLocalData.push(cloudItem);
+          }
+        }
+      }
+
+      // 2. معالجة السجلات المحلية غير الموجودة في السحاب
+      for (const localItem of localData) {
+        if (localItem && !cloudMap.has(String(localItem.id))) {
+          const localTime = new Date(localItem.updated_at || 0).getTime();
+          if (localTime > new Date(lastSyncTime).getTime()) {
+            // سجل جديد تمت إضافته محلياً بعد آخر تزامن -> رفع للسحاب
+            pendingUpserts.push(localItem);
+            updatedLocalData.push(localItem);
+          } else {
+            // تم حذفه من السحاب بواسطة جهاز آخر -> مسحه محلياً
+            console.log(`🗑️ حذف الصنف ${localItem.id} محلياً من جدول ${tableName} بسبب حذفه من السحاب`);
+          }
+        }
+      }
+
+      // 3. تنفيذ العمليات على السحاب
+      if (pendingUpserts.length > 0) {
+        // تطبيع وتنسيق كائنات الرفع لتطابق جداول السحاب وتجنب تعارض الأعمدة
+        const cleanUpserts = pendingUpserts.map(item => {
+          const cleanItem = { ...item };
+          // استبدال وتجهيز الأعمدة لجدول توريدات الموردين
+          if (tableName === 'supplier_supplies') {
+            cleanItem.supplier_id = item.supplierId;
+            delete cleanItem.supplierId;
+          }
+          // استبدال وتجهيز الأعمدة لجدول مدفوعات الموردين
+          if (tableName === 'supplier_payments') {
+            cleanItem.supplier_id = item.supplierId;
+            cleanItem.payment_method = item.paymentMethod;
+            delete cleanItem.supplierId;
+            delete cleanItem.paymentMethod;
+          }
+          cleanItem.updated_at = cleanItem.updated_at || new Date().toISOString();
+          return cleanItem;
+        });
+
+        const { error: upsertError } = await supabase.from(tableName).upsert(cleanUpserts);
+        if (upsertError) throw upsertError;
+      }
+
+      if (pendingDeletes.length > 0) {
+        const { error: deleteError } = await supabase.from(tableName).delete().in('id', pendingDeletes);
+        if (deleteError) throw deleteError;
+      }
+
+      // 4. حفظ وتحديث مصفوفة الـ LocalStorage المحلية بالبيانات المدمجة والنهائية
+      // إعادة تحويل الأعمدة إلى CamelCase عند الحفظ محلياً لضمان عدم كسر صفحات العرض
+      const finalLocalData = updatedLocalData.map(item => {
+        const localItem = { ...item };
+        if (tableName === 'supplier_supplies') {
+          if (item.supplier_id) localItem.supplierId = item.supplier_id;
+          delete localItem.supplier_id;
+        }
+        if (tableName === 'supplier_payments') {
+          if (item.supplier_id) localItem.supplierId = item.supplier_id;
+          if (item.payment_method) localItem.paymentMethod = item.payment_method;
+          delete localItem.supplier_id;
+          delete localItem.payment_method;
+        }
+        return localItem;
+      });
+
+      localStorage.setItem(tableName, JSON.stringify(finalLocalData));
+      localStorage.setItem(lastSyncKey, newSyncTime);
+
+      // إشعار واجهة المستخدم للتحديث الفوري للبيانات المعروضة
+      window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: tableName } }));
+
+    } catch (e) {
+      console.error(`خطأ في مزامنة جدول LocalStorage ${tableName}:`, e);
       throw e;
     }
   }
