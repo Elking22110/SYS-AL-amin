@@ -230,41 +230,32 @@ const ALL_CATEGORIES = [
   { id: 'مرايات', name: 'مرايات', parentId: 'وحدات حوض+مرايات' }
 ];
 
-// دالة تُشغَّل في كل بدء تشغيل لضمان إن الفئات المحفوظة هي الـ 24 المعتمدة فقط
+// دالة تُشغَّل في كل بدء تشغيل لضمان إن الفئات المعتمدة موجودة دون حذف فئات المستخدم المضافة
 function enforceOnlyApprovedCategories() {
   try {
-    const APPROVED_IDS = new Set(ALL_CATEGORIES.map(c => c.id));
     const saved = JSON.parse(localStorage.getItem('productCategories') || '[]');
     if (!Array.isArray(saved)) {
       localStorage.setItem('productCategories', JSON.stringify(ALL_CATEGORIES));
       return;
     }
-    // إزالة أي فئة مش من ضمن الـ المعتمدة
-    const cleaned = saved.filter(c => c && APPROVED_IDS.has(c.id));
 
-    // إزالة المكرر: لو نفس الـ id موجود أكثر من مرة، نحتفظ بالنسخة اللي parentId بتاعتها صح حسب ALL_CATEGORIES
-    const approvedMap = new Map(ALL_CATEGORIES.map(c => [c.id, c]));
+    // إزالة المكرر: إبقاء نسخة واحدة فريدة لكل معرف فئة (id)
     const seenIds = new Set();
-    const deduped = cleaned.filter(c => {
+    const uniqueSaved = saved.filter(c => {
+      if (!c || !c.id) return false;
       if (seenIds.has(c.id)) return false;
-      // تحقق من أن الـ parentId صح
-      const approved = approvedMap.get(c.id);
-      if (approved && c.parentId !== approved.parentId) {
-        // استبدل بالنسخة الصحيحة
-        seenIds.add(c.id);
-        return false; // سيتم إضافتها من ALL_CATEGORIES في خطوة missing
-      }
       seenIds.add(c.id);
       return true;
     });
 
-    // إضافة أي فئة معتمدة مش موجودة
-    const existingIds = new Set(deduped.map(c => c.id));
+    // إضافة الفئات المعتمدة المفقودة
+    const existingIds = new Set(uniqueSaved.map(c => c.id));
     const missing = ALL_CATEGORIES.filter(c => !existingIds.has(c.id));
-    const final = [...deduped, ...missing];
-    if (final.length !== saved.length || missing.length > 0) {
+    
+    if (missing.length > 0 || uniqueSaved.length !== saved.length) {
+      const final = [...uniqueSaved, ...missing];
       localStorage.setItem('productCategories', JSON.stringify(final));
-      console.log(`enforceOnlyApprovedCategories: removed ${saved.length - deduped.length} unauthorized/duplicate, added ${missing.length} missing`);
+      console.log(`enforceOnlyApprovedCategories: added ${missing.length} missing, total: ${final.length}`);
     }
   } catch (_) {}
 }

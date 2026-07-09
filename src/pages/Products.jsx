@@ -1345,8 +1345,8 @@ const Products = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
               >
-                {hierarchicalCategoryOptions.map(opt => (
-                  <option key={opt.value} value={opt.value} className="bg-white text-slate-800">
+                {hierarchicalCategoryOptions.map((opt, idx) => (
+                  <option key={`${opt.value}-${idx}`} value={opt.value} className="bg-white text-slate-800">
                     {opt.label}
                   </option>
                 ))}
