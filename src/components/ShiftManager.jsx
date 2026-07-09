@@ -169,11 +169,16 @@ const ShiftManager = () => {
     const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === currentShift.id && s.shiftId !== currentShift.id);
     const salesDetails = calculateSalesDetails(currentShift.sales, settledSales);
 
+    // أرشفة المرتجعات الخاصة بالشفت الحالي
+    const returnsList = JSON.parse(localStorage.getItem('returns') || '[]');
+    const currentShiftReturns = returnsList.filter(r => r.shiftId === currentShift.id);
+
     const updatedShift = {
       ...currentShift,
       endTime: now.toISOString(),
       status: 'completed',
       salesDetails: salesDetails,
+      returns: currentShiftReturns,
       cashDrawer: {
         ...currentShift.cashDrawer,
         // المبلغ المتوقع = المبلغ الافتتاحي + المبلغ المستلم - المرتجعات

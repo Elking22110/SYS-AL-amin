@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
+import syncManager from '../utils/syncManager';
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -22,6 +23,63 @@ import soundManager from '../utils/soundManager.js';
 const Sidebar = () => {
   const location = useLocation();
   const { user, logout, hasPermission, hasRole } = useAuth();
+  const [syncStatus, setSyncStatus] = useState(syncManager.status);
+
+  useEffect(() => {
+    const unsubscribe = syncManager.subscribe(status => setSyncStatus(status));
+    syncManager.startAutoSync();
+    return () => {
+      unsubscribe();
+      syncManager.stopAutoSync();
+    };
+  }, []);
+
+  const renderSyncIndicator = () => {
+    let iconColor = 'bg-slate-400';
+    let text = 'غير متصل بالسحاب';
+    let textColor = 'text-slate-500';
+    let isOffline = syncStatus === 'offline';
+    let isSyncing = syncStatus === 'syncing';
+    let isError = syncStatus === 'error';
+    let isSynced = syncStatus === 'synced';
+
+    if (isOffline) {
+      iconColor = 'bg-red-500 animate-pulse';
+      text = 'يعمل محلياً (دون اتصال)';
+      textColor = 'text-red-600';
+    } else if (isSyncing) {
+      iconColor = 'bg-yellow-500 animate-pulse';
+      text = 'جاري مزامنة السحاب...';
+      textColor = 'text-yellow-600';
+    } else if (isError) {
+      iconColor = 'bg-orange-500 animate-bounce';
+      text = 'فشل التزامن السحابي';
+      textColor = 'text-orange-600';
+    } else if (isSynced) {
+      iconColor = 'bg-green-500';
+      text = 'متصل ومزامن بالسحاب';
+      textColor = 'text-green-600';
+    }
+
+    return (
+      <div className="mx-6 mt-3 px-3 py-2 bg-slate-50 rounded-xl border border-slate-200/60 flex items-center justify-between gap-2.5 text-[10px] font-semibold select-none shadow-sm transition-all duration-300">
+        <div className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${iconColor}`}></span>
+          <span className={`${textColor}`}>{text}</span>
+        </div>
+        {window.navigator.onLine && (
+          <button
+            onClick={() => syncManager.triggerSync()}
+            disabled={isSyncing}
+            className={`p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer ${isSyncing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            title="مزامنة الآن يدويًا"
+          >
+            🔄
+          </button>
+        )}
+      </div>
+    );
+  };
 
   const menuItems = [
     { path: "/", icon: LayoutDashboard, label: "لوحة التحكم", shortcut: "Ctrl+1", permission: null },
@@ -59,6 +117,9 @@ const Sidebar = () => {
           </div>
         </div>
       </div>
+
+      {/* مؤشر حالة التزامن السحابي */}
+      {renderSyncIndicator()}
 
 
       {/* Navigation */}

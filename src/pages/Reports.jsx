@@ -619,7 +619,23 @@ const Reports = () => {
     } else if (activeTab === 'returns') {
       // المرتجعات المسجلة
       try {
-        const returns = JSON.parse(localStorage.getItem('returns') || '[]');
+        const activeReturns = JSON.parse(localStorage.getItem('returns') || '[]');
+        const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+        const historicalReturns = shifts.flatMap(shift => shift.returns || []);
+
+        const returnsMap = new Map();
+        [...historicalReturns, ...activeReturns].forEach(ret => {
+          if (ret && ret.id) {
+            returnsMap.set(ret.id, ret);
+          }
+        });
+
+        const returns = Array.from(returnsMap.values()).sort((a, b) => {
+          const ta = new Date(a.timestamp || a.date || 0).getTime();
+          const tb = new Date(b.timestamp || b.date || 0).getTime();
+          return tb - ta;
+        });
+
         return returns.filter(ret => {
           if (!searchTerm.trim()) return true;
           const query = searchTerm.toLowerCase();

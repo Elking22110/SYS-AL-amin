@@ -63,6 +63,7 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.2",
     "axios": "^1.6.0",
     "crypto-js": "^4.1.1",
     "date-fns": "^2.30.0",

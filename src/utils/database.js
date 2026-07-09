@@ -1,6 +1,8 @@
 // نظام قاعدة البيانات المحلية باستخدام IndexedDB
 import { getCurrentDate } from './dateUtils.js';
 
+const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns'];
+
 class DatabaseManager {
   constructor() {
     this.db = null;
@@ -117,11 +119,23 @@ class DatabaseManager {
     }
   }
 
+  // إشعار نظام المزامنة بحدوث تعديل محلي
+  triggerSyncEvent(storeName) {
+    try {
+      window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName } }));
+    } catch (_) {}
+  }
+
   // إضافة بيانات
   async add(storeName, data) {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
       await this.init();
+    }
+
+    if (SYNCABLE_STORES.includes(storeName)) {
+      data.sync_status = data.sync_status || 'pending';
+      data.updated_at = data.updated_at || new Date().toISOString();
     }
 
     return new Promise((resolve, reject) => {
@@ -134,7 +148,10 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.add(data);
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        resolve(request.result);
+        this.triggerSyncEvent(storeName);
+      };
       request.onerror = () => reject(request.error);
     });
   }
@@ -144,6 +161,13 @@ class DatabaseManager {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
       await this.init();
+    }
+
+    if (SYNCABLE_STORES.includes(storeName)) {
+      if (data.sync_status !== 'synced') {
+        data.sync_status = 'pending';
+      }
+      data.updated_at = new Date().toISOString();
     }
 
     return new Promise((resolve, reject) => {
@@ -156,14 +180,61 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.put(data);
 
+      request.onsuccess = () => {
+        resolve(request.result);
+        this.triggerSyncEvent(storeName);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  // حذف بيانات (حذف مؤقت للمزامنة Soft Delete)
+  async delete(storeName, id) {
+    // التأكد من تهيئة قاعدة البيانات
+    if (!this.db) {
+      await this.init();
+    }
+
+    if (SYNCABLE_STORES.includes(storeName)) {
+      try {
+        const record = await this.get(storeName, id);
+        if (record) {
+          record.sync_status = 'deleted';
+          record.updated_at = new Date().toISOString();
+          
+          return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([storeName], 'readwrite');
+            const store = transaction.objectStore(storeName);
+            const request = store.put(record);
+            request.onsuccess = () => {
+              resolve(request.result);
+              this.triggerSyncEvent(storeName);
+            };
+            request.onerror = () => reject(request.error);
+          });
+        }
+      } catch (err) {
+        console.error('خطأ في أرشفة الحذف المزامنة:', err);
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('قاعدة البيانات غير مهيأة'));
+        return;
+      }
+
+      const transaction = this.db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.delete(id);
+
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
   }
 
-  // حذف بيانات
-  async delete(storeName, id) {
-    // التأكد من تهيئة قاعدة البيانات
+  // الحذف الفعلي والنهائي محلياً (يستخدمه محرك المزامنة حصراً)
+  async deletePhysical(storeName, id) {
     if (!this.db) {
       await this.init();
     }
@@ -183,7 +254,7 @@ class DatabaseManager {
     });
   }
 
-  // الحصول على بيانات
+  // الحصول على بيانات (تتخطي السجلات المحذوفة soft-delete)
   async get(storeName, id) {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
@@ -200,12 +271,19 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.get(id);
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const result = request.result;
+        if (result && result.sync_status === 'deleted') {
+          resolve(null);
+        } else {
+          resolve(result);
+        }
+      };
       request.onerror = () => reject(request.error);
     });
   }
 
-  // الحصول على جميع البيانات
+  // الحصول على جميع البيانات (تتخطي السجلات المحذوفة soft-delete)
   async getAll(storeName) {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
@@ -222,7 +300,35 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.getAll();
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const result = request.result || [];
+        if (SYNCABLE_STORES.includes(storeName)) {
+          resolve(result.filter(item => item && item.sync_status !== 'deleted'));
+        } else {
+          resolve(result);
+        }
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  // الحصول على كل شيء للمزامنة (بما فيه المحذوف soft-delete)
+  async getAllForSync(storeName) {
+    if (!this.db) {
+      await this.init();
+    }
+
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject(new Error('قاعدة البيانات غير مهيأة'));
+        return;
+      }
+
+      const transaction = this.db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+
+      request.onsuccess = () => resolve(request.result || []);
       request.onerror = () => reject(request.error);
     });
   }
