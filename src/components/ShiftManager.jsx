@@ -26,7 +26,7 @@ const ShiftManager = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // تفاصيل الوردية النشطة لحظياً (تشمل المرتجعات)
+  // تفاصيل الوردية النشطة لحظياً (تشمل المرتجعات والتسويات)
   const { activeDetails, activeSalesList } = useMemo(() => {
     try {
       if (!currentShift) return { activeDetails: null, activeSalesList: [] };
@@ -34,9 +34,13 @@ const ShiftManager = () => {
       const list = (currentShift.sales && currentShift.sales.length > 0)
         ? currentShift.sales
         : allSales.filter(s => s.shiftId === currentShift.id);
-      return { activeDetails: calculateSalesDetails(list || []), activeSalesList: list };
+
+      // الفواتير التي تمت تسويتها خلال هذا الشفت (العربونات المسددة) وهي من شفتات سابقة
+      const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === currentShift.id && s.shiftId !== currentShift.id);
+
+      return { activeDetails: calculateSalesDetails(list || [], settledSales), activeSalesList: list };
     } catch (_) { return { activeDetails: null, activeSalesList: [] }; }
-  }, [currentShift]);
+  }, [currentShift, calculateSalesDetails]);
 
   // تحميل الورديات المحفوظة
   useEffect(() => {
@@ -161,7 +165,9 @@ const ShiftManager = () => {
     const now = new Date();
 
     // حساب تفاصيل المبيعات
-    const salesDetails = calculateSalesDetails(currentShift.sales);
+    const allSales = JSON.parse(localStorage.getItem('sales') || '[]');
+    const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === currentShift.id && s.shiftId !== currentShift.id);
+    const salesDetails = calculateSalesDetails(currentShift.sales, settledSales);
 
     const updatedShift = {
       ...currentShift,
@@ -242,8 +248,8 @@ const ShiftManager = () => {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  // حساب تفاصيل المبيعات
-  const calculateSalesDetails = (sales) => {
+  // حساب تفاصيل المبيعات (مع دمج العربونات والمسدد لاحقاً)
+  const calculateSalesDetails = (sales, settledSales = []) => {
     let totalSales = 0;
     let totalReceived = 0;
     let totalRemaining = 0;
@@ -259,7 +265,18 @@ const ShiftManager = () => {
       'نقدي': { received: 0, remaining: 0, count: 0 },
       'محفظة إلكترونية': { received: 0, remaining: 0, count: 0 },
       'انستا باي': { received: 0, remaining: 0, count: 0 },
+      'تحويل بنكي': { received: 0, remaining: 0, count: 0 },
       'مرتجع': { received: 0, remaining: 0, count: 0 }
+    };
+
+    const getArabicPaymentMethod = (method) => {
+      if (!method) return 'نقدي';
+      const m = String(method).toLowerCase();
+      if (m === 'cash' || m === 'نقدي' || m === 'نقداً') return 'نقدي';
+      if (m === 'wallet' || m === 'محفظة إلكترونية') return 'محفظة إلكترونية';
+      if (m === 'instapay' || m === 'انستا باي') return 'انستا باي';
+      if (m === 'bank' || m === 'تحويل بنكي') return 'تحويل بنكي';
+      return method;
     };
 
     // دمج المرتجعات من تقرير returns ضمن الحسابات لهذه الوردية
@@ -318,7 +335,7 @@ const ShiftManager = () => {
         // فاتورة عادية أو بخصم
         let hasDiscount = sale.discount && sale.discount.amount > 0;
         let hasDownPayment = sale.downPayment && sale.downPayment.enabled;
-        const paymentMethod = sale.paymentMethod || 'نقدي';
+        const paymentMethod = getArabicPaymentMethod(sale.paymentMethod);
 
         // التأكد من وجود طريقة الدفع في القائمة
         if (!paymentMethods[paymentMethod]) {
@@ -353,6 +370,21 @@ const ShiftManager = () => {
           paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, sale.total);
           paymentMethods[paymentMethod].count++;
         }
+      }
+    });
+
+    // إضافة المبالغ المستلمة من تسوية فواتير قديمة خلال هذا الشفت
+    (settledSales || []).forEach(sale => {
+      if (sale.settlement) {
+        const amt = Number(sale.settlement.amount) || 0;
+        totalReceived = safeMath.add(totalReceived, amt);
+
+        const methodKey = getArabicPaymentMethod(sale.settlement.method);
+        if (!paymentMethods[methodKey]) {
+          paymentMethods[methodKey] = { received: 0, remaining: 0, count: 0 };
+        }
+        paymentMethods[methodKey].received = safeMath.add(paymentMethods[methodKey].received, amt);
+        paymentMethods[methodKey].count++;
       }
     });
 
@@ -403,7 +435,8 @@ const ShiftManager = () => {
         });
 
       // أعِد حساب تفاصيل المبيعات دائماً بناءً على البيانات الحالية لضمان عدم عرض نتائج قديمة
-      const salesDetails = calculateSalesDetails(salesForShift || []);
+      const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === shift.id && s.shiftId !== shift.id);
+      const salesDetails = calculateSalesDetails(salesForShift || [], settledSales);
 
       // التحقق من صحة البيانات
       console.log('🔍 فحص بيانات التقرير:', {

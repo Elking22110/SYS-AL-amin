@@ -1067,22 +1067,22 @@ const POSMain = () => {
                   <div className="text-center">الإجمالي</div>
                 </div>
                 {(invoiceData?.items || []).map((item, index) => (
-                  <div key={index} className="grid grid-cols-4 gap-2 p-3 border-b border-gray-600 last:border-b-0">
-                    <div className="text-white text-sm">{item.name}</div>
-                    <div className="text-center text-white text-sm">{Number(item.quantity || 0)}</div>
-                    <div className="text-center text-white text-sm">{(Number(item.price) || 0).toLocaleString('en-US')} جنيه</div>
-                    <div className="text-center text-white text-sm font-semibold">{((Number(item.price) || 0) * (Number(item.quantity) || 0)).toLocaleString('en-US')} جنيه</div>
+                  <div key={index} className="grid grid-cols-4 gap-2 p-3 border-b border-slate-100 hover:bg-slate-50 transition-colors last:border-b-0 text-slate-800 font-medium">
+                    <div className="text-sm">{item.name}</div>
+                    <div className="text-center text-sm">{Number(item.quantity || 0)}</div>
+                    <div className="text-center text-sm">{(Number(item.price) || 0).toLocaleString('en-US')} جنيه</div>
+                    <div className="text-center text-sm font-bold text-blue-600">{((Number(item.price) || 0) * (Number(item.quantity) || 0)).toLocaleString('en-US')} جنيه</div>
                   </div>
                 ))}
                 {(!invoiceData?.items || invoiceData.items.length === 0) && (
-                  <div className="p-3 text-center text-gray-300">لا توجد عناصر في هذه الفاتورة</div>
+                  <div className="p-3 text-center text-slate-400 font-medium">لا توجد عناصر في هذه الفاتورة</div>
                 )}
               </div>
             </div>
 
             {/* ملخص المبالغ */}
             <div className="mb-6">
-              <h4 className="text-lg font-semibold text-white mb-3">ملخص المبالغ</h4>
+              <h4 className="text-sm font-extrabold text-slate-700 mb-3">ملخص المبالغ</h4>
               <div className="bg-gray-700 rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-300">الإجمالي الفرعي:</span>
@@ -1135,7 +1135,7 @@ const POSMain = () => {
             {/* معلومات إضافية */}
             {downPayment.enabled && downPayment.deliveryDate && (
               <div className="mb-6">
-                <h4 className="text-lg font-semibold text-white mb-3">معلومات الاستلام</h4>
+                <h4 className="text-sm font-extrabold text-slate-700 mb-3">معلومات الاستلام</h4>
                 <div className="bg-gray-700 rounded-lg p-4">
                   <div className="flex justify-between">
                     <span className="text-gray-300">تاريخ الاستلام:</span>

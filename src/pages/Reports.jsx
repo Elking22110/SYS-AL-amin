@@ -1,5 +1,6 @@
 import { publish, EVENTS } from '../utils/observerManager';
 import React, { useState, useEffect } from 'react';
+import ProductGrid from '../components/POS/ProductGrid';
 import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
 import emojiManager from '../utils/emojiManager.js';
@@ -98,6 +99,12 @@ const Reports = () => {
   // بحث وإضافة المنتجات داخل الفاتورة
   const [prodSearch, setProdSearch] = useState('');
   const [matchedProducts, setMatchedProducts] = useState([]);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [showPOSGrid, setShowPOSGrid] = useState(false);
+  const [editSelectedCategory, setEditSelectedCategory] = useState('الكل');
+  const [editProducts, setEditProducts] = useState([]);
+  const [editCategories, setEditCategories] = useState([]);
+  const [editProductImages, setEditProductImages] = useState({});
 
   // Settlement Modal state
   const [showSettlementModal, setShowSettlementModal] = useState(false);
@@ -151,20 +158,36 @@ const Reports = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // تحميل المنتجات والفئات من أجل شبكة POS المدمجة عند فتح مودال الفاتورة
+  useEffect(() => {
+    if (showInvoiceModal) {
+      try {
+        const prods = JSON.parse(localStorage.getItem('products') || '[]');
+        const cats = JSON.parse(localStorage.getItem('productCategories') || '[]');
+        const imgs = JSON.parse(localStorage.getItem('productImages') || '{}');
+        setEditProducts(prods);
+        setEditCategories(cats);
+        setEditProductImages(imgs);
+        setShowPOSGrid(false); // إغلاق شبكة الـ POS كخيار افتراضي عند الفتح
+      } catch (_) {}
+    }
+  }, [showInvoiceModal]);
+
   // تصفية المنتجات داخل نافذة التعديل
   useEffect(() => {
-    if (!prodSearch.trim()) {
-      setMatchedProducts([]);
-      return;
-    }
     try {
       const products = JSON.parse(localStorage.getItem('products') || '[]');
+      if (!prodSearch.trim()) {
+        // إذا كان البحث فارغاً، نعرض أول 100 منتج ليسهل الاختيار منها مباشرة
+        setMatchedProducts(products.slice(0, 100));
+        return;
+      }
       const query = prodSearch.toLowerCase();
       const matched = products.filter(p => 
         (p.name || '').toLowerCase().includes(query) ||
         (p.sku || p.barcode || '').toLowerCase().includes(query)
-      ).slice(0, 5);
-      setMatchedProducts(matched);
+      );
+      setMatchedProducts(matched.slice(0, 100));
     } catch (_) {}
   }, [prodSearch]);
 
@@ -196,14 +219,44 @@ const Reports = () => {
         ...newItems.map(i => i.id)
       ]);
 
+      const returnsList = JSON.parse(localStorage.getItem('returns') || '[]');
+      const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+      const shiftId = (activeShift && activeShift.status === 'active') ? activeShift.id : null;
+
       allIds.forEach(id => {
         const oldQty = oldItemsMap.get(id) || 0;
+        const itemObj = (invoice.items || []).find(i => i.id === id) || newItems.find(i => i.id === id);
         const newQty = newItems.find(i => i.id === id)?.quantity || 0;
         const diff = newQty - oldQty;
+        
         if (diff !== 0) {
           adjustProductStock(id, diff);
         }
+
+        // إذا قلت الكمية، يعتبر مرتجعاً ويسجل في كشف المرتجعات للوردية
+        if (diff < 0) {
+          const returnedQty = Math.abs(diff);
+          const refundAmount = returnedQty * (itemObj?.price || 0);
+
+          const returnEntry = {
+            id: `${Date.now()}_${id}_${Math.random().toString(36).substr(2, 9)}`,
+            timestamp: new Date().toISOString(),
+            refInvoiceId: invoiceId,
+            customer: invoice.customer || { name: 'غير محدد', phone: '' },
+            item: {
+              id: id,
+              name: itemObj?.name || 'منتج غير معروف',
+              quantity: returnedQty
+            },
+            amount: refundAmount,
+            shiftId: shiftId
+          };
+
+          returnsList.push(returnEntry);
+        }
       });
+
+      localStorage.setItem('returns', JSON.stringify(returnsList));
 
       // 2. إعادة حساب الحسابات للفاتورة
       const updatedInvoice = { ...invoice };
@@ -389,11 +442,21 @@ const Reports = () => {
       const invoiceId = settlementInvoiceId;
       const method = settlementMethod;
 
+      const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+      const activeShiftId = (activeShift && activeShift.status === 'active') ? activeShift.id : null;
+      
+      const settlementData = {
+        method,
+        amount: remainingAmount,
+        timestamp: new Date().toISOString(),
+        shiftId: activeShiftId
+      };
+
       const updatedSales = allSales.map(sale => {
         if (sale.id === invoiceId) {
           return {
             ...sale,
-            settlement: { method, amount: remainingAmount, timestamp: new Date().toISOString() },
+            settlement: settlementData,
             downPayment: {
               ...sale.downPayment,
               remaining: 0,
@@ -407,14 +470,13 @@ const Reports = () => {
 
       localStorage.setItem('sales', JSON.stringify(updatedSales));
       
-      // تحديث الوردية
-      const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+      // تحديث الوردية النشطة
       if (activeShift && Array.isArray(activeShift.sales)) {
         activeShift.sales = activeShift.sales.map(s => {
           if (s.id === invoiceId) {
             return {
               ...s,
-              settlement: { method, amount: remainingAmount, timestamp: new Date().toISOString() },
+              settlement: settlementData,
               downPayment: { ...s.downPayment, remaining: 0, enabled: false },
               paymentStatus: 'complete'
             };
@@ -423,6 +485,25 @@ const Reports = () => {
         });
         localStorage.setItem('activeShift', JSON.stringify(activeShift));
       }
+
+      // تحديث الشفتات السابقة
+      try {
+        const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+        const updatedShifts = shifts.map(shift => {
+          const saleIdx = (shift.sales || []).findIndex(s => s.id === invoiceId);
+          if (saleIdx !== -1) {
+            shift.sales[saleIdx] = {
+              ...shift.sales[saleIdx],
+              settlement: settlementData,
+              downPayment: { ...shift.sales[saleIdx].downPayment, remaining: 0, enabled: false },
+              paymentStatus: 'complete'
+            };
+            shift.totalSales = shift.sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+          }
+          return shift;
+        });
+        localStorage.setItem('shifts', JSON.stringify(updatedShifts));
+      } catch (err) {}
 
       setAllSales(updatedSales);
       setShowSettlementModal(false);
@@ -860,7 +941,7 @@ const Reports = () => {
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] backdrop-blur-sm p-4 overflow-y-auto"
         >
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 animate-fadeInUp">
+          <div className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 animate-fadeInUp transition-all duration-300 ${showPOSGrid ? 'max-w-7xl h-[92vh]' : 'max-w-4xl max-h-[90vh]'}`}>
             {/* رأس المودال */}
             <div className="p-4 md:p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
               <div className="text-right">
@@ -879,168 +960,224 @@ const Reports = () => {
             </div>
 
             {/* محتوى المودال القابل للتمرير */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1 custom-scrollbar">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* بيانات العميل */}
-                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-right space-y-2">
-                  <h4 className="text-sm font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">معلومات العميل</h4>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">الاسم:</span>
-                    <span className="font-semibold text-slate-800">{selectedInvoice.customer?.name || 'غير محدد'}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">الهاتف:</span>
-                    <span className="font-semibold text-slate-800">{selectedInvoice.customer?.phone || 'غير حدد'}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">الكاشير المسئول:</span>
-                    <span className="font-semibold text-slate-800">{selectedInvoice.cashier || 'غير محدد'}</span>
-                  </div>
-                </div>
-
-                {/* تفاصيل السداد */}
-                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-right space-y-2">
-                  <h4 className="text-sm font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">بيانات الدفع والحساب</h4>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">طريقة الدفع الأساسية:</span>
-                    <span className="font-semibold text-slate-800">{getPaymentMethodText(selectedInvoice.paymentMethod)}</span>
-                  </div>
-                  {selectedInvoice.downPayment?.enabled && (
-                    <div className="pt-2 border-t border-slate-200 space-y-1">
-                      <div className="flex justify-between text-sm text-yellow-800">
-                        <span>العربون المدفوع:</span>
-                        <span className="font-bold">{selectedInvoice.downPayment.amount} ج.م</span>
+            <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
+              <div className={showPOSGrid ? "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-full" : "space-y-6"}>
+                
+                {/* العمود الأيمن: بيانات الفاتورة والأصناف */}
+                <div className={showPOSGrid ? "lg:col-span-5 space-y-6 overflow-y-auto max-h-[75vh] pr-2 text-right custom-scrollbar" : "space-y-6 text-right"}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* بيانات العميل */}
+                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-right space-y-2">
+                      <h4 className="text-sm font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">معلومات العميل</h4>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">الاسم:</span>
+                        <span className="font-semibold text-slate-800">{selectedInvoice.customer?.name || 'غير محدد'}</span>
                       </div>
-                      <div className="flex justify-between text-sm text-red-600">
-                        <span>المبلغ المتبقي:</span>
-                        <span className="font-bold">{(selectedInvoice.downPayment.remaining || 0).toFixed(2)} ج.م</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">الهاتف:</span>
+                        <span className="font-semibold text-slate-800">{selectedInvoice.customer?.phone || 'غير حدد'}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">الكاشير المسئول:</span>
+                        <span className="font-semibold text-slate-800">{selectedInvoice.cashier || 'غير محدد'}</span>
                       </div>
                     </div>
-                  )}
-                  {selectedInvoice.settlement && (
-                    <div className="pt-2 border-t border-slate-200 space-y-1">
-                      <div className="flex justify-between text-sm text-green-700">
-                        <span>تم تسوية المبلغ المتبقي نقداً بقيمة:</span>
-                        <span className="font-bold">{selectedInvoice.settlement.amount} ج.م</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* إضافة صنف جديد للفاتورة */}
-              <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 text-right">
-                <h4 className="text-sm font-bold text-slate-800 mb-2">إضافة صنف جديد للفاتورة:</h4>
-                <div className="relative">
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
-                    <Search className="h-5 w-5" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="ابحث باسم المنتج أو الباركود لإضافة صنف جديد للفاتورة..."
-                    value={prodSearch}
-                    onChange={(e) => setProdSearch(e.target.value)}
-                    className="w-full pr-10 pl-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-sm font-medium"
-                  />
-                  {matchedProducts.length > 0 && (
-                    <div className="absolute top-full right-0 left-0 bg-white text-slate-800 rounded-xl shadow-xl z-[10005] mt-1.5 border border-slate-300 max-h-48 overflow-y-auto">
-                      {matchedProducts.map(prod => (
-                        <div
-                          key={prod.id}
-                          onClick={() => {
-                            handleAddProductToInvoice(selectedInvoice.id, prod);
-                            setProdSearch('');
-                          }}
-                          className="p-3 hover:bg-blue-50 border-b border-slate-100 flex justify-between items-center cursor-pointer text-xs md:text-sm font-semibold"
-                        >
-                          <span className="text-slate-800">{prod.name}</span>
-                          <span className="text-blue-600 font-extrabold">{prod.price} ج.م</span>
+                    {/* تفاصيل السداد */}
+                    <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-right space-y-2">
+                      <h4 className="text-sm font-bold text-slate-800 border-b border-slate-200 pb-1.5 mb-2">بيانات الدفع والحساب</h4>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-500">طريقة الدفع الأساسية:</span>
+                        <span className="font-semibold text-slate-800">{getPaymentMethodText(selectedInvoice.paymentMethod)}</span>
+                      </div>
+                      {selectedInvoice.downPayment?.enabled && (
+                        <div className="pt-2 border-t border-slate-200 space-y-1">
+                          <div className="flex justify-between text-sm text-yellow-800">
+                            <span>العربون المدفوع:</span>
+                            <span className="font-bold">{selectedInvoice.downPayment.amount} ج.م</span>
+                          </div>
+                          <div className="flex justify-between text-sm text-red-600">
+                            <span>المبلغ المتبقي:</span>
+                            <span className="font-bold">{(selectedInvoice.downPayment.remaining || 0).toFixed(2)} ج.م</span>
+                          </div>
                         </div>
-                      ))}
+                      )}
+                      {selectedInvoice.settlement && (
+                        <div className="pt-2 border-t border-slate-200 space-y-1">
+                          <div className="flex justify-between text-sm text-green-700">
+                            <span>تم تسوية المبلغ المتبقي نقداً بقيمة:</span>
+                            <span className="font-bold">{selectedInvoice.settlement.amount} ج.م</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              {/* جدول أصناف الفاتورة */}
-              <div className="space-y-3">
-                <h4 className="text-base font-bold text-slate-800 text-right">أصناف الفاتورة</h4>
-                <div className="border border-slate-200 rounded-xl overflow-hidden">
-                  <table className="w-full text-right border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200">
-                        <th className="px-4 py-3 text-slate-600 font-bold text-xs">اسم الصنف والمقاس</th>
-                        <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الكمية بالفاتورة</th>
-                        <th className="px-4 py-3 text-slate-600 font-bold text-xs">سعر الوحدة</th>
-                        <th className="px-4 py-3 text-slate-600 font-bold text-xs">إجمالي الصنف</th>
-                        <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الإجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {(selectedInvoice.items || []).map((item, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-4 py-3 text-sm">{renderProductTitleAndSize(item.name)}</td>
-                          <td className="px-4 py-3 text-center">
-                            <div className="flex justify-center items-center gap-2">
-                              {/* تقليل / مرتجع قطعه */}
-                              <button
-                                onClick={() => { soundManager.play('delete'); changeItemQty(selectedInvoice.id, idx, -1); }}
-                                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
-                                title="مرتجع قطعة واحدة"
+                  {/* إضافة صنف جديد للفاتورة */}
+                  <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/20 text-right flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex-1 w-full relative">
+                      <h4 className="text-sm font-bold text-slate-800 mb-2">إضافة صنف جديد للفاتورة:</h4>
+                      <div className="relative">
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400">
+                          <Search className="h-5 w-5" />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="اضغط هنا لعرض كافة المنتجات أو ابحث بالاسم/الباركود لسهولة الاختيار..."
+                          value={prodSearch}
+                          onChange={(e) => setProdSearch(e.target.value)}
+                          onFocus={() => setIsInputFocused(true)}
+                          onBlur={() => setTimeout(() => setIsInputFocused(false), 250)}
+                          className="w-full pr-10 pl-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-sm font-medium"
+                        />
+                        {isInputFocused && matchedProducts.length > 0 && (
+                          <div className="absolute top-full right-0 left-0 bg-white text-slate-800 rounded-xl shadow-xl z-[10005] mt-1.5 border border-slate-300 max-h-60 overflow-y-auto text-right">
+                            {matchedProducts.map(prod => (
+                              <div
+                                key={prod.id}
+                                onClick={() => {
+                                  handleAddProductToInvoice(selectedInvoice.id, prod);
+                                  setProdSearch('');
+                                }}
+                                className="p-3 hover:bg-blue-50 border-b border-slate-100 flex justify-between items-center cursor-pointer text-xs md:text-sm font-semibold"
                               >
-                                -
-                              </button>
-                              <span className="font-bold text-slate-800 text-sm px-2">{item.quantity}</span>
-                              {/* زيادة قطعه */}
-                              <button
-                                onClick={() => { soundManager.play('add'); changeItemQty(selectedInvoice.id, idx, 1); }}
-                                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
-                                title="إضافة قطعة واحدة"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 text-slate-700 text-sm font-semibold">{item.price.toLocaleString('en-US')} ج.م</td>
-                          <td className="px-4 py-3 text-blue-600 text-sm font-bold">{((item.price) * (item.quantity)).toLocaleString('en-US')} ج.م</td>
-                          <td className="px-4 py-3 text-center">
-                            <button
-                              onClick={() => { soundManager.play('delete'); deleteItemFromInvoice(selectedInvoice.id, idx); }}
-                              className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg cursor-pointer"
-                              title="حذف هذا البند بالكامل"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                                <div className="flex flex-col text-right">
+                                  <span className="text-slate-800">{prod.name}</span>
+                                  <span className="text-slate-400 text-[10px] mt-0.5">{prod.category || 'عام'}</span>
+                                </div>
+                                <span className="text-blue-600 font-extrabold">{prod.price} ج.م</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="shrink-0 w-full md:w-auto self-end">
+                      <button
+                        onClick={() => {
+                          soundManager.play('click');
+                          setShowPOSGrid(!showPOSGrid);
+                        }}
+                        className={`w-full md:w-auto px-5 py-2.5 rounded-xl font-bold border shadow-sm transition-all cursor-pointer text-sm flex items-center justify-center gap-2 ${
+                          showPOSGrid 
+                            ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' 
+                            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                        }`}
+                      >
+                        <span>🏪 تصفح من نقطة البيع</span>
+                      </button>
+                    </div>
+                  </div>
 
-              {/* ملخص المبالغ */}
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right space-y-2">
-                <div className="flex justify-between text-sm text-slate-600">
-                  <span>المجموع الفرعي للأصناف:</span>
-                  <span className="font-semibold text-slate-800">{selectedInvoice.subtotal} ج.م</span>
+                  {/* جدول أصناف الفاتورة */}
+                  <div className="space-y-3">
+                    <h4 className="text-base font-bold text-slate-800 text-right">أصناف الفاتورة</h4>
+                    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                      <table className="w-full text-right border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs">اسم الصنف والمقاس</th>
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الكمية بالفاتورة</th>
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs">سعر الوحدة</th>
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs">إجمالي الصنف</th>
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الإجراءات</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {(selectedInvoice.items || []).map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="px-4 py-3 text-sm">{renderProductTitleAndSize(item.name)}</td>
+                              <td className="px-4 py-3 text-center">
+                                <div className="flex justify-center items-center gap-2">
+                                  <button
+                                    onClick={() => { soundManager.play('delete'); changeItemQty(selectedInvoice.id, idx, -1); }}
+                                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
+                                    title="مرتجع قطعة واحدة"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="font-bold text-slate-800 text-sm px-2">{item.quantity}</span>
+                                  <button
+                                    onClick={() => { soundManager.play('add'); changeItemQty(selectedInvoice.id, idx, 1); }}
+                                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
+                                    title="إضافة قطعة واحدة"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 text-slate-700 text-sm font-semibold">{item.price.toLocaleString('en-US')} ج.م</td>
+                              <td className="px-4 py-3 text-blue-600 text-sm font-bold">{((item.price) * (item.quantity)).toLocaleString('en-US')} ج.م</td>
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => { soundManager.play('delete'); deleteItemFromInvoice(selectedInvoice.id, idx); }}
+                                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg cursor-pointer"
+                                  title="حذف هذا البند بالكامل"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* ملخص المبالغ */}
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-right space-y-2">
+                    <div className="flex justify-between text-sm text-slate-600">
+                      <span>المجموع الفرعي للأصناف:</span>
+                      <span className="font-semibold text-slate-800">{selectedInvoice.subtotal} ج.م</span>
+                    </div>
+                    {selectedInvoice.discountAmount > 0 && (
+                      <div className="flex justify-between text-sm text-red-600">
+                        <span>الخصم المطبق:</span>
+                        <span className="font-bold">-{selectedInvoice.discountAmount} ج.م</span>
+                      </div>
+                    )}
+                    {selectedInvoice.taxAmount > 0 && (
+                      <div className="flex justify-between text-sm text-slate-600">
+                        <span>الضريبة:</span>
+                        <span className="font-semibold text-slate-800">+{selectedInvoice.taxAmount} ج.م</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-lg font-bold text-slate-800 pt-2 border-t border-slate-200">
+                      <span>الإجمالي النهائي للمبيعات:</span>
+                      <span className="text-blue-600 font-extrabold text-xl">{selectedInvoice.total.toLocaleString('en-US')} ج.م</span>
+                    </div>
+                  </div>
                 </div>
-                {selectedInvoice.discountAmount > 0 && (
-                  <div className="flex justify-between text-sm text-red-600">
-                    <span>الخصم المطبق:</span>
-                    <span className="font-bold">-{selectedInvoice.discountAmount} ج.م</span>
+
+                {/* العمود الأيسر: شبكة منتجات نقطة البيع */}
+                {showPOSGrid && (
+                  <div className="lg:col-span-7 bg-slate-50 rounded-2xl border border-slate-200 p-4 h-[75vh] overflow-y-auto flex flex-col custom-scrollbar text-right">
+                    <div className="flex justify-between items-center border-b border-slate-200 pb-3 mb-4 shrink-0">
+                      <span className="text-sm font-bold text-slate-800">🏪 تصفح واختيار منتجات نقطة البيع</span>
+                      <button 
+                        onClick={() => { soundManager.play('click'); setShowPOSGrid(false); }}
+                        className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-200 font-bold transition-all cursor-pointer"
+                      >
+                        إغلاق شبكة المنتجات
+                      </button>
+                    </div>
+                    <div className="flex-1 min-h-0">
+                      <ProductGrid
+                        selectedCategory={editSelectedCategory}
+                        onCategoryChange={setEditSelectedCategory}
+                        onAddToCart={(product) => handleAddProductToInvoice(selectedInvoice.id, product)}
+                        categories={editCategories}
+                        setCategories={setEditCategories}
+                        products={editProducts}
+                        setProducts={setEditProducts}
+                        productImages={editProductImages}
+                        setProductImages={setEditProductImages}
+                      />
+                    </div>
                   </div>
                 )}
-                {selectedInvoice.taxAmount > 0 && (
-                  <div className="flex justify-between text-sm text-slate-600">
-                    <span>الضريبة:</span>
-                    <span className="font-semibold text-slate-800">+{selectedInvoice.taxAmount} ج.م</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center text-lg font-bold text-slate-800 pt-2 border-t border-slate-200">
-                  <span>الإجمالي النهائي للمبيعات:</span>
-                  <span className="text-blue-600 font-extrabold text-xl">{selectedInvoice.total.toLocaleString('en-US')} ج.م</span>
-                </div>
+
               </div>
             </div>
 

@@ -26,11 +26,20 @@ const CartManager = ({
   const { notifySuccess, notifyError } = useNotifications();
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [showTaxModal, setShowTaxModal] = useState(false);
+  const [editingQty, setEditingQty] = useState({});
+  const [editingPrice, setEditingPrice] = useState({});
 
   // حساب الإجمالي الفرعي
   const getSubtotal = useMemo(() => {
     return safeMath.calculateSubtotal(cart);
   }, [cart]);
+
+  // تحديث سعر المنتج يدويًا في السلة
+  const updatePrice = useCallback((id, newPrice) => {
+    setCart(prevCart => prevCart.map(item =>
+      item.id === id ? { ...item, price: parseFloat(newPrice) || 0 } : item
+    ));
+  }, [setCart]);
 
   // تحديث كمية المنتج - محسن بالأداء
   const updateQuantity = useCallback((id, newQuantity) => {
@@ -145,53 +154,107 @@ const CartManager = ({
           </div>
         ) : (
           <div className="space-y-3">
-            {cart.map((item) => (
-              <div
-                key={item.id}
-                className="bg-slate-50 rounded-lg p-3 hover:bg-blue-50 transition-colors border border-slate-100"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-semibold text-slate-800 text-sm line-clamp-2">
-                    {item.name}
-                  </h4>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-red-400 hover:text-red-300 transition-colors p-1"
-                    title="حذف المنتج"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
+            {cart.map((item) => {
+              const qtyValue = editingQty[item.id] !== undefined ? editingQty[item.id] : item.quantity;
+              const priceValue = editingPrice[item.id] !== undefined ? editingPrice[item.id] : item.price;
+              
+              return (
+                <div
+                  key={item.id}
+                  className="bg-slate-50 rounded-lg p-3 hover:bg-blue-50 transition-colors border border-slate-100"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-slate-800 text-sm line-clamp-2">
+                      {item.name}
+                    </h4>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-400 hover:text-red-300 transition-colors p-1"
+                      title="حذف المنتج"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="bg-red-500 hover:bg-red-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
-                    >
-                      <Minus className="h-3 w-3" />
-                    </button>
-                    <span className="bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-sm font-bold min-w-[30px] text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="bg-green-500 hover:bg-green-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
-                    >
-                      <Plus className="h-3 w-3" />
-                    </button>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-left font-bold text-slate-800 pr-2 whitespace-nowrap min-w-[70px]">
-                      {(safeMath.multiply(item.price, item.quantity)).toLocaleString('en-US')} جنيه
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="bg-red-500 hover:bg-red-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
+                      >
+                        <Minus className="h-3 w-3" />
+                      </button>
+                      <input
+                        type="number"
+                        value={qtyValue}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEditingQty(prev => ({ ...prev, [item.id]: val }));
+                          const parsed = parseInt(val);
+                          if (!isNaN(parsed) && parsed > 0) {
+                            updateQuantity(item.id, parsed);
+                          }
+                        }}
+                        onBlur={() => {
+                          const parsed = parseInt(qtyValue);
+                          if (isNaN(parsed) || parsed <= 0) {
+                            updateQuantity(item.id, 1);
+                          }
+                          setEditingQty(prev => {
+                            const copy = { ...prev };
+                            delete copy[item.id];
+                            return copy;
+                          });
+                        }}
+                        className="w-12 text-center bg-slate-200 text-slate-800 font-bold py-1 px-1 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="bg-green-500 hover:bg-green-600 text-slate-800 w-6 h-6 rounded-full flex items-center justify-center text-sm transition-colors"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </button>
                     </div>
-                    <p className="text-slate-500 text-xs">
-                      {item.price.toLocaleString('en-US')} × {item.quantity}
-                    </p>
+                    
+                    <div className="text-right flex flex-col items-end">
+                      <div className="text-left font-bold text-slate-800 pr-2 whitespace-nowrap min-w-[70px]">
+                        {(safeMath.multiply(item.price, item.quantity)).toLocaleString('en-US')} جنيه
+                      </div>
+                      
+                      {/* السعر القابل للتعديل */}
+                      <div className="flex items-center gap-1 mt-1 justify-end">
+                        <span className="text-slate-500 text-[10px]">ج.م</span>
+                        <input
+                          type="number"
+                          value={priceValue}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setEditingPrice(prev => ({ ...prev, [item.id]: val }));
+                            const parsed = parseFloat(val);
+                            if (!isNaN(parsed) && parsed >= 0) {
+                              updatePrice(item.id, parsed);
+                            }
+                          }}
+                          onBlur={() => {
+                            const parsed = parseFloat(priceValue);
+                            if (isNaN(parsed) || parsed < 0) {
+                              updatePrice(item.id, item.price);
+                            }
+                            setEditingPrice(prev => {
+                              const copy = { ...prev };
+                              delete copy[item.id];
+                              return copy;
+                            });
+                          }}
+                          className="w-16 text-center bg-slate-100 border border-slate-300 text-slate-800 font-bold py-0.5 px-1 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        <span className="text-slate-500 text-[10px]">× {item.quantity}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
