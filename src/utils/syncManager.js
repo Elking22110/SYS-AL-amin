@@ -93,14 +93,22 @@ class SyncManager {
 
   // المزامنة الفعلية لكافة الجداول ثنائية الاتجاه
   async syncAll() {
-    const stores = ['categories', 'products', 'customers', 'shifts', 'sales', 'returns'];
+    const stores = ['categories', 'products', 'customers', 'shifts', 'sales', 'returns', 'users'];
 
     for (const storeName of stores) {
       await this.syncStore(storeName);
     }
 
     // مزامنة جداول الـ LocalStorage المفقودة لضمان أمان وتزامن النظام بالكامل
-    const localStores = ['suppliers', 'supplier_supplies', 'supplier_payments', 'expenses'];
+    const localStores = [
+      'suppliers', 
+      'supplier_supplies', 
+      'supplier_payments', 
+      'expenses',
+      'storeInfo',
+      'pos-settings',
+      'system-settings'
+    ];
     for (const storeName of localStores) {
       await this.syncLocalStorageStore(storeName);
     }
@@ -297,25 +305,46 @@ class SyncManager {
   // مزامنة جداول الـ LocalStorage ثنائية الاتجاه مع معالجة الإضافات والمحذوفات والتعديلات
   async syncLocalStorageStore(tableName) {
     try {
-      const localData = JSON.parse(localStorage.getItem(tableName) || '[]');
+      const tableMap = {
+        'storeInfo': 'store_info',
+        'pos-settings': 'pos_settings',
+        'system-settings': 'system_settings'
+      };
+      const dbTableName = tableMap[tableName] || tableName;
+      const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings'].includes(tableName);
+
+      let localData = [];
       let mutated = false;
 
-      // تهيئة المعرفات وتواقيت التعديل محلياً إذا لم تكن موجودة لمنع الضياع
-      localData.forEach(item => {
-        if (item && typeof item === 'object') {
-          if (!item.id) {
-            item.id = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-            mutated = true;
-          }
-          if (!item.updated_at) {
-            item.updated_at = new Date().toISOString();
-            mutated = true;
-          }
+      if (isSingleObject) {
+        const localObj = JSON.parse(localStorage.getItem(tableName) || '{}');
+        const configItem = { ...localObj, id: 'config' };
+        if (!configItem.updated_at) {
+          configItem.updated_at = new Date().toISOString();
+          mutated = true;
         }
-      });
-
-      if (mutated) {
-        localStorage.setItem(tableName, JSON.stringify(localData));
+        localData = [configItem];
+        if (mutated) {
+          // إضافة الـ updated_at للملف المحلي لتفادي التكرار
+          localStorage.setItem(tableName, JSON.stringify({ ...localObj, updated_at: configItem.updated_at }));
+        }
+      } else {
+        localData = JSON.parse(localStorage.getItem(tableName) || '[]');
+        localData.forEach(item => {
+          if (item && typeof item === 'object') {
+            if (!item.id) {
+              item.id = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+              mutated = true;
+            }
+            if (!item.updated_at) {
+              item.updated_at = new Date().toISOString();
+              mutated = true;
+            }
+          }
+        });
+        if (mutated) {
+          localStorage.setItem(tableName, JSON.stringify(localData));
+        }
       }
 
       const localMap = new Map(localData.map(item => [String(item.id), item]));
@@ -324,16 +353,28 @@ class SyncManager {
       const newSyncTime = new Date().toISOString();
 
       // جلب السجلات من السحابة
-      const { data: cloudData, error: fetchError } = await supabase.from(tableName).select('*');
+      const { data: rawCloudData, error: fetchError } = await supabase.from(dbTableName).select('*');
       if (fetchError) throw fetchError;
 
-      const cloudMap = new Map((cloudData || []).map(item => [String(item.id), item]));
+      // تطبيع البيانات السحابية (استخراج كائنات الإعدادات الفردية من عمود JSONB)
+      const cloudData = (rawCloudData || []).map(cloudItem => {
+        if (isSingleObject && cloudItem.id === 'config') {
+          return {
+            ...(cloudItem.value || {}),
+            id: 'config',
+            updated_at: cloudItem.updated_at
+          };
+        }
+        return cloudItem;
+      });
+
+      const cloudMap = new Map(cloudData.map(item => [String(item.id), item]));
       const updatedLocalData = [];
       const pendingUpserts = [];
       const pendingDeletes = [];
 
       // 1. معالجة وتصنيف السجلات السحابية
-      for (const cloudItem of (cloudData || [])) {
+      for (const cloudItem of cloudData) {
         const localItem = localMap.get(String(cloudItem.id));
 
         if (!localItem) {
@@ -376,52 +417,73 @@ class SyncManager {
 
       // 3. تنفيذ العمليات على السحاب
       if (pendingUpserts.length > 0) {
-        // تطبيع وتنسيق كائنات الرفع لتطابق جداول السحاب وتجنب تعارض الأعمدة
-        const cleanUpserts = pendingUpserts.map(item => {
-          const cleanItem = { ...item };
-          // استبدال وتجهيز الأعمدة لجدول توريدات الموردين
-          if (tableName === 'supplier_supplies') {
-            cleanItem.supplier_id = item.supplierId;
-            delete cleanItem.supplierId;
-          }
-          // استبدال وتجهيز الأعمدة لجدول مدفوعات الموردين
-          if (tableName === 'supplier_payments') {
-            cleanItem.supplier_id = item.supplierId;
-            cleanItem.payment_method = item.paymentMethod;
-            delete cleanItem.supplierId;
-            delete cleanItem.paymentMethod;
-          }
-          cleanItem.updated_at = cleanItem.updated_at || new Date().toISOString();
-          return cleanItem;
-        });
+        let cleanUpserts = [];
 
-        const { error: upsertError } = await supabase.from(tableName).upsert(cleanUpserts);
+        if (isSingleObject) {
+          // بالنسبة للإعدادات الفردية، نقوم بحفظ الكائن بالكامل داخل عمود JSONB
+          cleanUpserts = pendingUpserts.map(item => {
+            const { id, updated_at, ...cleanValue } = item;
+            return {
+              id: 'config',
+              value: cleanValue,
+              updated_at: item.updated_at || new Date().toISOString()
+            };
+          });
+        } else {
+          // تطبيع وتنسيق كائنات الرفع لتطابق جداول السحاب وتجنب تعارض الأعمدة
+          cleanUpserts = pendingUpserts.map(item => {
+            const cleanItem = { ...item };
+            // استبدال وتجهيز الأعمدة لجدول توريدات الموردين
+            if (tableName === 'supplier_supplies') {
+              cleanItem.supplier_id = item.supplierId;
+              delete cleanItem.supplierId;
+            }
+            // استبدال وتجهيز الأعمدة لجدول مدفوعات الموردين
+            if (tableName === 'supplier_payments') {
+              cleanItem.supplier_id = item.supplierId;
+              cleanItem.payment_method = item.paymentMethod;
+              delete cleanItem.supplierId;
+              delete cleanItem.paymentMethod;
+            }
+            cleanItem.updated_at = cleanItem.updated_at || new Date().toISOString();
+            return cleanItem;
+          });
+        }
+
+        const { error: upsertError } = await supabase.from(dbTableName).upsert(cleanUpserts);
         if (upsertError) throw upsertError;
       }
 
-      if (pendingDeletes.length > 0) {
-        const { error: deleteError } = await supabase.from(tableName).delete().in('id', pendingDeletes);
+      if (pendingDeletes.length > 0 && !isSingleObject) {
+        const { error: deleteError } = await supabase.from(dbTableName).delete().in('id', pendingDeletes);
         if (deleteError) throw deleteError;
       }
 
       // 4. حفظ وتحديث مصفوفة الـ LocalStorage المحلية بالبيانات المدمجة والنهائية
-      // إعادة تحويل الأعمدة إلى CamelCase عند الحفظ محلياً لضمان عدم كسر صفحات العرض
-      const finalLocalData = updatedLocalData.map(item => {
-        const localItem = { ...item };
-        if (tableName === 'supplier_supplies') {
-          if (item.supplier_id) localItem.supplierId = item.supplier_id;
-          delete localItem.supplier_id;
-        }
-        if (tableName === 'supplier_payments') {
-          if (item.supplier_id) localItem.supplierId = item.supplier_id;
-          if (item.payment_method) localItem.paymentMethod = item.payment_method;
-          delete localItem.supplier_id;
-          delete localItem.payment_method;
-        }
-        return localItem;
-      });
+      if (isSingleObject) {
+        const configItem = updatedLocalData[0] || {};
+        const { id, ...cleanConfig } = configItem;
+        localStorage.setItem(tableName, JSON.stringify(cleanConfig));
+      } else {
+        // إعادة تحويل الأعمدة إلى CamelCase عند الحفظ محلياً لضمان عدم كسر صفحات العرض
+        const finalLocalData = updatedLocalData.map(item => {
+          const localItem = { ...item };
+          if (tableName === 'supplier_supplies') {
+            if (item.supplier_id) localItem.supplierId = item.supplier_id;
+            delete localItem.supplier_id;
+          }
+          if (tableName === 'supplier_payments') {
+            if (item.supplier_id) localItem.supplierId = item.supplier_id;
+            if (item.payment_method) localItem.paymentMethod = item.payment_method;
+            delete localItem.supplier_id;
+            delete localItem.payment_method;
+          }
+          return localItem;
+        });
 
-      localStorage.setItem(tableName, JSON.stringify(finalLocalData));
+        localStorage.setItem(tableName, JSON.stringify(finalLocalData));
+      }
+
       localStorage.setItem(lastSyncKey, newSyncTime);
 
       // إشعار واجهة المستخدم للتحديث الفوري للبيانات المعروضة
