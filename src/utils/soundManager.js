@@ -22,130 +22,289 @@ class SoundManager {
     }
   }
 
-  // إنشاء الأصوات باستخدام Web Audio API
-  createSounds() {
-    // صوت النقر (أنعم وأقصر)
-    this.sounds.click = this.createTone(800, 0.05, 'sine');
+  // تشغيل نغمة مخصصة بمغلف صوتي دقيق (ADSR Envelope)
+  playTone({ frequency, duration, type = 'sine', attack = 0.01, decay = 0.1, gainMult = 0.3, delay = 0 }) {
+    if (!this.isEnabled || !this.audioContext) return;
 
-    // صوت النجاح (تآلف هادئ ومريح)
-    this.sounds.success = this.createChord([440, 554, 659], 0.4, 'sine');
-
-    // صوت الخطأ (معدل ليكون تنبيهاً بدلاً من إزعاج)
-    this.sounds.error = this.createTone(150, 0.3, 'triangle');
-
-    // صوت إضافة منتج (أسرع وأنعم)
-    this.sounds.addProduct = this.createTone(700, 0.1, 'sine');
-
-    // صوت حذف منتج
-    this.sounds.removeProduct = this.createTone(300, 0.15, 'triangle');
-
-    // صوت بدء الوردية
-    this.sounds.startShift = this.createChord([523, 659, 784], 0.5, 'sine');
-
-    // صوت إنهاء الوردية
-    this.sounds.endShift = this.createChord([784, 659, 523], 0.5, 'sine');
-
-    // صوت طباعة
-    this.sounds.print = this.createTone(800, 0.1, 'triangle');
-
-    // صوت فتح نافذة
-    this.sounds.openWindow = this.createTone(600, 0.15, 'sine');
-
-    // صوت إغلاق نافذة
-    this.sounds.closeWindow = this.createTone(400, 0.15, 'sine');
-
-    // صوت حفظ
-    this.sounds.save = this.createChord([659, 880], 0.2, 'sine');
-
-    // صوت تحديث
-    this.sounds.update = this.createTone(900, 0.1, 'sine');
-
-    // صوت حذف
-    this.sounds.delete = this.createTone(250, 0.2, 'triangle');
-
-    // صوت تنبيه (إشعار ناعم)
-    this.sounds.notification = this.createChord([659, 880], 0.25, 'sine');
-
-    // صوت تحذير
-    this.sounds.warning = this.createTone(350, 0.3, 'triangle');
-
-    // صوت نقدي
-    this.sounds.cash = this.createChord([587, 740, 880, 1175], 0.35, 'sine');
-
-    // صوت بطاقة (دفع إلكتروني ناعم)
-    this.sounds.card = this.createTone(1200, 0.15, 'sine');
-
-    // صوت خصم
-    this.sounds.discount = this.createTone(550, 0.2, 'sine');
-
-    // صوت عربون
-    this.sounds.downPayment = this.createChord([523, 659], 0.25, 'sine');
-
-    // صوت المرتجع
-    this.sounds.return = this.createTone(350, 0.25, 'triangle');
-
-    // صوت مرتجع
-    this.sounds.refund = this.createTone(250, 0.3, 'triangle');
-
-    // صوت تسجيل دخول
-    this.sounds.login = this.createChord([440, 554, 659, 880], 0.5, 'sine');
-
-    // صوت تسجيل خروج
-    this.sounds.logout = this.createChord([880, 659, 554, 440], 0.5, 'sine');
-
-    // صوت تحميل
-    this.sounds.loading = this.createTone(900, 0.05, 'sine');
-
-    // صوت اكتمال
-    this.sounds.complete = this.createChord([523, 659, 784, 1047], 0.6, 'sine');
-  }
-
-  // إنشاء نغمة واحدة
-  createTone(frequency, duration, type = 'sine') {
-    return () => {
-      if (!this.isEnabled || !this.audioContext) return;
-
+    try {
+      const now = this.audioContext.currentTime + delay;
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
 
       oscillator.connect(gainNode);
       gainNode.connect(this.audioContext.destination);
 
-      oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+      oscillator.frequency.setValueAtTime(frequency, now);
       oscillator.type = type;
 
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(this.volume * 0.3, this.audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + duration);
+      const maxVolume = this.volume * gainMult;
 
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration);
-    };
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(maxVolume, now + attack);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      oscillator.start(now);
+      oscillator.stop(now + duration + 0.1);
+    } catch (e) {
+      console.warn('فشل تشغيل النغمة:', e);
+    }
   }
 
-  // إنشاء وتر (أكثر من نغمة)
-  createChord(frequencies, duration, type = 'sine') {
-    return () => {
-      if (!this.isEnabled || !this.audioContext) return;
+  // تشغيل نغمة متغيرة التردد (Frequency Sweep)
+  playSweep({ startFreq, endFreq, duration, type = 'sine', gainMult = 0.3, delay = 0 }) {
+    if (!this.isEnabled || !this.audioContext) return;
 
-      frequencies.forEach((frequency, index) => {
-        const oscillator = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
+    try {
+      const now = this.audioContext.currentTime + delay;
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
 
-        oscillator.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
+      oscillator.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
 
-        oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-        oscillator.type = type;
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(startFreq, now);
+      oscillator.frequency.exponentialRampToValueAtTime(endFreq, now + duration);
 
-        const delay = index * 0.05; // تأخير طفيف بين النغمات
+      const maxVolume = this.volume * gainMult;
 
-        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime + delay);
-        gainNode.gain.linearRampToValueAtTime(this.volume * 0.2, this.audioContext.currentTime + delay + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + delay + duration);
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(maxVolume, now + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-        oscillator.start(this.audioContext.currentTime + delay);
-        oscillator.stop(this.audioContext.currentTime + delay + duration);
+      oscillator.start(now);
+      oscillator.stop(now + duration + 0.1);
+    } catch (e) {
+      console.warn('فشل تشغيل تردد متحرك:', e);
+    }
+  }
+
+  // إنشاء الأصوات باستخدام Web Audio API المطور والفاخر
+  createSounds() {
+    // 1. صوت النقر الناعم الكلاسيكي (Soft Cozy Click)
+    this.sounds.click = () => {
+      this.playTone({ frequency: 900, duration: 0.04, type: 'sine', attack: 0.002, decay: 0.038, gainMult: 0.45 });
+    };
+
+    // 2. صوت النجاح الكريستالي الصاعد (Crystal Ascending Chime)
+    this.sounds.success = () => {
+      const freqs = [523.25, 659.25, 783.99, 1046.50]; // C Major Chord
+      freqs.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 0.6, 
+          type: 'sine', 
+          attack: 0.05, 
+          decay: 0.5, 
+          gainMult: 0.35, 
+          delay: idx * 0.06 
+        });
+      });
+    };
+
+    // 3. صوت الخطأ / التنبيه الناعم (Soft Double Warning)
+    this.sounds.error = () => {
+      this.playTone({ frequency: 220, duration: 0.25, type: 'triangle', attack: 0.02, decay: 0.23, gainMult: 0.5 });
+      this.playTone({ frequency: 180, duration: 0.25, type: 'sine', attack: 0.02, decay: 0.23, gainMult: 0.5, delay: 0.05 });
+    };
+
+    // 4. صوت إضافة منتج (Bubble Pop / Plop)
+    this.sounds.addProduct = () => {
+      this.playTone({ frequency: 600, duration: 0.08, type: 'sine', attack: 0.005, decay: 0.075, gainMult: 0.45 });
+      this.playTone({ frequency: 900, duration: 0.08, type: 'sine', attack: 0.005, decay: 0.075, gainMult: 0.35, delay: 0.04 });
+    };
+
+    // 5. صوت حذف منتج (Descending Pop)
+    this.sounds.removeProduct = () => {
+      this.playTone({ frequency: 800, duration: 0.1, type: 'sine', attack: 0.005, decay: 0.095, gainMult: 0.35 });
+      this.playTone({ frequency: 500, duration: 0.1, type: 'sine', attack: 0.005, decay: 0.095, gainMult: 0.4, delay: 0.04 });
+    };
+
+    // 6. صوت بدء الوردية (Warm Rising Synth)
+    this.sounds.startShift = () => {
+      const freqs = [329.63, 392.00, 523.25, 659.25]; // E-G-C-E chord
+      freqs.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 0.8, 
+          type: 'sine', 
+          attack: 0.1, 
+          decay: 0.7, 
+          gainMult: 0.3, 
+          delay: idx * 0.08 
+        });
+      });
+    };
+
+    // 7. ... صوت إنهاء الوردية (Warm Descending Synth)
+    this.sounds.endShift = () => {
+      const freqs = [659.25, 523.25, 392.00, 329.63];
+      freqs.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 0.8, 
+          type: 'sine', 
+          attack: 0.1, 
+          decay: 0.7, 
+          gainMult: 0.3, 
+          delay: idx * 0.08 
+        });
+      });
+    };
+
+    // 8. صوت طباعة الفاتورة (Fast Mechanical Whir)
+    this.sounds.print = () => {
+      this.playTone({ frequency: 1000, duration: 0.05, type: 'triangle', attack: 0.005, decay: 0.045, gainMult: 0.25 });
+      this.playTone({ frequency: 800, duration: 0.05, type: 'triangle', attack: 0.005, decay: 0.045, gainMult: 0.25, delay: 0.05 });
+      this.playTone({ frequency: 1200, duration: 0.05, type: 'triangle', attack: 0.005, decay: 0.045, gainMult: 0.2, delay: 0.1 });
+    };
+
+    // 9. صوت فتح وإغلاق النوافذ (Cozy Sweeps)
+    this.sounds.openWindow = () => {
+      this.playSweep({ startFreq: 400, endFreq: 700, duration: 0.15, type: 'sine', gainMult: 0.3 });
+    };
+    this.sounds.closeWindow = () => {
+      this.playSweep({ startFreq: 700, endFreq: 400, duration: 0.15, type: 'sine', gainMult: 0.3 });
+    };
+
+    // 10. صوت الحفظ (Sparkling Chime)
+    this.sounds.save = () => {
+      this.playTone({ frequency: 880, duration: 0.15, type: 'sine', attack: 0.01, decay: 0.14, gainMult: 0.4 });
+      this.playTone({ frequency: 1318.51, duration: 0.2, type: 'sine', attack: 0.01, decay: 0.19, gainMult: 0.3, delay: 0.05 });
+    };
+
+    // 11. صوت التحديث (Pleasant Double Beep)
+    this.sounds.update = () => {
+      this.playTone({ frequency: 880, duration: 0.08, type: 'sine', attack: 0.005, decay: 0.075, gainMult: 0.4 });
+      this.playTone({ frequency: 880, duration: 0.08, type: 'sine', attack: 0.005, decay: 0.075, gainMult: 0.4, delay: 0.08 });
+    };
+
+    // 12. صوت الحذف والتخلص (Soft Downward Pop)
+    this.sounds.delete = () => {
+      this.playTone({ frequency: 400, duration: 0.18, type: 'triangle', attack: 0.01, decay: 0.17, gainMult: 0.4 });
+      this.playTone({ frequency: 200, duration: 0.18, type: 'sine', attack: 0.01, decay: 0.17, gainMult: 0.45, delay: 0.05 });
+    };
+
+    // 13. صوت الإشعارات والتنبيهات (Ambient Bell)
+    this.sounds.notification = () => {
+      this.playTone({ frequency: 783.99, duration: 0.4, type: 'sine', attack: 0.02, decay: 0.38, gainMult: 0.4 });
+      this.playTone({ frequency: 987.77, duration: 0.4, type: 'sine', attack: 0.02, decay: 0.38, gainMult: 0.35, delay: 0.04 });
+    };
+
+    // 14. صوت التحذير (Soft Warning Bell)
+    this.sounds.warning = () => {
+      this.playTone({ frequency: 330, duration: 0.3, type: 'sine', attack: 0.05, decay: 0.25, gainMult: 0.45 });
+      this.playTone({ frequency: 330, duration: 0.3, type: 'triangle', attack: 0.05, decay: 0.25, gainMult: 0.25, delay: 0.08 });
+    };
+
+    // 15. صوت كاش النقدي - صندوق النقود والعملات المعدنية (Realistic Ka-Ching & Coin Rattle)
+    this.sounds.cash = () => {
+      // أ) رنين جرس الصندوق الميكانيكي الحاد (Ka-Ching Bell)
+      const bellFreqs = [880, 1174.66, 1396.91, 1760]; // رنين ساطع
+      bellFreqs.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 0.8, 
+          type: 'sine', 
+          attack: 0.005, 
+          decay: 0.75, 
+          gainMult: 0.55, // صوت أعلى ومسموع بوضوح
+          delay: idx * 0.02 
+        });
+      });
+
+      // ب) الطقة الميكانيكية لفتح الدرج (Mechanical Click)
+      this.playTone({ frequency: 150, duration: 0.15, type: 'triangle', attack: 0.01, decay: 0.14, gainMult: 0.6 });
+      this.playTone({ frequency: 180, duration: 0.15, type: 'square', attack: 0.01, decay: 0.14, gainMult: 0.2, delay: 0.02 });
+
+      // ج) خشخشة وتصادم العملات المعدنية داخل الدرج (Coin Rattle)
+      const coinDelays = [0.05, 0.08, 0.12, 0.15, 0.18];
+      const coinFreqs = [2800, 3200, 2500, 3000, 3500];
+      coinDelays.forEach((d, idx) => {
+        this.playTone({ 
+          frequency: coinFreqs[idx], 
+          duration: 0.03, 
+          type: 'sine', 
+          attack: 0.001, 
+          decay: 0.029, 
+          gainMult: 0.45, 
+          delay: d 
+        });
+      });
+    };
+
+    // 16. صوت الدفع الإلكتروني بالبطاقة (Digital Payment Swipe)
+    this.sounds.card = () => {
+      this.playSweep({ startFreq: 600, endFreq: 1200, duration: 0.2, type: 'sine', gainMult: 0.45 });
+    };
+
+    // 17. صوت الخصم (Cozy Slide Down)
+    this.sounds.discount = () => {
+      this.playSweep({ startFreq: 900, endFreq: 700, duration: 0.25, type: 'sine', gainMult: 0.45 });
+    };
+
+    // 18. صوت العربون (Bell Accent)
+    this.sounds.downPayment = () => {
+      this.playTone({ frequency: 587.33, duration: 0.2, type: 'sine', attack: 0.01, decay: 0.19, gainMult: 0.45 });
+      this.playTone({ frequency: 880, duration: 0.3, type: 'sine', attack: 0.01, decay: 0.29, gainMult: 0.4, delay: 0.06 });
+    };
+
+    // 19. صوت المرتجع (Warning Sweep Down)
+    this.sounds.return = () => {
+      this.playSweep({ startFreq: 500, endFreq: 300, duration: 0.3, type: 'triangle', gainMult: 0.45 });
+    };
+    this.sounds.refund = () => {
+      this.playSweep({ startFreq: 400, endFreq: 250, duration: 0.3, type: 'triangle', gainMult: 0.45 });
+    };
+
+    // 20. صوت تسجيل الدخول (Premium Startup Chime)
+    this.sounds.login = () => {
+      const chord = [261.63, 329.63, 392.00, 523.25, 659.25];
+      chord.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 1.2, 
+          type: 'sine', 
+          attack: 0.15, 
+          decay: 1.0, 
+          gainMult: 0.2, 
+          delay: idx * 0.08 
+        });
+      });
+    };
+
+    // 21. ... صوت تسجيل الخروج (Premium Shutdown Chime)
+    this.sounds.logout = () => {
+      const chord = [659.25, 523.25, 392.00, 329.63, 261.63];
+      chord.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 1.2, 
+          type: 'sine', 
+          attack: 0.15, 
+          decay: 1.0, 
+          gainMult: 0.2, 
+          delay: idx * 0.08 
+        });
+      });
+    };
+
+    this.sounds.loading = () => {
+      this.playTone({ frequency: 600, duration: 0.05, type: 'sine', attack: 0.005, decay: 0.045, gainMult: 0.2 });
+    };
+
+    this.sounds.complete = () => {
+      const chord = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+      chord.forEach((f, idx) => {
+        this.playTone({ 
+          frequency: f, 
+          duration: 1.0, 
+          type: 'sine', 
+          attack: 0.08, 
+          decay: 0.9, 
+          gainMult: 0.25, 
+          delay: idx * 0.05 
+        });
       });
     };
   }

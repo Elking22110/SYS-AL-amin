@@ -18,19 +18,21 @@ const StoreSettings = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [saveTimer, setSaveTimer] = useState(null);
 
   // تحميل بيانات المتجر المحفوظة
   useEffect(() => {
     const savedStoreInfo = localStorage.getItem('storeInfo');
     if (savedStoreInfo) {
-      setStoreInfo(JSON.parse(savedStoreInfo));
+      try {
+        setStoreInfo(JSON.parse(savedStoreInfo));
+      } catch (_) {}
     }
   }, []);
 
   // الاستماع لأمر الحفظ العام القادم من شاشة الإعدادات (زر الحفظ العلوي)
   useEffect(() => {
     const handleExternalSave = () => {
-      // استدعاء نفس منطق الحفظ الداخلي
       handleSave();
     };
 
@@ -40,15 +42,31 @@ const StoreSettings = () => {
     };
   }, [storeInfo]);
 
-  // حفظ بيانات المتجر
+  // حفظ بيانات المتجر (يُستخدم عند الضغط على زر الحفظ)
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      localStorage.setItem('storeInfo', JSON.stringify(storeInfo));
-      setMessage('تم حفظ بيانات المتجر بنجاح!');
+      const current = JSON.parse(localStorage.getItem('storeInfo') || '{}');
+      const merged = { ...current, ...storeInfo };
+      localStorage.setItem('storeInfo', JSON.stringify(merged));
+
+      // مزامنة مع pos-settings
+      const posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+      localStorage.setItem('pos-settings', JSON.stringify({
+        ...posSettings,
+        companyName: merged.storeName,
+        companyAddress: merged.storeAddress,
+        companyPhone: merged.storePhone,
+        companyEmail: merged.storeEmail,
+        taxEnabled: merged.taxEnabled,
+        taxRate: merged.taxRate,
+        taxName: merged.taxName,
+      }));
+
+      setMessage('✅ تم حفظ بيانات المتجر بنجاح!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('حدث خطأ في حفظ البيانات');
+      setMessage('❌ حدث خطأ في حفظ البيانات');
       setTimeout(() => setMessage(''), 3000);
     } finally {
       setIsLoading(false);
@@ -57,7 +75,7 @@ const StoreSettings = () => {
 
   // إعادة تعيين البيانات
   const handleReset = () => {
-    setStoreInfo({
+    const defaults = {
       storeName: 'متجر الأمين',
       storePhone: '01029022006',
       storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
@@ -65,20 +83,39 @@ const StoreSettings = () => {
       storeTaxNumber: '',
       storeLogo: '',
       storeDescription: '',
-      // إعدادات الضرائب
       taxEnabled: false,
       taxRate: 15,
       taxName: 'ضريبة القيمة المضافة'
-    });
+    };
+    setStoreInfo(defaults);
+    localStorage.setItem('storeInfo', JSON.stringify(defaults));
     setMessage('تم إعادة تعيين البيانات');
     setTimeout(() => setMessage(''), 3000);
   };
 
+  // تغيير حقل مع حفظ فوري تلقائي في localStorage
   const handleInputChange = (field, value) => {
-    setStoreInfo(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setStoreInfo(prev => {
+      const updated = { ...prev, [field]: value };
+
+      // حفظ فوري بدون انتظار زر الحفظ
+      localStorage.setItem('storeInfo', JSON.stringify(updated));
+
+      // مزامنة مع pos-settings
+      try {
+        const posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+        const keyMap = {
+          storeName: 'companyName',
+          storeAddress: 'companyAddress',
+          storePhone: 'companyPhone',
+          storeEmail: 'companyEmail',
+        };
+        const posKey = keyMap[field] || field;
+        localStorage.setItem('pos-settings', JSON.stringify({ ...posSettings, [posKey]: value }));
+      } catch (_) {}
+
+      return updated;
+    });
   };
 
   return (

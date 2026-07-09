@@ -167,63 +167,57 @@ const Settings = () => {
   ];
 
   const handleSettingChange = (key, value) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    // نبني الإعدادات الجديدة أولاً ثم نحدّث الـ state والـ localStorage معاً بنفس الكائن
+    setSettings(prev => {
+      const updatedSettings = { ...prev, [key]: value };
 
-    // تطبيق التغييرات فورياً
-    applySettingChange(key, value);
-    try { publish(EVENTS.SETTINGS_CHANGED, { key, value }); } catch (_) { }
-  };
-
-  // تطبيق التغييرات فورياً على النظام
-  const applySettingChange = (key, value) => {
-    try {
-      // تطبيق تغيير المظهر
-      if (key === 'theme') {
-        applyTheme(value);
-      }
-
-      // تطبيق تغيير اللون الأساسي
-      if (key === 'primaryColor') {
-        applyPrimaryColor(value);
-      }
-
-      // تطبيق تغيير طي القائمة الجانبية
-      if (key === 'sidebarCollapsed') {
-        applySidebarCollapse(value);
-      }
-
-      // تطبيق تغيير الأصوات
-      if (key === 'soundsEnabled') {
-        soundManager.setEnabled(value);
-      }
-
-      if (key === 'soundVolume') {
-        soundManager.setVolume(value);
-      }
-
-      // حفظ الإعدادات في localStorage فوراً
-      const updatedSettings = { ...settings, [key]: value };
+      // حفظ فوري في localStorage بالقيمة الصحيحة
       localStorage.setItem('pos-settings', JSON.stringify(updatedSettings));
-      // عند تغيير المخزون: احفظ في storeInfo أيضاً لضمان عمل نقطة البيع
+
+      // تزامن storeInfo عند الحاجة
       if (key === 'inventoryEnabled') {
         try {
           const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-          const updatedStoreInfo = { ...storeInfo, inventoryEnabled: !!value };
-          localStorage.setItem('storeInfo', JSON.stringify(updatedStoreInfo));
+          localStorage.setItem('storeInfo', JSON.stringify({ ...storeInfo, inventoryEnabled: !!value }));
+        } catch (_) { }
+      }
+      if (['companyName', 'companyAddress', 'companyPhone', 'companyEmail', 'taxEnabled', 'taxRate', 'taxName'].includes(key)) {
+        try {
+          const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
+          const storeKey = {
+            companyName: 'storeName',
+            companyAddress: 'storeAddress',
+            companyPhone: 'storePhone',
+            companyEmail: 'storeEmail',
+          }[key] || key;
+          localStorage.setItem('storeInfo', JSON.stringify({ ...storeInfo, [storeKey]: value }));
         } catch (_) { }
       }
 
-      // إضافة الإعدادات إلى document.documentElement للاستمرارية
-      document.documentElement.setAttribute(`data-${key}`, value);
+      return updatedSettings;
+    });
 
-      console.log(`تم تطبيق الإعداد: ${key} = ${value}`);
+    // تطبيق التغييرات الفورية على واجهة المستخدم (لا تحتاج قراءة الـ state)
+    applySettingEffect(key, value);
+    try { publish(EVENTS.SETTINGS_CHANGED, { key, value }); } catch (_) { }
+  };
+
+  // تطبيق تأثيرات جانبية فورية (ليست حفظ - الحفظ يتم في handleSettingChange)
+  const applySettingEffect = (key, value) => {
+    try {
+      if (key === 'theme') applyTheme(value);
+      if (key === 'primaryColor') applyPrimaryColor(value);
+      if (key === 'sidebarCollapsed') applySidebarCollapse(value);
+      if (key === 'soundsEnabled') soundManager.setEnabled(value);
+      if (key === 'soundVolume') soundManager.setVolume(value);
+      document.documentElement.setAttribute(`data-${key}`, value);
     } catch (error) {
       console.error('خطأ في تطبيق الإعداد:', error);
     }
   };
+
+  // تطبيق التغييرات فورياً على النظام (legacy - kept for compatibility)
+  const applySettingChange = applySettingEffect;
 
 
 
