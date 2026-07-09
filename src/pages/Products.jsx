@@ -26,6 +26,7 @@ import { useAuth } from '../components/AuthProvider';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
 import databaseManager from '../utils/database';
+import storageOptimizer from '../utils/storageOptimizer.js';
 
 // دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
 const renderProductTitleAndSize = (name) => {
@@ -693,6 +694,7 @@ const Products = () => {
 
     // حفظ الفئات في localStorage
     localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
+    storageOptimizer.clearCache();
 
     // إرسال إشارة لتحديث نقطة البيع فورياً
     window.dispatchEvent(new CustomEvent('categoriesUpdated', {
@@ -710,13 +712,14 @@ const Products = () => {
       categories: updatedCategories
     });
 
+    const addedCategoryName = newCategory.name;
     // إعادة تعيين النموذج
     setNewCategory({ name: '', description: '', parentId: '' });
     setNewCategoryType('main');
     setShowAddCategoryModal(false);
 
     // إشعار نجاح إضافة الفئة
-    notifyCategoryAdded(newCategory.name);
+    notifyCategoryAdded(addedCategoryName);
   };
 
   // حذف فئة
@@ -740,6 +743,7 @@ const Products = () => {
 
       // حفظ الفئات في localStorage
       localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
+      storageOptimizer.clearCache();
 
       // نشر حدث تغيير الفئات
       publish(EVENTS.CATEGORIES_CHANGED, {
@@ -817,6 +821,7 @@ const Products = () => {
 
     setProducts(updatedProducts);
     localStorage.setItem('products', JSON.stringify(updatedProducts));
+    storageOptimizer.clearCache();
 
     publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: oldName, to: newName, categories: updatedCategories });
     publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: oldName, to: newName, products: updatedProducts });
@@ -959,6 +964,7 @@ const Products = () => {
 
     // حفظ المنتجات في localStorage
     localStorage.setItem('products', JSON.stringify(updatedProducts));
+    storageOptimizer.clearCache();
 
     // إرسال إشارة لتحديث نقطة البيع فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1031,6 +1037,7 @@ const Products = () => {
 
       // حفظ المنتجات في localStorage
       localStorage.setItem('products', JSON.stringify(updatedProducts));
+      storageOptimizer.clearCache();
 
       // إرسال إشارة لتحديث نقطة البيع فورياً
       window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1073,6 +1080,7 @@ const Products = () => {
 
       // حفظ المنتجات في localStorage
       localStorage.setItem('products', JSON.stringify(updatedProducts));
+      storageOptimizer.clearCache();
 
       // إرسال إشارة لتحديث نقطة البيع فورياً
       window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1359,6 +1367,7 @@ const Products = () => {
                 const updatedProductsLocal = products.map(p => p.category === selectedCategory ? { ...p, category: newName } : p);
                 setProducts(updatedProductsLocal);
                 localStorage.setItem('products', JSON.stringify(updatedProductsLocal));
+                storageOptimizer.clearCache();
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: selectedCategory, to: newName, categories: updatedCategories }); } catch (_) { }
                 try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: selectedCategory, to: newName }); } catch (_) { }
 
@@ -1404,6 +1413,7 @@ const Products = () => {
                 const updatedCategories = categories.filter(c => c.name !== selectedCategory);
                 setCategories(updatedCategories);
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
+                storageOptimizer.clearCache();
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'delete', categoryName: selectedCategory, categories: updatedCategories }); } catch (_) { }
 
                 notifyCategoryDeleted(selectedCategory);

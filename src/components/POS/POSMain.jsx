@@ -99,12 +99,14 @@ const POSMain = () => {
   useEffect(() => {
     const reloadProducts = () => {
       try {
+        storageOptimizer.clearCache();
         const saved = JSON.parse(localStorage.getItem('products') || '[]');
         setProducts(saved);
       } catch (_) { }
     };
     const reloadCategories = () => {
       try {
+        storageOptimizer.clearCache();
         const saved = JSON.parse(localStorage.getItem('productCategories') || '[]');
         setCategories(saved);
       } catch (_) { }
