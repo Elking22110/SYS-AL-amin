@@ -430,7 +430,8 @@ const Products = () => {
   const [products, setProducts] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('الكل');
+  const [selectedMainCategory, setSelectedMainCategory] = useState('الكل');
+  const [selectedSubCategory, setSelectedSubCategory] = useState('الكل');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showManageCategoriesModal, setShowManageCategoriesModal] = useState(false);
@@ -452,6 +453,31 @@ const Products = () => {
   const [showImageModal, setShowImageModal] = useState(false);
   // تعريف الفئات قبل أي استخدام لها في callbacks
   const [categories, setCategories] = useState([]);
+
+  const selectedCategory = selectedSubCategory !== 'الكل' ? selectedSubCategory : selectedMainCategory;
+  const setSelectedCategory = (val) => {
+    if (val === 'الكل') {
+      setSelectedMainCategory('الكل');
+      setSelectedSubCategory('الكل');
+    } else {
+      const cat = categories.find(c => c.name === val);
+      if (cat) {
+        if (!cat.parentId) {
+          setSelectedMainCategory(val);
+          setSelectedSubCategory('الكل');
+        } else {
+          const parent = categories.find(p => String(p.id) === String(cat.parentId) || p.name === cat.parentId);
+          if (parent) {
+            setSelectedMainCategory(parent.name);
+          }
+          setSelectedSubCategory(val);
+        }
+      } else {
+        setSelectedMainCategory(val);
+        setSelectedSubCategory('الكل');
+      }
+    }
+  };
 
   // مُحدّث فوري للحالة من التخزين المحلي
   const forceReloadProductsAndCategories = React.useCallback(() => {
@@ -847,12 +873,39 @@ const Products = () => {
 
   useEffect(() => {
     setVisibleCount(30);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedMainCategory, selectedSubCategory]);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'الكل' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    
+    // 1. تصفية الفئة الرئيسية
+    let matchesMain = true;
+    if (selectedMainCategory !== 'الكل') {
+      const mainCat = categories.find(c => !c.parentId && c.name === selectedMainCategory);
+      if (mainCat) {
+        const isDirect = String(product.mainCategoryId) === String(mainCat.id) || product.category === mainCat.name;
+        const isSub = categories.some(sub => 
+          (String(sub.parentId) === String(mainCat.id) || sub.parentId === mainCat.name) &&
+          (product.category === sub.name || String(product.subCategoryId) === String(sub.id))
+        );
+        matchesMain = isDirect || isSub;
+      } else {
+        matchesMain = product.category === selectedMainCategory;
+      }
+    }
+
+    // 2. تصفية الفئة الفرعية
+    let matchesSub = true;
+    if (selectedSubCategory !== 'الكل') {
+      const subCat = categories.find(c => c.parentId && c.name === selectedSubCategory);
+      if (subCat) {
+        matchesSub = String(product.subCategoryId) === String(subCat.id) || product.category === subCat.name;
+      } else {
+        matchesSub = product.category === selectedSubCategory;
+      }
+    }
+
+    return matchesSearch && matchesMain && matchesSub;
   });
 
   const displayedProducts = filteredProducts.slice(0, visibleCount);
@@ -1338,18 +1391,45 @@ const Products = () => {
               />
             </div>
 
-            <div className="relative">
+            <div className="relative min-w-[180px]">
               <Filter className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5 md:h-6 md:w-6" />
               <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800"
+                value={selectedMainCategory}
+                onChange={(e) => {
+                  setSelectedMainCategory(e.target.value);
+                  setSelectedSubCategory('الكل');
+                }}
+                className="input-modern pr-12 md:pr-14 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800 w-full"
               >
-                {hierarchicalCategoryOptions.map((opt, idx) => (
-                  <option key={`${opt.value}-${idx}`} value={opt.value} className="bg-white text-slate-800">
-                    {opt.label}
+                <option value="الكل" className="bg-white text-slate-800">الكل (رئيسي)</option>
+                {categories.filter(c => !c.parentId).map((cat, idx) => (
+                  <option key={`${cat.id || cat.name}-${idx}`} value={cat.name} className="bg-white text-slate-800">
+                    {cat.name}
                   </option>
                 ))}
+              </select>
+            </div>
+
+            <div className="relative min-w-[180px]">
+              <select
+                value={selectedSubCategory}
+                onChange={(e) => setSelectedSubCategory(e.target.value)}
+                className="input-modern pr-6 pl-3 md:pl-4 py-3 md:py-4 text-base md:text-lg text-right font-medium appearance-none bg-white border-slate-400 text-slate-800 w-full"
+              >
+                <option value="الكل" className="bg-white text-slate-800">الكل (فرعي)</option>
+                {categories
+                  .filter(c => {
+                    if (!c.parentId) return false;
+                    if (selectedMainCategory === 'الكل') return true;
+                    const parent = categories.find(p => String(p.id) === String(c.parentId) || p.name === c.parentId);
+                    return parent && parent.name === selectedMainCategory;
+                  })
+                  .map((cat, idx) => (
+                    <option key={`${cat.id || cat.name}-${idx}`} value={cat.name} className="bg-white text-slate-800">
+                      {cat.name}
+                    </option>
+                  ))
+                }
               </select>
             </div>
 

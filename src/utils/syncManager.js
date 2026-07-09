@@ -325,7 +325,6 @@ class SyncManager {
         }
         localData = [configItem];
         if (mutated) {
-          // إضافة الـ updated_at للملف المحلي لتفادي التكرار
           localStorage.setItem(tableName, JSON.stringify({ ...localObj, updated_at: configItem.updated_at }));
         }
       } else {
@@ -356,16 +355,13 @@ class SyncManager {
       const { data: rawCloudData, error: fetchError } = await supabase.from(dbTableName).select('*');
       if (fetchError) throw fetchError;
 
-      // تطبيع البيانات السحابية (استخراج كائنات الإعدادات الفردية من عمود JSONB)
+      // تطبيع البيانات السحابية (استخراج الكائنات من عمود JSONB)
       const cloudData = (rawCloudData || []).map(cloudItem => {
-        if (isSingleObject && cloudItem.id === 'config') {
-          return {
-            ...(cloudItem.value || {}),
-            id: 'config',
-            updated_at: cloudItem.updated_at
-          };
-        }
-        return cloudItem;
+        return {
+          ...(cloudItem.value || {}),
+          id: cloudItem.id,
+          updated_at: cloudItem.updated_at
+        };
       });
 
       const cloudMap = new Map(cloudData.map(item => [String(item.id), item]));
@@ -417,38 +413,15 @@ class SyncManager {
 
       // 3. تنفيذ العمليات على السحاب
       if (pendingUpserts.length > 0) {
-        let cleanUpserts = [];
-
-        if (isSingleObject) {
-          // بالنسبة للإعدادات الفردية، نقوم بحفظ الكائن بالكامل داخل عمود JSONB
-          cleanUpserts = pendingUpserts.map(item => {
-            const { id, updated_at, ...cleanValue } = item;
-            return {
-              id: 'config',
-              value: cleanValue,
-              updated_at: item.updated_at || new Date().toISOString()
-            };
-          });
-        } else {
-          // تطبيع وتنسيق كائنات الرفع لتطابق جداول السحاب وتجنب تعارض الأعمدة
-          cleanUpserts = pendingUpserts.map(item => {
-            const cleanItem = { ...item };
-            // استبدال وتجهيز الأعمدة لجدول توريدات الموردين
-            if (tableName === 'supplier_supplies') {
-              cleanItem.supplier_id = item.supplierId;
-              delete cleanItem.supplierId;
-            }
-            // استبدال وتجهيز الأعمدة لجدول مدفوعات الموردين
-            if (tableName === 'supplier_payments') {
-              cleanItem.supplier_id = item.supplierId;
-              cleanItem.payment_method = item.paymentMethod;
-              delete cleanItem.supplierId;
-              delete cleanItem.paymentMethod;
-            }
-            cleanItem.updated_at = cleanItem.updated_at || new Date().toISOString();
-            return cleanItem;
-          });
-        }
+        // جميع الجداول في localStorage ستستخدم هيكل id + value المشترك
+        const cleanUpserts = pendingUpserts.map(item => {
+          const { id, updated_at, ...cleanValue } = item;
+          return {
+            id: String(item.id),
+            value: cleanValue,
+            updated_at: item.updated_at || new Date().toISOString()
+          };
+        });
 
         const { error: upsertError } = await supabase.from(dbTableName).upsert(cleanUpserts);
         if (upsertError) throw upsertError;
@@ -465,23 +438,7 @@ class SyncManager {
         const { id, ...cleanConfig } = configItem;
         localStorage.setItem(tableName, JSON.stringify(cleanConfig));
       } else {
-        // إعادة تحويل الأعمدة إلى CamelCase عند الحفظ محلياً لضمان عدم كسر صفحات العرض
-        const finalLocalData = updatedLocalData.map(item => {
-          const localItem = { ...item };
-          if (tableName === 'supplier_supplies') {
-            if (item.supplier_id) localItem.supplierId = item.supplier_id;
-            delete localItem.supplier_id;
-          }
-          if (tableName === 'supplier_payments') {
-            if (item.supplier_id) localItem.supplierId = item.supplier_id;
-            if (item.payment_method) localItem.paymentMethod = item.payment_method;
-            delete localItem.supplier_id;
-            delete localItem.payment_method;
-          }
-          return localItem;
-        });
-
-        localStorage.setItem(tableName, JSON.stringify(finalLocalData));
+        localStorage.setItem(tableName, JSON.stringify(updatedLocalData));
       }
 
       localStorage.setItem(lastSyncKey, newSyncTime);

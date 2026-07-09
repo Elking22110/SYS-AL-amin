@@ -254,7 +254,7 @@ const ShiftManager = () => {
   };
 
   // حساب تفاصيل المبيعات (مع دمج العربونات والمسدد لاحقاً)
-  const calculateSalesDetails = (sales, settledSales = []) => {
+  function calculateSalesDetails(sales, settledSales = []) {
     let totalSales = 0;
     let totalReceived = 0;
     let totalRemaining = 0;

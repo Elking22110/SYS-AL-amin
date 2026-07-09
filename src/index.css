@@ -8,28 +8,99 @@
 
 /* متغيرات CSS للمظهر */
 :root {
-  --primary-color: #8B5CF6;
-  --primary-500: #8B5CF6;
+  --primary-color: #7c3aed;
+  --primary-500: #7c3aed;
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --text-primary: #1e293b;
+  --text-primary: #0f172a;
   --text-secondary: #475569;
 }
 
 /* الوضع الفاتح */
 .light {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
 }
 
 /* الوضع الداكن */
 .dark {
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
-  --text-primary: #f1f5f9;
+  --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
+}
+
+/* فئات التصميم الحديث الفاخر (Design System Utilities) */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 10px 30px -10px rgba(31, 38, 135, 0.05) !important;
+}
+
+.dark .glass-panel {
+  background: rgba(30, 41, 59, 0.8) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* تأثير التوهج الملون */
+.shadow-glow {
+  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.25), 0 8px 10px -6px rgba(124, 58, 237, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.shadow-glow:hover {
+  box-shadow: 0 15px 30px -5px rgba(124, 58, 237, 0.4), 0 10px 15px -6px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* التكبير التدريجي السلس */
+.hover-scale {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.hover-scale:hover {
+  transform: translateY(-4px) scale(1.015) !important;
+  box-shadow: 0 20px 25px -5px rgba(31, 38, 135, 0.06), 0 10px 10px -5px rgba(31, 38, 135, 0.03) !important;
+}
+
+.dark .hover-scale:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 10px 10px -5px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* حواف الإدخال التفاعلية */
+.focus-ring-glow {
+  transition: all 0.2s ease-in-out !important;
+}
+
+.focus-ring-glow:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.2) !important;
+  outline: none !important;
+}
+
+/* تخصيص شريط التمرير الدائري الناعم */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.15);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.35);
 }
 
 /* القائمة الجانبية المطوية */
@@ -874,7 +945,6 @@ body::before {
   }
 
   .ipad-main-content {
-    margin-left: 280px;
     padding: 20px;
   }
 }
@@ -1919,9 +1989,8 @@ body::before {
 }
 
 .nav-enhanced a:hover {
-  background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* تأثيرات متقدمة للرسوم البيانية */
@@ -2486,4 +2555,115 @@ select.input-modern {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
+}
+
+/* ==========================================================================
+   تحديثات النظام الجمالية الفاخرة (Premium UI Updates)
+   ========================================================================== */
+
+/* 1. ترقية القائمة الجانبية (Sidebar) */
+.nav-enhanced {
+  background: var(--bg-secondary) !important;
+  border-right: 1px solid rgba(124, 58, 237, 0.08) !important;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02) !important;
+}
+
+.dark .nav-enhanced {
+  background: var(--bg-secondary) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 2. ترقية تصميم كروت المنتجات (Product Cards) */
+.pos-product-card {
+  background: var(--bg-secondary) !important;
+  border: 1px solid rgba(124, 58, 237, 0.08) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.005) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  padding: 16px !important;
+  border-radius: 16px !important;
+}
+
+.dark .pos-product-card {
+  border: 1px solid rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.pos-product-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.08), 0 10px 10px -5px rgba(124, 58, 237, 0.03) !important;
+}
+
+.dark .pos-product-card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 10px 10px -5px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 3. ترقية أزرار الإجراءات الرئيسية بنظام متدرج ناعم ومتوهج */
+button.bg-blue-600, 
+button.bg-indigo-600,
+button.bg-indigo-500,
+button.bg-blue-500 {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button.bg-blue-600:hover, 
+button.bg-indigo-600:hover,
+button.bg-indigo-500:hover,
+button.bg-blue-500:hover {
+  transform: translateY(-1.5px) !important;
+  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.4) !important;
+  filter: brightness(1.1);
+}
+
+/* 4. ترقية تصميم الجداول ورؤوس الأعمدة */
+table th {
+  background: rgba(124, 58, 237, 0.05) !important;
+  color: var(--text-primary) !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  font-size: 0.75rem !important;
+  border-bottom: 2px solid rgba(124, 58, 237, 0.1) !important;
+}
+
+.dark table th {
+  background: rgba(124, 58, 237, 0.15) !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 5. ترقية حقول الإدخال والبحث */
+input[type="text"],
+input[type="search"],
+input[type="number"],
+select,
+textarea {
+  border-radius: 10px !important;
+  border: 1px solid rgba(124, 58, 237, 0.15) !important;
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
+  outline: none !important;
+}
+
+/* 6. تحسين الأيقونات وعناصر التفاعل */
+.lucide {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.02));
+  transition: transform 0.2s ease;
+}
+
+button:hover .lucide {
+  transform: scale(1.08);
 }

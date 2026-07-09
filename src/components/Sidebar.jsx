@@ -134,24 +134,24 @@ const Sidebar = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => soundManager.play('click')}
-                className={`menu-item flex items-center justify-between p-4 rounded-xl group relative overflow-hidden ${isActive
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-500 text-slate-800 shadow-glow'
-                  : 'text-slate-700 hover:bg-purple-500 hover:bg-opacity-10 hover:text-slate-800'
+                className={`menu-item flex items-center justify-between p-4 rounded-xl group relative overflow-hidden transition-all duration-300 ${isActive
+                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-glow'
+                  : 'text-slate-700 hover:bg-violet-500 hover:bg-opacity-10 hover:text-violet-600 dark:text-slate-300 dark:hover:text-violet-400'
                   }`}
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-lg ${isActive
-                    ? 'bg-purple-400 bg-opacity-30'
-                    : 'bg-gray-500 bg-opacity-20 group-hover:bg-purple-500 group-hover:bg-opacity-30'
+                  <div className={`p-2 rounded-lg transition-colors ${isActive
+                    ? 'bg-white bg-opacity-20'
+                    : 'bg-slate-100 dark:bg-slate-800 group-hover:bg-violet-100 dark:group-hover:bg-violet-950'
                     }`}>
-                    <Icon className={`h-4 w-4 ${isActive ? 'text-slate-800' : 'text-slate-600 group-hover:text-slate-800'
+                    <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-violet-600 dark:text-slate-400'
                       }`} />
                   </div>
                   <span className="font-semibold text-sm">{item.label}</span>
                 </div>
-                <span className={`text-xs px-2 py-1 rounded-full font-semibold ${isActive
-                  ? 'bg-purple-400 bg-opacity-30 text-slate-800'
-                  : 'bg-gray-500 bg-opacity-20 text-slate-600 group-hover:bg-purple-500 group-hover:bg-opacity-30 group-hover:text-slate-800'
+                <span className={`text-[10px] px-2 py-1 rounded-full font-semibold transition-all ${isActive
+                  ? 'bg-white bg-opacity-20 text-white'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-violet-100 group-hover:text-violet-600 dark:text-slate-400'
                   }`}>
                   {item.shortcut}
                 </span>
