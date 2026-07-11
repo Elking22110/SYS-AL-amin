@@ -200,6 +200,27 @@ const Customers = () => {
       setCustomers(updatedCustomers);
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
+      // تسجيل الدفعة في الوردية النشطة لضمان دقة الحسابات
+      try {
+        const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+        if (activeShift && activeShift.status === 'active') {
+          const debtPaymentRecord = {
+            id: 'DP-' + Date.now(),
+            isDebtPayment: true,
+            total: amount,
+            paymentMethod: 'cash', // الافتراضي نقدي من شاشة العملاء
+            timestamp: new Date().toISOString(),
+            shiftId: activeShift.id,
+            customer: settlingCustomer
+          };
+          activeShift.sales = [...(activeShift.sales || []), debtPaymentRecord];
+          localStorage.setItem('activeShift', JSON.stringify(activeShift));
+          window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'shift' } }));
+        }
+      } catch (err) {
+        console.error('Error logging debt payment to shift:', err);
+      }
+
       publish(EVENTS.CUSTOMERS_CHANGED, {
         type: 'update',
         customer: updatedCustomer,

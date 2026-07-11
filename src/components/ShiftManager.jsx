@@ -353,6 +353,18 @@ const ShiftManager = () => {
         return; // لا تُحتسب ضمن إجمالي المبيعات
       }
 
+      // تسديد مديونية عامة من شاشة العملاء
+      if (sale.isDebtPayment) {
+        totalReceived = safeMath.add(totalReceived, saleTotal);
+        const paymentMethod = getArabicPaymentMethod(sale.paymentMethod || 'نقدي');
+        if (!paymentMethods[paymentMethod]) {
+          paymentMethods[paymentMethod] = { received: 0, remaining: 0, count: 0 };
+        }
+        paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, saleTotal);
+        paymentMethods[paymentMethod].count++;
+        return;
+      }
+
       // فاتورة عادية: أضف لإجمالي المبيعات
       totalSales += saleTotal;
 
