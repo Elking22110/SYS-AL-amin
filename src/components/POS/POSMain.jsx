@@ -612,17 +612,18 @@ const POSMain = () => {
         <style>
           @page {
             size: auto;
-            margin: 15mm;
+            margin: 5mm;
           }
           body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            color: #334155;
+            color: #000;
             background-color: #fff;
             margin: 0;
             padding: 0;
             direction: rtl;
             font-size: 14px;
-            line-height: 1.5;
+            font-weight: bold;
+            line-height: 1.4;
           }
           .invoice-box {
             max-width: 100%;
@@ -632,7 +633,7 @@ const POSMain = () => {
           .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
           }
           .header-table td {
             vertical-align: top;
@@ -640,111 +641,114 @@ const POSMain = () => {
             padding: 0;
           }
           .logo {
-            max-height: 70px;
+            max-height: 50px;
             width: auto;
-            margin-bottom: 8px;
-          }
-          .store-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #0f172a;
             margin-bottom: 4px;
           }
+          .store-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #000;
+            margin-bottom: 2px;
+          }
           .store-subtitle {
-            font-size: 12px;
-            color: #64748b;
+            font-size: 13px;
+            font-weight: bold;
+            color: #000;
           }
           .invoice-title-col {
             text-align: left;
           }
           .invoice-title-text {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 900;
-            color: #2563eb;
-            margin-bottom: 10px;
+            color: #000;
+            margin-bottom: 5px;
             letter-spacing: -0.5px;
           }
           .info-badge {
             display: inline-block;
-            background-color: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            padding: 6px 12px;
-            border-radius: 8px;
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 12px;
-            color: #334155;
+            font-weight: bold;
+            color: #000;
             text-align: right;
           }
           .divider {
-            border-top: 2px solid #e2e8f0;
-            margin: 15px 0;
+            border-top: 2px solid #000;
+            margin: 10px 0;
           }
           .details-grid {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
           }
           .details-grid td {
             width: 50%;
             vertical-align: top;
-            padding: 0 0 0 15px;
+            padding: 0 0 0 10px;
             border: none;
           }
           .details-card {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 8px;
+            padding: 10px;
           }
           .details-card h4 {
-            margin: 0 0 10px 0;
-            font-size: 13px;
-            font-weight: 800;
-            color: #1e293b;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 6px;
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 900;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 4px;
           }
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 12px;
+            margin-bottom: 4px;
+            font-size: 13px;
           }
           .info-label {
-            color: #64748b;
-            font-weight: 600;
+            color: #000;
+            font-weight: 900;
           }
           .info-val {
-            color: #0f172a;
-            font-weight: 700;
+            color: #000;
+            font-weight: 900;
           }
           .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
           }
           .products-table th {
-            background-color: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            padding: 10px 12px;
-            font-size: 12px;
-            font-weight: 800;
-            color: #334155;
+            background-color: #fff;
+            border: 2px solid #000;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #000;
             text-align: right;
           }
           .products-table td {
-            border: 1px solid #cbd5e1;
-            padding: 10px 12px;
-            font-size: 13px;
-            color: #0f172a;
+            border: 1px solid #000;
+            padding: 6px 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
           }
           .products-table tr:nth-child(even) {
-            background-color: #f8fafc;
+            background-color: #f8f8f8;
           }
           .text-center { text-align: center !important; }
           .text-left { text-align: left !important; }
           .summary-table-container {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 10px;
           }
           .summary-table {
             width: 320px;
@@ -752,51 +756,52 @@ const POSMain = () => {
             border-collapse: collapse;
           }
           .summary-table td {
-            padding: 6px 10px;
-            font-size: 12px;
+            padding: 4px 8px;
+            font-size: 14px;
             border: none;
           }
           .summary-table .label {
-            color: #64748b;
-            font-weight: 600;
+            color: #000;
+            font-weight: 900;
             text-align: right;
           }
           .summary-table .value {
-            color: #0f172a;
-            font-weight: 700;
+            color: #000;
+            font-weight: 900;
             text-align: left;
           }
           .summary-table .total-row td {
-            border-top: 2px solid #cbd5e1;
-            padding-top: 10px;
-            font-size: 15px;
-            font-weight: 800;
+            border-top: 2px solid #000;
+            padding-top: 8px;
+            font-size: 16px;
+            font-weight: 900;
           }
           .summary-table .total-row .value {
-            color: #2563eb;
+            color: #000;
           }
           .footer-section {
-            margin-top: 50px;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 20px;
+            margin-top: 30px;
+            border-top: 2px solid #000;
+            padding-top: 15px;
             text-align: center;
-            font-size: 11px;
-            color: #64748b;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
           }
           .signatures {
-            margin-top: 40px;
+            margin-top: 30px;
             display: flex;
             justify-content: space-between;
-            padding: 0 40px;
+            padding: 0 20px;
           }
           .sig-box {
             text-align: center;
             width: 150px;
           }
           .sig-line {
-            border-bottom: 1px solid #94a3b8;
-            margin-bottom: 8px;
-            height: 30px;
+            border-bottom: 2px solid #000;
+            margin-bottom: 6px;
+            height: 25px;
           }
           @media print {
             body {
