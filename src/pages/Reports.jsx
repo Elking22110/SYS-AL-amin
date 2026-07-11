@@ -634,8 +634,8 @@ const Reports = () => {
             }
             .store-subtitle {
               font-size: 12px;
-              font-weight: 700;
-              color: #475569;
+              font-weight: bold;
+              color: #000000;
             }
             .invoice-title-col {
               text-align: left;
@@ -775,8 +775,8 @@ const Reports = () => {
               padding-top: 15px;
               text-align: center;
               font-size: 11px;
-              font-weight: 700;
-              color: #475569;
+              font-weight: bold;
+              color: #000000;
             }
             .signatures {
               margin-top: 35px;
@@ -813,8 +813,10 @@ const Reports = () => {
               <tr>
                 <td>
                   ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
-                  <div class="store-title">${storeInfo.companyName || 'متجر الأمين للأدوات الصحية والسباكة'}</div>
-                  <div class="store-subtitle">هاتف: ${storeInfo.companyPhone || '01029022006'}</div>
+                  <div class="store-title">${storeInfo.companyName || 'الأمين للأدوات الصحية'}</div>
+                  <div class="store-subtitle" style="font-weight: 800; color: #0f172a; margin-bottom: 2px;">إدارة محمد أمين</div>
+                  <div class="store-subtitle">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
+                  <div class="store-subtitle" style="font-size: 11px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
                 </td>
                 <td class="invoice-title-col">
                   <div class="invoice-title-text">فاتورة بيع</div>
@@ -929,7 +931,8 @@ const Reports = () => {
             </div>
 
             <div class="footer-section">
-              <div>شكراً لتعاملكم معنا. نظام إدارة المبيعات للأدوات الصحية والسباكة</div>
+              <div style="font-weight: 800; margin-bottom: 4px; color: #000000;">شكراً لتعاملكم معنا</div>
+              <div style="font-size: 11px; color: #000000; font-weight: bold;">برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631</div>
             </div>
           </div>
 
