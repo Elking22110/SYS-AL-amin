@@ -45,6 +45,9 @@ const POSMain = () => {
   const [showInvoiceSummary, setShowInvoiceSummary] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash');
+  // نوافذ الخصم والضريبة - على مستوى POSMain لتجنب تقييد overflow
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [showTaxModal, setShowTaxModal] = useState(false);
 
   // Multi-stage pricing states
   const [colorModalProduct, setColorModalProduct] = useState(null);
@@ -951,22 +954,11 @@ const POSMain = () => {
 
   return (
     <div className="min-h-screen bg-slate-50" dir="rtl">
-      <div className="container mx-auto px-4 py-6">
-        {/* العنوان */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            نقطة البيع - {user?.username || 'غير محدد'}
-          </h1>
-          <p className="text-slate-500">
-            الوردية: {activeShift ? `#${activeShift.id}` : 'غير نشطة'} |
-            التاريخ: {getCurrentDate()}
-          </p>
-        </div>
-
+      <div className="container mx-auto px-4 py-4">
         {/* المحتوى الرئيسي */}
         <div className="flex flex-row gap-4 lg:gap-6 items-start w-full" dir="rtl">
           {/* إدارة السلة والدفع - تظهر على اليمين في RTL لأنها الأولى في JSX */}
-          <div className="flex flex-col gap-4 lg:gap-6 w-80 xl:w-96 sticky top-6 h-[calc(100vh-120px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
+          <div className="flex flex-col gap-4 lg:gap-6 w-80 xl:w-96 sticky top-4 h-[calc(100vh-32px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
             <CartManager
               cart={cart}
               setCart={setCart}
@@ -984,6 +976,8 @@ const POSMain = () => {
               setDownPayment={setDownPayment}
               customerInfo={customerInfo}
               setCustomerInfo={setCustomerInfo}
+              onOpenDiscountModal={() => setShowDiscountModal(true)}
+              onOpenTaxModal={() => setShowTaxModal(true)}
             />
 
             <PaymentManager
@@ -1014,6 +1008,116 @@ const POSMain = () => {
         </div>
 
       </div>
+
+      {/* نافذة الخصم - على مستوى POSMain لتجنب overflow clipping */}
+      {showDiscountModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999] backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق خصم</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-600 mb-2">نوع الخصم:</label>
+                <select
+                  value={discounts.type}
+                  onChange={(e) => setDiscounts({ ...discounts, type: e.target.value, percentage: '', fixed: '' })}
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="percentage">نسبة مئوية (%)</option>
+                  <option value="fixed">مبلغ ثابت (جنيه)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-600 mb-2">
+                  {discounts.type === 'percentage' ? 'النسبة المئوية:' : 'المبلغ:'}
+                </label>
+                <input
+                  type="number"
+                  autoFocus
+                  value={discounts.type === 'percentage' ? discounts.percentage : discounts.fixed}
+                  onChange={(e) => setDiscounts({ ...discounts, [discounts.type === 'percentage' ? 'percentage' : 'fixed']: e.target.value })}
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder={discounts.type === 'percentage' ? '0 - 100' : '0'}
+                  min="0"
+                  max={discounts.type === 'percentage' ? '100' : undefined}
+                  step={discounts.type === 'percentage' ? '1' : '0.01'}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowDiscountModal(false)}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  const val = discounts.type === 'percentage' ? discounts.percentage : discounts.fixed;
+                  const num = parseFloat(val);
+                  if (discounts.type === 'percentage' && (num < 0 || num > 100)) {
+                    alert('نسبة الخصم يجب أن تكون بين 0 و 100');
+                    return;
+                  }
+                  setShowDiscountModal(false);
+                }}
+                className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg transition-colors font-semibold"
+              >
+                تطبيق الخصم
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* نافذة الضريبة - على مستوى POSMain */}
+      {showTaxModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[9999] backdrop-blur-sm">
+          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4 shadow-2xl">
+            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق ضريبة</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-slate-600 mb-2">اسم الضريبة:</label>
+                <input
+                  type="text"
+                  value={taxes.name}
+                  onChange={(e) => setTaxes({ ...taxes, name: e.target.value })}
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="مثال: ضريبة القيمة المضافة"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-600 mb-2">النسبة المئوية:</label>
+                <input
+                  type="number"
+                  autoFocus
+                  value={taxes.vat}
+                  onChange={(e) => setTaxes({ ...taxes, vat: parseFloat(e.target.value) || 0 })}
+                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="0-100"
+                  min="0" max="100" step="0.1"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowTaxModal(false)}
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => {
+                  setTaxes({ ...taxes, enabled: true });
+                  setShowTaxModal(false);
+                }}
+                className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition-colors font-semibold"
+              >
+                تطبيق الضريبة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ملخص الفاتورة */}
       {showInvoiceSummary && (

@@ -164,7 +164,7 @@ const ALL_CATEGORIES = [
 
   // 16. جوليت صيني
   { id: 'جوليت صيني', name: 'جوليت صيني', description: 'أطقم صيني جوليت', parentId: null },
-  { id: 'جوليت صيني عام', name: 'جوليت صيني', parentId: 'جوليت صيني' },
+  { id: 'جوليت صيني عام', name: 'جوليت صيني عام', parentId: 'جوليت صيني' },
 
   // 17. مكن كومبينيشمن
   { id: 'مكن كومبينيشمن', name: 'مكن كومبينيشمن', description: 'مكن كومبينشن وأغطية خزان وملحقاتها', parentId: null },
@@ -174,7 +174,7 @@ const ALL_CATEGORIES = [
 
   // 18. احواض استانلس
   { id: 'احواض استانلس', name: 'احواض استانلس', description: 'أحواض مطبخ استانلس ستيل', parentId: null },
-  { id: 'احواض استانلس عام', name: 'احواض استانلس', parentId: 'احواض استانلس' },
+  { id: 'احواض استانلس عام', name: 'احواض استانلس عام', parentId: 'احواض استانلس' },
   { id: 'حلة استانلس ايطالى', name: 'حلة استانلس ايطالى', parentId: 'احواض استانلس' },
   { id: 'حلة استانلس المنار', name: 'حلة استانلس المنار', parentId: 'احواض استانلس' },
   { id: 'حلة استانلس ترك ستيل', name: 'حلة استانلس ترك ستيل', parentId: 'احواض استانلس' },
@@ -213,21 +213,25 @@ const ALL_CATEGORIES = [
 
   // 22. وصله متعدده
   { id: 'وصله متعدده', name: 'وصله متعدده', description: 'وصلات مرنة متعددة', parentId: null },
-  { id: 'وصلة تجاري', name: 'وصلة تجاري', parentId: 'وصله متعدده' },
-  { id: 'وصلة فايبر', name: 'وصلة فايبر', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة تجاري', name: 'وصلة مرنة تجاري', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة فاير', name: 'وصلة مرنة فاير', parentId: 'وصله متعدده' },
   { id: 'وصلة مرنة اصيل', name: 'وصلة مرنة اصيل', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة Smart hom', name: 'وصلة مرنة Smart hom', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة LAVITA', name: 'وصلة مرنة LAVITA', parentId: 'وصله متعدده' },
   { id: 'وصلة سوستة شاور', name: 'وصلة سوستة شاور', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة نحاس', name: 'وصلة مرنة نحاس', parentId: 'وصله متعدده' },
+  { id: 'وصلة مرنة Active', name: 'وصلة مرنة Active', parentId: 'وصله متعدده' },
 
   // 23. شاور+مساطر
   { id: 'شاور+مساطر', name: 'شاور+مساطر', description: 'شاور ومساطر دش', parentId: null },
-  { id: 'مسطرة دش', name: 'مسطرة دش', parentId: 'شاور+مساطر' },
-  { id: 'شاور حراري', name: 'شاور حراري', parentId: 'شاور+مساطر' },
-  { id: 'شاور استانلس', name: 'شاور استانلس', parentId: 'شاور+مساطر' },
+  { id: 'مساطر دش ٢*١', name: 'مساطر دش ٢*١', parentId: 'شاور+مساطر' },
+  { id: 'سماعة دش فردي', name: 'سماعة دش فردي', parentId: 'شاور+مساطر' },
+  { id: 'دش دفن هد + هاند', name: 'دش دفن هد + هاند', parentId: 'شاور+مساطر' },
+  { id: 'شطاف خارجي', name: 'شطاف خارجي', parentId: 'شاور+مساطر' },
 
   // 24. وحدات حوض+مرايات
   { id: 'وحدات حوض+مرايات', name: 'وحدات حوض+مرايات', description: 'وحدات حوض ومرايات', parentId: null },
-  { id: 'وحدات حوض', name: 'وحدات حوض', parentId: 'وحدات حوض+مرايات' },
-  { id: 'مرايات', name: 'مرايات', parentId: 'وحدات حوض+مرايات' }
+  { id: 'وحدات حوض + مرايات', name: 'وحدات حوض + مرايات', parentId: 'وحدات حوض+مرايات' }
 ];
 
 // دالة تُشغَّل في كل بدء تشغيل لضمان إن الفئات المعتمدة موجودة دون حذف فئات المستخدم المضافة
@@ -279,14 +283,16 @@ export function runCategoryMigration() {
     localStorage.removeItem('categories_hierarchical_migration_v19');
     localStorage.removeItem('categories_hierarchical_migration_v20');
     localStorage.removeItem('categories_hierarchical_migration_v21');
+    localStorage.removeItem('categories_hierarchical_migration_v22');
+    localStorage.removeItem('categories_hierarchical_migration_v23');
 
-    const migrationFlag = localStorage.getItem('categories_hierarchical_migration_v22');
+    const migrationFlag = localStorage.getItem('categories_hierarchical_migration_v24');
     if (migrationFlag === 'true') {
       enforceOnlyApprovedCategories();
       return;
     }
 
-    console.log('Running Category Hierarchy Overwrite & Seeding V22 (جوليت صيني single tab)...');
+    console.log('Running Category Hierarchy Overwrite & Seeding V24 (جوليت صيني single tab)...');
 
     // 1. كتابة كافة الفئات الـ 24 الجديدة وحذف أي شيء قديم تمامًا
     localStorage.setItem('productCategories', JSON.stringify(ALL_CATEGORIES));
@@ -593,8 +599,8 @@ export function runCategoryMigration() {
       }
     }
 
-    localStorage.setItem('categories_hierarchical_migration_v22', 'true');
-    console.log('Category Hierarchy Overwrite V22 completed successfully.');
+    localStorage.setItem('categories_hierarchical_migration_v24', 'true');
+    console.log('Category Hierarchy Overwrite V24 completed successfully.');
   } catch (error) {
     console.error('Error during category migration v9:', error);
   }

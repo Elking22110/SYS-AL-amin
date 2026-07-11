@@ -132,6 +132,7 @@ class SyncManager {
         if (storeName === 'categories') {
           uploadData.parent_id = record.parentId;
           delete uploadData.parentId;
+          delete uploadData.description; // حقل محلي فقط، لا يوجد في Supabase
         } else if (storeName === 'products') {
           uploadData.main_category_id = record.mainCategoryId;
           uploadData.sub_category_id = record.subCategoryId;
@@ -139,6 +140,7 @@ class SyncManager {
           delete uploadData.mainCategoryId;
           delete uploadData.subCategoryId;
           delete uploadData.imagePath;
+          delete uploadData.category; // حقل محلي فقط، لا يوجد في Supabase
         } else if (storeName === 'sales') {
           uploadData.shift_id = record.shiftId;
           uploadData.customer_id = record.customerId;

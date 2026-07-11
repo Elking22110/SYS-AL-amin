@@ -582,17 +582,7 @@ const Products = () => {
     try {
       const savedCategories = JSON.parse(localStorage.getItem('productCategories') || '[]');
       const catsArr = Array.isArray(savedCategories) ? savedCategories : [];
-      // دمج أي فئات موجودة داخل قائمة المنتجات وغير موجودة في قائمة الفئات
-      const productsNow = JSON.parse(localStorage.getItem('products') || '[]');
-      const productCategoryNames = Array.from(new Set((productsNow || []).map(p => p && p.category).filter(Boolean)));
-      const have = new Set(catsArr.map(c => c && c.name));
-      const missing = productCategoryNames.filter(n => !have.has(n)).map(name => ({ name, description: '' }));
-      const merged = missing.length > 0 ? [...catsArr, ...missing] : catsArr;
-
-      setCategories(merged);
-      if (missing.length > 0) {
-        try { localStorage.setItem('productCategories', JSON.stringify(merged)); } catch (_) { }
-      }
+      setCategories(catsArr);
     } catch (_) {
       setCategories([]);
     }

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthProvider';
 import databaseManager from '../utils/database';
 import { design } from '../utils/design';
 import { perf } from '../utils/performance';
 import { formatDate, getCurrentDate } from '../utils/dateUtils.js';
+import syncManager from '../utils/syncManager';
 import { 
   Download, 
   Upload, 
@@ -13,14 +14,20 @@ import {
   Trash2, 
   CheckCircle, 
   AlertCircle,
+  AlertTriangle,
   FileText,
   HardDrive,
   Cloud,
+  CloudOff,
+  CloudLightning,
+  Wifi,
+  WifiOff,
   Settings,
   BarChart3,
   Users,
   Package,
-  ShoppingCart
+  ShoppingCart,
+  Loader
 } from 'lucide-react';
 import { publish, EVENTS } from '../utils/observerManager';
 
@@ -31,6 +38,86 @@ const DataManager = () => {
   const [message, setMessage] = useState({ type: '', text: '' });
   const [stats, setStats] = useState(null);
   const [backups, setBackups] = useState([]);
+
+  // ---- حالة المزامنة السحابية ----
+  const [syncStatus, setSyncStatus] = useState(syncManager.status);
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncMessage, setSyncMessage] = useState({ type: '', text: '' });
+  const [tableSyncStats, setTableSyncStats] = useState({});
+
+  // الاشتراك في تحديثات حالة المزامنة
+  useEffect(() => {
+    const unsubscribe = syncManager.subscribe((status) => {
+      setSyncStatus(status);
+      if (status === 'syncing') setSyncLoading(true);
+      else setSyncLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  // تحميل إحصائيات كل جدول (pending / synced / deleted)
+  const loadTableSyncStats = useCallback(async () => {
+    const stores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns'];
+    const result = {};
+    for (const store of stores) {
+      try {
+        const all = await databaseManager.getAllForSync(store);
+        result[store] = {
+          total: all.length,
+          pending: all.filter(r => r && r.sync_status === 'pending').length,
+          synced: all.filter(r => r && r.sync_status === 'synced').length,
+          deleted: all.filter(r => r && r.sync_status === 'deleted').length,
+          noStatus: all.filter(r => r && !r.sync_status).length,
+        };
+      } catch {
+        result[store] = { total: 0, pending: 0, synced: 0, deleted: 0, noStatus: 0 };
+      }
+    }
+    setTableSyncStats(result);
+  }, []);
+
+  // مزامنة يدوية فورية
+  const handleManualSync = async () => {
+    setSyncLoading(true);
+    setSyncMessage({ type: '', text: '' });
+    try {
+      await syncManager.triggerSync();
+      setSyncMessage({ type: 'success', text: '✅ تمت المزامنة مع السحابة بنجاح!' });
+      await loadTableSyncStats();
+    } catch (err) {
+      setSyncMessage({ type: 'error', text: `❌ فشلت المزامنة: ${err?.message || 'خطأ غير معروف'}` });
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
+  // إعادة ضبط كل السجلات بدون sync_status إلى pending (لضمان رفعها)
+  const handleMarkAllPending = async () => {
+    if (!confirm('سيتم تحديد جميع السجلات للمزامنة مع السحابة. هل تريد المتابعة؟')) return;
+    setSyncLoading(true);
+    setSyncMessage({ type: '', text: '' });
+    let totalMarked = 0;
+    const stores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns'];
+    for (const store of stores) {
+      try {
+        const all = await databaseManager.getAllForSync(store);
+        for (const record of all) {
+          if (record && record.sync_status !== 'pending' && record.sync_status !== 'deleted') {
+            record.sync_status = 'pending';
+            record.updated_at = record.updated_at || new Date().toISOString();
+            const tx = databaseManager.db.transaction([store], 'readwrite');
+            tx.objectStore(store).put(record);
+            totalMarked++;
+          }
+        }
+      } catch (e) {
+        console.error(`خطأ في تعليم ${store}:`, e);
+      }
+    }
+    setSyncMessage({ type: 'success', text: `✅ تم تعليم ${totalMarked} سجل للمزامنة. ابدأ المزامنة الآن.` });
+    await loadTableSyncStats();
+    setSyncLoading(false);
+  };
 
   // دالة تحويل البيانات إلى CSV
   const convertToCSV = (data) => {
@@ -401,6 +488,27 @@ const DataManager = () => {
           <Trash2 className="h-5 w-5 inline mr-2" />
           التنظيف
         </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setActiveTab('cloudsync');
+            loadTableSyncStats();
+          }}
+          className={`px-6 py-3 rounded-lg font-semibold transition-colors min-h-[50px] cursor-pointer ${
+            activeTab === 'cloudsync' 
+              ? 'bg-blue-500 bg-opacity-20 text-blue-300 border border-blue-500 border-opacity-30' 
+              : 'text-slate-800 hover:bg-white hover:bg-opacity-10'
+          }`}
+          style={{ 
+            pointerEvents: 'auto',
+            zIndex: 10,
+            position: 'relative'
+          }}
+        >
+          <Cloud className="h-5 w-5 inline mr-2" />
+          مزامنة السحابة
+        </button>
       </div>
 
       {/* Message */}
@@ -722,6 +830,140 @@ const DataManager = () => {
             <Trash2 className="h-5 w-5 mr-2" />
             تنظيف البيانات
           </button>
+        </div>
+      )}
+
+      {/* Cloud Sync Tab */}
+      {activeTab === 'cloudsync' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-slate-800">مزامنة السحابة (Supabase)</h3>
+            {/* مؤشر الحالة */}
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border ${
+              syncStatus === 'synced'   ? 'bg-green-500 bg-opacity-20 text-green-300 border-green-500 border-opacity-30' :
+              syncStatus === 'syncing'  ? 'bg-blue-500 bg-opacity-20 text-blue-300 border-blue-500 border-opacity-30' :
+              syncStatus === 'error'    ? 'bg-red-500 bg-opacity-20 text-red-300 border-red-500 border-opacity-30' :
+                                         'bg-gray-500 bg-opacity-20 text-gray-300 border-gray-500 border-opacity-30'
+            }`}>
+              {syncStatus === 'synced'  && <><CheckCircle className="h-4 w-4" /> متزامن</>}
+              {syncStatus === 'syncing' && <><Loader className="h-4 w-4 animate-spin" /> جارٍ المزامنة...</>}
+              {syncStatus === 'error'   && <><AlertTriangle className="h-4 w-4" /> خطأ في المزامنة</>}
+              {syncStatus === 'offline' && <><WifiOff className="h-4 w-4" /> غير متصل بالإنترنت</>}
+            </div>
+          </div>
+
+          {/* رسالة النتيجة */}
+          {syncMessage.text && (
+            <div className={`p-4 rounded-lg border ${
+              syncMessage.type === 'success'
+                ? 'bg-green-500 bg-opacity-20 border-green-500 border-opacity-30 text-green-300'
+                : 'bg-red-500 bg-opacity-20 border-red-500 border-opacity-30 text-red-300'
+            }`}>
+              {syncMessage.text}
+            </div>
+          )}
+
+          {/* أزرار المزامنة */}
+          <div className="flex gap-3 flex-wrap">
+            <button
+              onClick={handleManualSync}
+              disabled={syncLoading || syncStatus === 'offline'}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-600 bg-opacity-80 hover:bg-opacity-100 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
+            >
+              {syncLoading
+                ? <Loader className="h-5 w-5 animate-spin" />
+                : <Cloud className="h-5 w-5" />
+              }
+              مزامنة الآن مع السحابة
+            </button>
+
+            <button
+              onClick={loadTableSyncStats}
+              disabled={syncLoading}
+              className="flex items-center gap-2 px-4 py-3 bg-white bg-opacity-10 hover:bg-opacity-20 text-slate-800 rounded-lg font-semibold transition-all disabled:opacity-50"
+              style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
+            >
+              <RefreshCw className="h-4 w-4" />
+              تحديث الإحصائيات
+            </button>
+
+            <button
+              onClick={handleMarkAllPending}
+              disabled={syncLoading}
+              className="flex items-center gap-2 px-4 py-3 bg-orange-500 bg-opacity-20 hover:bg-opacity-30 text-orange-300 border border-orange-500 border-opacity-30 rounded-lg font-semibold transition-all disabled:opacity-50"
+              style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
+              title="يضع جميع السجلات في وضع الانتظار للمزامنة للمرة القادمة"
+            >
+              <CloudLightning className="h-4 w-4" />
+              فرض إعادة رفع الكل
+            </button>
+          </div>
+
+          {/* تعليمات */}
+          <div className="p-4 bg-blue-500 bg-opacity-10 border border-blue-500 border-opacity-20 rounded-lg text-sm text-blue-200 space-y-1">
+            <p className="font-semibold text-blue-300">💡 كيفية التحقق من المزامنة:</p>
+            <p>① اضغط <strong>"تحديث الإحصائيات"</strong> لرؤية عدد السجلات في كل جدول.</p>
+            <p>② إذا كان عدد <strong className="text-yellow-300">"في الانتظار"</strong> أكبر من صفر، اضغط <strong>"مزامنة الآن"</strong>.</p>
+            <p>③ بعد المزامنة، يجب أن يصبح عدد "في الانتظار" صفراً ويزيد عدد "متزامن".</p>
+            <p>④ إذا لم تنجح المزامنة، اضغط <strong className="text-orange-300">"فرض إعادة رفع الكل"</strong> ثم جرب المزامنة مرة أخرى.</p>
+          </div>
+
+          {/* إحصائيات الجداول */}
+          {Object.keys(tableSyncStats).length > 0 && (
+            <div>
+              <h4 className="text-slate-800 font-semibold mb-3">📊 حالة المزامنة لكل جدول:</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white border-opacity-10">
+                      <th className="text-right pb-2 text-purple-200 font-medium">الجدول</th>
+                      <th className="text-center pb-2 text-purple-200 font-medium">الإجمالي</th>
+                      <th className="text-center pb-2 text-yellow-300 font-medium">في الانتظار</th>
+                      <th className="text-center pb-2 text-green-300 font-medium">متزامن</th>
+                      <th className="text-center pb-2 text-red-300 font-medium">محذوف</th>
+                      <th className="text-center pb-2 text-gray-300 font-medium">بدون حالة</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(tableSyncStats).map(([store, s]) => (
+                      <tr key={store} className="border-b border-white border-opacity-5 hover:bg-white hover:bg-opacity-5">
+                        <td className="py-2 text-slate-800 font-medium">{store}</td>
+                        <td className="py-2 text-center text-slate-800">{s.total}</td>
+                        <td className="py-2 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            s.pending > 0 ? 'bg-yellow-500 bg-opacity-20 text-yellow-300' : 'text-gray-500'
+                          }`}>{s.pending}</span>
+                        </td>
+                        <td className="py-2 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            s.synced > 0 ? 'bg-green-500 bg-opacity-20 text-green-300' : 'text-gray-500'
+                          }`}>{s.synced}</span>
+                        </td>
+                        <td className="py-2 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            s.deleted > 0 ? 'bg-red-500 bg-opacity-20 text-red-300' : 'text-gray-500'
+                          }`}>{s.deleted}</span>
+                        </td>
+                        <td className="py-2 text-center">
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            s.noStatus > 0 ? 'bg-gray-500 bg-opacity-20 text-gray-300' : 'text-gray-500'
+                          }`}>{s.noStatus}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {Object.keys(tableSyncStats).length === 0 && (
+            <div className="text-center py-8 text-purple-200">
+              <Cloud className="h-12 w-12 mx-auto mb-4 opacity-40" />
+              <p>اضغط "تحديث الإحصائيات" لعرض حالة المزامنة</p>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -21,11 +21,11 @@ const CartManager = ({
   downPayment,
   setDownPayment,
   customerInfo,
-  setCustomerInfo
+  setCustomerInfo,
+  onOpenDiscountModal,
+  onOpenTaxModal
 }) => {
   const { notifySuccess, notifyError } = useNotifications();
-  const [showDiscountModal, setShowDiscountModal] = useState(false);
-  const [showTaxModal, setShowTaxModal] = useState(false);
   const [editingQty, setEditingQty] = useState({});
   const [editingPrice, setEditingPrice] = useState({});
 
@@ -84,7 +84,6 @@ const CartManager = ({
         }
         setDiscounts({ type: 'fixed', fixed, percentage: '' });
       }
-      setShowDiscountModal(false);
       notifySuccess('تم تطبيق الخصم', 'تم تطبيق الخصم بنجاح');
     } catch (error) {
       errorHandler.handleError(error, 'Apply Discount', 'medium');
@@ -108,7 +107,6 @@ const CartManager = ({
       if (setTaxes) {
         setTaxes({ enabled: true, vat, name });
       }
-      setShowTaxModal(false);
       notifySuccess('تم تطبيق الضريبة', 'تم تطبيق الضريبة بنجاح');
     } catch (error) {
       errorHandler.handleError(error, 'Apply Tax', 'medium');
@@ -386,123 +384,18 @@ const CartManager = ({
       {cart.length > 0 && (
         <div className="mt-4 space-y-2">
           <button
-            onClick={() => setShowDiscountModal(true)}
+            onClick={() => onOpenDiscountModal && onOpenDiscountModal()}
             className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-slate-800 py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
           >
             تطبيق خصم
           </button>
 
           <button
-            onClick={() => setShowTaxModal(true)}
+            onClick={() => onOpenTaxModal && onOpenTaxModal()}
             className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-slate-800 py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105"
           >
             {taxes.enabled ? 'تعديل الضريبة' : 'تطبيق ضريبة'}
           </button>
-        </div>
-      )}
-
-      {/* نافذة الخصم */}
-      {showDiscountModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق خصم</h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-slate-600 mb-2">نوع الخصم:</label>
-                <select
-                  value={discounts.type}
-                  onChange={(e) => setDiscounts({ ...discounts, type: e.target.value, percentage: '', fixed: '' })}
-                  className="w-full bg-gray-600 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <option value="percentage">نسبة مئوية</option>
-                  <option value="fixed">مبلغ ثابت</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-slate-600 mb-2">
-                  {discounts.type === 'percentage' ? 'النسبة المئوية:' : 'المبلغ:'}
-                </label>
-                <input
-                  type="number"
-                  value={discounts.type === 'percentage' ? discounts.percentage : discounts.fixed}
-                  onChange={(e) => setDiscounts({ ...discounts, [discounts.type]: e.target.value })}
-                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder={discounts.type === 'percentage' ? '0-100' : '0'}
-                  min="0"
-                  max={discounts.type === 'percentage' ? '100' : getSubtotal}
-                  step={discounts.type === 'percentage' ? '1' : '0.01'}
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowDiscountModal(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={() => applyDiscount(discounts.type, discounts.type === 'percentage' ? discounts.percentage : discounts.fixed)}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors"
-              >
-                تطبيق
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* نافذة الضريبة */}
-      {showTaxModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-96 max-w-full mx-4">
-            <h3 className="text-xl font-bold text-slate-800 mb-4">تطبيق ضريبة</h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-slate-600 mb-2">اسم الضريبة:</label>
-                <input
-                  type="text"
-                  value={taxes.name}
-                  onChange={(e) => setTaxes({ ...taxes, name: e.target.value })}
-                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="مثال: ضريبة القيمة المضافة"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-600 mb-2">النسبة المئوية:</label>
-                <input
-                  type="number"
-                  value={taxes.vat}
-                  onChange={(e) => setTaxes({ ...taxes, vat: parseFloat(e.target.value) || 0 })}
-                  className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="0-100"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowTaxModal(false)}
-                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-4 rounded-lg transition-colors border border-slate-300"
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={() => applyTax(taxes.vat, taxes.name)}
-                className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg transition-colors"
-              >
-                تطبيق
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>
