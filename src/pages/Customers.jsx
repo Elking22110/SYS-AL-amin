@@ -31,8 +31,14 @@ const Customers = () => {
     name: '',
     phone: '',
     email: '',
-    address: ''
+    address: '',
+    type: 'عميل عادي',
+    debt: 0
   });
+
+  const [selectedType, setSelectedType] = useState('الكل');
+  const [settlingCustomer, setSettlingCustomer] = useState(null);
+  const [settleAmount, setSettleAmount] = useState('');
 
   const statuses = ['الكل', 'نشط', 'VIP', 'جديد', 'غير نشط'];
 
@@ -86,7 +92,8 @@ const Customers = () => {
       customer.phone.includes(searchTerm) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === 'الكل' || customer.status === selectedStatus;
-    return matchesSearch && matchesStatus;
+    const matchesType = selectedType === 'الكل' || (customer.type || 'عميل عادي') === selectedType;
+    return matchesSearch && matchesStatus && matchesType;
   });
 
   const handleAddCustomer = () => {
@@ -117,7 +124,9 @@ const Customers = () => {
         name: '',
         phone: '',
         email: '',
-        address: ''
+        address: '',
+        type: 'عميل عادي',
+        debt: 0
       });
       setShowAddModal(false);
     }
@@ -129,7 +138,9 @@ const Customers = () => {
       name: customer.name,
       phone: customer.phone,
       email: customer.email,
-      address: customer.address
+      address: customer.address,
+      type: customer.type || 'عميل عادي',
+      debt: customer.debt || 0
     });
     setShowAddModal(true);
   };
@@ -158,9 +169,43 @@ const Customers = () => {
         name: '',
         phone: '',
         email: '',
-        address: ''
+        address: '',
+        type: 'عميل عادي',
+        debt: 0
       });
       setShowAddModal(false);
+    }
+  };
+
+  const handleSettleDebt = () => {
+    if (settlingCustomer && settleAmount) {
+      const amount = parseFloat(settleAmount) || 0;
+      if (amount <= 0) {
+        alert('يرجى إدخال مبلغ صحيح أكبر من الصفر');
+        return;
+      }
+      
+      const currentDebt = settlingCustomer.debt || 0;
+      const newDebt = Math.max(0, safeMath.subtract(currentDebt, amount));
+
+      const updatedCustomer = {
+        ...settlingCustomer,
+        debt: newDebt
+      };
+
+      const updatedCustomers = customers.map(c => c.id === settlingCustomer.id ? updatedCustomer : c);
+      setCustomers(updatedCustomers);
+      localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+
+      publish(EVENTS.CUSTOMERS_CHANGED, {
+        type: 'update',
+        customer: updatedCustomer,
+        customers: updatedCustomers
+      });
+
+      alert(`تم سداد مبلغ ${amount.toLocaleString('en-US')} ج.م. المديونية المتبقية: ${newDebt.toLocaleString('en-US')} ج.م`);
+      setSettlingCustomer(null);
+      setSettleAmount('');
     }
   };
 
@@ -304,16 +349,16 @@ const Customers = () => {
           <div className="glass-card hover-lift animate-fadeInUp group cursor-pointer p-4 md:p-6 lg:p-8" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
-                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">عملاء جدد هذا الشهر</p>
-                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-slate-800 mb-2 md:mb-3">
-                  {customers.filter(c => c.status === 'جديد').length}
+                <p className="text-xs md:text-sm font-medium text-slate-600 mb-1 md:mb-2 uppercase tracking-wide">مديونيات العملاء المستحقة</p>
+                <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-red-400 mb-2 md:mb-3">
+                  {customers.reduce((sum, c) => safeMath.add(sum, c.debt || 0), 0).toLocaleString('en-US')} ج.م
                 </p>
                 <div className="flex items-center text-xs md:text-sm">
-                  <span className="text-orange-300 font-medium">عملاء جدد</span>
+                  <span className="text-red-300 font-medium">إجمالي ديون العملاء آجل</span>
                 </div>
               </div>
-              <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Calendar className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
+              <div className="p-3 md:p-4 lg:p-5 bg-gradient-to-r from-red-500 to-rose-500 rounded-2xl md:rounded-3xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
           </div>
@@ -338,15 +383,15 @@ const Customers = () => {
                     <p className="font-bold text-slate-800 text-lg">{customer.name}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <Phone className="h-3 w-3 text-green-400" />
-                      <p className="text-sm text-green-300 font-medium bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">{customer.phone}</p>
+                      <p className="text-sm text-green-800 font-semibold bg-green-500 bg-opacity-20 px-2.5 py-1 rounded-full">{customer.phone}</p>
                     </div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full">
+                  <div className="text-lg font-bold text-emerald-800 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full">
                     {customer.totalSpent.toLocaleString('en-US')} ج.م
                   </div>
-                  <div className="text-xs text-orange-300 bg-orange-500 bg-opacity-20 px-2 py-1 rounded-full mt-1">
+                  <div className="text-xs text-orange-800 font-semibold bg-orange-500 bg-opacity-20 px-2.5 py-1 rounded-full mt-1">
                     {customer.orders} طلب
                   </div>
                 </div>
@@ -382,6 +427,19 @@ const Customers = () => {
               </select>
             </div>
 
+            <div className="relative">
+              <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-indigo-400 h-5 w-5" />
+              <select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                className="pr-10 pl-4 py-3 text-right appearance-none bg-white bg-opacity-10 border border-indigo-500 border-opacity-30 rounded-lg text-slate-800 focus:outline-none focus:border-indigo-400 focus:border-opacity-60"
+              >
+                {['الكل', 'عميل عادي', 'صنايعي', 'تاجر'].map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
             <button className="bg-gradient-to-r from-gray-600 to-gray-700 text-slate-800 px-4 py-3 rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all duration-300 flex items-center border border-gray-500 border-opacity-30 hover:scale-105">
               <Download className="h-5 w-5 mr-2" />
               تصدير
@@ -400,13 +458,15 @@ const Customers = () => {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-800 to-gray-900">
                 <tr>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-blue-300 uppercase tracking-wider">العميل</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-green-300 uppercase tracking-wider">معلومات الاتصال</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-emerald-300 uppercase tracking-wider">إجمالي المشتريات</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-orange-300 uppercase tracking-wider">عدد الطلبات</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-cyan-300 uppercase tracking-wider">آخر زيارة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">الحالة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">العميل</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">نوع العميل</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">معلومات الاتصال</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">إجمالي المشتريات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">المديونية</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">عدد الطلبات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">آخر زيارة</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">الحالة</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-20">
@@ -419,40 +479,67 @@ const Customers = () => {
                         </div>
                         <div>
                           <div className="text-sm font-bold text-slate-800">{customer.name}</div>
-                          <div className="text-xs text-blue-300 bg-blue-500 bg-opacity-20 px-2 py-1 rounded-full inline-block mt-1">
+                          <div className="text-xs text-blue-800 font-semibold bg-blue-500 bg-opacity-20 px-2 py-1 rounded-full inline-block mt-1">
                             انضم: {customer.joinDate}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-full ${
+                        customer.type === 'صنايعي' ? 'bg-orange-500 bg-opacity-20 text-orange-400' :
+                        customer.type === 'تاجر' ? 'bg-indigo-500 bg-opacity-20 text-indigo-400' :
+                        'bg-slate-500 bg-opacity-20 text-slate-400'
+                      }`}>
+                        {customer.type || 'عميل عادي'}
+                      </span>
+                    </td>
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
                           <Phone className="h-4 w-4 text-green-400" />
-                          <div className="text-sm font-semibold text-green-300 bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">
+                          <div className="text-sm font-semibold text-green-800 bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.phone}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Mail className="h-4 w-4 text-purple-400" />
-                          <div className="text-sm font-medium text-slate-500 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
+                          <div className="text-sm font-semibold text-purple-800 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.email}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-emerald-400 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
+                      <div className="text-sm font-bold text-emerald-800 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
                         {customer.totalSpent.toLocaleString('en-US')} ج.م
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-orange-400 bg-orange-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
+                      <div className="flex items-center space-x-2">
+                        <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+                          (customer.debt || 0) > 0 ? 'bg-red-500 bg-opacity-20 text-red-400' : 'bg-slate-500 bg-opacity-20 text-slate-400'
+                        }`}>
+                          {(customer.debt || 0).toLocaleString('en-US')} ج.م
+                        </span>
+                        {(customer.debt || 0) > 0 && (
+                          <button
+                            onClick={() => { soundManager.play('openWindow'); setSettlingCustomer(customer); setSettleAmount(''); }}
+                            className="text-xs bg-red-600 text-slate-800 font-extrabold px-2.5 py-1 rounded hover:bg-red-700 transition-colors cursor-pointer"
+                            title="تسوية مديونية العميل"
+                          >
+                            سداد
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-orange-800 bg-orange-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
                         {customer.orders} طلب
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-cyan-300 bg-cyan-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
+                      <div className="text-sm font-semibold text-cyan-800 bg-cyan-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
                         {customer.lastVisit}
                       </div>
                     </td>
@@ -489,6 +576,55 @@ const Customers = () => {
       </div>
 
       {/* Add/Edit Customer Modal - خارج الكارد الرئيسي تماماً */}
+      {/* نافذة تسوية المديونية */}
+      {settlingCustomer && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
+          <div className="glass-card p-6 w-full max-w-sm mx-4 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl">
+            <h3 className="text-lg font-bold text-slate-800 mb-2">سداد مديونية العميل</h3>
+            <p className="text-slate-600 text-sm mb-4">العميل: <strong className="text-slate-800">{settlingCustomer.name}</strong></p>
+            
+            <div className="bg-slate-800 bg-opacity-50 p-4 rounded-xl mb-4 border border-slate-700">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-slate-600 font-semibold">المديونية الحالية:</span>
+                <span className="text-red-400 font-bold text-base">{(settlingCustomer.debt || 0).toLocaleString('en-US')} ج.م</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">المبلغ المدفوع (جنيه):</label>
+                <input
+                  type="number"
+                  autoFocus
+                  value={settleAmount}
+                  onChange={(e) => setSettleAmount(e.target.value)}
+                  className="input-modern w-full px-3 py-2 text-right"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => { soundManager.play('closeWindow'); setSettlingCustomer(null); setSettleAmount(''); }}
+                className="px-4 py-2 text-slate-500 hover:text-slate-700 transition-colors font-semibold"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => { soundManager.play('save'); handleSettleDebt(); }}
+                className="btn-primary px-4 py-2"
+                disabled={!settleAmount || parseFloat(settleAmount) <= 0}
+              >
+                تأكيد سداد
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showAddModal && (
         <div
           className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm"
@@ -551,6 +687,31 @@ const Customers = () => {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1">تصنيف العميل</label>
+                <select
+                  value={newCustomer.type}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, type: e.target.value })}
+                  className="input-modern w-full px-3 py-2 text-right"
+                >
+                  <option value="عميل عادي">عميل عادي</option>
+                  <option value="صنايعي">صنايعي</option>
+                  <option value="تاجر">تاجر</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1">المديونية الابتدائية (جنيه)</label>
+                <input
+                  type="number"
+                  value={newCustomer.debt}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, debt: parseFloat(e.target.value) || 0 })}
+                  className="input-modern w-full px-3 py-2 text-right"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-slate-600 mb-1">العنوان</label>
                 <textarea
                   value={newCustomer.address}
@@ -571,7 +732,9 @@ const Customers = () => {
                     name: '',
                     phone: '',
                     email: '',
-                    address: ''
+                    address: '',
+                    type: 'عميل عادي',
+                    debt: 0
                   });
                 }}
                 className="px-4 py-2 text-slate-600 hover:text-slate-800 transition-colors"

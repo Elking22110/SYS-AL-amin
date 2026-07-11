@@ -352,6 +352,64 @@ const POSMain = () => {
       const existingSales = storageOptimizer.get('sales', []);
       const updatedSales = [...existingSales, sale];
       storageOptimizer.set('sales', updatedSales);
+
+      // تحديث مديونية وبيانات العميل
+      try {
+        if (customerInfo.phone && customerInfo.phone.trim() !== '') {
+          const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
+          const phoneTrimmed = customerInfo.phone.trim();
+          const existingCustIndex = savedCustomers.findIndex(c => c.phone.trim() === phoneTrimmed);
+          
+          let addedDebt = 0;
+          if (method === 'deferred') {
+            addedDebt = totalForSale;
+          } else if (downPayment.enabled) {
+            addedDebt = Math.max(0, safeMath.subtract(totalForSale, parseFloat(downPayment.amount) || 0));
+          }
+
+          let updatedCust;
+          if (existingCustIndex !== -1) {
+            const existing = savedCustomers[existingCustIndex];
+            updatedCust = {
+              ...existing,
+              name: customerInfo.name || existing.name,
+              totalSpent: safeMath.add(existing.totalSpent || 0, totalForSale),
+              orders: (existing.orders || 0) + 1,
+              debt: safeMath.add(existing.debt || 0, addedDebt),
+              lastVisit: getCurrentDate().split('T')[0]
+            };
+            savedCustomers[existingCustIndex] = updatedCust;
+          } else {
+            updatedCust = {
+              id: Date.now(),
+              name: customerInfo.name || 'عميل جديد',
+              phone: phoneTrimmed,
+              email: 'غير محدد',
+              address: 'غير محدد',
+              type: customerInfo.type || 'عميل عادي',
+              debt: addedDebt,
+              totalSpent: totalForSale,
+              orders: 1,
+              lastVisit: getCurrentDate().split('T')[0],
+              joinDate: getCurrentDate().split('T')[0],
+              status: 'جديد'
+            };
+            savedCustomers.push(updatedCust);
+          }
+          
+          localStorage.setItem('customers', JSON.stringify(savedCustomers));
+          
+          try {
+            publish(EVENTS.CUSTOMERS_CHANGED, {
+              type: existingCustIndex !== -1 ? 'update' : 'create',
+              customer: updatedCust,
+              customers: savedCustomers
+            });
+          } catch (_) {}
+        }
+      } catch (err) {
+        console.error('Error updating customer debt/stats on sale:', err);
+      }
       try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'sales' } })); } catch (_) { }
 
       // Handle remainingQuantity for supplies & delete product if empty

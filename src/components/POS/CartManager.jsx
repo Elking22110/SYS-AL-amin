@@ -369,13 +369,49 @@ const CartManager = ({
                 id="customer-phone-input"
                 type="tel"
                 value={customerInfo?.phone || ''}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+                onChange={(e) => {
+                  const phoneVal = e.target.value;
+                  let updatedInfo = { ...customerInfo, phone: phoneVal };
+                  if (phoneVal) {
+                    try {
+                      const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
+                      const found = savedCustomers.find(c => c.phone.trim() === phoneVal.trim());
+                      if (found) {
+                        updatedInfo = {
+                          ...updatedInfo,
+                          name: found.name,
+                          type: found.type || 'عميل عادي',
+                          debt: found.debt || 0
+                        };
+                      } else {
+                        delete updatedInfo.type;
+                        delete updatedInfo.debt;
+                      }
+                    } catch (err) {
+                      console.error(err);
+                    }
+                  }
+                  setCustomerInfo(updatedInfo);
+                }}
                 placeholder="رقم الهاتف *"
                 className="w-full px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
                 required
               />
             </div>
           </div>
+          {customerInfo?.phone && customerInfo?.name && (
+            <div className="mt-2 flex items-center justify-between text-xs font-semibold bg-blue-500 bg-opacity-20 text-slate-800 p-2 rounded">
+              <span>👤 الاسم: {customerInfo.name}</span>
+              <span className="bg-blue-600 text-slate-800 px-2 py-0.5 rounded text-[10px]">
+                النوع: {customerInfo.type || 'عميل عادي'}
+              </span>
+              {Number(customerInfo.debt || 0) > 0 && (
+                <span className="text-red-600 font-bold bg-red-500 bg-opacity-25 px-2 py-0.5 rounded text-[10px]">
+                  المديونية: {(customerInfo.debt || 0).toLocaleString('en-US')} ج.م
+                </span>
+              )}
+            </div>
+          )}
           {!customerInfo?.phone && (
             <p className="text-red-400 text-xs mt-1">رقم الهاتف مطلوب</p>
           )}

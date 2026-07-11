@@ -2639,3 +2639,8 @@ textarea:focus {
 button:hover .lucide {
   transform: scale(1.08);
 }
+
+/* تخصيص التدرج اللوني للجدول ليتحول إلى الأبيض */
+.to-gray-900 {
+  --tw-gradient-to: #ffffff var(--tw-gradient-to-position) !important;
+}

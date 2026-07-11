@@ -174,6 +174,7 @@ const PaymentManager = ({
         <div className="grid grid-cols-2 gap-2">
           {[
             { value: 'cash', label: 'نقدي', icon: '💵' },
+            { value: 'deferred', label: 'آجل', icon: '⏳' },
             { value: 'wallet', label: 'محفظة إلكترونية', icon: '📱' },
             { value: 'instapay', label: 'انستا باي', icon: '💳' },
             { value: 'bank', label: 'تحويل بنكي', icon: '🏦' }
