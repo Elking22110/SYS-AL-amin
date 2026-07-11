@@ -356,6 +356,7 @@ const CartManager = ({
           <div className="grid grid-cols-2 gap-2">
             <div>
               <input
+                id="customer-name-input"
                 type="text"
                 value={customerInfo?.name || ''}
                 onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
@@ -365,6 +366,7 @@ const CartManager = ({
             </div>
             <div>
               <input
+                id="customer-phone-input"
                 type="tel"
                 value={customerInfo?.phone || ''}
                 onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}

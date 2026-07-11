@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Plus,
   Search,
@@ -322,10 +322,11 @@ const CategoryDrillDownModal = ({
                         <div className="flex items-center gap-2 mt-1 justify-start">
                           <span className="text-[10px] text-slate-400 font-mono">{p.sku || p.barcode || '—'}</span>
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
-                            (p.stock ?? 0) > 5 ? 'bg-green-500/20 text-green-400'
+                            !inventoryEnabled ? 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                            : (p.stock ?? 0) > 5 ? 'bg-green-500/20 text-green-400'
                             : (p.stock ?? 0) > 0 ? 'bg-orange-500/20 text-orange-400'
                             : 'bg-red-500/20 text-red-400'
-                          }`}>مخزون: {p.stock ?? 0}</span>
+                          }`}>مخزون: {!inventoryEnabled ? '0' : (p.stock ?? 0)}</span>
                         </div>
                       </div>
                       <div className="text-left shrink-0 pl-3">
@@ -428,6 +429,29 @@ const Products = () => {
     );
   }
   const [products, setProducts] = useState([]);
+  const [inventoryEnabled, setInventoryEnabled] = useState(true);
+
+  useEffect(() => {
+    const checkInventorySetting = () => {
+      try {
+        const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
+        const settings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+        const rawFlag = (storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : settings.inventoryEnabled);
+        const enabled = !(rawFlag === false || rawFlag === 'false' || rawFlag === 0 || rawFlag === '0');
+        setInventoryEnabled(enabled);
+      } catch (_) {
+        setInventoryEnabled(true);
+      }
+    };
+    checkInventorySetting();
+    window.addEventListener('storage', checkInventorySetting);
+    const handleSettingsUpdated = () => checkInventorySetting();
+    window.addEventListener('settingsUpdated', handleSettingsUpdated);
+    return () => {
+      window.removeEventListener('storage', checkInventorySetting);
+      window.removeEventListener('settingsUpdated', handleSettingsUpdated);
+    };
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainCategory, setSelectedMainCategory] = useState('الكل');
@@ -439,6 +463,18 @@ const Products = () => {
   const [editCategoryForm, setEditCategoryForm] = useState({ name: '', parentId: '' });
   const [newCategoryType, setNewCategoryType] = useState('main'); // 'main' or 'sub'
   const [editingProduct, setEditingProduct] = useState(null);
+  const productNameInputRef = useRef(null);
+
+  // تركيز تلقائي على اسم المنتج عند فتح المودال لتسهيل وسرعة الإضافة
+  useEffect(() => {
+    if (showAddModal) {
+      setTimeout(() => {
+        if (productNameInputRef.current) {
+          productNameInputRef.current.focus();
+        }
+      }, 150);
+    }
+  }, [showAddModal, editingProduct]);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -995,12 +1031,35 @@ const Products = () => {
       return;
     }
 
+    if (inventoryEnabled) {
+      if (newProduct.stock === '' || isNaN(parseInt(newProduct.stock))) {
+        notifyValidationError('المخزون', 'يرجى إدخال كمية المخزون (إدارة المخزون مفعّلة)');
+        return;
+      }
+      if (parseInt(newProduct.stock) < 0) {
+        notifyValidationError('المخزون', 'المخزون لا يمكن أن يكون سالباً');
+        return;
+      }
+      if (newProduct.minStock === '' || isNaN(parseInt(newProduct.minStock))) {
+        notifyValidationError('الحد الأدنى', 'يرجى إدخال الحد الأدنى للمخزون');
+        return;
+      }
+      if (parseInt(newProduct.minStock) < 0) {
+        notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون سالباً');
+        return;
+      }
+      if (parseInt(newProduct.minStock) > parseInt(newProduct.stock)) {
+        notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون أكبر من المخزون الحالي');
+        return;
+      }
+    }
+
     const product = {
       id: Date.now(),
       ...newProduct,
       price: parseFloat(newProduct.price),
-      stock: parseInt(newProduct.stock) || 0,
-      minStock: parseInt(newProduct.minStock) || 0
+      stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
+      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0
     };
     const updatedProducts = [...products, product];
     setProducts(updatedProducts);
@@ -1068,12 +1127,35 @@ const Products = () => {
 
   const handleUpdateProduct = () => {
     if (editingProduct && newProduct.name && newProduct.price) {
+      if (inventoryEnabled) {
+        if (newProduct.stock === '' || isNaN(parseInt(newProduct.stock))) {
+          notifyValidationError('المخزون', 'يرجى إدخال كمية المخزون (إدارة المخزون مفعّلة)');
+          return;
+        }
+        if (parseInt(newProduct.stock) < 0) {
+          notifyValidationError('المخزون', 'المخزون لا يمكن أن يكون سالباً');
+          return;
+        }
+        if (newProduct.minStock === '' || isNaN(parseInt(newProduct.minStock))) {
+          notifyValidationError('الحد الأدنى', 'يرجى إدخال الحد الأدنى للمخزون');
+          return;
+        }
+        if (parseInt(newProduct.minStock) < 0) {
+          notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون سالباً');
+          return;
+        }
+        if (parseInt(newProduct.minStock) > parseInt(newProduct.stock)) {
+          notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون أكبر من المخزون الحالي');
+          return;
+        }
+      }
+
       const updatedProduct = {
         ...editingProduct,
         ...newProduct,
         price: parseFloat(newProduct.price),
-        stock: parseInt(newProduct.stock) || 0,
-        minStock: parseInt(newProduct.minStock) || 0
+        stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
+        minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0
       };
       const updatedProducts = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
       setProducts(updatedProducts);
@@ -1146,7 +1228,7 @@ const Products = () => {
     }
   };
 
-  const lowStockProducts = products.filter(p => p.stock <= p.minStock);
+  const lowStockProducts = inventoryEnabled ? products.filter(p => p.stock <= p.minStock) : [];
   console.log('=== حساب المنتجات منخفضة المخزون ===');
   console.log('المنتجات:', products.length);
   console.log('المنتجات منخفضة المخزون:', lowStockProducts.length);
@@ -1229,7 +1311,7 @@ const Products = () => {
   useEffect(() => {
     console.log('=== useEffect منفصل للمنتجات منخفضة المخزون ===');
     console.log('المنتجات في useEffect:', products.length);
-    const calculatedLowStock = products.filter(p => p.stock <= p.minStock);
+    const calculatedLowStock = inventoryEnabled ? products.filter(p => p.stock <= p.minStock) : [];
     console.log('المنتجات منخفضة المخزون المحسوبة:', calculatedLowStock.length);
     console.log('تفاصيل المنتجات منخفضة المخزون المحسوبة:', calculatedLowStock.map(p => `${p.name}: ${p.stock}/${p.minStock}`));
     console.log('=== نهاية useEffect منفصل ===');
@@ -1609,11 +1691,13 @@ const Products = () => {
                     </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-slate-800 font-semibold">${product.price}</td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm font-semibold rounded-full ${product.stock <= product.minStock
+                      <span className={`inline-flex px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm font-semibold rounded-full ${
+                        !inventoryEnabled ? 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                        : product.stock <= product.minStock
                         ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500 border-opacity-30'
                         : 'bg-green-500 bg-opacity-20 text-green-300 border border-green-500 border-opacity-30'
                         }`}>
-                        {product.stock}
+                        {!inventoryEnabled ? '0' : product.stock}
                       </span>
                     </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-blue-300 font-medium">{getProductCategoryDisplay(product)}</td>
@@ -1845,10 +1929,11 @@ const Products = () => {
               {editingProduct ? 'تعديل المنتج' : 'إضافة منتج جديد'}
             </h2>
 
-            <div className="space-y-4 md:space-y-5">
+             <div className="space-y-4 md:space-y-5">
               <div>
                 <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">اسم المنتج</label>
                 <input
+                  ref={productNameInputRef}
                   type="text"
                   value={newProduct.name}
                   onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
@@ -1925,28 +2010,30 @@ const Products = () => {
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">المخزون</label>
-                  <input
-                    type="number"
-                    value={newProduct.stock}
-                    onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
-                    className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
-                    placeholder="0"
-                  />
+              {inventoryEnabled && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">المخزون</label>
+                    <input
+                      type="number"
+                      value={newProduct.stock}
+                      onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
+                      className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">الحد الأدنى</label>
+                    <input
+                      type="number"
+                      value={newProduct.minStock}
+                      onChange={(e) => setNewProduct({ ...newProduct, minStock: e.target.value })}
+                      className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
+                      placeholder="0"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">الحد الأدنى</label>
-                  <input
-                    type="number"
-                    value={newProduct.minStock}
-                    onChange={(e) => setNewProduct({ ...newProduct, minStock: e.target.value })}
-                    className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
-                    placeholder="0"
-                  />
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="flex justify-end space-x-3 md:space-x-4 mt-6 md:mt-8">

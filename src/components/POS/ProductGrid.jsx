@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Package, Shirt, Footprints, Watch, Headphones, Smartphone, Laptop, Home, Car, Gamepad2, Book, Camera, Gift } from 'lucide-react';
 import storageOptimizer from '../../utils/storageOptimizer.js';
 import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
+import soundManager from '../../utils/soundManager.js';
 
 // دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
 const renderProductTitleAndSize = (name) => {
@@ -53,6 +54,14 @@ const ProductGrid = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainGroup, setSelectedMainGroup] = useState('الكل');
   const [visibleCount, setVisibleCount] = useState(36);
+  const searchInputRef = useRef(null);
+
+  // تركيز تلقائي على حقل البحث عند التحميل لسرعة الباركود
+  useEffect(() => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, []);
 
   // المجموعات الرئيسية ديناميكياً من التصنيفات
   const MAIN_GROUPS = React.useMemo(() => {
@@ -757,6 +766,18 @@ const ProductGrid = ({
     return filteredProducts.slice(0, visibleCount);
   }, [filteredProducts, visibleCount]);
 
+  // إضافة معالج Enter للإضافة السريعة عند تصفية منتج واحد
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      const results = filteredProducts;
+      if (results.length === 1) {
+        onAddToCart(results[0]);
+        setSearchTerm('');
+        soundManager.play('click');
+      }
+    }
+  };
+
 
   return (
     <div className="flex-1 bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-slate-200">
@@ -767,10 +788,12 @@ const ProductGrid = ({
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
             <input
+              ref={searchInputRef}
               type="text"
-              placeholder="البحث بالاسم، الكود، أو الباركود..."
+              placeholder="البحث بالاسم، الكود، أو الباركود... (اضغط Enter للإضافة السريعة)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
               className="w-full pr-10 pl-4 py-3 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
             />
           </div>

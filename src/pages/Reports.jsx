@@ -5,7 +5,7 @@ import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
 import emojiManager from '../utils/emojiManager.js';
 import storageOptimizer from '../utils/storageOptimizer.js';
-import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate } from '../utils/dateUtils.js';
+import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate, formatDateToDDMMYYYY } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
 import { useAuth } from '../components/AuthProvider';
 import databaseManager from '../utils/database';
@@ -105,6 +105,9 @@ const Reports = () => {
   const [editProducts, setEditProducts] = useState([]);
   const [editCategories, setEditCategories] = useState([]);
   const [editProductImages, setEditProductImages] = useState({});
+  const [editingQty, setEditingQty] = useState({});
+  const [editingPrice, setEditingPrice] = useState({});
+  const prodSearchInputRef = React.useRef(null);
 
   // Settlement Modal state
   const [showSettlementModal, setShowSettlementModal] = useState(false);
@@ -169,6 +172,11 @@ const Reports = () => {
         setEditCategories(cats);
         setEditProductImages(imgs);
         setShowPOSGrid(false); // إغلاق شبكة الـ POS كخيار افتراضي عند الفتح
+        setTimeout(() => {
+          if (prodSearchInputRef.current) {
+            prodSearchInputRef.current.focus();
+          }
+        }, 150);
       } catch (_) {}
     }
   }, [showInvoiceModal]);
@@ -338,6 +346,31 @@ const Reports = () => {
     updateInvoiceItems(invoiceId, items);
   };
 
+  const updateItemQtyDirectly = (invoiceId, itemIndex, newQty) => {
+    if (!selectedInvoice) return;
+    const items = [...selectedInvoice.items];
+    const item = items[itemIndex];
+    if (!item) return;
+
+    if (newQty <= 0) {
+      deleteItemFromInvoice(invoiceId, itemIndex);
+      return;
+    }
+
+    items[itemIndex] = { ...item, quantity: newQty };
+    updateInvoiceItems(invoiceId, items);
+  };
+
+  const updateItemPriceDirectly = (invoiceId, itemIndex, newPrice) => {
+    if (!selectedInvoice) return;
+    const items = [...selectedInvoice.items];
+    const item = items[itemIndex];
+    if (!item) return;
+
+    items[itemIndex] = { ...item, price: parseFloat(newPrice) || 0 };
+    updateInvoiceItems(invoiceId, items);
+  };
+
   // حذف منتج من الفاتورة
   const deleteItemFromInvoice = (invoiceId, itemIndex) => {
     if (!selectedInvoice) return;
@@ -369,6 +402,17 @@ const Reports = () => {
 
     updateInvoiceItems(invoiceId, items);
     notifySuccess('تم إضافة الصنف للفاتورة');
+  };
+
+  // معالج Enter للإضافة السريعة في مودال تعديل الفاتورة بالتقارير
+  const handleProdSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (matchedProducts.length === 1) {
+        handleAddProductToInvoice(selectedInvoice.id, matchedProducts[0]);
+        setProdSearch('');
+        soundManager.play('add');
+      }
+    }
   };
 
   // حذف الفاتورة بالكامل
@@ -523,75 +567,365 @@ const Reports = () => {
       const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
       const subtotal = invoice.subtotal || 0;
       const total = invoice.total || 0;
-      const remaining = invoice.downPayment?.remaining || 0;
+      const discountAmount = invoice.discountAmount || 0;
+      const taxAmount = invoice.taxAmount || 0;
+      const remainingAmount = invoice.downPayment?.remaining || 0;
+      const invoiceId = invoice.id;
+      
+      const logoSrc = storeInfo.logo || '';
+      const currentDate = formatDate(invoice.timestamp || invoice.date || new Date());
+      const cashierName = invoice.cashier || user?.username || 'غير محدد';
+      const paymentMethodText = invoice.paymentMethod === 'cash' ? '💵 نقدي' : invoice.paymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : invoice.paymentMethod === 'instapay' ? '💳 انستا باي' : '🏦 تحويل بنكي';
+      const customerName = invoice.customer?.name || 'عميل نقدي';
+      const customerPhone = invoice.customer?.phone || 'غير محدد';
+      const itemsArr = invoice.items || [];
 
       const printContent = `
-        <html dir="rtl">
-          <head>
-            <meta charset="utf-8">
-            <title>فاتورة مبيعات - ${invoice.id}</title>
-            <style>
-              body { font-family: 'Arial', sans-serif; direction: rtl; text-align: right; padding: 15px; color: #000; background: #fff; }
-              .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 15px; }
-              .store-name { font-size: 22px; font-weight: bold; }
-              .info-row { display: flex; justify-content: space-between; font-size: 13px; margin: 3px 0; }
-              table { width: 100%; border-collapse: collapse; margin-top: 15px; border-bottom: 2px dashed #000; }
-              th, td { padding: 8px 4px; text-align: right; font-size: 13px; }
-              th { border-bottom: 1px solid #000; }
-              .total-section { margin-top: 15px; font-size: 14px; border-bottom: 2px dashed #000; padding-bottom: 10px; }
-              .total-row { display: flex; justify-content: space-between; font-weight: bold; margin: 4px 0; }
-              .footer { text-align: center; margin-top: 20px; font-size: 11px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <div class="store-name">${storeInfo.name || 'متجر الأمين'}</div>
-              <div>${storeInfo.address || 'العنوان غير محدد'}</div>
-              <div>الهاتف: ${storeInfo.phone || 'الهاتف غير محدد'}</div>
-            </div>
-            <div class="info-row"><strong>رقم الفاتورة:</strong> <span>${invoice.id}</span></div>
-            <div class="info-row"><strong>التاريخ:</strong> <span>${formatDateTime(invoice.timestamp || invoice.date)}</span></div>
-            <div class="info-row"><strong>العميل:</strong> <span>${invoice.customer?.name || 'غير محدد'}</span></div>
-            <div class="info-row"><strong>الهاتف:</strong> <span>${invoice.customer?.phone || 'غير محدد'}</span></div>
-            <div class="info-row"><strong>الكاشير:</strong> <span>${invoice.cashier || user?.username || 'غير محدد'}</span></div>
-            
-            <table>
+        <!DOCTYPE html>
+        <html dir="rtl" lang="ar">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>فاتورة بيع - ${invoiceId}</title>
+          <style>
+            @page {
+              size: auto;
+              margin: 5mm;
+            }
+            body {
+              font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+              color: #000;
+              background-color: #fff;
+              margin: 0;
+              padding: 0;
+              direction: rtl;
+              font-size: 14px;
+              font-weight: bold;
+              line-height: 1.4;
+            }
+            .invoice-box {
+              max-width: 100%;
+              margin: 0 auto;
+              padding: 0;
+            }
+            .header-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 10px;
+            }
+            .header-table td {
+              vertical-align: top;
+              border: none;
+              padding: 0;
+            }
+            .logo {
+              max-height: 50px;
+              width: auto;
+              margin-bottom: 4px;
+            }
+            .store-title {
+              font-size: 18px;
+              font-weight: 900;
+              color: #000;
+              margin-bottom: 2px;
+            }
+            .store-subtitle {
+              font-size: 13px;
+              font-weight: bold;
+              color: #000;
+            }
+            .invoice-title-col {
+              text-align: left;
+            }
+            .invoice-title-text {
+              font-size: 20px;
+              font-weight: 900;
+              color: #000;
+              margin-bottom: 5px;
+              letter-spacing: -0.5px;
+            }
+            .info-badge {
+              display: inline-block;
+              background-color: #fff;
+              border: 2px solid #000;
+              padding: 4px 8px;
+              border-radius: 6px;
+              font-size: 12px;
+              font-weight: bold;
+              color: #000;
+              text-align: right;
+            }
+            .divider {
+              border-top: 2px solid #000;
+              margin: 10px 0;
+            }
+            .details-grid {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 10px;
+            }
+            .details-grid td {
+              width: 50%;
+              vertical-align: top;
+              padding: 0 0 0 10px;
+              border: none;
+            }
+            .details-card {
+              background-color: #fff;
+              border: 2px solid #000;
+              border-radius: 8px;
+              padding: 10px;
+            }
+            .details-card h4 {
+              margin: 0 0 5px 0;
+              font-size: 14px;
+              font-weight: 900;
+              color: #000;
+              border-bottom: 2px solid #000;
+              padding-bottom: 4px;
+            }
+            .info-row {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 4px;
+              font-size: 13px;
+            }
+            .info-label {
+              color: #000;
+              font-weight: 900;
+            }
+            .info-val {
+              color: #000;
+              font-weight: 900;
+            }
+            .products-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 15px;
+            }
+            .products-table th {
+              background-color: #fff;
+              border: 2px solid #000;
+              padding: 8px 10px;
+              font-size: 13px;
+              font-weight: 900;
+              color: #000;
+              text-align: right;
+            }
+            .products-table td {
+              border: 1px solid #000;
+              padding: 6px 8px;
+              font-size: 14px;
+              font-weight: bold;
+              color: #000;
+            }
+            .products-table tr:nth-child(even) {
+              background-color: #f8f8f8;
+            }
+            .text-center { text-align: center !important; }
+            .text-left { text-align: left !important; }
+            .summary-table-container {
+              width: 100%;
+              margin-top: 10px;
+            }
+            .summary-table {
+              width: 320px;
+              margin-right: auto;
+              border-collapse: collapse;
+            }
+            .summary-table td {
+              padding: 4px 8px;
+              font-size: 14px;
+              border: none;
+            }
+            .summary-table .label {
+              color: #000;
+              font-weight: 900;
+              text-align: right;
+            }
+            .summary-table .value {
+              color: #000;
+              font-weight: 900;
+              text-align: left;
+            }
+            .summary-table .total-row td {
+              border-top: 2px solid #000;
+              padding-top: 8px;
+              font-size: 16px;
+              font-weight: 900;
+            }
+            .summary-table .total-row .value {
+              color: #000;
+            }
+            .footer-section {
+              margin-top: 30px;
+              border-top: 2px solid #000;
+              padding-top: 15px;
+              text-align: center;
+              font-size: 12px;
+              font-weight: bold;
+              color: #000;
+            }
+            .signatures {
+              margin-top: 30px;
+              display: flex;
+              justify-content: space-between;
+              padding: 0 20px;
+            }
+            .sig-box {
+              text-align: center;
+              width: 150px;
+            }
+            .sig-line {
+              border-bottom: 2px solid #000;
+              margin-bottom: 6px;
+              height: 25px;
+            }
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="invoice-box">
+            <table class="header-table">
+              <tr>
+                <td>
+                  ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
+                  <div class="store-title">${storeInfo.companyName || 'متجر الأمين للأدوات الصحية والسباكة'}</div>
+                  <div class="store-subtitle">هاتف: ${storeInfo.companyPhone || '01029022006'}</div>
+                </td>
+                <td class="invoice-title-col">
+                  <div class="invoice-title-text">فاتورة بيع</div>
+                  <div class="info-badge">
+                    <strong>رقم الفاتورة:</strong> #${invoiceId}<br/>
+                    <strong>التاريخ:</strong> ${currentDate}
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table class="details-grid">
+              <tr>
+                <td>
+                  <div class="details-card">
+                    <h4>تفاصيل الفاتورة</h4>
+                    <div class="info-row">
+                      <span class="info-label">الكاشير:</span>
+                      <span class="info-val">${cashierName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">طريقة الدفع:</span>
+                      <span class="info-val">${paymentMethodText}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="details-card">
+                    <h4>بيانات العميل</h4>
+                    <div class="info-row">
+                      <span class="info-label">اسم العميل:</span>
+                      <span class="info-val">${customerName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">رقم الهاتف:</span>
+                      <span class="info-val direction-ltr">${customerPhone}</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table class="products-table">
               <thead>
                 <tr>
-                  <th>المنتج</th>
-                  <th style="text-align: center;">الكمية</th>
-                  <th style="text-align: left;">السعر</th>
+                  <th style="width: 8%" class="text-center">م</th>
+                  <th>بيان المنتجات</th>
+                  <th style="width: 15%" class="text-center">الكمية</th>
+                  <th style="width: 20%" class="text-center">سعر الوحدة</th>
+                  <th style="width: 20%" class="text-center">الإجمالي</th>
                 </tr>
               </thead>
               <tbody>
-                ${(invoice.items || []).map(item => `
+                ${itemsArr.map((item, idx) => `
                   <tr>
-                    <td>${item.name}</td>
-                    <td style="text-align: center;">${item.quantity}</td>
-                    <td style="text-align: left;">${item.price} ج.م</td>
+                    <td class="text-center">${idx + 1}</td>
+                    <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
+                    <td class="text-center">${Number(item.quantity || 0)}</td>
+                    <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')} ج.م</td>
+                    <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')} ج.م</strong></td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
 
-            <div class="total-section">
-              <div class="total-row"><span>المجموع الفرعي:</span> <span>${subtotal} ج.م</span></div>
-              ${invoice.discountAmount ? `<div class="total-row"><span>الخصم:</span> <span>-${invoice.discountAmount} ج.م</span></div>` : ''}
-              ${invoice.taxAmount ? `<div class="total-row"><span>الضريبة:</span> <span>+${invoice.taxAmount} ج.م</span></div>` : ''}
-              <div class="total-row" style="font-size: 16px;"><span>الإجمالي النهائي:</span> <span>${total} ج.م</span></div>
-              ${invoice.downPayment?.enabled ? `
-                <div class="total-row"><span>العربون المدفوع:</span> <span>${invoice.downPayment.amount} ج.م</span></div>
-                <div class="total-row" style="color: red;"><span>المبلغ المتبقي:</span> <span>${remaining} ج.م</span></div>
-              ` : ''}
+            <div class="summary-table-container">
+              <table class="summary-table">
+                <tr>
+                  <td class="label">إجمالي القيمة:</td>
+                  <td class="value">${(subtotal || 0).toLocaleString('en-US')} ج.م</td>
+                </tr>
+                ${discountAmount > 0 ? `
+                  <tr>
+                    <td class="label">الخصم الممنوح:</td>
+                    <td class="value text-red-600">-${discountAmount.toLocaleString('en-US')} ج.م</td>
+                  </tr>
+                ` : ''}
+                ${taxAmount > 0 ? `
+                  <tr>
+                    <td class="label">الضريبة المضافة:</td>
+                    <td class="value">+${taxAmount.toLocaleString('en-US')} ج.م</td>
+                  </tr>
+                ` : ''}
+                ${invoice.downPayment?.enabled ? `
+                  <tr>
+                    <td class="label">العربون المدفوع:</td>
+                    <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')} ج.م</td>
+                  </tr>
+                ` : ''}
+                <tr class="total-row">
+                  <td class="label">${(invoice.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
+                  <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')} ج.م</td>
+                </tr>
+              </table>
             </div>
 
-            <div class="footer">
-              <p>شكراً لزيارتكم! متجر الأمين للأدوات الصحية</p>
+            ${(invoice.downPayment?.enabled && invoice.downPayment?.deliveryDate) ? `
+              <div style="margin-top: 20px; font-size: 12px; color: #334155; background-color: #f1f5f9; padding: 10px 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                🗓️ <strong>تاريخ الاستلام المتوقع:</strong> ${formatDateToDDMMYYYY(invoice.downPayment.deliveryDate)}
+              </div>
+            ` : ''}
+
+            <div class="signatures">
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <span>توقيع العميل / المستلم</span>
+              </div>
+              <div class="sig-box">
+                <div class="sig-line"></div>
+                <span>توقيع الكاشير / المسؤول</span>
+              </div>
             </div>
-            <script>
-              window.onload = function() { window.print(); setTimeout(window.close, 1000); }
-            </script>
-          </body>
+
+            <div class="footer-section">
+              <div>شكراً لتعاملكم معنا. نظام إدارة المبيعات للأدوات الصحية والسباكة</div>
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+                setTimeout(function() {
+                  window.close();
+                }, 500);
+              }, 300);
+            };
+          </script>
+        </body>
         </html>
       `;
 
@@ -1038,10 +1372,12 @@ const Reports = () => {
                           <Search className="h-5 w-5" />
                         </div>
                         <input
+                          ref={prodSearchInputRef}
                           type="text"
-                          placeholder="اضغط هنا لعرض كافة المنتجات أو ابحث بالاسم/الباركود لسهولة الاختيار..."
+                          placeholder="اضغط هنا لعرض كافة المنتجات أو ابحث بالاسم/الباركود لسهولة الاختيار... (اضغط Enter للإضافة السريعة)"
                           value={prodSearch}
                           onChange={(e) => setProdSearch(e.target.value)}
+                          onKeyDown={handleProdSearchKeyDown}
                           onFocus={() => setIsInputFocused(true)}
                           onBlur={() => setTimeout(() => setIsInputFocused(false), 250)}
                           className="w-full pr-10 pl-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all text-sm font-medium"
@@ -1101,31 +1437,85 @@ const Reports = () => {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                          {(selectedInvoice.items || []).map((item, idx) => (
-                            <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                              <td className="px-4 py-3 text-sm">{renderProductTitleAndSize(item.name)}</td>
-                              <td className="px-4 py-3 text-center">
-                                <div className="flex justify-center items-center gap-2">
-                                  <button
-                                    onClick={() => { soundManager.play('delete'); changeItemQty(selectedInvoice.id, idx, -1); }}
-                                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
-                                    title="مرتجع قطعة واحدة"
-                                  >
-                                    -
-                                  </button>
-                                  <span className="font-bold text-slate-800 text-sm px-2">{item.quantity}</span>
-                                  <button
-                                    onClick={() => { soundManager.play('add'); changeItemQty(selectedInvoice.id, idx, 1); }}
-                                    className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
-                                    title="إضافة قطعة واحدة"
-                                  >
-                                    +
-                                  </button>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3 text-slate-700 text-sm font-semibold">{item.price.toLocaleString('en-US')} ج.م</td>
-                              <td className="px-4 py-3 text-blue-600 text-sm font-bold">{((item.price) * (item.quantity)).toLocaleString('en-US')} ج.م</td>
-                              <td className="px-4 py-3 text-center">
+                          {(selectedInvoice.items || []).map((item, idx) => {
+                            const qtyValue = editingQty[item.id] !== undefined ? editingQty[item.id] : item.quantity;
+                            const priceValue = editingPrice[item.id] !== undefined ? editingPrice[item.id] : item.price;
+                            return (
+                              <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="px-4 py-3 text-sm">{renderProductTitleAndSize(item.name)}</td>
+                                <td className="px-4 py-3 text-center">
+                                  <div className="flex justify-center items-center gap-2">
+                                    <button
+                                      onClick={() => { soundManager.play('delete'); changeItemQty(selectedInvoice.id, idx, -1); }}
+                                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
+                                      title="مرتجع قطعة واحدة"
+                                    >
+                                      -
+                                    </button>
+                                    <input
+                                      type="number"
+                                      value={qtyValue}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setEditingQty(prev => ({ ...prev, [item.id]: val }));
+                                        const parsed = parseInt(val);
+                                        if (!isNaN(parsed) && parsed > 0) {
+                                          updateItemQtyDirectly(selectedInvoice.id, idx, parsed);
+                                        }
+                                      }}
+                                      onBlur={() => {
+                                        const parsed = parseInt(qtyValue);
+                                        if (isNaN(parsed) || parsed <= 0) {
+                                          updateItemQtyDirectly(selectedInvoice.id, idx, 1);
+                                        }
+                                        setEditingQty(prev => {
+                                          const copy = { ...prev };
+                                          delete copy[item.id];
+                                          return copy;
+                                        });
+                                      }}
+                                      className="w-12 text-center bg-slate-100 border border-slate-200 text-slate-800 font-bold py-1 px-1 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                    <button
+                                      onClick={() => { soundManager.play('add'); changeItemQty(selectedInvoice.id, idx, 1); }}
+                                      className="w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 font-bold text-base flex items-center justify-center transition-colors cursor-pointer"
+                                      title="إضافة قطعة واحدة"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-slate-700 text-sm font-semibold">
+                                  <div className="flex items-center justify-start gap-1">
+                                    <input
+                                      type="number"
+                                      value={priceValue}
+                                      onChange={(e) => {
+                                        const val = e.target.value;
+                                        setEditingPrice(prev => ({ ...prev, [item.id]: val }));
+                                        const parsed = parseFloat(val);
+                                        if (!isNaN(parsed) && parsed >= 0) {
+                                          updateItemPriceDirectly(selectedInvoice.id, idx, parsed);
+                                        }
+                                      }}
+                                      onBlur={() => {
+                                        const parsed = parseFloat(priceValue);
+                                        if (isNaN(parsed) || parsed < 0) {
+                                          updateItemPriceDirectly(selectedInvoice.id, idx, item.price);
+                                        }
+                                        setEditingPrice(prev => {
+                                          const copy = { ...prev };
+                                          delete copy[item.id];
+                                          return copy;
+                                        });
+                                      }}
+                                      className="w-16 text-center bg-slate-50 border border-slate-200 text-slate-800 font-bold py-1 px-1 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    />
+                                    <span className="text-xs text-slate-500 mr-1">ج.م</span>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-3 text-blue-600 text-sm font-bold">{((item.price) * (item.quantity)).toLocaleString('en-US')} ج.م</td>
+                                <td className="px-4 py-3 text-center">
                                 <button
                                   onClick={() => { soundManager.play('delete'); deleteItemFromInvoice(selectedInvoice.id, idx); }}
                                   className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg cursor-pointer"
@@ -1134,8 +1524,9 @@ const Reports = () => {
                                   <Trash2 className="h-4 w-4" />
                                 </button>
                               </td>
-                            </tr>
-                          ))}
+                              </tr>
+                            );
+                          })}
                         </tbody>
                       </table>
                     </div>

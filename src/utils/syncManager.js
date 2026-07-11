@@ -123,8 +123,31 @@ class SyncManager {
       const pendingRecords = localRecords.filter(r => r && r.sync_status === 'pending');
       const deletedRecords = localRecords.filter(r => r && r.sync_status === 'deleted');
 
+      // جلب تواريخ التحديث السحابية للسجلات المعلقة للتحقق من وجود تعارضات (Last-Write-Wins)
+      let cloudMap = new Map();
+      if (pendingRecords.length > 0) {
+        try {
+          const { data: cloudTimestamps, error: timestampError } = await supabase
+            .from(storeName)
+            .select('id, updated_at')
+            .in('id', pendingRecords.map(r => r.id));
+          if (!timestampError && cloudTimestamps) {
+            cloudMap = new Map(cloudTimestamps.map(c => [String(c.id), c.updated_at]));
+          }
+        } catch (err) {
+          console.warn(`فشل التحقق من تعارضات السحابة لـ ${storeName}، سيتم الرفع المباشر:`, err);
+        }
+      }
+
       // رفع الإضافات والتعديلات
       for (const record of pendingRecords) {
+        // التحقق من التعارض: إذا كانت النسخة في السحابة أحدث من النسخة المحلية، نتخطى الرفع لتغليب السحابة
+        const cloudUpdatedAt = cloudMap.get(String(record.id));
+        if (cloudUpdatedAt && new Date(cloudUpdatedAt).getTime() > new Date(record.updated_at || 0).getTime()) {
+          console.warn(`⚠️ تعارض لجدول ${storeName} الصنف ${record.id}: النسخة السحابية أحدث. سيتم تخطي الرفع وتغليب السحاب.`);
+          continue;
+        }
+
         // تجهيز الكائن للرفع وحذف حالة المزامنة المحلية لمنع تعارض الأعمدة في السحاب
         const { sync_status, ...uploadData } = record;
         
@@ -140,7 +163,15 @@ class SyncManager {
           delete uploadData.mainCategoryId;
           delete uploadData.subCategoryId;
           delete uploadData.imagePath;
+          delete uploadData.minStock; // حقل محلي فقط، لا يوجد في Supabase
           delete uploadData.category; // حقل محلي فقط، لا يوجد في Supabase
+        } else if (storeName === 'customers') {
+          if (record.totalSpent !== undefined) uploadData.total_spent = record.totalSpent;
+          if (record.lastVisit !== undefined) uploadData.last_visit = record.lastVisit;
+          if (record.joinDate !== undefined) uploadData.join_date = record.joinDate;
+          delete uploadData.totalSpent;
+          delete uploadData.lastVisit;
+          delete uploadData.joinDate;
         } else if (storeName === 'sales') {
           uploadData.shift_id = record.shiftId;
           uploadData.customer_id = record.customerId;
@@ -218,8 +249,15 @@ class SyncManager {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
         for (const cloudItem of cloudUpdates) {
+          // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية فقط (مثل minStock)
+          const existingLocal = await databaseManager.get(storeName, cloudItem.id);
+          
           // تطبيع أسماء الأعمدة لتطابق واجهة React (تحويل من SnakeCase إلى CamelCase)
-          const localItem = { ...cloudItem, sync_status: 'synced' };
+          const localItem = {
+            ...(existingLocal || {}),
+            ...cloudItem,
+            sync_status: 'synced'
+          };
           
           if (storeName === 'categories') {
             localItem.parentId = cloudItem.parent_id;
@@ -228,9 +266,19 @@ class SyncManager {
             localItem.mainCategoryId = cloudItem.main_category_id;
             localItem.subCategoryId = cloudItem.sub_category_id;
             localItem.imagePath = cloudItem.image_path;
+            if (localItem.minStock === undefined) {
+              localItem.minStock = 5; // الحد الأدنى الافتراضي للمخزون محلياً
+            }
             delete localItem.main_category_id;
             delete localItem.sub_category_id;
             delete localItem.image_path;
+          } else if (storeName === 'customers') {
+            if (cloudItem.total_spent !== undefined) localItem.totalSpent = cloudItem.total_spent;
+            if (cloudItem.last_visit !== undefined) localItem.lastVisit = cloudItem.last_visit;
+            if (cloudItem.join_date !== undefined) localItem.joinDate = cloudItem.join_date;
+            delete localItem.total_spent;
+            delete localItem.last_visit;
+            delete localItem.join_date;
           } else if (storeName === 'sales') {
             localItem.shiftId = cloudItem.shift_id;
             localItem.customerId = cloudItem.customer_id;

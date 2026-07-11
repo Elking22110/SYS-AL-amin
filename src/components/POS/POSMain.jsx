@@ -499,7 +499,8 @@ const POSMain = () => {
         setCustomerInfo({ name: '', phone: '' });
         setDownPayment({ enabled: false, amount: '', deliveryDate: getLocalDateString() });
         setDiscounts({ percentage: '', fixed: '', type: 'percentage' });
-      }, 0);
+        window.dispatchEvent(new CustomEvent('focusPOSSearch'));
+      }, 50);
 
       notifySuccess('تم البيع بنجاح', `تم إنشاء الفاتورة رقم ${invoiceId}`);
 
@@ -512,6 +513,29 @@ const POSMain = () => {
     customerInfo, user, activeShift, products, setProducts,
     setActiveShift, logActivity, notifySuccess, notifyError
   ]);
+
+  // إعداد اختصارات لوحة المفاتيح العالمية لتسهيل وتسريع عمليات البيع
+  useEffect(() => {
+    const handleGlobalKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        window.dispatchEvent(new CustomEvent('focusPOSSearch'));
+      } else if (e.key === 'F4') {
+        e.preventDefault();
+        const phoneInput = document.getElementById('customer-phone-input');
+        if (phoneInput) {
+          phoneInput.focus();
+          phoneInput.select();
+        }
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        // إتمام البيع السريع كاش
+        confirmSale('cash');
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [confirmSale]);
 
   const handlePrintInvoice = useCallback(() => {
     try {
