@@ -361,10 +361,9 @@ const POSMain = () => {
           const existingCustIndex = savedCustomers.findIndex(c => c.phone.trim() === phoneTrimmed);
           
           let addedDebt = 0;
-          if (method === 'deferred') {
-            addedDebt = totalForSale;
-          } else if (downPayment.enabled) {
-            addedDebt = Math.max(0, safeMath.subtract(totalForSale, parseFloat(downPayment.amount) || 0));
+          if (method === 'deferred' || downPayment.enabled) {
+            const paidNow = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : 0;
+            addedDebt = Math.max(0, safeMath.subtract(totalForSale, paidNow));
           }
 
           let updatedCust;

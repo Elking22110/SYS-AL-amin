@@ -36,7 +36,17 @@ const ShiftManager = () => {
         : allSales.filter(s => s.shiftId === currentShift.id);
 
       // الفواتير التي تمت تسويتها خلال هذا الشفت (العربونات المسددة) وهي من شفتات سابقة
-      const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === currentShift.id && s.shiftId !== currentShift.id);
+      const settledSales = allSales.flatMap(s => {
+        if (s.shiftId === currentShift.id) return []; // Ignore same shift sales, they are handled via downPayment.amount
+        const sList = s.settlements || (s.settlement ? [s.settlement] : []);
+        const matchingSettlements = sList.filter(settlement => settlement.shiftId === currentShift.id);
+        if (matchingSettlements.length === 0) return [];
+        // Map each matching settlement to a pseudo-sale object so calculateSalesDetails can process it
+        return matchingSettlements.map(settlement => ({
+          ...s,
+          settlement: settlement // inject single settlement for compatibility
+        }));
+      });
 
       return { activeDetails: calculateSalesDetails(list || [], settledSales), activeSalesList: list };
     } catch (_) { return { activeDetails: null, activeSalesList: [] }; }
@@ -166,7 +176,17 @@ const ShiftManager = () => {
 
     // حساب تفاصيل المبيعات
     const allSales = JSON.parse(localStorage.getItem('sales') || '[]');
-    const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === currentShift.id && s.shiftId !== currentShift.id);
+    const settledSales = allSales.flatMap(s => {
+        if (s.shiftId === currentShift.id) return []; // Ignore same shift sales, they are handled via downPayment.amount
+        const sList = s.settlements || (s.settlement ? [s.settlement] : []);
+        const matchingSettlements = sList.filter(settlement => settlement.shiftId === currentShift.id);
+        if (matchingSettlements.length === 0) return [];
+        // Map each matching settlement to a pseudo-sale object so calculateSalesDetails can process it
+        return matchingSettlements.map(settlement => ({
+          ...s,
+          settlement: settlement // inject single settlement for compatibility
+        }));
+      });
     const salesDetails = calculateSalesDetails(currentShift.sales, settledSales);
 
     // أرشفة المرتجعات الخاصة بالشفت الحالي
@@ -440,7 +460,16 @@ const ShiftManager = () => {
         });
 
       // أعِد حساب تفاصيل المبيعات دائماً بناءً على البيانات الحالية لضمان عدم عرض نتائج قديمة
-      const settledSales = allSales.filter(s => s.settlement && s.settlement.shiftId === shift.id && s.shiftId !== shift.id);
+      const settledSales = allSales.flatMap(s => {
+        if (s.shiftId === shift.id) return [];
+        const sList = s.settlements || (s.settlement ? [s.settlement] : []);
+        const matchingSettlements = sList.filter(settlement => settlement.shiftId === shift.id);
+        if (matchingSettlements.length === 0) return [];
+        return matchingSettlements.map(settlement => ({
+          ...s,
+          settlement: settlement
+        }));
+      });
       const salesDetails = calculateSalesDetails(salesForShift || [], settledSales);
 
       // التحقق من صحة البيانات
