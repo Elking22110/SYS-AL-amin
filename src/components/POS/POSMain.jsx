@@ -737,8 +737,8 @@ const POSMain = () => {
             margin-bottom: 4px;
           }
           .store-subtitle {
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 900;
             color: #000000;
           }
           .invoice-title-col {
@@ -918,9 +918,9 @@ const POSMain = () => {
               <td>
                 ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
                 <div class="store-title">${storeInfo.companyName || 'الأمين للأدوات الصحية'}</div>
-                <div class="store-subtitle" style="font-weight: 800; color: #0f172a; margin-bottom: 2px;">إدارة محمد أمين</div>
-                <div class="store-subtitle">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
-                <div class="store-subtitle" style="font-size: 11px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; margin-bottom: 2px; font-size: 14px;">إدارة محمد أمين</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
               </td>
               <td class="invoice-title-col">
                 <div class="invoice-title-text">فاتورة بيع</div>
@@ -943,7 +943,7 @@ const POSMain = () => {
                   </div>
                   <div class="info-row">
                     <span class="info-label">طريقة الدفع:</span>
-                    <span class="info-val">${(invoiceData?.paymentMethod || paymentMethod) === 'cash' ? '💵 نقدي' : (invoiceData?.paymentMethod || paymentMethod) === 'wallet' ? '📱 محفظة إلكترونية' : (invoiceData?.paymentMethod || paymentMethod) === 'instapay' ? '💳 انستا باي' : '🏦 تحويل بنكي'}</span>
+                    <span class="info-val">${(invoiceData?.paymentMethod || paymentMethod) === 'cash' ? '💵 نقدي' : (invoiceData?.paymentMethod || paymentMethod) === 'wallet' ? '📱 محفظة إلكترونية' : (invoiceData?.paymentMethod || paymentMethod) === 'instapay' ? '💳 انستا باي' : (invoiceData?.paymentMethod || paymentMethod) === 'deferred' ? '⏳ آجل' : '💵 نقدي'}</span>
                   </div>
                 </div>
               </td>
@@ -1036,7 +1036,7 @@ const POSMain = () => {
 
           <div class="footer-section">
             <div style="font-weight: 800; margin-bottom: 4px; color: #000000;">شكراً لتعاملكم معنا</div>
-            <div style="font-size: 11px; color: #000000; font-weight: bold;">برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631</div>
+            <div style="font-size: 14px; color: #000000; font-weight: 900;">برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631</div>
           </div>
         </div>
 
@@ -1248,7 +1248,7 @@ const POSMain = () => {
                 </div>
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-slate-500 font-bold">طريقة الدفع:</span>
-                  <span className="text-slate-800 font-bold">{(invoiceData?.paymentMethod || paymentMethod) === 'cash' ? '💵 نقدي' : (invoiceData?.paymentMethod || paymentMethod) === 'wallet' ? '📱 محفظة إلكترونية' : (invoiceData?.paymentMethod || paymentMethod) === 'instapay' ? '💳 انستا باي' : '🏦 تحويل بنكي'}</span>
+                  <span className="text-slate-800 font-bold">{(invoiceData?.paymentMethod || paymentMethod) === 'cash' ? '💵 نقدي' : (invoiceData?.paymentMethod || paymentMethod) === 'wallet' ? '📱 محفظة إلكترونية' : (invoiceData?.paymentMethod || paymentMethod) === 'instapay' ? '💳 انستا باي' : (invoiceData?.paymentMethod || paymentMethod) === 'deferred' ? '⏳ آجل' : '💵 نقدي'}</span>
                 </div>
               </div>
 

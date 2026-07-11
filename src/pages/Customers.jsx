@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
   Plus,
+  ClipboardList,
+  FileText,
   Search,
   Edit,
   Trash2,
@@ -22,6 +24,7 @@ import safeMath from '../utils/safeMath.js';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
+  const [historyCustomer, setHistoryCustomer] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('الكل');
@@ -382,7 +385,7 @@ const Customers = () => {
                   <div>
                     <p className="font-bold text-slate-800 text-lg">{customer.name}</p>
                     <div className="flex items-center space-x-2 mt-1">
-                      <Phone className="h-3 w-3 text-green-400" />
+                      <Phone className="h-3 w-3 text-green-600" />
                       <p className="text-sm text-green-800 font-semibold bg-green-500 bg-opacity-20 px-2.5 py-1 rounded-full">{customer.phone}</p>
                     </div>
                   </div>
@@ -415,7 +418,7 @@ const Customers = () => {
             </div>
 
             <div className="relative">
-              <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-400 h-5 w-5" />
+              <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 h-5 w-5" />
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
@@ -456,17 +459,16 @@ const Customers = () => {
         <div className="glass-card hover-lift animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-gray-800 to-gray-900">
+              <thead className="bg-slate-100 border-b border-slate-200">
                 <tr>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">العميل</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">نوع العميل</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">معلومات الاتصال</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">إجمالي المشتريات</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">المديونية</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">عدد الطلبات</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">آخر زيارة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">الحالة</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-white uppercase tracking-wider">الإجراءات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">العميل</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">نوع العميل</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">معلومات الاتصال</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">إجمالي المشتريات</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">المديونية</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">عدد الطلبات</th>
+                                    <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">الحالة</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-20">
@@ -487,9 +489,9 @@ const Customers = () => {
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-full ${
-                        customer.type === 'صنايعي' ? 'bg-orange-500 bg-opacity-20 text-orange-400' :
-                        customer.type === 'تاجر' ? 'bg-indigo-500 bg-opacity-20 text-indigo-400' :
-                        'bg-slate-500 bg-opacity-20 text-slate-400'
+                        customer.type === 'صنايعي' ? 'bg-orange-100 text-orange-800 border border-orange-200' :
+                        customer.type === 'تاجر' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' :
+                        'bg-slate-100 text-slate-800 border border-slate-200'
                       }`}>
                         {customer.type || 'عميل عادي'}
                       </span>
@@ -497,13 +499,13 @@ const Customers = () => {
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          <Phone className="h-4 w-4 text-green-400" />
+                          <Phone className="h-4 w-4 text-green-600" />
                           <div className="text-sm font-semibold text-green-800 bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.phone}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Mail className="h-4 w-4 text-purple-400" />
+                          <Mail className="h-4 w-4 text-purple-600" />
                           <div className="text-sm font-semibold text-purple-800 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.email}
                           </div>
@@ -518,7 +520,7 @@ const Customers = () => {
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <span className={`text-sm font-bold px-3 py-1 rounded-full ${
-                          (customer.debt || 0) > 0 ? 'bg-red-500 bg-opacity-20 text-red-400' : 'bg-slate-500 bg-opacity-20 text-slate-400'
+                          (customer.debt || 0) > 0 ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-slate-100 text-slate-800 border border-slate-200'
                         }`}>
                           {(customer.debt || 0).toLocaleString('en-US')} ج.م
                         </span>
@@ -539,17 +541,19 @@ const Customers = () => {
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-cyan-800 bg-cyan-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
-                        {customer.lastVisit}
-                      </div>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
                         {customer.status}
                       </span>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
+                        <button
+                          onClick={() => { soundManager.play('openWindow'); setHistoryCustomer(customer); }}
+                          className="text-emerald-600 hover:text-emerald-500 transition-colors p-2 hover:bg-emerald-500 hover:bg-opacity-20 rounded-lg"
+                          title="سجل العميل"
+                        >
+                          <ClipboardList className="h-4 w-4" />
+                        </button>
                         <button
                           onClick={() => { soundManager.play('update'); handleEditCustomer(customer); }}
                           className="text-blue-400 hover:text-blue-300 transition-colors p-2 hover:bg-blue-500 hover:bg-opacity-20 rounded-lg"
@@ -576,14 +580,127 @@ const Customers = () => {
       </div>
 
       {/* Add/Edit Customer Modal - خارج الكارد الرئيسي تماماً */}
+      
+      {/* نافذة سجل العميل */}
+      {historyCustomer && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm p-4 text-right">
+          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
+            <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <ClipboardList className="h-6 w-6 text-emerald-600" />
+                سجل مشتريات العميل: <span className="text-blue-600">{historyCustomer.name}</span>
+              </h2>
+              <button onClick={() => { soundManager.play('closeWindow'); setHistoryCustomer(null); }} className="text-slate-400 hover:text-red-500 transition-colors p-2">
+                ✕
+              </button>
+            </div>
+            
+            <div className="p-5 overflow-y-auto flex-1">
+              {(() => {
+                const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
+                const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+                const historicalSales = shifts.flatMap(shift => shift.sales || []);
+                const allInvoices = [...historicalSales, ...activeSales].filter(inv => inv?.customer?.phone === historyCustomer.phone);
+                
+                // Sort by date descending
+                allInvoices.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+
+                if (allInvoices.length === 0) {
+                  return <div className="text-center text-slate-500 py-10 font-bold">لا توجد فواتير أو مشتريات لهذا العميل حتى الآن.</div>;
+                }
+
+                return (
+                  <div className="space-y-4">
+                    {allInvoices.map((inv, idx) => (
+                      <div key={idx} className="border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow bg-white">
+                        <div className="flex flex-wrap justify-between items-center border-b border-slate-100 pb-3 mb-3 gap-2">
+                          <div className="flex items-center gap-4">
+                            <div className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg text-sm">
+                              رقم الفاتورة: #{inv.id}
+                            </div>
+                            <div className="text-slate-500 text-sm font-semibold flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(inv.timestamp || inv.date).toLocaleString('ar-EG')}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${
+                              inv.paymentMethod === 'cash' ? 'bg-green-100 text-green-700' :
+                              inv.paymentMethod === 'deferred' ? 'bg-orange-100 text-orange-700' :
+                              inv.paymentMethod === 'wallet' ? 'bg-purple-100 text-purple-700' :
+                              'bg-indigo-100 text-indigo-700'
+                            }`}>
+                              {inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'deferred' ? 'آجل' : inv.paymentMethod === 'wallet' ? 'محفظة' : 'انستا باي'}
+                            </span>
+                            <span className={`text-xs font-bold px-2 py-1 rounded ${
+                              inv.paymentStatus === 'complete' ? 'bg-emerald-100 text-emerald-700' :
+                              inv.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-red-100 text-red-700'
+                            }`}>
+                              {inv.paymentStatus === 'complete' ? 'مكتمل' : inv.paymentStatus === 'partial' ? 'جزئي' : 'معلق'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="text-sm font-bold text-slate-700 mb-2 border-b pb-1">المنتجات:</h4>
+                            <ul className="space-y-1 max-h-32 overflow-y-auto pr-2">
+                              {(inv.items || []).map((item, i) => (
+                                <li key={i} className="text-xs flex justify-between text-slate-600 bg-slate-50 p-1.5 rounded">
+                                  <span>{item.quantity} × {item.name}</span>
+                                  <span className="font-bold text-slate-800">{(item.price * item.quantity).toFixed(2)} ج.م</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-center space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-slate-500 font-semibold">إجمالي الفاتورة:</span>
+                              <span className="font-bold text-slate-800">{inv.total || 0} ج.م</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-slate-500 font-semibold">المدفوع:</span>
+                              <span className="font-bold text-emerald-600">{(inv.downPayment?.amount || (inv.paymentStatus === 'complete' ? inv.total : 0))} ج.م</span>
+                            </div>
+                            {(inv.downPayment?.remaining > 0) && (
+                              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
+                                <span className="text-slate-500 font-semibold">المتبقي:</span>
+                                <span className="font-bold text-red-600">{inv.downPayment.remaining} ج.م</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
+            
+            <div className="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end">
+              <button
+                onClick={() => { soundManager.play('closeWindow'); setHistoryCustomer(null); }}
+                className="px-6 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-bold transition-colors"
+              >
+                إغلاق
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* نافذة تسوية المديونية */}
       {settlingCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
-          <div className="glass-card p-6 w-full max-w-sm mx-4 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl">
+          <div className="bg-white p-6 w-full max-w-sm mx-4 border border-slate-200 rounded-2xl shadow-2xl">
             <h3 className="text-lg font-bold text-slate-800 mb-2">سداد مديونية العميل</h3>
             <p className="text-slate-600 text-sm mb-4">العميل: <strong className="text-slate-800">{settlingCustomer.name}</strong></p>
             
-            <div className="bg-slate-800 bg-opacity-50 p-4 rounded-xl mb-4 border border-slate-700">
+            <div className="bg-slate-50 p-4 rounded-xl mb-4 border border-slate-200">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-slate-600 font-semibold">المديونية الحالية:</span>
                 <span className="text-red-400 font-bold text-base">{(settlingCustomer.debt || 0).toLocaleString('en-US')} ج.م</span>
@@ -638,19 +755,15 @@ const Customers = () => {
           }}
         >
           <div
-            className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp"
+            className="bg-white p-6 w-full max-w-md mx-4 animate-fadeInUp rounded-2xl shadow-2xl border border-slate-200"
             style={{
               position: 'relative',
               zIndex: 10000,
-              backgroundColor: 'rgba(17, 24, 39, 0.95)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '16px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
               maxHeight: '90vh',
               overflowY: 'auto'
             }}
           >
+
             <h2 className="text-xl font-bold text-slate-800 mb-4">
               {editingCustomer ? 'تعديل بيانات العميل' : 'إضافة عميل جديد'}
             </h2>

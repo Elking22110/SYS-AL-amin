@@ -270,7 +270,7 @@ const ShiftManager = () => {
       'نقدي': { received: 0, remaining: 0, count: 0 },
       'محفظة إلكترونية': { received: 0, remaining: 0, count: 0 },
       'انستا باي': { received: 0, remaining: 0, count: 0 },
-      'تحويل بنكي': { received: 0, remaining: 0, count: 0 },
+      'آجل': { received: 0, remaining: 0, count: 0 },
       'مرتجع': { received: 0, remaining: 0, count: 0 }
     };
 
@@ -280,7 +280,7 @@ const ShiftManager = () => {
       if (m === 'cash' || m === 'نقدي' || m === 'نقداً') return 'نقدي';
       if (m === 'wallet' || m === 'محفظة إلكترونية') return 'محفظة إلكترونية';
       if (m === 'instapay' || m === 'انستا باي') return 'انستا باي';
-      if (m === 'bank' || m === 'تحويل بنكي') return 'تحويل بنكي';
+      if (m === 'deferred' || m === 'آجل') return 'آجل';
       return method;
     };
 

@@ -177,7 +177,6 @@ const PaymentManager = ({
             { value: 'deferred', label: 'آجل', icon: '⏳' },
             { value: 'wallet', label: 'محفظة إلكترونية', icon: '📱' },
             { value: 'instapay', label: 'انستا باي', icon: '💳' },
-            { value: 'bank', label: 'تحويل بنكي', icon: '🏦' }
           ].map((method) => (
             <button
               key={method.value}

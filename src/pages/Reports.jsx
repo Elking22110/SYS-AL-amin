@@ -113,6 +113,7 @@ const Reports = () => {
   const [showSettlementModal, setShowSettlementModal] = useState(false);
   const [settlementInvoiceId, setSettlementInvoiceId] = useState(null);
   const [settlementRemaining, setSettlementRemaining] = useState(0);
+  const [settlementAmount, setSettlementAmount] = useState('');
   const [settlementMethod, setSettlementMethod] = useState('cash');
 
   // Confirmation Modal state
@@ -172,11 +173,6 @@ const Reports = () => {
         setEditCategories(cats);
         setEditProductImages(imgs);
         setShowPOSGrid(false); // إغلاق شبكة الـ POS كخيار افتراضي عند الفتح
-        setTimeout(() => {
-          if (prodSearchInputRef.current) {
-            prodSearchInputRef.current.focus();
-          }
-        }, 150);
       } catch (_) {}
     }
   }, [showInvoiceModal]);
@@ -476,38 +472,50 @@ const Reports = () => {
     const remaining = invoice.downPayment.remaining || (safeMath.subtract(invoice.total, invoice.downPayment.amount));
     setSettlementInvoiceId(invoiceId);
     setSettlementRemaining(Number(remaining) || 0);
+    setSettlementAmount(Number(remaining) || 0);
     setSettlementMethod('cash');
     setShowSettlementModal(true);
   };
 
   const confirmPayRemaining = () => {
     try {
-      const remainingAmount = settlementRemaining;
+      const amountPaid = parseFloat(settlementAmount) || 0;
+      if (amountPaid <= 0 || amountPaid > settlementRemaining) {
+        notifyError('برجاء إدخال مبلغ صحيح لا يتجاوز المبلغ المتبقي');
+        return;
+      }
+      
       const invoiceId = settlementInvoiceId;
       const method = settlementMethod;
+      const newRemaining = Math.max(0, settlementRemaining - amountPaid);
+      const isComplete = newRemaining <= 0;
 
       const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
       const activeShiftId = (activeShift && activeShift.status === 'active') ? activeShift.id : null;
       
       const settlementData = {
         method,
-        amount: remainingAmount,
+        amount: amountPaid,
         timestamp: new Date().toISOString(),
         shiftId: activeShiftId
       };
 
+      const updateInvoiceData = (sale) => ({
+        ...sale,
+        settlements: [...(sale.settlements || []), ...(sale.settlement ? [sale.settlement] : []), settlementData], // migrate old settlement to array
+        settlement: undefined,
+        downPayment: {
+          ...sale.downPayment,
+          remaining: newRemaining,
+          amount: (sale.downPayment?.amount || 0) + amountPaid,
+          enabled: !isComplete // keep enabled if partial
+        },
+        paymentStatus: isComplete ? 'complete' : 'partial'
+      });
+
       const updatedSales = allSales.map(sale => {
         if (sale.id === invoiceId) {
-          return {
-            ...sale,
-            settlement: settlementData,
-            downPayment: {
-              ...sale.downPayment,
-              remaining: 0,
-              enabled: false
-            },
-            paymentStatus: 'complete'
-          };
+          return updateInvoiceData(sale);
         }
         return sale;
       });
@@ -519,10 +527,7 @@ const Reports = () => {
         activeShift.sales = activeShift.sales.map(s => {
           if (s.id === invoiceId) {
             return {
-              ...s,
-              settlement: settlementData,
-              downPayment: { ...s.downPayment, remaining: 0, enabled: false },
-              paymentStatus: 'complete'
+...updateInvoiceData(s)
             };
           }
           return s;
@@ -537,10 +542,7 @@ const Reports = () => {
           const saleIdx = (shift.sales || []).findIndex(s => s.id === invoiceId);
           if (saleIdx !== -1) {
             shift.sales[saleIdx] = {
-              ...shift.sales[saleIdx],
-              settlement: settlementData,
-              downPayment: { ...shift.sales[saleIdx].downPayment, remaining: 0, enabled: false },
-              paymentStatus: 'complete'
+...updateInvoiceData(shift.sales[saleIdx])
             };
             shift.totalSales = shift.sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
           }
@@ -553,7 +555,7 @@ const Reports = () => {
       setShowSettlementModal(false);
       setShowInvoiceModal(false);
       setSelectedInvoice(null);
-      notifySuccess('تم سداد المبلغ المتبقي وإغلاق الفاتورة بنجاح');
+      notifySuccess(isComplete ? 'تم سداد المبلغ المتبقي وإغلاق الفاتورة بنجاح' : `تم سداد ${amountPaid} بنجاح، المتبقي ${newRemaining}`);
       try { publish(EVENTS.INVOICES_CHANGED, { type: 'settled', invoiceId }); } catch (_) {}
     } catch (error) {
       console.error('Error paying remaining:', error);
@@ -575,7 +577,7 @@ const Reports = () => {
       const logoSrc = storeInfo.logo || '';
       const currentDate = formatDate(invoice.timestamp || invoice.date || new Date());
       const cashierName = invoice.cashier || user?.username || 'غير محدد';
-      const paymentMethodText = invoice.paymentMethod === 'cash' ? '💵 نقدي' : invoice.paymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : invoice.paymentMethod === 'instapay' ? '💳 انستا باي' : '🏦 تحويل بنكي';
+      const paymentMethodText = invoice.paymentMethod === 'cash' ? '💵 نقدي' : invoice.paymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : invoice.paymentMethod === 'instapay' ? '💳 انستا باي' : invoice.paymentMethod === 'deferred' ? '⏳ آجل' : '💵 نقدي';
       const customerName = invoice.customer?.name || 'عميل نقدي';
       const customerPhone = invoice.customer?.phone || 'غير محدد';
       const itemsArr = invoice.items || [];
@@ -1094,7 +1096,7 @@ const Reports = () => {
       case 'cash': return 'نقداً';
       case 'wallet': return 'محفظة إلكترونية';
       case 'instapay': return 'انستا باي';
-      case 'bank': return 'تحويل بنكي';
+      case 'deferred': return 'آجل';
       default: return method || 'غير محدد';
     }
   };
@@ -1153,7 +1155,7 @@ const Reports = () => {
                 <option value="cash">نقداً</option>
                 <option value="wallet">محفظة إلكترونية</option>
                 <option value="instapay">انستا باي</option>
-                <option value="bank">تحويل بنكي</option>
+                <option value="deferred">آجل</option>
               </select>
             )}
 
@@ -1373,12 +1375,15 @@ const Reports = () => {
                           </div>
                         </div>
                       )}
-                      {selectedInvoice.settlement && (
+                      {(selectedInvoice.settlements || (selectedInvoice.settlement ? [selectedInvoice.settlement] : [])).length > 0 && (
                         <div className="pt-2 border-t border-slate-200 space-y-1">
-                          <div className="flex justify-between text-sm text-green-700">
-                            <span>تم تسوية المبلغ المتبقي نقداً بقيمة:</span>
-                            <span className="font-bold">{selectedInvoice.settlement.amount} ج.م</span>
-                          </div>
+                          <h5 className="text-xs font-bold text-slate-600 mb-1 border-b pb-1">سجل السداد:</h5>
+                          {(selectedInvoice.settlements || (selectedInvoice.settlement ? [selectedInvoice.settlement] : [])).map((s, idx) => (
+                            <div key={idx} className="flex justify-between text-xs text-green-700">
+                              <span>سداد ({s.method === 'cash' ? 'نقداً' : s.method === 'wallet' ? 'محفظة' : s.method === 'instapay' ? 'انستا باي' : 'آجل'}):</span>
+                              <span className="font-bold">{s.amount} ج.م</span>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -1643,15 +1648,28 @@ const Reports = () => {
         <div className="fixed inset-0 z-[10010] flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-right border border-slate-200 shadow-2xl">
             <h3 className="text-slate-800 text-lg font-bold mb-2">تسوية المبلغ المتبقي</h3>
-            <p className="text-slate-600 text-sm mb-4">المبلغ المتبقي للسداد: <strong className="text-red-600 font-extrabold text-base">{settlementRemaining} ج.م</strong></p>
+            <p className="text-slate-600 text-sm mb-4">إجمالي المبلغ المتبقي: <strong className="text-red-600 font-extrabold text-base">{settlementRemaining} ج.م</strong></p>
             
+            <div className="mb-4">
+              <label className="block text-xs font-semibold text-slate-500 mb-1">المبلغ المراد سداده:</label>
+              <input 
+                type="number" 
+                value={settlementAmount} 
+                onChange={(e) => setSettlementAmount(e.target.value)}
+                className="w-full border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-blue-500 font-bold"
+                placeholder="أدخل المبلغ..."
+                min="0.1"
+                step="0.1"
+              />
+            </div>
+
             <label className="block text-xs font-semibold text-slate-500 mb-2">اختر طريقة السداد:</label>
             <div className="grid grid-cols-2 gap-2 mb-6">
               {[
                 { value: 'cash', label: 'نقداً' },
                 { value: 'wallet', label: 'محفظة إلكترونية' },
                 { value: 'instapay', label: 'انستا باي' },
-                { value: 'bank', label: 'تحويل بنكي' }
+                { value: 'deferred', label: 'آجل' }
               ].map(opt => (
                 <button
                   key={opt.value}
@@ -1677,7 +1695,7 @@ const Reports = () => {
                 onClick={confirmPayRemaining}
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-xl font-bold text-xs cursor-pointer"
               >
-                تأكيد سداد {settlementRemaining} ج.م
+                تأكيد سداد {settlementAmount || 0} ج.م
               </button>
             </div>
           </div>

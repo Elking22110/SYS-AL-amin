@@ -400,13 +400,13 @@ const CartManager = ({
             </div>
           </div>
           {customerInfo?.phone && customerInfo?.name && (
-            <div className="mt-2 flex items-center justify-between text-xs font-semibold bg-blue-500 bg-opacity-20 text-slate-800 p-2 rounded">
+            <div className="mt-2 flex items-center justify-between text-sm font-bold bg-blue-50 border border-blue-200 text-blue-900 p-2 rounded">
               <span>👤 الاسم: {customerInfo.name}</span>
-              <span className="bg-blue-600 text-slate-800 px-2 py-0.5 rounded text-[10px]">
+              <span className="bg-blue-200 text-blue-900 px-2 py-0.5 rounded text-xs">
                 النوع: {customerInfo.type || 'عميل عادي'}
               </span>
               {Number(customerInfo.debt || 0) > 0 && (
-                <span className="text-red-600 font-bold bg-red-500 bg-opacity-25 px-2 py-0.5 rounded text-[10px]">
+                <span className="text-red-700 font-extrabold bg-red-100 px-2 py-0.5 rounded text-xs">
                   المديونية: {(customerInfo.debt || 0).toLocaleString('en-US')} ج.م
                 </span>
               )}
