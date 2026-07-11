@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Search, Package, Shirt, Footprints, Watch, Headphones, Smartphone, Laptop, Home, Car, Gamepad2, Book, Camera, Gift } from 'lucide-react';
+import { Search, Package, Shirt, Footprints, Watch, Headphones, Smartphone, Laptop, Home, Car, Gamepad2, Book, Camera, Gift, ChevronRight, ChevronLeft } from 'lucide-react';
 import storageOptimizer from '../../utils/storageOptimizer.js';
 import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
@@ -53,8 +53,18 @@ const ProductGrid = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMainGroup, setSelectedMainGroup] = useState('الكل');
+  const [isMainGroupsExpanded, setIsMainGroupsExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(36);
   const searchInputRef = useRef(null);
+  const mainGroupsRef = useRef(null);
+
+  // دالة تحريك شريط المجموعات الرئيسية باللمس أو النقر على الأزرار
+  const scrollMainGroups = (direction) => {
+    if (mainGroupsRef.current) {
+      const scrollAmount = direction === 'left' ? -250 : 250;
+      mainGroupsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   // تركيز تلقائي على حقل البحث عند التحميل لسرعة الباركود
   useEffect(() => {
@@ -801,25 +811,83 @@ const ProductGrid = ({
 
         {/* فئات المنتجات الرئيسية (سريعة التنقل) */}
         <div className="border-b border-slate-200 pb-4">
-          <span className="block text-xs font-extrabold text-slate-500 mb-2">مجموعات رئيسية (الماركات):</span>
-          <div className="flex flex-row overflow-x-auto gap-2 pb-2 scrollbar-none" style={{ direction: 'rtl' }}>
-            {MAIN_GROUPS.map((group) => (
-              <button
-                key={group.key}
-                onClick={() => {
-                  setSelectedMainGroup(group.key);
-                  onCategoryChange('الكل'); // تصفير القسم الفرعي عند الانتقال لماركة جديدة
-                }}
-                className={`px-5 py-3 rounded-lg font-extrabold transition-all duration-200 text-xs md:text-sm whitespace-nowrap cursor-pointer shadow-xs border ${
-                  selectedMainGroup === group.key
-                    ? 'bg-amber-400 text-slate-900 border-amber-500 font-black shadow-md'
-                    : 'bg-slate-200 text-slate-800 hover:bg-slate-300 border-slate-300'
-                }`}
-              >
-                {group.label}
-              </button>
-            ))}
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="block text-xs font-black text-slate-500">مجموعات رئيسية (الماركات):</span>
+            <button
+              type="button"
+              onClick={() => setIsMainGroupsExpanded(!isMainGroupsExpanded)}
+              className="text-[11px] bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 font-bold px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <span>{isMainGroupsExpanded ? 'عرض شريطي ☰' : 'عرض شبكة ▦'}</span>
+            </button>
           </div>
+          
+          {isMainGroupsExpanded ? (
+            <div className="flex flex-wrap gap-1.5 pb-2" style={{ direction: 'rtl' }}>
+              {MAIN_GROUPS.map((group) => (
+                <button
+                  key={group.key}
+                  onClick={() => {
+                    setSelectedMainGroup(group.key);
+                    onCategoryChange('الكل');
+                  }}
+                  className={`px-4 py-2 md:py-2.5 rounded-lg font-extrabold transition-all duration-200 text-xs md:text-sm whitespace-nowrap cursor-pointer shadow-xs border ${
+                    selectedMainGroup === group.key
+                      ? 'bg-amber-400 text-slate-900 border-amber-500 font-black shadow-md'
+                      : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  {group.label}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="relative flex items-center">
+              {/* زر التمرير لليمين */}
+              <button
+                type="button"
+                onClick={() => scrollMainGroups('right')}
+                className="absolute right-0 z-10 p-1.5 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 -mr-2 cursor-pointer transition-all duration-150 flex items-center justify-center hover:scale-105 active:scale-95"
+                title="تصفح لليمين"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+              
+              {/* قائمة الفئات الأفقية */}
+              <div
+                ref={mainGroupsRef}
+                className="flex flex-row overflow-x-auto gap-2 px-6 pb-2 scrollbar-none w-full scroll-smooth"
+                style={{ direction: 'rtl' }}
+              >
+                {MAIN_GROUPS.map((group) => (
+                  <button
+                    key={group.key}
+                    onClick={() => {
+                      setSelectedMainGroup(group.key);
+                      onCategoryChange('الكل');
+                    }}
+                    className={`px-5 py-3 rounded-lg font-extrabold transition-all duration-200 text-xs md:text-sm whitespace-nowrap cursor-pointer shadow-xs border ${
+                      selectedMainGroup === group.key
+                        ? 'bg-amber-400 text-slate-900 border-amber-500 font-black shadow-md'
+                        : 'bg-white text-slate-700 hover:bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    {group.label}
+                  </button>
+                ))}
+              </div>
+              
+              {/* زر التمرير ليسار */}
+              <button
+                type="button"
+                onClick={() => scrollMainGroups('left')}
+                className="absolute left-0 z-10 p-1.5 rounded-full bg-white/90 hover:bg-white text-slate-700 shadow-md border border-slate-200 -ml-2 cursor-pointer transition-all duration-150 flex items-center justify-center hover:scale-105 active:scale-95"
+                title="تصفح لليسار"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

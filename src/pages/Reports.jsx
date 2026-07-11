@@ -587,21 +587,24 @@ const Reports = () => {
           <meta charset="UTF-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>فاتورة بيع - ${invoiceId}</title>
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
           <style>
             @page {
               size: auto;
-              margin: 5mm;
+              margin: 8mm;
             }
             body {
-              font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-              color: #000;
+              font-family: 'Almarai', Arial, "Segoe UI", Tahoma, sans-serif;
+              color: #1e293b;
               background-color: #fff;
               margin: 0;
               padding: 0;
               direction: rtl;
-              font-size: 14px;
-              font-weight: bold;
-              line-height: 1.4;
+              font-size: 13px;
+              font-weight: 700;
+              line-height: 1.5;
             }
             .invoice-box {
               max-width: 100%;
@@ -611,58 +614,58 @@ const Reports = () => {
             .header-table {
               width: 100%;
               border-collapse: collapse;
-              margin-bottom: 10px;
+              margin-bottom: 15px;
             }
             .header-table td {
-              vertical-align: top;
+              vertical-align: middle;
               border: none;
               padding: 0;
             }
             .logo {
-              max-height: 50px;
+              max-height: 60px;
               width: auto;
-              margin-bottom: 4px;
+              margin-bottom: 6px;
             }
             .store-title {
               font-size: 18px;
               font-weight: 900;
-              color: #000;
-              margin-bottom: 2px;
+              color: #0f172a;
+              margin-bottom: 4px;
             }
             .store-subtitle {
-              font-size: 13px;
-              font-weight: bold;
-              color: #000;
+              font-size: 12px;
+              font-weight: 700;
+              color: #475569;
             }
             .invoice-title-col {
               text-align: left;
             }
             .invoice-title-text {
-              font-size: 20px;
+              font-size: 22px;
               font-weight: 900;
-              color: #000;
-              margin-bottom: 5px;
-              letter-spacing: -0.5px;
+              color: #0f172a;
+              margin-bottom: 6px;
             }
             .info-badge {
               display: inline-block;
-              background-color: #fff;
-              border: 2px solid #000;
-              padding: 4px 8px;
-              border-radius: 6px;
+              background-color: #f8fafc;
+              border: 1.5px solid #cbd5e1;
+              padding: 8px 12px;
+              border-radius: 8px;
               font-size: 12px;
-              font-weight: bold;
-              color: #000;
+              font-weight: 700;
+              color: #1e293b;
               text-align: right;
+              line-height: 1.6;
             }
             .divider {
-              border-top: 2px solid #000;
-              margin: 10px 0;
+              border-top: 2px solid #cbd5e1;
+              margin: 15px 0;
             }
             .details-grid {
               width: 100%;
               border-collapse: collapse;
-              margin-bottom: 10px;
+              margin-bottom: 15px;
             }
             .details-grid td {
               width: 50%;
@@ -670,121 +673,136 @@ const Reports = () => {
               padding: 0 0 0 10px;
               border: none;
             }
+            .details-grid td:last-child {
+              padding: 0 10px 0 0;
+            }
             .details-card {
-              background-color: #fff;
-              border: 2px solid #000;
-              border-radius: 8px;
-              padding: 10px;
+              background-color: #f8fafc;
+              border: 1.5px solid #cbd5e1;
+              border-radius: 10px;
+              padding: 12px;
+              height: 100%;
+              box-sizing: border-box;
             }
             .details-card h4 {
-              margin: 0 0 5px 0;
-              font-size: 14px;
+              margin: 0 0 8px 0;
+              font-size: 13px;
               font-weight: 900;
-              color: #000;
-              border-bottom: 2px solid #000;
-              padding-bottom: 4px;
+              color: #0f172a;
+              border-bottom: 1.5px solid #cbd5e1;
+              padding-bottom: 6px;
             }
             .info-row {
               display: flex;
               justify-content: space-between;
-              margin-bottom: 4px;
-              font-size: 13px;
+              margin-bottom: 6px;
+              font-size: 12px;
             }
             .info-label {
-              color: #000;
-              font-weight: 900;
+              color: #475569;
+              font-weight: 700;
             }
             .info-val {
-              color: #000;
-              font-weight: 900;
+              color: #0f172a;
+              font-weight: 800;
             }
             .products-table {
               width: 100%;
               border-collapse: collapse;
-              margin-bottom: 15px;
+              margin-bottom: 20px;
             }
             .products-table th {
-              background-color: #fff;
-              border: 2px solid #000;
-              padding: 8px 10px;
-              font-size: 13px;
+              background-color: #f1f5f9;
+              border: 1.5px solid #cbd5e1;
+              padding: 10px;
+              font-size: 12px;
               font-weight: 900;
-              color: #000;
+              color: #0f172a;
               text-align: right;
             }
             .products-table td {
-              border: 1px solid #000;
-              padding: 6px 8px;
-              font-size: 14px;
-              font-weight: bold;
-              color: #000;
+              border: 1.5px solid #e2e8f0;
+              padding: 8px 10px;
+              font-size: 13px;
+              font-weight: 700;
+              color: #1e293b;
             }
-            .products-table tr:nth-child(even) {
-              background-color: #f8f8f8;
+            .products-table tr:nth-child(even) td {
+              background-color: #f8fafc;
             }
             .text-center { text-align: center !important; }
             .text-left { text-align: left !important; }
             .summary-table-container {
               width: 100%;
-              margin-top: 10px;
+              margin-top: 15px;
             }
             .summary-table {
-              width: 320px;
+              width: 340px;
               margin-right: auto;
               border-collapse: collapse;
             }
             .summary-table td {
-              padding: 4px 8px;
-              font-size: 14px;
+              padding: 6px 10px;
+              font-size: 13px;
               border: none;
             }
             .summary-table .label {
-              color: #000;
-              font-weight: 900;
+              color: #475569;
+              font-weight: 700;
               text-align: right;
             }
             .summary-table .value {
-              color: #000;
-              font-weight: 900;
+              color: #0f172a;
+              font-weight: 800;
               text-align: left;
             }
             .summary-table .total-row td {
-              border-top: 2px solid #000;
-              padding-top: 8px;
-              font-size: 16px;
+              border-top: 2px solid #0f172a;
+              padding-top: 10px;
+              font-size: 15px;
               font-weight: 900;
             }
+            .summary-table .total-row .label {
+              color: #0f172a;
+            }
             .summary-table .total-row .value {
-              color: #000;
+              color: #059669;
+              font-size: 17px;
             }
             .footer-section {
-              margin-top: 30px;
-              border-top: 2px solid #000;
+              margin-top: 40px;
+              border-top: 1.5px dashed #cbd5e1;
               padding-top: 15px;
               text-align: center;
-              font-size: 12px;
-              font-weight: bold;
-              color: #000;
+              font-size: 11px;
+              font-weight: 700;
+              color: #475569;
             }
             .signatures {
-              margin-top: 30px;
+              margin-top: 35px;
               display: flex;
               justify-content: space-between;
-              padding: 0 20px;
+              padding: 0 30px;
             }
             .sig-box {
               text-align: center;
-              width: 150px;
+              width: 160px;
             }
             .sig-line {
-              border-bottom: 2px solid #000;
-              margin-bottom: 6px;
-              height: 25px;
+              border-bottom: 1.5px solid #cbd5e1;
+              margin-bottom: 8px;
+              height: 30px;
             }
             @media print {
               body {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+              }
+              .details-card {
+                background-color: #f8fafc !important;
+              }
+              .products-table th {
+                background-color: #f1f5f9 !important;
               }
             }
           </style>

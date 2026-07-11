@@ -231,8 +231,7 @@ class SyncManager {
         }
       }
 
-      // 2. استيراد وتحديث البيانات المعدلة في السحاب للأسفل (Download)
-      // استنتاج توقيت آخر تحديث محلي مزامن لتجنب تحميل كامل البيانات مجدداً
+      // 2. استيراد وتحديث البيانات المعدلة في السحاب للأسفل (Download) - معالجة الصفحات لدعم أي عدد من السجلات
       const syncedRecords = localRecords.filter(r => r && r.sync_status === 'synced');
       let lastLocalUpdate = new Date(0).toISOString();
       if (syncedRecords.length > 0) {
@@ -240,12 +239,37 @@ class SyncManager {
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
 
-      const { data: cloudUpdates, error: fetchError } = await supabase
-        .from(storeName)
-        .select('*')
-        .gt('updated_at', lastLocalUpdate);
+      let cloudUpdates = [];
+      let hasMore = true;
+      let lastFetchedTime = lastLocalUpdate;
+      const pageSize = 1000;
 
-      if (!fetchError && cloudUpdates && cloudUpdates.length > 0) {
+      while (hasMore) {
+        const { data, error: fetchError } = await supabase
+          .from(storeName)
+          .select('*')
+          .gt('updated_at', lastFetchedTime)
+          .order('updated_at', { ascending: true })
+          .limit(pageSize);
+
+        if (fetchError) {
+          throw fetchError;
+        }
+
+        if (data && data.length > 0) {
+          cloudUpdates = [...cloudUpdates, ...data];
+          if (data.length < pageSize) {
+            hasMore = false;
+          } else {
+            // تحديث التوقيت ليكون توقيت آخر عنصر تم جلبه للانتقال للصفحة التالية
+            lastFetchedTime = data[data.length - 1].updated_at;
+          }
+        } else {
+          hasMore = false;
+        }
+      }
+
+      if (cloudUpdates.length > 0) {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
         for (const cloudItem of cloudUpdates) {
@@ -328,22 +352,6 @@ class SyncManager {
 
         // إطلاق حدث للتطبيق العام لتحديث واجهاته بالبيانات الجديدة المستوردة
         window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: storeName } }));
-      }
-
-      // 3. تصالح المحذوفات السحابية (التأكد من حذف ما تم حذفه من لوحة التحكم السحابية)
-      if (['categories', 'products'].includes(storeName)) {
-        const { data: cloudIds, error: idsError } = await supabase.from(storeName).select('id');
-        if (!idsError && cloudIds) {
-          const activeIds = new Set(cloudIds.map(c => c.id));
-          const localSynced = localRecords.filter(r => r && r.sync_status === 'synced');
-          
-          for (const local of localSynced) {
-            if (!activeIds.has(local.id)) {
-              console.log(`🗑️ حذف الصنف ${local.id} محلياً لأنه لم يعد موجوداً في السحاب (${storeName})`);
-              await databaseManager.deletePhysical(storeName, local.id);
-            }
-          }
-        }
       }
 
     } catch (e) {
