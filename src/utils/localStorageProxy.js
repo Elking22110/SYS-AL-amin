@@ -33,6 +33,7 @@ const localCache = new Map();
 
 // الاحتفاظ بالدالة الأصلية
 const originalSetItem = localStorage.setItem;
+const originalRemoveItem = localStorage.removeItem;
 
 /**
  * دالة تفريغ المتغيرات لتسريع المعالجة وحساب الفروقات

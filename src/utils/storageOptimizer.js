@@ -4,6 +4,12 @@ class StorageOptimizer {
     this.cache = new Map();
     this.debounceTimers = new Map();
     this.batchUpdates = new Map();
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', () => this.clearCache());
+      window.addEventListener('dataUpdated', () => this.clearCache());
+      window.addEventListener('realtimeDataUpdate', () => this.clearCache());
+    }
   }
 
   // قراءة محسنة مع cache

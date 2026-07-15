@@ -66,6 +66,48 @@ const Settings = () => {
       soundManager.setVolume(settings.soundVolume);
     }
   }, []);
+
+  // إعادة تحميل الإعدادات والمستخدمين عند حدوث تحديث خارجي (مزامنة سحابية)
+  useEffect(() => {
+    const reloadAllSettings = () => {
+      try {
+        const savedSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+        const savedStoreInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
+        setSettings(prev => ({
+          ...prev,
+          ...savedSettings,
+          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'متجر الأمين',
+          companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
+          companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
+          companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
+          taxEnabled: savedStoreInfo.taxEnabled !== undefined ? savedStoreInfo.taxEnabled : savedSettings.taxEnabled !== undefined ? savedSettings.taxEnabled : false,
+          taxRate: savedStoreInfo.taxRate || savedSettings.taxRate || 15,
+          taxName: savedStoreInfo.taxName || savedSettings.taxName || 'ضريبة القيمة المضافة',
+          inventoryEnabled: savedStoreInfo.inventoryEnabled !== undefined ? savedStoreInfo.inventoryEnabled : (savedSettings.inventoryEnabled !== undefined ? savedSettings.inventoryEnabled : true)
+        }));
+      } catch (_) {}
+      
+      try {
+        const savedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        if (savedUsers.length > 0) {
+          setUsers(savedUsers);
+        }
+      } catch (_) {}
+    };
+
+    const handleDataUpdated = (e) => {
+      const type = e.detail?.type;
+      if (type === 'pos-settings' || type === 'storeInfo' || type === 'users' || type === 'system-settings') {
+        console.log(`⚙️ [Settings] Reloading settings due to sync update for: ${type}`);
+        reloadAllSettings();
+      }
+    };
+
+    window.addEventListener('dataUpdated', handleDataUpdated);
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdated);
+    };
+  }, []);
   const [users, setUsers] = useState(() => {
     const savedUsers = JSON.parse(localStorage.getItem('users') || '[]');
     return savedUsers.length > 0 ? savedUsers : [

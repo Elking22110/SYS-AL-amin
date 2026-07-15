@@ -268,3 +268,72 @@ CREATE TRIGGER update_manufacturing_waste_modtime BEFORE UPDATE ON public.manufa
 
 DROP TRIGGER IF EXISTS update_product_images_modtime ON public.product_images;
 CREATE TRIGGER update_product_images_modtime BEFORE UPDATE ON public.product_images FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ========================================================
+-- CLIENT API ACCESS + REALTIME PUBLICATION
+-- ========================================================
+-- Required for browser/Electron clients that use the anon key.
+-- Supabase projects created after 2026-04-28 may not expose new tables
+-- to the Data API automatically, so grant access explicitly.
+
+GRANT USAGE ON SCHEMA public TO anon, authenticated;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
+    public.categories,
+    public.products,
+    public.customers,
+    public.sales,
+    public.shifts,
+    public.returns,
+    public.users,
+    public.suppliers,
+    public.supplier_supplies,
+    public.supplier_payments,
+    public.expenses,
+    public.store_info,
+    public.pos_settings,
+    public.system_settings,
+    public.active_shift,
+    public.manufacturing_waste,
+    public.product_images
+TO anon, authenticated;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO anon, authenticated;
+
+-- Add all POS tables to Supabase Realtime publication if they are not there.
+DO $$
+DECLARE
+    table_name text;
+    realtime_tables text[] := ARRAY[
+        'categories',
+        'products',
+        'customers',
+        'sales',
+        'shifts',
+        'returns',
+        'users',
+        'suppliers',
+        'supplier_supplies',
+        'supplier_payments',
+        'expenses',
+        'store_info',
+        'pos_settings',
+        'system_settings',
+        'active_shift',
+        'manufacturing_waste',
+        'product_images'
+    ];
+BEGIN
+    FOREACH table_name IN ARRAY realtime_tables LOOP
+        IF NOT EXISTS (
+            SELECT 1
+            FROM pg_publication_tables
+            WHERE pubname = 'supabase_realtime'
+              AND schemaname = 'public'
+              AND tablename = table_name
+        ) THEN
+            EXECUTE format('ALTER PUBLICATION supabase_realtime ADD TABLE public.%I', table_name);
+        END IF;
+    END LOOP;
+END $$;

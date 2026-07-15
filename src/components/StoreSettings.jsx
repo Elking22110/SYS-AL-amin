@@ -22,13 +22,28 @@ const StoreSettings = () => {
 
   // تحميل بيانات المتجر المحفوظة
   useEffect(() => {
-    const savedStoreInfo = localStorage.getItem('storeInfo');
-    if (savedStoreInfo) {
-      try {
-        const parsed = JSON.parse(savedStoreInfo);
-        setStoreInfo(prev => ({ ...prev, ...parsed }));
-      } catch (_) {}
-    }
+    const loadInfo = () => {
+      const savedStoreInfo = localStorage.getItem('storeInfo');
+      if (savedStoreInfo) {
+        try {
+          const parsed = JSON.parse(savedStoreInfo);
+          setStoreInfo(prev => ({ ...prev, ...parsed }));
+        } catch (_) {}
+      }
+    };
+    
+    loadInfo();
+    
+    const handleDataUpdated = (e) => {
+      if (e.detail?.type === 'storeInfo') {
+        loadInfo();
+      }
+    };
+    
+    window.addEventListener('dataUpdated', handleDataUpdated);
+    return () => {
+      window.removeEventListener('dataUpdated', handleDataUpdated);
+    };
   }, []);
 
   // الاستماع لأمر الحفظ العام القادم من شاشة الإعدادات (زر الحفظ العلوي)
