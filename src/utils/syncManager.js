@@ -212,8 +212,21 @@ class SyncManager {
         const lsKey = keyMap[table];
         if (lsKey) {
           const allItems = await databaseManager.getAll(table);
-          if (allItems && allItems.length > 0) {
-            localStorage.setItem(lsKey, JSON.stringify(allItems));
+          // دمج مع localStorage الحالي لحماية السجلات المعلقة (pending) من الضياع
+          let idbMap = new Map((allItems || []).map(item => [String(item.id), item]));
+          try {
+            const currentLS = JSON.parse(localStorage.getItem(lsKey) || '[]');
+            if (Array.isArray(currentLS)) {
+              for (const lsItem of currentLS) {
+                if (lsItem && lsItem.id && !idbMap.has(String(lsItem.id))) {
+                  idbMap.set(String(lsItem.id), lsItem);
+                }
+              }
+            }
+          } catch (_) {}
+          const mergedItems = Array.from(idbMap.values());
+          if (mergedItems && mergedItems.length > 0) {
+            localStorage.setItem(lsKey, JSON.stringify(mergedItems));
           }
         }
 
@@ -789,6 +802,9 @@ class SyncManager {
         }
       }
 
+      // بناء مجموعة IDs المحذوفة محلياً لتجنب استعادة ما حذفه المستخدم من السحابة
+      const deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
+
       if (cloudUpdates.length > 0) {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
@@ -796,6 +812,12 @@ class SyncManager {
           // تحويل ID من رقم إلى نص لمنع التكرار في IndexedDB (أصل مشكلة التضاعف)
           if (cloudItem.id !== undefined && cloudItem.id !== null) {
             cloudItem.id = String(cloudItem.id);
+          }
+
+          // تخطي السجلات المحذوفة محلياً — لا نُعيدها من السحاب أبداً
+          if (deletedIdsSet.has(cloudItem.id)) {
+            console.log(`🚫 [SyncManager] تخطي استعادة سجل محذوف محلياً: ${storeName}/${cloudItem.id}`);
+            continue;
           }
 
           // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية فقط (مثل minStock)
@@ -909,8 +931,23 @@ class SyncManager {
           };
           const localStorageKey = keyMap[storeName];
           if (localStorageKey) {
+            // دمج العناصر في IndexedDB مع العناصر الحالية في localStorage
+            // لمنع فقدان العناصر الجديدة التي لم تُحفظ في IndexedDB بعد (بسبب تأخر الـ proxy)
+            let idbMap = new Map(allItems.map(item => [String(item.id), item]));
+            try {
+              const currentLS = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
+              if (Array.isArray(currentLS)) {
+                for (const lsItem of currentLS) {
+                  if (lsItem && lsItem.id && !idbMap.has(String(lsItem.id))) {
+                    // عنصر موجود في localStorage لكن غير موجود في IndexedDB بعد → نحتفظ به
+                    idbMap.set(String(lsItem.id), lsItem);
+                  }
+                }
+              }
+            } catch (_) {}
+            const mergedItems = Array.from(idbMap.values());
             window.__bypass_sync_proxy__ = true;
-            localStorage.setItem(localStorageKey, JSON.stringify(allItems));
+            localStorage.setItem(localStorageKey, JSON.stringify(mergedItems));
             window.__bypass_sync_proxy__ = false;
             
             const eventMap = {
