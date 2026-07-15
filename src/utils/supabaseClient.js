@@ -7,19 +7,34 @@ const FALLBACK_KEY = 'sb_publishable_NZWEAHXuHWyBfPFwUgMahQ_Z3LHrg8k';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
 
-// التحقق من صحة وجود المفاتيح وتفادي قيم النماذج الافتراضية
+// التحقق من صحة وجود المفاتيح
 const isKeysConfigured = 
   supabaseUrl && 
   supabaseUrl !== 'https://your-project-id.supabase.co' && 
   supabaseAnonKey && 
   supabaseAnonKey !== 'your-supabase-anon-key-here';
 
+// Singleton pattern - منع إنشاء أكثر من instance واحد
+const GLOBAL_KEY = '__supabase_singleton__';
+
 let supabase = null;
 
 if (isKeysConfigured) {
   try {
-    supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ تم تهيئة اتصال Supabase بنجاح - المزامنة السحابية نشطة');
+    // استخدام instance موجود إذا كان هناك واحد (تجنب Multiple GoTrueClient)
+    if (window[GLOBAL_KEY]) {
+      supabase = window[GLOBAL_KEY];
+    } else {
+      supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          persistSession: false,  // لا نحتاج session للـ POS
+          autoRefreshToken: false,
+          detectSessionInUrl: false
+        }
+      });
+      window[GLOBAL_KEY] = supabase;
+      console.log('✅ تم تهيئة اتصال Supabase بنجاح - المزامنة السحابية نشطة');
+    }
   } catch (err) {
     console.error('❌ فشل تهيئة اتصال Supabase:', err);
   }
@@ -28,4 +43,3 @@ if (isKeysConfigured) {
 }
 
 export { supabase, isKeysConfigured };
-
