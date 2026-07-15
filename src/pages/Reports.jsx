@@ -1,5 +1,6 @@
 import { publish, EVENTS } from '../utils/observerManager';
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ProductGrid from '../components/POS/ProductGrid';
 import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
@@ -75,6 +76,8 @@ const renderProductTitleAndSize = (name) => {
 const Reports = () => {
   const { user, hasPermission } = useAuth();
   const { notifySuccess, notifyError } = useNotifications();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // فحص الصلاحيات
   if (user?.role !== 'admin' && !hasPermission('view_reports')) {
@@ -95,6 +98,39 @@ const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [periodFilter, setPeriodFilter] = useState('month'); // day | week | month | all
+
+  
+  // معالجة التنقل من صفحات أخرى
+  useEffect(() => {
+    if (location.state && allSales.length > 0) {
+      if (location.state.openInvoiceId) {
+        const invToOpen = allSales.find(s => s.id === location.state.openInvoiceId);
+        if (invToOpen) {
+          setSelectedInvoice(invToOpen);
+          setShowInvoiceModal(true);
+        }
+        // تنظيف الحالة
+        window.history.replaceState({}, document.title);
+      }
+      
+      if (location.state.deleteInvoiceId) {
+        // ننتظر قليلا حتى تكتمل دورة الرندر وتتوفر الدالة handleDeleteInvoice
+        setTimeout(() => {
+          handleDeleteInvoice(location.state.deleteInvoiceId);
+        }, 100);
+        // تنظيف الحالة
+        window.history.replaceState({}, document.title);
+      }
+      
+      if (location.state.settleInvoiceId) {
+        setTimeout(() => {
+          handlePayRemaining(location.state.settleInvoiceId);
+        }, 100);
+        // تنظيف الحالة
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, allSales]);
 
   // بحث وإضافة المنتجات داخل الفاتورة
   const [prodSearch, setProdSearch] = useState('');
@@ -146,7 +182,8 @@ const Reports = () => {
       const salesList = Array.from(salesMap.values()).sort((a, b) => {
         const ta = new Date(a.timestamp || a.date || 0).getTime();
         const tb = new Date(b.timestamp || b.date || 0).getTime();
-        return tb - ta; // الأحدث أولاً
+        if (tb !== ta) return tb - ta;
+        return (Number(b.id) || 0) - (Number(a.id) || 0);
       });
 
       setAllSales(salesList);
@@ -314,6 +351,22 @@ const Reports = () => {
       } catch (err) {}
 
       // 6. تحديث الحالة المحلية
+      // تحديث مديونية العميل في سجل العملاء
+      const customerInvoice = allSales.find(s => s.id === invoiceId);
+      if (customerInvoice && customerInvoice.customer?.phone) {
+        try {
+          const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+          const cIndex = customers.findIndex(c => c.phone === customerInvoice.customer.phone);
+          if (cIndex !== -1) {
+            customers[cIndex].debt = Math.max(0, safeMath.subtract(customers[cIndex].debt || 0, amountPaid));
+            localStorage.setItem('customers', JSON.stringify(customers));
+            try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update' }); } catch (_) {}
+          }
+        } catch (e) {
+          console.error("Error updating customer debt:", e);
+        }
+      }
+
       setAllSales(updatedSales);
       setSelectedInvoice(updatedInvoice);
       notifySuccess('تم تعديل وتحديث الفاتورة بنجاح');
@@ -467,12 +520,24 @@ const Reports = () => {
   // سداد المبلغ المتبقي (عربون)
   const handlePayRemaining = (invoiceId) => {
     const invoice = allSales.find(sale => sale.id === invoiceId);
-    if (!invoice || !invoice.downPayment?.enabled) return;
+    if (!invoice || (!invoice.downPayment?.enabled && invoice.paymentMethod !== 'deferred')) return;
 
-    const remaining = invoice.downPayment.remaining || (safeMath.subtract(invoice.total, invoice.downPayment.amount));
+    let calcRemaining = 0;
+    if (invoice.downPayment?.enabled) {
+      calcRemaining = invoice.downPayment.remaining || (safeMath.subtract(invoice.total, invoice.downPayment.amount));
+    } else if (invoice.paymentMethod === 'deferred') {
+      const settledAmount = (invoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (invoice.settlement ? Number(invoice.settlement.amount) || 0 : 0);
+      calcRemaining = safeMath.subtract(invoice.total, settledAmount);
+    }
+
+    if (calcRemaining <= 0) {
+      notifyError('لا يوجد مبلغ متبقي لهذه الفاتورة');
+      return;
+    }
+
     setSettlementInvoiceId(invoiceId);
-    setSettlementRemaining(Number(remaining) || 0);
-    setSettlementAmount(Number(remaining) || 0);
+    setSettlementRemaining(Number(calcRemaining) || 0);
+    setSettlementAmount(Number(calcRemaining) || 0);
     setSettlementMethod('cash');
     setShowSettlementModal(true);
   };
@@ -972,7 +1037,7 @@ const Reports = () => {
 
     // فلترة حسب التبويب
     if (activeTab === 'partial') {
-      result = result.filter(inv => inv.downPayment?.enabled && (inv.downPayment?.remaining || 0) > 0);
+      result = result.filter(inv => (inv.downPayment?.enabled && (inv.downPayment?.remaining || 0) > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete'));
     } else if (activeTab === 'returns') {
       // المرتجعات المسجلة
       try {

@@ -28,6 +28,8 @@ const CartManager = ({
   const { notifySuccess, notifyError } = useNotifications();
   const [editingQty, setEditingQty] = useState({});
   const [editingPrice, setEditingPrice] = useState({});
+  const [customerSuggestions, setCustomerSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // حساب الإجمالي الفرعي
   const getSubtotal = useMemo(() => {
@@ -116,11 +118,53 @@ const CartManager = ({
 
   // إزالة الضريبة
   const removeTax = useCallback(() => {
-    if (setTaxes) {
-      setTaxes({ enabled: false, vat: 0, name: '' });
-    }
+    setTaxes({ enabled: false, percentage: 0, amount: 0, name: '' });
     notifySuccess('تم إزالة الضريبة', 'تم إزالة الضريبة من الفاتورة');
-  }, [notifySuccess]);
+  }, [setTaxes, notifySuccess]);
+
+  // البحث في العملاء
+  const handleCustomerSearch = useCallback((value, field) => {
+    let updatedInfo = { ...customerInfo, [field]: value };
+    
+    // Reset type/debt if user starts typing manually to detach from existing profile
+    if (!value.trim()) {
+        delete updatedInfo.type;
+        delete updatedInfo.debt;
+    }
+    
+    setCustomerInfo(updatedInfo);
+
+    if (value.trim().length > 0) {
+      try {
+        const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
+        const matches = savedCustomers.filter(c => 
+          c.name.toLowerCase().includes(value.toLowerCase()) || 
+          c.phone.includes(value)
+        ).slice(0, 5); // top 5 suggestions
+        
+        setCustomerSuggestions(matches);
+        setShowSuggestions(matches.length > 0);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setCustomerSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [customerInfo, setCustomerInfo]);
+
+  // اختيار عميل من الاقتراحات
+  const selectCustomer = useCallback((customer) => {
+    setCustomerInfo({
+      ...customerInfo,
+      id: customer.id,
+      name: customer.name,
+      phone: customer.phone,
+      type: customer.type || 'عميل عادي',
+      debt: customer.debt || 0
+    });
+    setShowSuggestions(false);
+  }, [customerInfo, setCustomerInfo]);
 
   return (
     <div className="w-full bg-white border border-slate-200 rounded-xl shadow-lg p-6 flex flex-col">
@@ -348,18 +392,20 @@ const CartManager = ({
 
       {/* بيانات العميل - مصغرة */}
       {cart.length > 0 && (
-        <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+        <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 relative">
           <h4 className="text-sm font-semibold text-slate-800 mb-2 flex items-center gap-1">
             <span className="text-slate-600">👤</span>
             بيانات العميل
           </h4>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 relative">
             <div>
               <input
                 id="customer-name-input"
                 type="text"
                 value={customerInfo?.name || ''}
-                onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+                onChange={(e) => handleCustomerSearch(e.target.value, 'name')}
+                onFocus={() => { if(customerSuggestions.length > 0) setShowSuggestions(true); }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 placeholder="اسم العميل"
                 className="w-full px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
               />
@@ -369,36 +415,41 @@ const CartManager = ({
                 id="customer-phone-input"
                 type="tel"
                 value={customerInfo?.phone || ''}
-                onChange={(e) => {
-                  const phoneVal = e.target.value;
-                  let updatedInfo = { ...customerInfo, phone: phoneVal };
-                  if (phoneVal) {
-                    try {
-                      const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
-                      const found = savedCustomers.find(c => c.phone.trim() === phoneVal.trim());
-                      if (found) {
-                        updatedInfo = {
-                          ...updatedInfo,
-                          name: found.name,
-                          type: found.type || 'عميل عادي',
-                          debt: found.debt || 0
-                        };
-                      } else {
-                        delete updatedInfo.type;
-                        delete updatedInfo.debt;
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }
-                  setCustomerInfo(updatedInfo);
-                }}
+                onChange={(e) => handleCustomerSearch(e.target.value, 'phone')}
+                onFocus={() => { if(customerSuggestions.length > 0) setShowSuggestions(true); }}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 placeholder="رقم الهاتف *"
                 className="w-full px-2 py-1 bg-slate-100 border border-slate-300 rounded text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
                 required
               />
             </div>
           </div>
+          
+          {/* قائمة الاقتراحات */}
+          {showSuggestions && customerSuggestions.length > 0 && (
+            <div className="absolute z-50 left-3 right-3 mt-1 bg-white border border-blue-300 shadow-xl rounded-lg max-h-48 overflow-y-auto">
+              {customerSuggestions.map((cust, idx) => (
+                <div 
+                  key={idx}
+                  onClick={() => selectCustomer(cust)}
+                  className="p-2 border-b border-gray-100 hover:bg-blue-50 cursor-pointer flex flex-col transition-colors"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-sm text-slate-800">{cust.name}</span>
+                    <span className="text-xs text-slate-500">{cust.phone}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-[10px] bg-blue-100 text-blue-800 px-1.5 rounded">{cust.type || 'عميل عادي'}</span>
+                    {Number(cust.debt) > 0 && (
+                      <span className="text-[10px] bg-red-100 text-red-700 px-1.5 rounded font-bold">
+                        مديونية: {Number(cust.debt).toLocaleString('en-US')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           {customerInfo?.phone && customerInfo?.name && (
             <div className="mt-2 flex items-center justify-between text-sm font-bold bg-blue-50 border border-blue-200 text-blue-900 p-2 rounded">
               <span>👤 الاسم: {customerInfo.name}</span>

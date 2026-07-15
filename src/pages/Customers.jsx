@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Plus,
   ClipboardList,
@@ -6,6 +7,9 @@ import {
   Search,
   Edit,
   Trash2,
+  Eye,
+  Printer,
+  Banknote,
   User,
   Phone,
   Mail,
@@ -21,11 +25,12 @@ import soundManager from '../utils/soundManager.js';
 import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
+import thermalPrinter from '../utils/thermalPrinter.js';
 
 const Customers = () => {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
-  const [historyCustomer, setHistoryCustomer] = useState(null);
-
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('الكل');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -569,7 +574,7 @@ const Customers = () => {
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => { soundManager.play('openWindow'); setHistoryCustomer(customer); }}
+                          onClick={() => { soundManager.play('openWindow'); navigate(`/customers/${customer.id || customer.phone}`); }}
                           className="text-emerald-600 hover:text-emerald-500 transition-colors p-2 hover:bg-emerald-500 hover:bg-opacity-20 rounded-lg"
                           title="سجل العميل"
                         >
@@ -602,118 +607,6 @@ const Customers = () => {
 
       {/* Add/Edit Customer Modal - خارج الكارد الرئيسي تماماً */}
       
-      {/* نافذة سجل العميل */}
-      {historyCustomer && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm p-4 text-right">
-          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col" style={{ maxHeight: '90vh' }}>
-            <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <ClipboardList className="h-6 w-6 text-emerald-600" />
-                سجل مشتريات العميل: <span className="text-blue-600">{historyCustomer.name}</span>
-              </h2>
-              <button onClick={() => { soundManager.play('closeWindow'); setHistoryCustomer(null); }} className="text-slate-400 hover:text-red-500 transition-colors p-2">
-                ✕
-              </button>
-            </div>
-            
-            <div className="p-5 overflow-y-auto flex-1">
-              {(() => {
-                const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
-                const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
-                const historicalSales = shifts.flatMap(shift => shift.sales || []);
-                const allInvoices = [...historicalSales, ...activeSales].filter(inv => inv?.customer?.phone === historyCustomer.phone);
-                
-                // Sort by date descending
-                allInvoices.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
-
-                if (allInvoices.length === 0) {
-                  return <div className="text-center text-slate-500 py-10 font-bold">لا توجد فواتير أو مشتريات لهذا العميل حتى الآن.</div>;
-                }
-
-                return (
-                  <div className="space-y-4">
-                    {allInvoices.map((inv, idx) => (
-                      <div key={idx} className="border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow bg-white">
-                        <div className="flex flex-wrap justify-between items-center border-b border-slate-100 pb-3 mb-3 gap-2">
-                          <div className="flex items-center gap-4">
-                            <div className="bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-lg text-sm">
-                              رقم الفاتورة: #{inv.id}
-                            </div>
-                            <div className="text-slate-500 text-sm font-semibold flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              {new Date(inv.timestamp || inv.date).toLocaleString('ar-EG')}
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs font-bold px-2 py-1 rounded ${
-                              inv.paymentMethod === 'cash' ? 'bg-green-100 text-green-700' :
-                              inv.paymentMethod === 'deferred' ? 'bg-orange-100 text-orange-700' :
-                              inv.paymentMethod === 'wallet' ? 'bg-purple-100 text-purple-700' :
-                              'bg-indigo-100 text-indigo-700'
-                            }`}>
-                              {inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'deferred' ? 'آجل' : inv.paymentMethod === 'wallet' ? 'محفظة' : 'انستا باي'}
-                            </span>
-                            <span className={`text-xs font-bold px-2 py-1 rounded ${
-                              inv.paymentStatus === 'complete' ? 'bg-emerald-100 text-emerald-700' :
-                              inv.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-red-100 text-red-700'
-                            }`}>
-                              {inv.paymentStatus === 'complete' ? 'مكتمل' : inv.paymentStatus === 'partial' ? 'جزئي' : 'معلق'}
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <h4 className="text-sm font-bold text-slate-700 mb-2 border-b pb-1">المنتجات:</h4>
-                            <ul className="space-y-1 max-h-32 overflow-y-auto pr-2">
-                              {(inv.items || []).map((item, i) => (
-                                <li key={i} className="text-xs flex justify-between text-slate-600 bg-slate-50 p-1.5 rounded">
-                                  <span>{item.quantity} × {item.name}</span>
-                                  <span className="font-bold text-slate-800">{(item.price * item.quantity).toFixed(2)} ج.م</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex flex-col justify-center space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span className="text-slate-500 font-semibold">إجمالي الفاتورة:</span>
-                              <span className="font-bold text-slate-800">{inv.total || 0} ج.م</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span className="text-slate-500 font-semibold">المدفوع:</span>
-                              <span className="font-bold text-emerald-600">{(inv.downPayment?.amount || (inv.paymentStatus === 'complete' ? inv.total : 0))} ج.م</span>
-                            </div>
-                            {(inv.downPayment?.remaining > 0) && (
-                              <div className="flex justify-between text-sm pt-2 border-t border-slate-200">
-                                <span className="text-slate-500 font-semibold">المتبقي:</span>
-                                <span className="font-bold text-red-600">{inv.downPayment.remaining} ج.م</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-            
-            <div className="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end">
-              <button
-                onClick={() => { soundManager.play('closeWindow'); setHistoryCustomer(null); }}
-                className="px-6 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-bold transition-colors"
-              >
-                إغلاق
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-
       {/* نافذة تسوية المديونية */}
       {settlingCustomer && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
