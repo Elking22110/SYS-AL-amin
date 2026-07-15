@@ -174,7 +174,7 @@ class SyncManager {
   async handleRealtimeChange(payload) {
     try {
       const { table, eventType, new: newRecord, old: oldRecord } = payload;
-      const INDEXEDDB_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories'];
+      const INDEXEDDB_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'users'];
       const LOCALSTORAGE_TABLES = ['active_shift', 'suppliers'];
 
       if (INDEXEDDB_TABLES.includes(table)) {
@@ -199,7 +199,7 @@ class SyncManager {
         window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table } }));
 
         // تحديث localStorage أيضاً
-        const keyMap = { categories: 'productCategories', products: 'products', customers: 'customers', sales: 'sales', shifts: 'shifts', returns: 'returns' };
+        const keyMap = { categories: 'productCategories', products: 'products', customers: 'customers', sales: 'sales', shifts: 'shifts', returns: 'returns', users: 'users' };
         const lsKey = keyMap[table];
         if (lsKey) {
           const allItems = await databaseManager.getAll(table);
@@ -287,6 +287,9 @@ class SyncManager {
       if (record.main_category_id !== undefined) { mapped.mainCategoryId = record.main_category_id; delete mapped.main_category_id; }
       if (record.sub_category_id !== undefined) { mapped.subCategoryId = record.sub_category_id; delete mapped.sub_category_id; }
       if (record.image_path !== undefined) { mapped.imagePath = record.image_path; delete mapped.image_path; }
+    } else if (table === 'users') {
+      if (record.created_at !== undefined) { mapped.createdAt = record.created_at; delete mapped.created_at; }
+      if (record.last_login !== undefined) { mapped.lastLogin = record.last_login; delete mapped.last_login; }
     }
     return mapped;
   }
@@ -386,6 +389,7 @@ class SyncManager {
           }
 
           const { sync_status, ...uploadData } = record;
+          uploadData.id = String(record.id);
           
           // استبدال أسماء الأعمدة لتطابق PostgreSQL CamelCase/SnakeCase
           if (storeName === 'categories') {
@@ -448,6 +452,13 @@ class SyncManager {
             uploadData.shift_id = record.shiftId;
             delete uploadData.refInvoiceId;
             delete uploadData.shiftId;
+          } else if (storeName === 'users') {
+            if (record.createdAt !== undefined) { uploadData.created_at = record.createdAt; delete uploadData.createdAt; }
+            if (record.lastLogin !== undefined) { uploadData.last_login = record.lastLogin; delete uploadData.lastLogin; }
+            delete uploadData.phone;
+            const effUser = uploadData.username || String(record.id);
+            if (!effUser || !uploadData.password) { console.warn('SyncManager: skip user ' + record.id + ': no username/password'); continue; }
+            uploadData.username = effUser;
           }
 
           batchData.push(uploadData);
@@ -654,6 +665,9 @@ class SyncManager {
             localItem.shiftId = cloudItem.shift_id;
             delete localItem.ref_invoice_id;
             delete localItem.shift_id;
+          } else if (storeName === 'users') {
+            if (cloudItem.created_at !== undefined) { localItem.createdAt = cloudItem.created_at; delete localItem.created_at; }
+            if (cloudItem.last_login !== undefined) { localItem.lastLogin = cloudItem.last_login; delete localItem.last_login; }
           }
 
           // حفظ محلياً في IndexedDB دون إطلاق حدث تزامن لمنع الدوران اللانهائي
