@@ -548,13 +548,17 @@ class SyncManager {
             delete uploadData.totalSpent;
             delete uploadData.lastVisit;
             delete uploadData.joinDate;
+            // الأعمدة المضافة في السكيما الجديدة - نتأكد من إرسالها بشكل صحيح
+            if (uploadData.address === undefined) delete uploadData.address;
+            if (uploadData.type === undefined) delete uploadData.type;
+            if (uploadData.status === undefined) delete uploadData.status;
+            if (uploadData.debt === undefined) delete uploadData.debt;
+
             const cust = {
               id: String(record.id),
               name: uploadData.name,
               phone: uploadData.phone ?? null,
               email: uploadData.email ?? null,
-              address: uploadData.address ?? null,
-              type: uploadData.type ?? 'عميل عادي',
               status: uploadData.status ?? 'نشط',
               debt: uploadData.debt ?? 0,
               total_spent: uploadData.total_spent ?? 0,
@@ -562,6 +566,10 @@ class SyncManager {
               join_date: uploadData.join_date ?? null,
               updated_at: uploadData.updated_at || new Date().toISOString()
             };
+
+            if (uploadData.address !== undefined) cust.address = uploadData.address;
+            if (uploadData.type !== undefined) cust.type = uploadData.type;
+
             Object.keys(uploadData).forEach(k => delete uploadData[k]);
             Object.assign(uploadData, cust);
           } else if (storeName === 'sales') {
