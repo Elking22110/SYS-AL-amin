@@ -17,6 +17,12 @@ class DatabaseManager {
 
       request.onerror = () => {
         console.error('خطأ في فتح قاعدة البيانات:', request.error);
+        if (request.error && request.error.name === 'VersionError') {
+          console.warn('⚠️ تم اكتشاف تعارض في إصدار قاعدة البيانات (نسخة قديمة نشطة). جاري إعادة تحميل الصفحة لتطبيق التحديثات...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        }
         reject(request.error);
       };
 

@@ -491,6 +491,7 @@ const Customers = () => {
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">نوع العميل</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">معلومات الاتصال</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">المديونية</th>
+                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">إجمالي المشتريات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
@@ -551,6 +552,11 @@ const Customers = () => {
                             سداد
                           </button>
                         )}
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                      <div className="text-sm font-bold text-emerald-800 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
+                        {(customer.totalSpent || 0).toLocaleString('en-US')} ج.م
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
