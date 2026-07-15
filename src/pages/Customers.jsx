@@ -484,25 +484,22 @@ const Customers = () => {
         {/* Customers Table */}
         <div className="glass-card hover-lift animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full text-right" dir="rtl">
               <thead className="bg-slate-100 border-b border-slate-200">
                 <tr>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">العميل</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">نوع العميل</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">معلومات الاتصال</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">إجمالي المشتريات</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">المديونية</th>
-                  <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">عدد الطلبات</th>
-                                    <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">الحالة</th>
                   <th className="px-4 md:px-6 py-3 text-right text-xs font-bold text-slate-800 uppercase tracking-wider">الإجراءات</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white divide-opacity-20">
                 {filteredCustomers.map((customer) => (
                   <tr key={customer.id} className="hover:bg-white hover:bg-opacity-10 transition-colors">
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center ml-3 shadow-lg">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex items-center space-x-3 space-x-reverse">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
                           <User className="h-5 w-5 text-slate-800" />
                         </div>
                         <div>
@@ -513,7 +510,7 @@ const Customers = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
                       <span className={`inline-flex px-2.5 py-1 text-xs font-bold rounded-full ${
                         customer.type === 'صنايعي' ? 'bg-orange-100 text-orange-800 border border-orange-200' :
                         customer.type === 'تاجر' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' :
@@ -522,15 +519,15 @@ const Customers = () => {
                         {customer.type || 'عميل عادي'}
                       </span>
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
                       <div className="space-y-2">
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 space-x-reverse">
                           <Phone className="h-4 w-4 text-green-600" />
                           <div className="text-sm font-semibold text-green-800 bg-green-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.phone}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2 space-x-reverse">
                           <Mail className="h-4 w-4 text-purple-600" />
                           <div className="text-sm font-semibold text-purple-800 bg-purple-500 bg-opacity-20 px-2 py-1 rounded-full">
                             {customer.email}
@@ -538,13 +535,8 @@ const Customers = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-emerald-800 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
-                        {customer.totalSpent.toLocaleString('en-US')} ج.م
-                      </div>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex items-center space-x-2 space-x-reverse">
                         <span className={`text-sm font-bold px-3 py-1 rounded-full ${
                           (customer.debt || 0) > 0 ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-slate-100 text-slate-800 border border-slate-200'
                         }`}>
@@ -561,18 +553,8 @@ const Customers = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-orange-800 bg-orange-500 bg-opacity-20 px-3 py-1 rounded-full inline-block">
-                        {customer.orders} طلب
-                      </div>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(customer.status)}`}>
-                        {customer.status}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
+                    <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                      <div className="flex space-x-2 space-x-reverse">
                         <button
                           onClick={() => { soundManager.play('openWindow'); navigate(`/customers/${customer.id || customer.phone}`); }}
                           className="text-emerald-600 hover:text-emerald-500 transition-colors p-2 hover:bg-emerald-500 hover:bg-opacity-20 rounded-lg"
