@@ -153,7 +153,42 @@ class SyncManager {
           const lsKeyMap = { active_shift: 'activeShift', suppliers: 'suppliers' };
           const lsKey = lsKeyMap[table];
           if (lsKey) {
-            localStorage.setItem(lsKey, JSON.stringify(newRecord.value));
+            let targetValue = newRecord.value;
+            
+            if (lsKey === 'activeShift') {
+              if (targetValue.originalShiftId) {
+                targetValue = { ...targetValue, id: targetValue.originalShiftId };
+                delete targetValue.originalShiftId;
+              }
+              
+              // Detect changes in active shift to publish start/end events to UI components
+              const oldShiftStr = localStorage.getItem('activeShift');
+              const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
+              const newShift = Object.keys(targetValue).length > 0 && targetValue.status === 'active' ? targetValue : null;
+              
+              localStorage.setItem(lsKey, JSON.stringify(targetValue));
+              
+              // Publish UI state events
+              if (!oldShift && newShift) {
+                console.log('⚡ [Realtime] Shift started on another device, notifying UI:', newShift.id);
+                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
+                try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
+              } else if (oldShift && !newShift) {
+                console.log('⚡ [Realtime] Shift ended on another device, notifying UI:', oldShift.id);
+                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
+                try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
+              } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
+                console.log('⚡ [Realtime] Shift updated on another device, notifying UI:', newShift.id);
+                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+              }
+            } else {
+              if (lsKey === 'productImages' && targetValue.originalImagesId) {
+                targetValue = { ...targetValue, id: targetValue.originalImagesId };
+                delete targetValue.originalImagesId;
+              }
+              localStorage.setItem(lsKey, JSON.stringify(targetValue));
+            }
+            
             window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: lsKey } }));
           }
         }
@@ -593,7 +628,17 @@ class SyncManager {
 
       if (isSingleObject) {
         const localObj = JSON.parse(localStorage.getItem(tableName) || '{}');
-        const configItem = { ...localObj, id: 'config' };
+        const configItem = { ...localObj };
+        
+        // Preserve original business ID for single objects
+        if (tableName === 'activeShift') {
+          configItem.originalShiftId = localObj.id;
+        } else if (tableName === 'productImages') {
+          configItem.originalImagesId = localObj.id;
+        }
+        
+        configItem.id = 'config';
+        
         if (!configItem.updated_at) {
           configItem.updated_at = new Date().toISOString();
           mutated = true;
@@ -711,7 +756,40 @@ class SyncManager {
       if (isSingleObject) {
         const configItem = updatedLocalData[0] || {};
         const { id, ...cleanConfig } = configItem;
-        localStorage.setItem(tableName, JSON.stringify(cleanConfig));
+        
+        // Reconstruct original business ID for single objects
+        if (tableName === 'activeShift' && cleanConfig.originalShiftId) {
+          cleanConfig.id = cleanConfig.originalShiftId;
+          delete cleanConfig.originalShiftId;
+        } else if (tableName === 'productImages' && cleanConfig.originalImagesId) {
+          cleanConfig.id = cleanConfig.originalImagesId;
+          delete cleanConfig.originalImagesId;
+        }
+        
+        if (tableName === 'activeShift') {
+          // Detect changes in active shift to publish start/end events to UI components
+          const oldShiftStr = localStorage.getItem('activeShift');
+          const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
+          const newShift = Object.keys(cleanConfig).length > 0 && cleanConfig.status === 'active' ? cleanConfig : null;
+          
+          localStorage.setItem(tableName, JSON.stringify(cleanConfig));
+          
+          // Publish UI state events
+          if (!oldShift && newShift) {
+            console.log('⚡ [SyncManager] Shift started on another device, notifying UI:', newShift.id);
+            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
+            try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
+          } else if (oldShift && !newShift) {
+            console.log('⚡ [SyncManager] Shift ended on another device, notifying UI:', oldShift.id);
+            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
+            try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
+          } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
+            console.log('⚡ [SyncManager] Shift updated on another device, notifying UI:', newShift.id);
+            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+          }
+        } else {
+          localStorage.setItem(tableName, JSON.stringify(cleanConfig));
+        }
       } else {
         localStorage.setItem(tableName, JSON.stringify(updatedLocalData));
       }

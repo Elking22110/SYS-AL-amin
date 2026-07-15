@@ -106,7 +106,7 @@ localStorage.setItem = function(key, value) {
     } else if (LOCAL_SYNC_STORES.includes(key)) {
         setTimeout(async () => {
             try {
-                const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings'].includes(key);
+                const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings', 'activeShift', 'productImages'].includes(key);
                 let changed = false;
 
                 if (isSingleObject) {
