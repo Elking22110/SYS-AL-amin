@@ -42,4 +42,4 @@ if (isKeysConfigured) {
   console.warn('⚠️ لم يتم تكوين بيانات الاتصال بـ Supabase في ملف .env - يعمل النظام محلياً بالكامل (Offline Mode)');
 }
 
-export { supabase, isKeysConfigured };
+export { supabase, isKeysConfigured, supabaseUrl };

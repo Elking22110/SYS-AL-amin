@@ -1,7 +1,32 @@
 import databaseManager from './database.js';
 
+// خريطة تحويل مفاتيح localStorage إلى جداول IndexedDB
+const LS_TO_IDB_MAP = {
+    'products': 'products',
+    'productCategories': 'categories',
+    'customers': 'customers',
+    'sales': 'sales',
+    'shifts': 'shifts',
+    'returns': 'returns',
+    'users': 'users'
+};
+
 // الجداول القابلة للمزامنة عبر IndexedDB و Supabase
 const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
+
+// الجداول المخزنة محلياً بالكامل والتي يتم مزامنتها كائنات أو مصفوفات في Supabase
+const LOCAL_SYNC_STORES = [
+    'suppliers', 
+    'supplier_supplies', 
+    'supplier_payments', 
+    'expenses',
+    'storeInfo',
+    'pos-settings',
+    'system-settings',
+    'activeShift',
+    'manufacturing_waste',
+    'productImages'
+];
 
 // كاش محلي لتجنب قراءة localStorage في كل مرة نحتاج فيها للمقارنة
 const localCache = new Map();
@@ -21,7 +46,7 @@ const diffArrays = (oldArray, newArray) => {
         const updated = newArray.filter(item => {
             const oldItem = oldMap.get(String(item.id));
             if (!oldItem) return false;
-            // فحص التغيير الحقيقي بتجاهل حقل updated_at
+            // فحص التغيير الحقيقي بتجاهل حقل updated_at و sync_status
             const { updated_at: u1, sync_status: s1, ...o1 } = oldItem;
             const { updated_at: u2, sync_status: s2, ...o2 } = item;
             return JSON.stringify(o1) !== JSON.stringify(o2);
@@ -37,19 +62,36 @@ const diffArrays = (oldArray, newArray) => {
     }
 };
 
-// الجداول المخزنة محلياً بالكامل والتي يتم مزامنتها كائنات أو مصفوفات في Supabase
-const LOCAL_SYNC_STORES = [
-    'suppliers', 
-    'supplier_supplies', 
-    'supplier_payments', 
-    'expenses',
-    'storeInfo',
-    'pos-settings',
-    'system-settings',
-    'activeShift',
-    'manufacturing_waste',
-    'productImages'
-];
+// تهيئة الكاش الأولي من localStorage الحالي بشكل متزامن وفوري عند التحميل
+// لضمان عدم وجود سباق للبيانات وتجنب التخطي الخاطئ
+const initializeCache = () => {
+    // تهيئة الجداول الرئيسية
+    Object.keys(LS_TO_IDB_MAP).forEach(lsKey => {
+        try {
+            const data = localStorage.getItem(lsKey);
+            localCache.set(lsKey, data ? JSON.parse(data) : []);
+        } catch(e) {
+            localCache.set(lsKey, []);
+        }
+    });
+    // تهيئة جداول المزامنة المحلية
+    LOCAL_SYNC_STORES.forEach(lsKey => {
+        try {
+            const data = localStorage.getItem(lsKey);
+            if (data) {
+                localCache.set(lsKey, JSON.parse(data));
+            } else {
+                const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings', 'activeShift', 'productImages'].includes(lsKey);
+                localCache.set(lsKey, isSingleObject ? {} : []);
+            }
+        } catch(e) {
+            localCache.set(lsKey, {});
+        }
+    });
+    console.log('[SyncProxy] Interceptor cache initialized successfully.');
+};
+
+initializeCache();
 
 /**
  * فلترة اعتراض حفظ localStorage وتوجيه التحديثات الحقيقية إلى IndexedDB أو المزامنة المباشرة
@@ -58,8 +100,18 @@ localStorage.setItem = function(key, value) {
     // 1. التنفيذ الفوري السريع للحفاظ على أداء واجهة المستخدم React
     originalSetItem.apply(this, arguments);
 
+    // التحقق من تجاوز الوكيل للمزامنة لتجنب الحلقات اللانهائية عند التنزيل السحابي
+    if (typeof window !== 'undefined' && window.__bypass_sync_proxy__) {
+        try {
+            localCache.set(key, JSON.parse(value));
+        } catch (_) {}
+        return;
+    }
+
     // 2. معالجة غير متزامنة (خلفية) لمعرفة ما إذا كان يجب المزامنة
-    if (SYNCABLE_STORES.includes(key)) {
+    const idbStore = LS_TO_IDB_MAP[key];
+
+    if (idbStore) {
         setTimeout(async () => {
             try {
                 const oldArray = localCache.get(key) || [];
@@ -68,11 +120,6 @@ localStorage.setItem = function(key, value) {
                 // تحديث الكاش
                 localCache.set(key, newArray);
                 
-                // إذا لم يكن هناك كاش سابق (مثلاً عند بدء التطبيق)، نتجاهل الـ diff
-                if (!localCache.has(key) && oldArray.length === 0 && newArray.length > 0) {
-                    return; 
-                }
-
                 if (Array.isArray(newArray) && Array.isArray(oldArray)) {
                     const { added, updated, deleted } = diffArrays(oldArray, newArray);
                     
@@ -83,20 +130,20 @@ localStorage.setItem = function(key, value) {
                     for (const item of toUpsert) {
                         item.sync_status = 'pending';
                         item.updated_at = new Date().toISOString();
-                        await databaseManager.update(key, item);
+                        await databaseManager.update(idbStore, item);
                         dbMutated = true;
                     }
 
                     // تحديث المحذوفات (Soft Delete)
                     for (const delItem of deleted) {
-                        await databaseManager.delete(key, delItem.id);
+                        await databaseManager.delete(idbStore, delItem.id);
                         dbMutated = true;
                     }
 
                     // إشعار مدير المزامنة السحابية (syncManager)
                     if (dbMutated) {
-                        console.log(`[SyncProxy] Detected IndexedDB changes in ${key}. Added: ${added.length}, Updated: ${updated.length}, Deleted: ${deleted.length}`);
-                        window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName: key } }));
+                        console.log(`[SyncProxy] Detected IndexedDB changes in ${idbStore}. Added: ${added.length}, Updated: ${updated.length}, Deleted: ${deleted.length}`);
+                        window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName: idbStore } }));
                     }
                 }
             } catch (error) {
@@ -159,18 +206,5 @@ localStorage.setItem = function(key, value) {
         }, 0);
     }
 };
-
-// تهيئة الكاش الأولي من localStorage الحالي
-setTimeout(() => {
-    SYNCABLE_STORES.forEach(key => {
-        try {
-            const data = localStorage.getItem(key);
-            if (data) {
-                localCache.set(key, JSON.parse(data));
-            }
-        } catch(e) {}
-    });
-    console.log('[SyncProxy] Interceptor Initialized successfully.');
-}, 100);
 
 export default true;

@@ -339,7 +339,7 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         // MIGRATION: Local Storage to IndexedDB One-Time Sync
         // ----------------------------------------------------
-        const syncMigrationDone = localStorage.getItem('local_to_indexeddb_sync_migration_v1') === 'true';
+        const syncMigrationDone = localStorage.getItem('local_to_indexeddb_sync_migration_v3') === 'true';
         if (!syncMigrationDone) {
           console.log('DataLoader: Running one-time localStorage to IndexedDB sync migration...');
           const STORES_TO_MIGRATE = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
@@ -373,7 +373,7 @@ const DataLoader = ({ children }) => {
               console.error(`DataLoader: Migration failed for ${storeName}:`, err);
             }
           }
-          localStorage.setItem('local_to_indexeddb_sync_migration_v1', 'true');
+          localStorage.setItem('local_to_indexeddb_sync_migration_v3', 'true');
         }
         // ----------------------------------------------------
 

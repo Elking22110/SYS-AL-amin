@@ -1,4 +1,4 @@
-import { supabase, isKeysConfigured } from './supabaseClient.js';
+import { supabase, isKeysConfigured, supabaseUrl } from './supabaseClient.js';
 import databaseManager from './database.js';
 import { publish, EVENTS } from './observerManager.js';
 
@@ -40,7 +40,7 @@ class SyncManager {
     if (!isKeysConfigured || !supabase) return;
     
     try {
-      const currentUrl = supabase.supabaseUrl;
+      const currentUrl = supabaseUrl;
       const match = currentUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
       const projectId = match ? match[1] : '';
       
@@ -737,7 +737,9 @@ class SyncManager {
           };
           const localStorageKey = keyMap[storeName];
           if (localStorageKey) {
+            window.__bypass_sync_proxy__ = true;
             localStorage.setItem(localStorageKey, JSON.stringify(allItems));
+            window.__bypass_sync_proxy__ = false;
             
             const eventMap = {
               'categories': EVENTS.CATEGORIES_CHANGED,
@@ -769,6 +771,7 @@ class SyncManager {
 
   // مزامنة جداول الـ LocalStorage ثنائية الاتجاه مع معالجة الإضافات والمحذوفات والتعديلات
   async syncLocalStorageStore(tableName) {
+    window.__bypass_sync_proxy__ = true;
     try {
       const tableMap = {
         'storeInfo': 'store_info',
@@ -980,6 +983,8 @@ class SyncManager {
     } catch (e) {
       console.error(`خطأ في مزامنة جدول LocalStorage ${tableName}:`, e);
       throw e;
+    } finally {
+      window.__bypass_sync_proxy__ = false;
     }
   }
 }

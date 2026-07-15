@@ -1,13 +1,13 @@
 // نظام قاعدة البيانات المحلية باستخدام IndexedDB
 import { getCurrentDate } from './dateUtils.js';
 
-const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns'];
+const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
 
 class DatabaseManager {
   constructor() {
     this.db = null;
     this.dbName = 'POS_Database';
-    this.version = 1;
+    this.version = 5;
   }
 
   // تهيئة قاعدة البيانات
