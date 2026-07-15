@@ -1322,10 +1322,18 @@ const Reports = () => {
                               </button>
 
                               {/* زر سداد المتبقي */}
-                              {inv.downPayment?.enabled && remaining > 0 && (
+                              {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) ? (
                                 <button
                                   onClick={() => handlePayRemaining(inv.id)}
                                   className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 cursor-pointer flex items-center gap-1"
+                                >
+                                  <Banknote className="h-4 w-4" />
+                                  سداد المتبقي
+                                </button>
+                              ) : (
+                                <button
+                                  className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold invisible pointer-events-none flex items-center gap-1"
+                                  aria-hidden="true"
                                 >
                                   <Banknote className="h-4 w-4" />
                                   سداد المتبقي

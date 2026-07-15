@@ -1,5 +1,6 @@
 import { supabase, isKeysConfigured } from './supabaseClient.js';
 import databaseManager from './database.js';
+import { publish, EVENTS } from './observerManager.js';
 
 class SyncManager {
   constructor() {
@@ -107,7 +108,10 @@ class SyncManager {
       'expenses',
       'storeInfo',
       'pos-settings',
-      'system-settings'
+      'system-settings',
+      'activeShift',
+      'manufacturing_waste',
+      'productImages'
     ];
     for (const storeName of localStores) {
       await this.syncLocalStorageStore(storeName);
@@ -350,6 +354,40 @@ class SyncManager {
           store.put(localItem);
         }
 
+        // تحديث LocalStorage من IndexedDB للحفاظ على تزامن واجهة المستخدم اللحظي
+        try {
+          const allItems = await databaseManager.getAll(storeName);
+          const keyMap = {
+            'categories': 'productCategories',
+            'products': 'products',
+            'customers': 'customers',
+            'sales': 'sales',
+            'shifts': 'shifts',
+            'returns': 'returns',
+            'users': 'users'
+          };
+          const localStorageKey = keyMap[storeName];
+          if (localStorageKey) {
+            localStorage.setItem(localStorageKey, JSON.stringify(allItems));
+            
+            const eventMap = {
+              'categories': EVENTS.CATEGORIES_CHANGED,
+              'products': EVENTS.PRODUCTS_CHANGED,
+              'customers': EVENTS.CUSTOMERS_CHANGED,
+              'sales': EVENTS.INVOICES_CHANGED,
+              'shifts': EVENTS.SHIFTS_CHANGED,
+              'returns': EVENTS.RETURNS_CHANGED,
+              'users': EVENTS.USERS_CHANGED
+            };
+            const eventName = eventMap[storeName];
+            if (eventName) {
+              publish(eventName, { type: 'import', storeName });
+            }
+          }
+        } catch (err) {
+          console.error(`[SyncManager] Failed to update localStorage for ${storeName}:`, err);
+        }
+
         // إطلاق حدث للتطبيق العام لتحديث واجهاته بالبيانات الجديدة المستوردة
         window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: storeName } }));
       }
@@ -366,10 +404,12 @@ class SyncManager {
       const tableMap = {
         'storeInfo': 'store_info',
         'pos-settings': 'pos_settings',
-        'system-settings': 'system_settings'
+        'system-settings': 'system_settings',
+        'activeShift': 'active_shift',
+        'productImages': 'product_images'
       };
       const dbTableName = tableMap[tableName] || tableName;
-      const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings'].includes(tableName);
+      const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings', 'activeShift', 'productImages'].includes(tableName);
 
       let localData = [];
       let mutated = false;

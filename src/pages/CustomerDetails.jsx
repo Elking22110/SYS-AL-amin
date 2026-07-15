@@ -297,20 +297,6 @@ const CustomerDetails = () => {
                                                 <td className="px-6 py-4 text-blue-600 font-extrabold text-sm">{(inv.total || 0).toLocaleString('en-US')} ج.م</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex gap-2 justify-center">
-                                                        {/* زر سداد المتبقي */}
-                                                        {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) && (
-                                                            <button
-                                                                onClick={() => {
-                                                                    navigate('/reports', { state: { settleInvoiceId: inv.id } });
-                                                                }}
-                                                                className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 cursor-pointer flex items-center gap-1 transition-colors"
-                                                                title="سداد المتبقي من الفاتورة"
-                                                            >
-                                                                <Banknote className="h-4 w-4" />
-                                                                سداد المتبقي
-                                                            </button>
-                                                        )}
-
                                                         {/* زر فتح وتعديل الفاتورة */}
                                                         <button
                                                             onClick={() => {
@@ -321,6 +307,28 @@ const CustomerDetails = () => {
                                                             <Eye className="h-4 w-4" />
                                                             عرض وتعديل
                                                         </button>
+
+                                                        {/* زر سداد المتبقي */}
+                                                        {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) ? (
+                                                            <button
+                                                                onClick={() => {
+                                                                    navigate('/reports', { state: { settleInvoiceId: inv.id } });
+                                                                }}
+                                                                className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 cursor-pointer flex items-center gap-1 transition-colors"
+                                                                title="سداد المتبقي من الفاتورة"
+                                                            >
+                                                                <Banknote className="h-4 w-4" />
+                                                                سداد المتبقي
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold invisible pointer-events-none flex items-center gap-1"
+                                                                aria-hidden="true"
+                                                            >
+                                                                <Banknote className="h-4 w-4" />
+                                                                سداد المتبقي
+                                                            </button>
+                                                        )}
 
                                                         {/* زر الطباعة */}
                                                         <button
