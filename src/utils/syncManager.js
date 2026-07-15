@@ -10,6 +10,7 @@ class SyncManager {
     this.syncIntervalId = null;
     this.realtimeChannel = null;
     this.lastSyncedAt = {}; // لتجنب مزامنة التغييرات الصادرة من نفس الجهاز
+    this.projectSwitchChecked = false;
 
     if (typeof window !== 'undefined') {
       this.status = window.navigator.onLine ? 'synced' : 'offline';
@@ -23,6 +24,64 @@ class SyncManager {
         console.log(`🔄 تعديل محلي في الجدول ${e.detail?.storeName}، بدء مزامنة خلفية...`);
         this.triggerSync();
       });
+
+      // التحقق من تغيير المشروع وتصفير مؤشرات المزامنة القديمة
+      this.projectSwitchPromise = this.checkProjectSwitch().then(() => {
+        this.projectSwitchChecked = true;
+      });
+    } else {
+      this.projectSwitchPromise = Promise.resolve();
+      this.projectSwitchChecked = true;
+    }
+  }
+
+  // التحقق من تغيير المشروع وتصفير مؤشرات المزامنة القديمة لتجنب حذف البيانات المحلية
+  async checkProjectSwitch() {
+    if (!isKeysConfigured || !supabase) return;
+    
+    try {
+      const currentUrl = supabase.supabaseUrl;
+      const match = currentUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+      const projectId = match ? match[1] : '';
+      
+      if (!projectId) return;
+      
+      const savedProjectId = localStorage.getItem('current_supabase_project_id');
+      if (savedProjectId !== projectId) {
+        console.log(`🔄 [SyncManager] تم اكتشاف تغيير في مشروع Supabase من "${savedProjectId}" إلى "${projectId}". تهيئة المزامنة الكاملة...`);
+        
+        // 1. مسح جميع مؤشرات آخر تزامن من localStorage
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+          if (key.startsWith('last_sync_') || key.startsWith('last_sync_')) {
+            localStorage.removeItem(key);
+          }
+        });
+        
+        // 2. تحديث جميع العناصر المحلية في IndexedDB لتكون pending لتُرفع للمشروع الجديد
+        const stores = ['categories', 'products', 'customers', 'shifts', 'sales', 'returns', 'users'];
+        for (const storeName of stores) {
+          try {
+            const records = await databaseManager.getAll(storeName);
+            if (records && records.length > 0) {
+              console.log(`🔄 [SyncManager] تجهيز ${records.length} سجل في ${storeName} للرفع إلى المشروع الجديد...`);
+              for (const record of records) {
+                record.sync_status = 'pending';
+                record.updated_at = new Date().toISOString();
+                await databaseManager.update(storeName, record);
+              }
+            }
+          } catch (err) {
+            console.error(`خطأ في تحديث جدول ${storeName} للمشروع الجديد:`, err);
+          }
+        }
+        
+        // 3. حفظ معرف المشروع الجديد
+        localStorage.setItem('current_supabase_project_id', projectId);
+        console.log(`✅ [SyncManager] اكتملت تهيئة الانتقال للمشروع الجديد.`);
+      }
+    } catch (err) {
+      console.error('❌ [SyncManager] خطأ أثناء التحقق من تغيير المشروع:', err);
     }
   }
 
@@ -240,6 +299,10 @@ class SyncManager {
     if (!isKeysConfigured) {
       // إذا لم يكن Supabase مهيأ، لا نقوم بأي محاولة اتصال
       return;
+    }
+
+    if (!this.projectSwitchChecked && this.projectSwitchPromise) {
+      await this.projectSwitchPromise;
     }
 
     this.syncInProgress = true;
