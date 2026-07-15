@@ -176,6 +176,11 @@ class SyncManager {
           delete uploadData.totalSpent;
           delete uploadData.lastVisit;
           delete uploadData.joinDate;
+          // الأعمدة المضافة في السكيما الجديدة - نتأكد من إرسالها بشكل صحيح
+          if (uploadData.address === undefined) delete uploadData.address;
+          if (uploadData.type === undefined) delete uploadData.type;
+          if (uploadData.status === undefined) delete uploadData.status;
+          if (uploadData.debt === undefined) delete uploadData.debt;
         } else if (storeName === 'sales') {
           uploadData.shift_id = record.shiftId;
           uploadData.customer_id = record.customerId;
@@ -213,7 +218,50 @@ class SyncManager {
           delete uploadData.shiftId;
         }
 
-        const { error } = await supabase.from(storeName).upsert(uploadData);
+        let { error } = await supabase.from(storeName).upsert(uploadData);
+        
+        // إذا كان الخطأ بسبب عمود غير موجود (PGRST204)، نحاول الرفع بدون الأعمدة الإضافية
+        if (error && error.code === 'PGRST204') {
+          console.warn(`⚠️ [SyncManager] عمود غير موجود في جدول ${storeName}، سيتم الرفع بالأعمدة الأساسية فقط...`);
+          // الاحتفاظ بالأعمدة الأساسية المضمون وجودها في كل الأجهزة
+          const safeData = { id: uploadData.id, updated_at: uploadData.updated_at };
+          if (storeName === 'customers') {
+            if (uploadData.name) safeData.name = uploadData.name;
+            if (uploadData.phone) safeData.phone = uploadData.phone;
+            if (uploadData.email) safeData.email = uploadData.email;
+            if (uploadData.total_spent !== undefined) safeData.total_spent = uploadData.total_spent;
+            if (uploadData.last_visit) safeData.last_visit = uploadData.last_visit;
+            if (uploadData.join_date) safeData.join_date = uploadData.join_date;
+            // محاولة إضافة الحقول الجديدة بشكل فردي
+            const extendedFields = ['address', 'type', 'status', 'debt'];
+            for (const field of extendedFields) {
+              if (uploadData[field] !== undefined) {
+                const testData = { ...safeData, [field]: uploadData[field] };
+                const { error: testErr } = await supabase.from(storeName).upsert(testData);
+                if (!testErr) {
+                  safeData[field] = uploadData[field];
+                }
+              }
+            }
+          } else if (storeName === 'users') {
+            if (uploadData.username) safeData.username = uploadData.username;
+            if (uploadData.email) safeData.email = uploadData.email;
+            if (uploadData.role) safeData.role = uploadData.role;
+            if (uploadData.password) safeData.password = uploadData.password;
+          } else if (storeName === 'sales') {
+            Object.assign(safeData, uploadData);
+          } else if (storeName === 'shifts') {
+            Object.assign(safeData, uploadData);
+          } else {
+            Object.assign(safeData, uploadData);
+          }
+          const { error: retryError } = await supabase.from(storeName).upsert(safeData);
+          error = retryError;
+          if (!retryError) {
+            console.log(`✅ [SyncManager] تم الرفع بنجاح للجدول ${storeName} بالأعمدة المتاحة`);
+          }
+        }
+
         if (!error) {
           record.sync_status = 'synced';
           // حفظ محلياً بحالة 'synced' دون إطلاق حدث تزامن مجدداً لمنع الحلقة اللانهائية
@@ -221,7 +269,7 @@ class SyncManager {
           const store = transaction.objectStore(storeName);
           store.put(record);
         } else {
-          console.error(`خطأ في رفع الصنف ${record.id} في جدول ${storeName}:`, error);
+          console.error(`❌ خطأ في رفع الصنف ${record.id} في جدول ${storeName}:`, error);
         }
       }
 
