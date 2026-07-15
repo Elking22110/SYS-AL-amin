@@ -336,6 +336,47 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // MIGRATION: Local Storage to IndexedDB One-Time Sync
+        // ----------------------------------------------------
+        const syncMigrationDone = localStorage.getItem('local_to_indexeddb_sync_migration_v1') === 'true';
+        if (!syncMigrationDone) {
+          console.log('DataLoader: Running one-time localStorage to IndexedDB sync migration...');
+          const STORES_TO_MIGRATE = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
+          for (const storeName of STORES_TO_MIGRATE) {
+            const keyMap = {
+              'categories': 'productCategories',
+              'products': 'products',
+              'customers': 'customers',
+              'sales': 'sales',
+              'shifts': 'shifts',
+              'returns': 'returns',
+              'users': 'users'
+            };
+            const lsKey = keyMap[storeName];
+            try {
+              const localData = JSON.parse(localStorage.getItem(lsKey) || '[]');
+              if (Array.isArray(localData) && localData.length > 0) {
+                for (const item of localData) {
+                  if (item && item.id) {
+                    const existing = await databaseManager.get(storeName, item.id);
+                    if (!existing) {
+                      const itemToMigrate = { ...item };
+                      itemToMigrate.sync_status = 'pending';
+                      itemToMigrate.updated_at = new Date().toISOString();
+                      await databaseManager.update(storeName, itemToMigrate);
+                    }
+                  }
+                }
+              }
+            } catch (err) {
+              console.error(`DataLoader: Migration failed for ${storeName}:`, err);
+            }
+          }
+          localStorage.setItem('local_to_indexeddb_sync_migration_v1', 'true');
+        }
+        // ----------------------------------------------------
+
         setLoadingMessage('جاري التحقق من البيانات...');
         
         // التحقق من صحة البيانات
