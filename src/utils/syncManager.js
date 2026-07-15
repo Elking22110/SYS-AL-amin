@@ -244,25 +244,25 @@ class SyncManager {
                   delete targetValue.originalShiftId;
                 }
                 
-                // Detect changes in active shift to publish start/end events to UI components
                 const oldShiftStr = localStorage.getItem('activeShift');
                 const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
-                const newShift = Object.keys(targetValue).length > 0 && targetValue.status === 'active' ? targetValue : null;
+                const wasActive = oldShift && oldShift.status === 'active';
+                const isActiveNow = targetValue && targetValue.status === 'active';
                 
                 localStorage.setItem(lsKey, JSON.stringify(targetValue));
                 
                 // Publish UI state events
-                if (!oldShift && newShift) {
-                  console.log('⚡ [Realtime] Shift started on another device, notifying UI:', newShift.id);
-                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
-                  try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
-                } else if (oldShift && !newShift) {
+                if (!wasActive && isActiveNow) {
+                  console.log('⚡ [Realtime] Shift started on another device, notifying UI:', targetValue.id);
+                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: targetValue }); } catch (_) {}
+                  try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: targetValue.id } })); } catch (_) {}
+                } else if (wasActive && !isActiveNow) {
                   console.log('⚡ [Realtime] Shift ended on another device, notifying UI:', oldShift.id);
                   try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
                   try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
-                } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
-                  console.log('⚡ [Realtime] Shift updated on another device, notifying UI:', newShift.id);
-                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+                } else if (wasActive && isActiveNow && JSON.stringify(oldShift) !== JSON.stringify(targetValue)) {
+                  console.log('⚡ [Realtime] Shift updated on another device, notifying UI:', targetValue.id);
+                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: targetValue }); } catch (_) {}
                 }
               } else {
                 if (lsKey === 'productImages' && targetValue.originalImagesId) {
@@ -947,22 +947,23 @@ class SyncManager {
           // Detect changes in active shift to publish start/end events to UI components
           const oldShiftStr = localStorage.getItem('activeShift');
           const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
-          const newShift = Object.keys(cleanConfig).length > 0 && cleanConfig.status === 'active' ? cleanConfig : null;
+          const wasActive = oldShift && oldShift.status === 'active';
+          const isActiveNow = cleanConfig && cleanConfig.status === 'active';
           
           localStorage.setItem(tableName, JSON.stringify(cleanConfig));
           
           // Publish UI state events
-          if (!oldShift && newShift) {
-            console.log('⚡ [SyncManager] Shift started on another device, notifying UI:', newShift.id);
-            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
-            try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
-          } else if (oldShift && !newShift) {
+          if (!wasActive && isActiveNow) {
+            console.log('⚡ [SyncManager] Shift started on another device, notifying UI:', cleanConfig.id);
+            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: cleanConfig }); } catch (_) {}
+            try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: cleanConfig.id } })); } catch (_) {}
+          } else if (wasActive && !isActiveNow) {
             console.log('⚡ [SyncManager] Shift ended on another device, notifying UI:', oldShift.id);
             try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
             try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
-          } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
-            console.log('⚡ [SyncManager] Shift updated on another device, notifying UI:', newShift.id);
-            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+          } else if (wasActive && isActiveNow && JSON.stringify(oldShift) !== JSON.stringify(cleanConfig)) {
+            console.log('⚡ [SyncManager] Shift updated on another device, notifying UI:', cleanConfig.id);
+            try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: cleanConfig }); } catch (_) {}
           }
         } else {
           localStorage.setItem(tableName, JSON.stringify(cleanConfig));

@@ -171,7 +171,7 @@ const Dashboard = () => {
                 </h3>
                 <p className="text-slate-500 text-xs mt-1">
                   {activeShift 
-                    ? `الكاشير: ${activeShift.cashierName || 'غير محدد'} | بدأت في: ${formatTimeOnly(activeShift.startTime)}`
+                    ? `الكاشير: ${activeShift.userName || activeShift.cashierName || 'غير محدد'} | بدأت في: ${formatTimeOnly(activeShift.startTime)}`
                     : 'يجب فتح وردية عمل جديدة لبدء عمليات البيع وتسجيل المعاملات.'}
                 </p>
               </div>
