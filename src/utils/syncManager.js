@@ -8,6 +8,8 @@ class SyncManager {
     this.listeners = new Set();
     this.syncInProgress = false;
     this.syncIntervalId = null;
+    this.realtimeChannel = null;
+    this.lastSyncedAt = {}; // لتجنب مزامنة التغييرات الصادرة من نفس الجهاز
 
     if (typeof window !== 'undefined') {
       this.status = window.navigator.onLine ? 'synced' : 'offline';
@@ -49,21 +51,148 @@ class SyncManager {
     }
   }
 
-  // بدء التزامن التلقائي الدوري (كل 30 ثانية)
+  // بدء التزامن التلقائي الدوري (كل 5 ثوانٍ fallback) + Realtime فوري
   startAutoSync() {
+    // 1. تفعيل المزامنة الفورية عبر Supabase Realtime (WebSocket)
+    this.startRealtimeSync();
+
+    // 2. المزامنة الدورية كـ fallback كل 5 ثوانٍ
     if (this.syncIntervalId) return;
     this.syncIntervalId = setInterval(() => {
       this.triggerSync();
-    }, 30000);
-    console.log('⏰ تم تفعيل المزامنة الدورية الخلفية (كل 30 ثانية)');
+    }, 5000);
+    console.log('⏰ تم تفعيل المزامنة الدورية الخلفية (كل 5 ثوانٍ) + Realtime فوري');
   }
 
-  // إيقاف التزامن الدوري
+  // إيقاف التزامن الدوري والـ Realtime
   stopAutoSync() {
     if (this.syncIntervalId) {
       clearInterval(this.syncIntervalId);
       this.syncIntervalId = null;
     }
+    this.stopRealtimeSync();
+  }
+
+  // تفعيل مزامنة Realtime الفورية عبر WebSocket
+  startRealtimeSync() {
+    if (!isKeysConfigured || !supabase) return;
+    if (this.realtimeChannel) return; // منع الاشتراك المزدوج
+
+    try {
+      const REALTIME_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'active_shift', 'suppliers'];
+
+      this.realtimeChannel = supabase
+        .channel('pos-realtime-sync')
+        .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
+          const table = payload.table;
+          if (REALTIME_TABLES.includes(table)) {
+            console.log(`⚡ [Realtime] تغيير فوري في جدول ${table}:`, payload.eventType);
+            this.handleRealtimeChange(payload);
+          }
+        })
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            console.log('⚡ [Realtime] متصل - المزامنة الفورية نشطة!');
+          } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+            console.warn('⚠️ [Realtime] انقطع الاتصال الفوري، يعتمد على الـ polling');
+            this.realtimeChannel = null;
+          }
+        });
+    } catch (err) {
+      console.warn('⚠️ [Realtime] تعذر تفعيل المزامنة الفورية:', err);
+    }
+  }
+
+  // إيقاف الـ Realtime
+  stopRealtimeSync() {
+    if (this.realtimeChannel && supabase) {
+      supabase.removeChannel(this.realtimeChannel);
+      this.realtimeChannel = null;
+    }
+  }
+
+  // معالجة تغيير قادم من Supabase Realtime (من جهاز آخر)
+  async handleRealtimeChange(payload) {
+    try {
+      const { table, eventType, new: newRecord, old: oldRecord } = payload;
+      const INDEXEDDB_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories'];
+      const LOCALSTORAGE_TABLES = ['active_shift', 'suppliers'];
+
+      if (INDEXEDDB_TABLES.includes(table)) {
+        // تحديث IndexedDB مباشرة
+        if (eventType === 'INSERT' || eventType === 'UPDATE') {
+          if (newRecord && newRecord.id) {
+            // تحويل snake_case للـ camelCase للجداول التي تحتاجه
+            const localRecord = this.mapCloudToLocal(table, newRecord);
+            localRecord.sync_status = 'synced';
+            await databaseManager.update(table, localRecord);
+          }
+        } else if (eventType === 'DELETE') {
+          if (oldRecord && oldRecord.id) {
+            await databaseManager.deletePhysical(table, oldRecord.id);
+          }
+        }
+
+        // إخطار واجهة المستخدم بالتغيير الفوري
+        window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType } }));
+        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table } }));
+
+        // تحديث localStorage أيضاً
+        const keyMap = { categories: 'productCategories', products: 'products', customers: 'customers', sales: 'sales', shifts: 'shifts', returns: 'returns' };
+        const lsKey = keyMap[table];
+        if (lsKey) {
+          const allItems = await databaseManager.getAll(table);
+          if (allItems && allItems.length > 0) {
+            localStorage.setItem(lsKey, JSON.stringify(allItems));
+          }
+        }
+
+      } else if (LOCALSTORAGE_TABLES.includes(table)) {
+        // تحديث localStorage مباشرة
+        if (eventType !== 'DELETE' && newRecord && newRecord.value) {
+          const lsKeyMap = { active_shift: 'activeShift', suppliers: 'suppliers' };
+          const lsKey = lsKeyMap[table];
+          if (lsKey) {
+            localStorage.setItem(lsKey, JSON.stringify(newRecord.value));
+            window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: lsKey } }));
+          }
+        }
+      }
+    } catch (err) {
+      console.error('❌ [Realtime] خطأ في معالجة التغيير الفوري:', err);
+    }
+  }
+
+  // تحويل بيانات السحابة (snake_case) إلى بيانات محلية (camelCase)
+  mapCloudToLocal(table, record) {
+    const mapped = { ...record };
+    if (table === 'customers') {
+      if (record.total_spent !== undefined) { mapped.totalSpent = record.total_spent; delete mapped.total_spent; }
+      if (record.last_visit !== undefined) { mapped.lastVisit = record.last_visit; delete mapped.last_visit; }
+      if (record.join_date !== undefined) { mapped.joinDate = record.join_date; delete mapped.join_date; }
+    } else if (table === 'sales') {
+      if (record.shift_id !== undefined) { mapped.shiftId = record.shift_id; delete mapped.shift_id; }
+      if (record.customer_id !== undefined) { mapped.customerId = record.customer_id; delete mapped.customer_id; }
+      if (record.discount_amount !== undefined) { mapped.discountAmount = record.discount_amount; delete mapped.discount_amount; }
+      if (record.tax_amount !== undefined) { mapped.taxAmount = record.tax_amount; delete mapped.tax_amount; }
+      if (record.payment_method !== undefined) { mapped.paymentMethod = record.payment_method; delete mapped.payment_method; }
+      if (record.payment_status !== undefined) { mapped.paymentStatus = record.payment_status; delete mapped.payment_status; }
+      if (record.down_payment !== undefined) { mapped.downPayment = record.down_payment; delete mapped.down_payment; }
+    } else if (table === 'shifts') {
+      if (record.start_time !== undefined) { mapped.startTime = record.start_time; delete mapped.start_time; }
+      if (record.end_time !== undefined) { mapped.endTime = record.end_time; delete mapped.end_time; }
+      if (record.sales_details !== undefined) { mapped.salesDetails = record.sales_details; delete mapped.sales_details; }
+      if (record.returns_data !== undefined) { mapped.returns = record.returns_data; delete mapped.returns_data; }
+      if (record.cashier_username !== undefined) { mapped.cashier = { username: record.cashier_username }; delete mapped.cashier_username; }
+      if (record.opening_amount !== undefined) { mapped.cashDrawer = { openingAmount: record.opening_amount, expectedAmount: record.expected_amount || 0, closingAmount: record.closing_amount || 0 }; delete mapped.opening_amount; delete mapped.expected_amount; delete mapped.closing_amount; }
+    } else if (table === 'categories') {
+      if (record.parent_id !== undefined) { mapped.parentId = record.parent_id; delete mapped.parent_id; }
+    } else if (table === 'products') {
+      if (record.main_category_id !== undefined) { mapped.mainCategoryId = record.main_category_id; delete mapped.main_category_id; }
+      if (record.sub_category_id !== undefined) { mapped.subCategoryId = record.sub_category_id; delete mapped.sub_category_id; }
+      if (record.image_path !== undefined) { mapped.imagePath = record.image_path; delete mapped.image_path; }
+    }
+    return mapped;
   }
 
   // مشغل المزامنة الآمن
