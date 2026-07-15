@@ -182,13 +182,15 @@ class SyncManager {
         if (eventType === 'INSERT' || eventType === 'UPDATE') {
           if (newRecord && newRecord.id) {
             // تحويل snake_case للـ camelCase للجداول التي تحتاجه
+            // تحويل ID لنص لمنع التكرار في IndexedDB
+            newRecord.id = String(newRecord.id);
             const localRecord = this.mapCloudToLocal(table, newRecord);
             localRecord.sync_status = 'synced';
             await databaseManager.update(table, localRecord);
           }
         } else if (eventType === 'DELETE') {
           if (oldRecord && oldRecord.id) {
-            await databaseManager.deletePhysical(table, oldRecord.id);
+            await databaseManager.deletePhysical(table, String(oldRecord.id));
           }
         }
 
@@ -577,6 +579,11 @@ class SyncManager {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
         for (const cloudItem of cloudUpdates) {
+          // تحويل ID من رقم إلى نص لمنع التكرار في IndexedDB (أصل مشكلة التضاعف)
+          if (cloudItem.id !== undefined && cloudItem.id !== null) {
+            cloudItem.id = String(cloudItem.id);
+          }
+
           // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية فقط (مثل minStock)
           const existingLocal = await databaseManager.get(storeName, cloudItem.id);
           
@@ -584,6 +591,7 @@ class SyncManager {
           const localItem = {
             ...(existingLocal || {}),
             ...cloudItem,
+            id: cloudItem.id, // ضمان أن الـ id نصي دائماً
             sync_status: 'synced'
           };
           
