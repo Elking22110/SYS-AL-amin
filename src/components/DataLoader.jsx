@@ -405,6 +405,47 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // SELF-HEALING: Verify and auto-import any missing products from the seed file
+        // ----------------------------------------------------
+        try {
+          const currentProducts = await databaseManager.getAll('products');
+          if (currentProducts.length < 2296) {
+            console.log(`[DataLoader] Missing products detected (${currentProducts.length} < 2296). Auto-importing gaps...`);
+            setLoadingMessage('جاري استيراد المنتجات المفقودة...');
+            const response = await fetch('/products_seed.json');
+            if (response.ok) {
+              const seedData = await response.json();
+              const seedProducts = seedData.products || [];
+              const existingIds = new Set(currentProducts.map(p => p.id));
+              
+              const toAdd = seedProducts.filter(p => !existingIds.has(p.id));
+              if (toAdd.length > 0) {
+                console.log(`[DataLoader] Merging ${toAdd.length} missing products...`);
+                for (const p of toAdd) {
+                  const cleanP = { ...p };
+                  if (cleanP.hasOwnProperty('category')) {
+                    delete cleanP.category;
+                  }
+                  cleanP.sync_status = 'pending';
+                  cleanP.updated_at = new Date().toISOString();
+                  await databaseManager.update('products', cleanP);
+                }
+                
+                // Also update localStorage products
+                const currentLS = JSON.parse(localStorage.getItem('products') || '[]');
+                const currentLSIds = new Set(currentLS.map(p => p.id));
+                const updatedLS = [...currentLS, ...toAdd.filter(p => !currentLSIds.has(p.id))];
+                localStorage.setItem('products', JSON.stringify(updatedLS));
+                console.log(`[DataLoader] Successfully merged ${toAdd.length} missing products.`);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('[DataLoader] Failed to self-heal missing products:', err);
+        }
+        // ----------------------------------------------------
+
         setLoadingMessage('جاري التحقق من البيانات...');
         
         // التحقق من صحة البيانات
