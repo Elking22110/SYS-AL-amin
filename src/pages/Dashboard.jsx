@@ -38,7 +38,7 @@ const Dashboard = () => {
   const analyzeRealData = () => {
     try {
       const currentShift = storageOptimizer.get('activeShift', null);
-      setActiveShift(currentShift);
+      setActiveShift(currentShift && currentShift.status === 'active' ? currentShift : null);
 
       const products = storageOptimizer.get('products', []) || [];
       const totalProducts = products.length;
