@@ -9,6 +9,7 @@ import POS from "./pages/POS";
 import Products from "./pages/Products";
 import Reports from "./pages/Reports";
 import Customers from "./pages/Customers";
+import CustomerDetails from "./pages/CustomerDetails";
 import Suppliers from "./pages/Suppliers";
 import SupplierDetails from "./pages/SupplierDetails";
 import Expenses from "./pages/Expenses";
@@ -316,6 +317,11 @@ function App() {
                 <Route path="/customers" element={
                   <ProtectedRoute requiredPermission="manage_customers">
                     <Customers />
+                  </ProtectedRoute>
+                } />
+                <Route path="/customers/:id" element={
+                  <ProtectedRoute requiredPermission="manage_customers">
+                    <CustomerDetails />
                   </ProtectedRoute>
                 } />
                 <Route path="/suppliers" element={
