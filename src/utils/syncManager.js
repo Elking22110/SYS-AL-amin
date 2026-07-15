@@ -138,7 +138,11 @@ class SyncManager {
     if (this.realtimeChannel) return; // منع الاشتراك المزدوج
 
     try {
-      const REALTIME_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'active_shift', 'suppliers'];
+      const REALTIME_TABLES = [
+        'customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'users',
+        'active_shift', 'suppliers', 'supplier_supplies', 'supplier_payments', 'expenses',
+        'store_info', 'pos_settings', 'system_settings', 'manufacturing_waste', 'product_images'
+      ];
 
       this.realtimeChannel = supabase
         .channel('pos-realtime-sync')
@@ -175,7 +179,11 @@ class SyncManager {
     try {
       const { table, eventType, new: newRecord, old: oldRecord } = payload;
       const INDEXEDDB_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'users'];
-      const LOCALSTORAGE_TABLES = ['active_shift', 'suppliers'];
+      const LOCALSTORAGE_TABLES = [
+        'active_shift', 'suppliers', 'supplier_supplies', 'supplier_payments',
+        'expenses', 'store_info', 'pos_settings', 'system_settings',
+        'manufacturing_waste', 'product_images'
+      ];
 
       if (INDEXEDDB_TABLES.includes(table)) {
         // تحديث IndexedDB مباشرة
@@ -210,48 +218,87 @@ class SyncManager {
 
       } else if (LOCALSTORAGE_TABLES.includes(table)) {
         // تحديث localStorage مباشرة
-        if (eventType !== 'DELETE' && newRecord && newRecord.value) {
-          const lsKeyMap = { active_shift: 'activeShift', suppliers: 'suppliers' };
-          const lsKey = lsKeyMap[table];
-          if (lsKey) {
-            let targetValue = newRecord.value;
-            
-            if (lsKey === 'activeShift') {
-              if (targetValue.originalShiftId) {
-                targetValue = { ...targetValue, id: targetValue.originalShiftId };
-                delete targetValue.originalShiftId;
-              }
+        const lsKeyMap = { 
+          active_shift: 'activeShift', 
+          suppliers: 'suppliers',
+          supplier_supplies: 'supplier_supplies',
+          supplier_payments: 'supplier_payments',
+          expenses: 'expenses',
+          store_info: 'storeInfo',
+          pos_settings: 'pos-settings',
+          system_settings: 'system-settings',
+          manufacturing_waste: 'manufacturing_waste',
+          product_images: 'productImages'
+        };
+        const lsKey = lsKeyMap[table];
+        if (lsKey) {
+          const isSingleObj = ['storeInfo', 'pos-settings', 'system-settings', 'activeShift', 'productImages'].includes(lsKey);
+          
+          if (isSingleObj) {
+            if (eventType !== 'DELETE' && newRecord) {
+              let targetValue = newRecord.value || newRecord;
               
-              // Detect changes in active shift to publish start/end events to UI components
-              const oldShiftStr = localStorage.getItem('activeShift');
-              const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
-              const newShift = Object.keys(targetValue).length > 0 && targetValue.status === 'active' ? targetValue : null;
-              
-              localStorage.setItem(lsKey, JSON.stringify(targetValue));
-              
-              // Publish UI state events
-              if (!oldShift && newShift) {
-                console.log('⚡ [Realtime] Shift started on another device, notifying UI:', newShift.id);
-                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
-                try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
-              } else if (oldShift && !newShift) {
-                console.log('⚡ [Realtime] Shift ended on another device, notifying UI:', oldShift.id);
-                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
-                try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
-              } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
-                console.log('⚡ [Realtime] Shift updated on another device, notifying UI:', newShift.id);
-                try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+              if (lsKey === 'activeShift') {
+                if (targetValue.originalShiftId) {
+                  targetValue = { ...targetValue, id: targetValue.originalShiftId };
+                  delete targetValue.originalShiftId;
+                }
+                
+                // Detect changes in active shift to publish start/end events to UI components
+                const oldShiftStr = localStorage.getItem('activeShift');
+                const oldShift = oldShiftStr ? JSON.parse(oldShiftStr) : null;
+                const newShift = Object.keys(targetValue).length > 0 && targetValue.status === 'active' ? targetValue : null;
+                
+                localStorage.setItem(lsKey, JSON.stringify(targetValue));
+                
+                // Publish UI state events
+                if (!oldShift && newShift) {
+                  console.log('⚡ [Realtime] Shift started on another device, notifying UI:', newShift.id);
+                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) {}
+                  try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) {}
+                } else if (oldShift && !newShift) {
+                  console.log('⚡ [Realtime] Shift ended on another device, notifying UI:', oldShift.id);
+                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: oldShift }); } catch (_) {}
+                  try { window.dispatchEvent(new CustomEvent('shiftEnded', { detail: { shiftId: oldShift.id } })); } catch (_) {}
+                } else if (oldShift && newShift && JSON.stringify(oldShift) !== JSON.stringify(newShift)) {
+                  console.log('⚡ [Realtime] Shift updated on another device, notifying UI:', newShift.id);
+                  try { publish(EVENTS.SHIFTS_CHANGED, { type: 'update', shift: newShift }); } catch (_) {}
+                }
+              } else {
+                if (lsKey === 'productImages' && targetValue.originalImagesId) {
+                  targetValue = { ...targetValue, id: targetValue.originalImagesId };
+                  delete targetValue.originalImagesId;
+                }
+                localStorage.setItem(lsKey, JSON.stringify(targetValue));
               }
-            } else {
-              if (lsKey === 'productImages' && targetValue.originalImagesId) {
-                targetValue = { ...targetValue, id: targetValue.originalImagesId };
-                delete targetValue.originalImagesId;
-              }
-              localStorage.setItem(lsKey, JSON.stringify(targetValue));
             }
-            
-            window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: lsKey } }));
+          } else {
+            // معالجة الجداول التي هي عبارة عن مصفوفات في localStorage
+            let localArray = [];
+            try {
+              localArray = JSON.parse(localStorage.getItem(lsKey) || '[]');
+            } catch (_) {}
+            if (!Array.isArray(localArray)) localArray = [];
+
+            if (eventType === 'DELETE') {
+              const idToDelete = String(oldRecord?.id || newRecord?.id);
+              localArray = localArray.filter(item => String(item.id) !== idToDelete);
+            } else if (newRecord) {
+              const mappedItem = {
+                id: String(newRecord.id),
+                ...(newRecord.value || {})
+              };
+              const existingIndex = localArray.findIndex(item => String(item.id) === String(mappedItem.id));
+              if (existingIndex !== -1) {
+                localArray[existingIndex] = { ...localArray[existingIndex], ...mappedItem };
+              } else {
+                localArray.push(mappedItem);
+              }
+            }
+            localStorage.setItem(lsKey, JSON.stringify(localArray));
           }
+          
+          window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: lsKey } }));
         }
       }
     } catch (err) {
@@ -813,11 +860,31 @@ class SyncManager {
             pendingDeletes.push(cloudItem.id);
           }
         } else {
-          // السجل موجود في الجهتين -> مقارنة التواقيت الزمنية للنسخ الأحدث
-          const localTime = new Date(localItem.updated_at || 0).getTime();
-          const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+          // السجل موجود في الجهتين
+          let useLocal = false;
+          if (isSingleObject) {
+            // التحقق من الحقول الفعلية (التي لا تشمل id و updated_at والمُعرفات البديلة)
+            const cloudKeys = Object.keys(cloudItem).filter(k => k !== 'id' && k !== 'updated_at' && k !== 'originalShiftId' && k !== 'originalImagesId');
+            const localKeys = Object.keys(localItem).filter(k => k !== 'id' && k !== 'updated_at' && k !== 'originalShiftId' && k !== 'originalImagesId');
+            
+            if (cloudKeys.length === 0 && localKeys.length > 0) {
+              // السحاب فارغ والمحلي يحتوي بيانات -> غلّب المحلي ليرفعه
+              useLocal = true;
+            } else if (localKeys.length === 0 && cloudKeys.length > 0) {
+              // المحلي فارغ والسحاب يحتوي بيانات -> غلّب السحاب لتنزيله
+              useLocal = false;
+            } else {
+              const localTime = new Date(localItem.updated_at || 0).getTime();
+              const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+              useLocal = localTime > cloudTime;
+            }
+          } else {
+            const localTime = new Date(localItem.updated_at || 0).getTime();
+            const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+            useLocal = localTime > cloudTime;
+          }
 
-          if (localTime > cloudTime) {
+          if (useLocal) {
             pendingUpserts.push(localItem);
             updatedLocalData.push(localItem);
           } else {
@@ -830,8 +897,8 @@ class SyncManager {
       for (const localItem of localData) {
         if (localItem && !cloudMap.has(String(localItem.id))) {
           const localTime = new Date(localItem.updated_at || 0).getTime();
-          if (localTime > new Date(lastSyncTime).getTime()) {
-            // سجل جديد تمت إضافته محلياً بعد آخر تزامن -> رفع للسحاب
+          if (localTime > new Date(lastSyncTime).getTime() || isSingleObject) {
+            // سجل جديد تمت إضافته محلياً بعد آخر تزامن (أو إعدادات وحيدة رئيسية) -> رفع للسحاب
             pendingUpserts.push(localItem);
             updatedLocalData.push(localItem);
           } else {

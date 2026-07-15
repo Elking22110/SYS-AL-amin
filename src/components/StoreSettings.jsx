@@ -25,7 +25,8 @@ const StoreSettings = () => {
     const savedStoreInfo = localStorage.getItem('storeInfo');
     if (savedStoreInfo) {
       try {
-        setStoreInfo(JSON.parse(savedStoreInfo));
+        const parsed = JSON.parse(savedStoreInfo);
+        setStoreInfo(prev => ({ ...prev, ...parsed }));
       } catch (_) {}
     }
   }, []);

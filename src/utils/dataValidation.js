@@ -41,9 +41,16 @@ export class DataValidator {
 
       // التحقق من إعدادات المتجر
       const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-      if (typeof storeInfo !== 'object') {
-        errors.push('إعدادات المتجر غير صحيحة');
+      if (typeof storeInfo !== 'object' || !storeInfo.storeName) {
+        errors.push('إعدادات المتجر غير مكتملة أو مفقودة');
       }
+
+      // التحقق من إعدادات نقاط البيع
+      const posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+      if (typeof posSettings !== 'object' || !posSettings.companyName) {
+        errors.push('إعدادات نقاط البيع غير مكتملة أو مفقودة');
+      }
+
 
     } catch (error) {
       errors.push('خطأ في قراءة البيانات المحفوظة');
@@ -90,10 +97,79 @@ export class DataValidator {
 
       // إصلاح إعدادات المتجر
       let storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-      if (typeof storeInfo !== 'object') {
-        storeInfo = {};
+      if (typeof storeInfo !== 'object' || !storeInfo.storeName) {
+        storeInfo = {
+          storeName: 'متجر الأمين',
+          storePhone: '01029022006',
+          storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
+          storeEmail: 'info@msgroupplast.com',
+          storeTaxNumber: '300123456789003',
+          storeLogo: '',
+          storeDescription: 'نظام إدارة المبيعات المتطور',
+          taxEnabled: false,
+          taxRate: 15,
+          taxName: 'ضريبة القيمة المضافة',
+          inventoryEnabled: true,
+          ...storeInfo
+        };
       }
       localStorage.setItem('storeInfo', JSON.stringify(storeInfo));
+
+      // إصلاح إعدادات نقاط البيع
+      let posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+      if (typeof posSettings !== 'object' || !posSettings.companyName) {
+        posSettings = {
+          companyName: storeInfo.storeName || 'متجر الأمين',
+          companyAddress: storeInfo.storeAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
+          companyPhone: storeInfo.storePhone || '01029022006',
+          companyEmail: storeInfo.storeEmail || 'info@msgroupplast.com',
+          currency: 'EGP',
+          language: 'ar',
+          timezone: 'Africa/Cairo',
+          taxEnabled: storeInfo.taxEnabled !== undefined ? storeInfo.taxEnabled : false,
+          taxRate: storeInfo.taxRate || 15,
+          taxName: storeInfo.taxName || 'ضريبة القيمة المضافة',
+          allowRegistration: true,
+          requireEmailVerification: true,
+          defaultRole: 'cashier',
+          printerName: 'EPSON TM-T20III',
+          paperSize: '80mm',
+          printLogo: true,
+          printFooter: true,
+          autoBackup: true,
+          backupFrequency: 'daily',
+          backupLocation: 'local',
+          emailNotifications: true,
+          smsNotifications: false,
+          lowStockAlerts: true,
+          salesReports: true,
+          theme: 'light',
+          primaryColor: '#8B5CF6',
+          sidebarCollapsed: false,
+          soundsEnabled: true,
+          soundVolume: 0.7,
+          clickSounds: true,
+          notificationSounds: true,
+          systemSounds: true,
+          maintenanceMode: false,
+          debugMode: false,
+          analyticsEnabled: true,
+          inventoryEnabled: storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : true,
+          ...posSettings
+        };
+      }
+      localStorage.setItem('pos-settings', JSON.stringify(posSettings));
+
+      // إصلاح إعدادات النظام
+      let systemSettings = JSON.parse(localStorage.getItem('system-settings') || '{}');
+      if (typeof systemSettings !== 'object' || !systemSettings.theme) {
+        systemSettings = {
+          ...posSettings,
+          ...systemSettings
+        };
+      }
+      localStorage.setItem('system-settings', JSON.stringify(systemSettings));
+
 
       return true;
     } catch (error) {
