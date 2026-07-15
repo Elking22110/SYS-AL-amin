@@ -154,6 +154,9 @@ class SyncManager {
           }
         })
         .subscribe((status) => {
+          // #region agent log
+          fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H5',location:'syncManager.js:startRealtimeSync',message:'realtime subscribe status',data:{status},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
           if (status === 'SUBSCRIBED') {
             console.log('⚡ [Realtime] متصل - المزامنة الفورية نشطة!');
           } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
@@ -343,12 +346,23 @@ class SyncManager {
 
   // مشغل المزامنة الآمن
   async triggerSync() {
-    if (this.syncInProgress) return;
+    if (this.syncInProgress) {
+      // #region agent log
+      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: already in progress',data:{},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+      return;
+    }
     if (!window.navigator.onLine) {
+      // #region agent log
+      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: offline',data:{},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       this.updateStatus('offline');
       return;
     }
     if (!isKeysConfigured) {
+      // #region agent log
+      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: keys not configured',data:{supabaseUrl},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       // إذا لم يكن Supabase مهيأ، لا نقوم بأي محاولة اتصال
       return;
     }
@@ -364,6 +378,9 @@ class SyncManager {
       await this.syncAll();
       this.updateStatus('synced');
     } catch (error) {
+      // #region agent log
+      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:triggerSync',message:'syncAll threw',data:{error:String(error?.message||error),code:error?.code||null},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
       console.error('❌ فشل مزامنة البيانات مع السحاب:', error);
       this.updateStatus('error');
     } finally {
@@ -405,6 +422,12 @@ class SyncManager {
       
       const pendingRecords = localRecords.filter(r => r && r.sync_status === 'pending');
       const deletedRecords = localRecords.filter(r => r && r.sync_status === 'deleted');
+      const noStatusCount = localRecords.filter(r => r && !r.sync_status).length;
+      // #region agent log
+      if (['customers','sales','shifts','products'].includes(storeName) || pendingRecords.length > 0) {
+        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:syncStore:entry',message:'store sync counts',data:{storeName,total:localRecords.length,pending:pendingRecords.length,deleted:deletedRecords.length,synced:localRecords.filter(r=>r&&r.sync_status==='synced').length,noStatus:noStatusCount},timestamp:Date.now()})}).catch(()=>{});
+      }
+      // #endregion
 
       // جلب تواريخ التحديث السحابية للسجلات المعلقة للتحقق من وجود تعارضات (Last-Write-Wins)
       let cloudMap = new Map();
@@ -520,6 +543,9 @@ class SyncManager {
           
           // في حال فشل الدفعة بسبب عمود مفقود (PGRST204) أو غيره، نقوم بالرفع الفردي التراجعي كاحتياط
           if (error) {
+            // #region agent log
+            fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:syncStore:upsert',message:'batch upsert failed',data:{storeName,chunkSize:chunk.length,code:error.code||null,msg:String(error.message||error).slice(0,200),details:String(error.details||'').slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
+            // #endregion
             console.warn(`⚠️ [SyncManager] فشل رفع دفعة لـ ${storeName}، الانتقال للرفع الفردي التراجعي...`, error);
             for (const uploadItemData of chunk) {
               let singleUploadData = { ...uploadItemData };
@@ -633,6 +659,11 @@ class SyncManager {
         }
       }
 
+      // #region agent log
+      if (['customers','sales','shifts','products'].includes(storeName) || cloudUpdates.length > 0) {
+        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H3',location:'syncManager.js:syncStore:download',message:'cloud download result',data:{storeName,lastLocalUpdate,downloaded:cloudUpdates.length,pendingSkippedByLww:pendingRecords.length - (pendingRecords.filter(r=>{const c=cloudMap.get(String(r.id));return!(c&&new Date(c).getTime()>new Date(r.updated_at||0).getTime());}).length)},timestamp:Date.now()})}).catch(()=>{});
+      }
+      // #endregion
       if (cloudUpdates.length > 0) {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
@@ -912,6 +943,14 @@ class SyncManager {
       }
 
       // 3. تنفيذ العمليات على السحاب
+      // #region agent log
+      if (tableName === 'activeShift' || pendingUpserts.length > 0 || pendingDeletes.length > 0) {
+        const localCfg = localData[0] || {};
+        const cloudCfg = cloudMap.get('config') || cloudData[0] || null;
+        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H4',location:'syncManager.js:syncLocalStorageStore',message:'localStorage merge decision',data:{tableName,dbTableName,isSingleObject,lastSyncTime,localCount:localData.length,cloudCount:cloudData.length,pendingUpserts:pendingUpserts.length,pendingDeletes:pendingDeletes.length,localStatus:localCfg.status||null,localUpdatedAt:localCfg.updated_at||null,cloudStatus:cloudCfg?.status||null,cloudUpdatedAt:cloudCfg?.updated_at||null,localKeys:Object.keys(localCfg).filter(k=>k!=='id'&&k!=='updated_at').length,cloudKeys:cloudCfg?Object.keys(cloudCfg).filter(k=>k!=='id'&&k!=='updated_at').length:0},timestamp:Date.now()})}).catch(()=>{});
+      }
+      // #endregion
+
       if (pendingUpserts.length > 0) {
         // جميع الجداول في localStorage ستستخدم هيكل id + value المشترك
         const cleanUpserts = pendingUpserts.map(item => {
@@ -924,7 +963,12 @@ class SyncManager {
         });
 
         const { error: upsertError } = await supabase.from(dbTableName).upsert(cleanUpserts);
-        if (upsertError) throw upsertError;
+        if (upsertError) {
+          // #region agent log
+          fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:syncLocalStorageStore:upsert',message:'localStorage upsert failed',data:{tableName,dbTableName,code:upsertError.code||null,msg:String(upsertError.message||upsertError).slice(0,200)},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          throw upsertError;
+        }
       }
 
       if (pendingDeletes.length > 0 && !isSingleObject) {
