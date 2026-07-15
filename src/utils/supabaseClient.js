@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// القيم الاحتياطية المباشرة تضمن الاتصال دائماً حتى لو .env لم يُحمَّل
+const FALLBACK_URL = 'https://jwjjykrrnlnitelcgzfy.supabase.co';
+const FALLBACK_KEY = 'sb_publishable_NZWEAHXuHWyBfPFwUgMahQ_Z3LHrg8k';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
 
 // التحقق من صحة وجود المفاتيح وتفادي قيم النماذج الافتراضية
 const isKeysConfigured = 
@@ -15,7 +19,7 @@ let supabase = null;
 if (isKeysConfigured) {
   try {
     supabase = createClient(supabaseUrl, supabaseAnonKey);
-    console.log('✅ تم تهيئة اتصال Supabase بنجاح');
+    console.log('✅ تم تهيئة اتصال Supabase بنجاح - المزامنة السحابية نشطة');
   } catch (err) {
     console.error('❌ فشل تهيئة اتصال Supabase:', err);
   }
@@ -24,3 +28,4 @@ if (isKeysConfigured) {
 }
 
 export { supabase, isKeysConfigured };
+
