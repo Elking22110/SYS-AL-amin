@@ -133,6 +133,10 @@ class DatabaseManager {
       await this.init();
     }
 
+    if (data && data.id !== undefined && data.id !== null) {
+      data.id = String(data.id);
+    }
+
     if (SYNCABLE_STORES.includes(storeName)) {
       data.sync_status = data.sync_status || 'pending';
       data.updated_at = data.updated_at || new Date().toISOString();
@@ -161,6 +165,10 @@ class DatabaseManager {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
       await this.init();
+    }
+
+    if (data && data.id !== undefined && data.id !== null) {
+      data.id = String(data.id);
     }
 
     if (SYNCABLE_STORES.includes(storeName)) {

@@ -446,6 +446,72 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // DEDUPLICATION MIGRATION: Clean up integer vs string ID duplicates locally
+        // ----------------------------------------------------
+        try {
+          console.log('[DataLoader] Running deduplication and ID normalization migration...');
+          const stores = ['products', 'categories'];
+          for (const storeName of stores) {
+            const allItems = await databaseManager.getAll(storeName);
+            if (allItems && allItems.length > 0) {
+              const uniqueItemsMap = new Map();
+              const idsToDelete = [];
+
+              for (const item of allItems) {
+                if (!item || item.id === undefined) continue;
+                const stringId = String(item.id);
+
+                if (uniqueItemsMap.has(stringId)) {
+                  const existing = uniqueItemsMap.get(stringId);
+                  if (existing.sync_status !== 'synced' && item.sync_status === 'synced') {
+                    uniqueItemsMap.set(stringId, { ...item, id: stringId });
+                  }
+                  idsToDelete.push(item.id);
+                } else {
+                  uniqueItemsMap.set(stringId, { ...item, id: stringId });
+                  if (typeof item.id === 'number') {
+                    idsToDelete.push(item.id);
+                  }
+                }
+              }
+
+              if (idsToDelete.length > 0) {
+                console.log(`[DataLoader] Deduplicating ${storeName}: deleting ${idsToDelete.length} numeric/duplicate keys...`);
+                const transaction = databaseManager.db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                
+                for (const id of idsToDelete) {
+                  await new Promise((resolve) => {
+                    const req = store.delete(id);
+                    req.onsuccess = resolve;
+                    req.onerror = resolve;
+                  });
+                }
+
+                for (const item of uniqueItemsMap.values()) {
+                  await new Promise((resolve) => {
+                    const req = store.put(item);
+                    req.onsuccess = resolve;
+                    req.onerror = resolve;
+                  });
+                }
+
+                // Update localStorage
+                const keyMap = { products: 'products', categories: 'productCategories' };
+                const lsKey = keyMap[storeName];
+                if (lsKey) {
+                  localStorage.setItem(lsKey, JSON.stringify(Array.from(uniqueItemsMap.values())));
+                }
+                console.log(`[DataLoader] Deduplicated ${storeName} successfully. New count: ${uniqueItemsMap.size}`);
+              }
+            }
+          }
+        } catch (err) {
+          console.error('[DataLoader] Failed to deduplicate stores:', err);
+        }
+        // ----------------------------------------------------
+
         setLoadingMessage('جاري التحقق من البيانات...');
         
         // التحقق من صحة البيانات
