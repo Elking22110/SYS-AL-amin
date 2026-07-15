@@ -236,7 +236,15 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.delete(id);
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const numId = Number(id);
+        if (typeof id === 'string' && !isNaN(numId) && String(numId) === id) {
+          store.delete(numId);
+        } else if (typeof id === 'number') {
+          store.delete(String(id));
+        }
+        resolve(request.result);
+      };
       request.onerror = () => reject(request.error);
     });
   }
@@ -257,7 +265,15 @@ class DatabaseManager {
       const store = transaction.objectStore(storeName);
       const request = store.delete(id);
 
-      request.onsuccess = () => resolve(request.result);
+      request.onsuccess = () => {
+        const numId = Number(id);
+        if (typeof id === 'string' && !isNaN(numId) && String(numId) === id) {
+          store.delete(numId);
+        } else if (typeof id === 'number') {
+          store.delete(String(id));
+        }
+        resolve(request.result);
+      };
       request.onerror = () => reject(request.error);
     });
   }
@@ -281,10 +297,42 @@ class DatabaseManager {
 
       request.onsuccess = () => {
         const result = request.result;
-        if (result && result.sync_status === 'deleted') {
-          resolve(null);
+        if (result) {
+          if (result.sync_status === 'deleted') {
+            resolve(null);
+          } else {
+            resolve(result);
+          }
+          return;
+        }
+
+        // إذا لم يعثر عليه، وكان المعرف نصاً يمثل رقماً، نجرب البحث الرقمي
+        const numId = Number(id);
+        if (typeof id === 'string' && !isNaN(numId) && String(numId) === id) {
+          const retryRequest = store.get(numId);
+          retryRequest.onsuccess = () => {
+            const retryResult = retryRequest.result;
+            if (retryResult && retryResult.sync_status === 'deleted') {
+              resolve(null);
+            } else {
+              resolve(retryResult || null);
+            }
+          };
+          retryRequest.onerror = () => reject(retryRequest.error);
+        } else if (typeof id === 'number') {
+          // وإذا كان رقماً، نجرب البحث النصي
+          const retryRequest = store.get(String(id));
+          retryRequest.onsuccess = () => {
+            const retryResult = retryRequest.result;
+            if (retryResult && retryResult.sync_status === 'deleted') {
+              resolve(null);
+            } else {
+              resolve(retryResult || null);
+            }
+          };
+          retryRequest.onerror = () => reject(retryRequest.error);
         } else {
-          resolve(result);
+          resolve(null);
         }
       };
       request.onerror = () => reject(request.error);
