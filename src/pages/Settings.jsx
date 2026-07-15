@@ -71,7 +71,10 @@ const Settings = () => {
   useEffect(() => {
     const reloadAllSettings = () => {
       try {
-        const savedSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+        const savedSettings = {
+          ...JSON.parse(localStorage.getItem('pos-settings') || '{}'),
+          ...JSON.parse(localStorage.getItem('system-settings') || '{}')
+        };
         const savedStoreInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
         setSettings(prev => ({
           ...prev,
@@ -103,9 +106,17 @@ const Settings = () => {
       }
     };
 
+    const handleStorage = (e) => {
+      if (!e.key || ['pos-settings', 'storeInfo', 'users', 'system-settings'].includes(e.key)) {
+        reloadAllSettings();
+      }
+    };
+
     window.addEventListener('dataUpdated', handleDataUpdated);
+    window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('dataUpdated', handleDataUpdated);
+      window.removeEventListener('storage', handleStorage);
     };
   }, []);
   const [users, setUsers] = useState(() => {
@@ -135,7 +146,10 @@ const Settings = () => {
     password: ''
   });
   const [settings, setSettings] = useState(() => {
-    const savedSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
+    const savedSettings = {
+      ...JSON.parse(localStorage.getItem('pos-settings') || '{}'),
+      ...JSON.parse(localStorage.getItem('system-settings') || '{}')
+    };
     const savedStoreInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
 
     return {

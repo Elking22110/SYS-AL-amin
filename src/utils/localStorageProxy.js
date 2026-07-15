@@ -208,4 +208,45 @@ localStorage.setItem = function(key, value) {
     }
 };
 
+localStorage.removeItem = function(key) {
+    const hadCachedValue = localCache.has(key);
+    const oldValue = localCache.get(key);
+
+    originalRemoveItem.apply(this, arguments);
+
+    if (typeof window !== 'undefined' && window.__bypass_sync_proxy__) {
+        localCache.delete(key);
+        return;
+    }
+
+    const idbStore = LS_TO_IDB_MAP[key];
+    if (idbStore && Array.isArray(oldValue) && oldValue.length > 0) {
+        localCache.set(key, []);
+        setTimeout(async () => {
+            try {
+                for (const item of oldValue) {
+                    if (item && item.id !== undefined && item.id !== null) {
+                        await databaseManager.delete(idbStore, item.id);
+                    }
+                }
+                window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName: idbStore } }));
+            } catch (error) {
+                console.error(`[SyncProxy] Error processing removed IndexedDB store ${key}:`, error);
+            }
+        }, 0);
+        return;
+    }
+
+    if (LOCAL_SYNC_STORES.includes(key) && hadCachedValue) {
+        const isSingleObject = ['storeInfo', 'pos-settings', 'system-settings', 'activeShift', 'productImages'].includes(key);
+        localCache.set(key, isSingleObject ? {} : []);
+        setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName: key } }));
+        }, 0);
+        return;
+    }
+
+    localCache.delete(key);
+};
+
 export default true;
