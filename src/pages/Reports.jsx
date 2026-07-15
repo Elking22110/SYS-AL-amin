@@ -1,4 +1,4 @@
-import { publish, EVENTS } from '../utils/observerManager';
+import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ProductGrid from '../components/POS/ProductGrid';
@@ -196,7 +196,20 @@ const Reports = () => {
   useEffect(() => {
     loadSalesData();
     const interval = setInterval(loadSalesData, 15000);
-    return () => clearInterval(interval);
+    const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, loadSalesData) : null;
+    const unsubShifts = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, loadSalesData) : null;
+    const unsubReturns = typeof subscribe === 'function' ? subscribe(EVENTS.RETURNS_CHANGED, loadSalesData) : null;
+    const onDataUpdated = () => loadSalesData();
+    window.addEventListener('dataUpdated', onDataUpdated);
+    window.addEventListener('realtimeDataUpdate', onDataUpdated);
+    return () => {
+      clearInterval(interval);
+      if (typeof unsubInvoices === 'function') unsubInvoices();
+      if (typeof unsubShifts === 'function') unsubShifts();
+      if (typeof unsubReturns === 'function') unsubReturns();
+      window.removeEventListener('dataUpdated', onDataUpdated);
+      window.removeEventListener('realtimeDataUpdate', onDataUpdated);
+    };
   }, []);
 
   // تحميل المنتجات والفئات من أجل شبكة POS المدمجة عند فتح مودال الفاتورة

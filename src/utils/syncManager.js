@@ -7,6 +7,7 @@ class SyncManager {
     this.status = 'synced'; // 'synced' | 'syncing' | 'error' | 'offline'
     this.listeners = new Set();
     this.syncInProgress = false;
+    this.syncQueued = false; // إعادة مزامنة بعد انتهاء الدورة الحالية بدل إسقاط التغييرات
     this.syncIntervalId = null;
     this.realtimeChannel = null;
     this.lastSyncedAt = {}; // لتجنب مزامنة التغييرات الصادرة من نفس الجهاز
@@ -154,9 +155,6 @@ class SyncManager {
           }
         })
         .subscribe((status) => {
-          // #region agent log
-          fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H5',location:'syncManager.js:startRealtimeSync',message:'realtime subscribe status',data:{status},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           if (status === 'SUBSCRIBED') {
             console.log('⚡ [Realtime] متصل - المزامنة الفورية نشطة!');
           } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
@@ -323,14 +321,33 @@ class SyncManager {
       if (record.tax_amount !== undefined) { mapped.taxAmount = record.tax_amount; delete mapped.tax_amount; }
       if (record.payment_method !== undefined) { mapped.paymentMethod = record.payment_method; delete mapped.payment_method; }
       if (record.payment_status !== undefined) { mapped.paymentStatus = record.payment_status; delete mapped.payment_status; }
-      if (record.down_payment !== undefined) { mapped.downPayment = record.down_payment; delete mapped.down_payment; }
+      if (record.down_payment !== undefined) {
+        const dp = record.down_payment && typeof record.down_payment === 'object' ? { ...record.down_payment } : record.down_payment;
+        if (dp && typeof dp === 'object') {
+          if (dp._settlements) { mapped.settlements = dp._settlements; delete dp._settlements; }
+          if (dp._settlement) { mapped.settlement = dp._settlement; delete dp._settlement; }
+        }
+        mapped.downPayment = dp;
+        delete mapped.down_payment;
+      }
     } else if (table === 'shifts') {
       if (record.start_time !== undefined) { mapped.startTime = record.start_time; delete mapped.start_time; }
       if (record.end_time !== undefined) { mapped.endTime = record.end_time; delete mapped.end_time; }
-      if (record.sales_details !== undefined) { mapped.salesDetails = record.sales_details; delete mapped.sales_details; }
+      if (record.sales_details !== undefined) {
+        const details = record.sales_details && typeof record.sales_details === 'object' ? { ...record.sales_details } : record.sales_details;
+        if (details && Array.isArray(details._invoices)) {
+          mapped.sales = details._invoices;
+          delete details._invoices;
+        }
+        mapped.salesDetails = details;
+        delete mapped.sales_details;
+      }
       if (record.returns_data !== undefined) { mapped.returns = record.returns_data; delete mapped.returns_data; }
       if (record.cashier_username !== undefined) { mapped.cashier = { username: record.cashier_username }; delete mapped.cashier_username; }
       if (record.opening_amount !== undefined) { mapped.cashDrawer = { openingAmount: record.opening_amount, expectedAmount: record.expected_amount || 0, closingAmount: record.closing_amount || 0 }; delete mapped.opening_amount; delete mapped.expected_amount; delete mapped.closing_amount; }
+    } else if (table === 'returns') {
+      if (record.ref_invoice_id !== undefined) { mapped.refInvoiceId = record.ref_invoice_id; delete mapped.ref_invoice_id; }
+      if (record.shift_id !== undefined) { mapped.shiftId = record.shift_id; delete mapped.shift_id; }
     } else if (table === 'categories') {
       if (record.parent_id !== undefined) { mapped.parentId = record.parent_id; delete mapped.parent_id; }
     } else if (table === 'products') {
@@ -344,73 +361,104 @@ class SyncManager {
     return mapped;
   }
 
+  // مهلة زمنية لطلبات السحابة حتى لا تعلق المزامنة إلى ما لا نهاية
+  withCloudTimeout(promise, ms, label) {
+    let timer;
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`cloud timeout: ${label} (${ms}ms)`)), ms);
+      })
+    ]).finally(() => clearTimeout(timer));
+  }
+
   // مشغل المزامنة الآمن
   async triggerSync() {
     if (this.syncInProgress) {
-      // #region agent log
-      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: already in progress',data:{},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+      this.syncQueued = true;
       return;
     }
     if (!window.navigator.onLine) {
-      // #region agent log
-      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: offline',data:{},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       this.updateStatus('offline');
       return;
     }
     if (!isKeysConfigured) {
-      // #region agent log
-      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:triggerSync',message:'sync skipped: keys not configured',data:{supabaseUrl},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       // إذا لم يكن Supabase مهيأ، لا نقوم بأي محاولة اتصال
       return;
     }
 
-    if (!this.projectSwitchChecked && this.projectSwitchPromise) {
-      await this.projectSwitchPromise;
-    }
-
+    // قفل فوري قبل أي await لمنع سباق المزامنات المتوازية
     this.syncInProgress = true;
     this.updateStatus('syncing');
 
     try {
+      if (!this.projectSwitchChecked && this.projectSwitchPromise) {
+        await this.projectSwitchPromise;
+      }
       await this.syncAll();
       this.updateStatus('synced');
     } catch (error) {
-      // #region agent log
-      fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:triggerSync',message:'syncAll threw',data:{error:String(error?.message||error),code:error?.code||null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       console.error('❌ فشل مزامنة البيانات مع السحاب:', error);
       this.updateStatus('error');
     } finally {
       this.syncInProgress = false;
+      if (this.syncQueued) {
+        this.syncQueued = false;
+        setTimeout(() => this.triggerSync(), 0);
+      }
     }
   }
 
   // المزامنة الفعلية لكافة الجداول ثنائية الاتجاه
+  // الأولوية للبيانات التشغيلية (وردية/مبيعات/عملاء) قبل الكتالوج الثقيل حتى لا تعلق الأجهزة
   async syncAll() {
-    const stores = ['categories', 'products', 'customers', 'shifts', 'sales', 'returns', 'users'];
-
-    for (const storeName of stores) {
-      await this.syncStore(storeName);
-    }
-
-    // مزامنة جداول الـ LocalStorage المفقودة لضمان أمان وتزامن النظام بالكامل
-    const localStores = [
-      'suppliers', 
-      'supplier_supplies', 
-      'supplier_payments', 
+    const priorityStores = ['sales', 'customers', 'shifts', 'returns', 'users'];
+    const heavyStores = ['products', 'categories'];
+    const priorityLocal = [
+      'activeShift',
       'expenses',
+      'suppliers',
+      'supplier_supplies',
+      'supplier_payments'
+    ];
+    const restLocal = [
       'storeInfo',
       'pos-settings',
       'system-settings',
-      'activeShift',
       'manufacturing_waste',
       'productImages'
     ];
-    for (const storeName of localStores) {
-      await this.syncLocalStorageStore(storeName);
+
+    for (const storeName of priorityStores) {
+      try {
+        await this.syncStore(storeName);
+      } catch (err) {
+        console.error(`❌ فشل مزامنة ${storeName} (استمرار لباقي الجداول):`, err);
+      }
+    }
+
+    for (const storeName of priorityLocal) {
+      try {
+        await this.syncLocalStorageStore(storeName);
+      } catch (err) {
+        console.error(`❌ فشل مزامنة ${storeName} (استمرار لباقي الجداول):`, err);
+      }
+    }
+
+    for (const storeName of heavyStores) {
+      try {
+        await this.syncStore(storeName);
+      } catch (err) {
+        console.error(`❌ فشل مزامنة ${storeName} (استمرار لباقي الجداول):`, err);
+      }
+    }
+
+    for (const storeName of restLocal) {
+      try {
+        await this.syncLocalStorageStore(storeName);
+      } catch (err) {
+        console.error(`❌ فشل مزامنة ${storeName} (استمرار لباقي الجداول):`, err);
+      }
     }
   }
 
@@ -422,21 +470,16 @@ class SyncManager {
       
       const pendingRecords = localRecords.filter(r => r && r.sync_status === 'pending');
       const deletedRecords = localRecords.filter(r => r && r.sync_status === 'deleted');
-      const noStatusCount = localRecords.filter(r => r && !r.sync_status).length;
-      // #region agent log
-      if (['customers','sales','shifts','products'].includes(storeName) || pendingRecords.length > 0) {
-        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H1',location:'syncManager.js:syncStore:entry',message:'store sync counts',data:{storeName,total:localRecords.length,pending:pendingRecords.length,deleted:deletedRecords.length,synced:localRecords.filter(r=>r&&r.sync_status==='synced').length,noStatus:noStatusCount},timestamp:Date.now()})}).catch(()=>{});
-      }
-      // #endregion
 
       // جلب تواريخ التحديث السحابية للسجلات المعلقة للتحقق من وجود تعارضات (Last-Write-Wins)
       let cloudMap = new Map();
       if (pendingRecords.length > 0) {
         try {
-          const { data: cloudTimestamps, error: timestampError } = await supabase
-            .from(storeName)
-            .select('id, updated_at')
-            .in('id', pendingRecords.map(r => r.id));
+          const { data: cloudTimestamps, error: timestampError } = await this.withCloudTimeout(
+            supabase.from(storeName).select('id, updated_at').in('id', pendingRecords.map(r => r.id)),
+            15000,
+            `timestamp-check ${storeName}`
+          );
           if (!timestampError && cloudTimestamps) {
             cloudMap = new Map(cloudTimestamps.map(c => [String(c.id), c.updated_at]));
           }
@@ -466,6 +509,15 @@ class SyncManager {
             uploadData.parent_id = record.parentId;
             delete uploadData.parentId;
             delete uploadData.description; // حقل محلي فقط، لا يوجد في Supabase
+            // أعمدة السكيما فقط — منع PGRST204 ومسار الرفع الفردي البطيء
+            const cat = {
+              id: String(record.id),
+              name: uploadData.name,
+              parent_id: uploadData.parent_id ?? null,
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, cat);
           } else if (storeName === 'products') {
             uploadData.main_category_id = record.mainCategoryId;
             uploadData.sub_category_id = record.subCategoryId;
@@ -475,6 +527,20 @@ class SyncManager {
             delete uploadData.imagePath;
             delete uploadData.minStock; // حقل محلي فقط، لا يوجد في Supabase
             delete uploadData.category; // حقل محلي فقط، لا يوجد في Supabase
+            const prod = {
+              id: String(record.id),
+              name: uploadData.name,
+              price: uploadData.price ?? 0,
+              cost: uploadData.cost ?? 0,
+              stock: uploadData.stock ?? 0,
+              barcode: uploadData.barcode ?? null,
+              main_category_id: uploadData.main_category_id ?? null,
+              sub_category_id: uploadData.sub_category_id ?? null,
+              image_path: uploadData.image_path ?? null,
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, prod);
           } else if (storeName === 'customers') {
             if (record.totalSpent !== undefined) uploadData.total_spent = record.totalSpent;
             if (record.lastVisit !== undefined) uploadData.last_visit = record.lastVisit;
@@ -482,11 +548,22 @@ class SyncManager {
             delete uploadData.totalSpent;
             delete uploadData.lastVisit;
             delete uploadData.joinDate;
-            // الأعمدة المضافة في السكيما الجديدة - نتأكد من إرسالها بشكل صحيح
-            if (uploadData.address === undefined) delete uploadData.address;
-            if (uploadData.type === undefined) delete uploadData.type;
-            if (uploadData.status === undefined) delete uploadData.status;
-            if (uploadData.debt === undefined) delete uploadData.debt;
+            const cust = {
+              id: String(record.id),
+              name: uploadData.name,
+              phone: uploadData.phone ?? null,
+              email: uploadData.email ?? null,
+              address: uploadData.address ?? null,
+              type: uploadData.type ?? 'عميل عادي',
+              status: uploadData.status ?? 'نشط',
+              debt: uploadData.debt ?? 0,
+              total_spent: uploadData.total_spent ?? 0,
+              last_visit: uploadData.last_visit ?? null,
+              join_date: uploadData.join_date ?? null,
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, cust);
           } else if (storeName === 'sales') {
             uploadData.shift_id = record.shiftId;
             uploadData.customer_id = record.customerId;
@@ -494,34 +571,68 @@ class SyncManager {
             uploadData.tax_amount = record.taxAmount;
             uploadData.payment_method = record.paymentMethod;
             uploadData.payment_status = record.paymentStatus;
-            uploadData.down_payment = record.downPayment;
-            delete uploadData.shiftId;
-            delete uploadData.customerId;
-            delete uploadData.discountAmount;
-            delete uploadData.taxAmount;
-            delete uploadData.paymentMethod;
-            delete uploadData.paymentStatus;
-            delete uploadData.downPayment;
+            // دمج التسويات داخل down_payment لأن السكيما لا تحتوي عمود settlements
+            const downPayment = record.downPayment && typeof record.downPayment === 'object'
+              ? { ...record.downPayment }
+              : {};
+            if (record.settlements) downPayment._settlements = record.settlements;
+            if (record.settlement) downPayment._settlement = record.settlement;
+            uploadData.down_payment = downPayment;
+            const sale = {
+              id: String(record.id),
+              date: record.date ?? null,
+              timestamp: record.timestamp ?? null,
+              shift_id: uploadData.shift_id ?? null,
+              customer_id: uploadData.customer_id ?? null,
+              items: record.items ?? [],
+              total: record.total ?? 0,
+              discount_amount: uploadData.discount_amount ?? 0,
+              tax_amount: uploadData.tax_amount ?? 0,
+              payment_method: uploadData.payment_method ?? 'cash',
+              payment_status: uploadData.payment_status ?? 'complete',
+              down_payment: uploadData.down_payment ?? {},
+              customer: record.customer ?? {},
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, sale);
           } else if (storeName === 'shifts') {
-            uploadData.start_time = record.startTime;
-            uploadData.end_time = record.endTime;
-            uploadData.opening_amount = record.cashDrawer?.openingAmount || 0;
-            uploadData.expected_amount = record.cashDrawer?.expectedAmount || 0;
-            uploadData.closing_amount = record.closing_amount || 0;
-            uploadData.cashier_username = record.cashier?.username || record.cashier || 'unknown';
-            uploadData.sales_details = record.salesDetails;
-            uploadData.returns_data = record.returns;
-            delete uploadData.startTime;
-            delete uploadData.endTime;
-            delete uploadData.cashDrawer;
-            delete uploadData.cashier;
-            delete uploadData.salesDetails;
-            delete uploadData.returns;
+            // تضمين فواتير الوردية داخل sales_details JSONB حتى تتزامن التقارير عبر الأجهزة
+            const details = (record.salesDetails && typeof record.salesDetails === 'object')
+              ? { ...record.salesDetails }
+              : {};
+            if (Array.isArray(record.sales) && record.sales.length > 0) {
+              details._invoices = record.sales;
+            }
+            const shiftPayload = {
+              id: String(record.id),
+              status: record.status || 'completed',
+              start_time: record.startTime || null,
+              end_time: record.endTime || null,
+              opening_amount: record.cashDrawer?.openingAmount || 0,
+              expected_amount: record.cashDrawer?.expectedAmount || 0,
+              closing_amount: record.closing_amount ?? record.cashDrawer?.closingAmount ?? 0,
+              cashier_username: record.cashier?.username || record.cashier || 'unknown',
+              sales_details: details,
+              returns_data: Array.isArray(record.returns) ? record.returns : [],
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, shiftPayload);
           } else if (storeName === 'returns') {
-            uploadData.ref_invoice_id = record.refInvoiceId;
-            uploadData.shift_id = record.shiftId;
-            delete uploadData.refInvoiceId;
-            delete uploadData.shiftId;
+            const ret = {
+              id: String(record.id),
+              date: record.date ?? null,
+              timestamp: record.timestamp ?? null,
+              ref_invoice_id: record.refInvoiceId ?? null,
+              shift_id: record.shiftId ?? null,
+              customer: record.customer ?? {},
+              item: record.item ?? {},
+              amount: record.amount ?? 0,
+              updated_at: uploadData.updated_at || new Date().toISOString()
+            };
+            Object.keys(uploadData).forEach(k => delete uploadData[k]);
+            Object.assign(uploadData, ret);
           } else if (storeName === 'users') {
             if (record.createdAt !== undefined) { uploadData.created_at = record.createdAt; delete uploadData.createdAt; }
             if (record.lastLogin !== undefined) { uploadData.last_login = record.lastLogin; delete uploadData.lastLogin; }
@@ -539,14 +650,25 @@ class SyncManager {
         const batchSize = 200;
         for (let i = 0; i < batchData.length; i += batchSize) {
           const chunk = batchData.slice(i, i + batchSize);
-          let { error } = await supabase.from(storeName).upsert(chunk);
+          let error = null;
+          try {
+            const result = await this.withCloudTimeout(
+              supabase.from(storeName).upsert(chunk),
+              20000,
+              `upsert ${storeName} x${chunk.length}`
+            );
+            error = result.error;
+          } catch (timeoutErr) {
+            error = { message: String(timeoutErr.message || timeoutErr), code: 'TIMEOUT' };
+          }
           
           // في حال فشل الدفعة بسبب عمود مفقود (PGRST204) أو غيره، نقوم بالرفع الفردي التراجعي كاحتياط
           if (error) {
-            // #region agent log
-            fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:syncStore:upsert',message:'batch upsert failed',data:{storeName,chunkSize:chunk.length,code:error.code||null,msg:String(error.message||error).slice(0,200),details:String(error.details||'').slice(0,120)},timestamp:Date.now()})}).catch(()=>{});
-            // #endregion
             console.warn(`⚠️ [SyncManager] فشل رفع دفعة لـ ${storeName}، الانتقال للرفع الفردي التراجعي...`, error);
+            // عند الـ timeout نتخطى الرفع الفردي لـ 200 سجل حتى لا نعلق دقائق
+            if (error.code === 'TIMEOUT') {
+              continue;
+            }
             for (const uploadItemData of chunk) {
               let singleUploadData = { ...uploadItemData };
               let { error: singleError } = await supabase.from(storeName).upsert(singleUploadData);
@@ -659,11 +781,6 @@ class SyncManager {
         }
       }
 
-      // #region agent log
-      if (['customers','sales','shifts','products'].includes(storeName) || cloudUpdates.length > 0) {
-        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H3',location:'syncManager.js:syncStore:download',message:'cloud download result',data:{storeName,lastLocalUpdate,downloaded:cloudUpdates.length,pendingSkippedByLww:pendingRecords.length - (pendingRecords.filter(r=>{const c=cloudMap.get(String(r.id));return!(c&&new Date(c).getTime()>new Date(r.updated_at||0).getTime());}).length)},timestamp:Date.now()})}).catch(()=>{});
-      }
-      // #endregion
       if (cloudUpdates.length > 0) {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
         
@@ -711,7 +828,14 @@ class SyncManager {
             localItem.taxAmount = cloudItem.tax_amount;
             localItem.paymentMethod = cloudItem.payment_method;
             localItem.paymentStatus = cloudItem.payment_status;
-            localItem.downPayment = cloudItem.down_payment;
+            if (cloudItem.down_payment && typeof cloudItem.down_payment === 'object') {
+              const dp = { ...cloudItem.down_payment };
+              if (dp._settlements) { localItem.settlements = dp._settlements; delete dp._settlements; }
+              if (dp._settlement) { localItem.settlement = dp._settlement; delete dp._settlement; }
+              localItem.downPayment = dp;
+            } else {
+              localItem.downPayment = cloudItem.down_payment;
+            }
             delete localItem.shift_id;
             delete localItem.customer_id;
             delete localItem.discount_amount;
@@ -728,7 +852,16 @@ class SyncManager {
               closingAmount: Number(cloudItem.closing_amount) || 0
             };
             localItem.cashier = { username: cloudItem.cashier_username };
-            localItem.salesDetails = cloudItem.sales_details;
+            if (cloudItem.sales_details && typeof cloudItem.sales_details === 'object') {
+              const details = { ...cloudItem.sales_details };
+              if (Array.isArray(details._invoices)) {
+                localItem.sales = details._invoices;
+                delete details._invoices;
+              }
+              localItem.salesDetails = details;
+            } else {
+              localItem.salesDetails = cloudItem.sales_details;
+            }
             localItem.returns = cloudItem.returns_data;
             delete localItem.start_time;
             delete localItem.end_time;
@@ -943,14 +1076,6 @@ class SyncManager {
       }
 
       // 3. تنفيذ العمليات على السحاب
-      // #region agent log
-      if (tableName === 'activeShift' || pendingUpserts.length > 0 || pendingDeletes.length > 0) {
-        const localCfg = localData[0] || {};
-        const cloudCfg = cloudMap.get('config') || cloudData[0] || null;
-        fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H4',location:'syncManager.js:syncLocalStorageStore',message:'localStorage merge decision',data:{tableName,dbTableName,isSingleObject,lastSyncTime,localCount:localData.length,cloudCount:cloudData.length,pendingUpserts:pendingUpserts.length,pendingDeletes:pendingDeletes.length,localStatus:localCfg.status||null,localUpdatedAt:localCfg.updated_at||null,cloudStatus:cloudCfg?.status||null,cloudUpdatedAt:cloudCfg?.updated_at||null,localKeys:Object.keys(localCfg).filter(k=>k!=='id'&&k!=='updated_at').length,cloudKeys:cloudCfg?Object.keys(cloudCfg).filter(k=>k!=='id'&&k!=='updated_at').length:0},timestamp:Date.now()})}).catch(()=>{});
-      }
-      // #endregion
-
       if (pendingUpserts.length > 0) {
         // جميع الجداول في localStorage ستستخدم هيكل id + value المشترك
         const cleanUpserts = pendingUpserts.map(item => {
@@ -963,12 +1088,7 @@ class SyncManager {
         });
 
         const { error: upsertError } = await supabase.from(dbTableName).upsert(cleanUpserts);
-        if (upsertError) {
-          // #region agent log
-          fetch('http://127.0.0.1:7421/ingest/baaa0d01-24a0-4303-a164-d2aca3efeaa4',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'8d1c3e'},body:JSON.stringify({sessionId:'8d1c3e',runId:'pre-fix',hypothesisId:'H2',location:'syncManager.js:syncLocalStorageStore:upsert',message:'localStorage upsert failed',data:{tableName,dbTableName,code:upsertError.code||null,msg:String(upsertError.message||upsertError).slice(0,200)},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
-          throw upsertError;
-        }
+        if (upsertError) throw upsertError;
       }
 
       if (pendingDeletes.length > 0 && !isSingleObject) {

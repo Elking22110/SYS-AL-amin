@@ -228,21 +228,26 @@ const ShiftManager = () => {
 
     localStorage.setItem('shifts', JSON.stringify(updatedShifts));
     // إزالة فواتير الوردية النشطة من قائمة المبيعات العامة (الاحتفاظ بغير المكتمل فقط)
+    // بدون soft-delete للسحابة — الفواتير تبقى في السحابة وداخل shift.sales للتقارير على كل الأجهزة
     try {
       const allSales = JSON.parse(localStorage.getItem('sales') || '[]');
       // بعد إنهاء الوردية: نُبقي فقط الفواتير غير المكتملة (مهما كان shiftId)
       const partialOnly = (allSales || []).filter(inv => {
         const hasDown = inv?.downPayment?.enabled;
-        if (!hasDown) return false; // مكتملة تُحذف
+        if (!hasDown) return false; // مكتملة تُحذف محلياً فقط من قائمة الـ POS
         const remaining = (inv.downPayment?.remaining != null)
           ? Number(inv.downPayment.remaining) || 0
           : (Number(inv.total) || 0) - (Number(inv.downPayment?.amount) || 0);
         return remaining > 0; // فقط غير المكتملة
       });
+      window.__bypass_sync_proxy__ = true;
       localStorage.setItem('sales', JSON.stringify(partialOnly));
+      window.__bypass_sync_proxy__ = false;
       try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'sales' } })); } catch (_) { }
       try { publish(EVENTS.INVOICES_CHANGED, { type: 'cleanup_after_shift_end_partial_only' }); } catch (_) { }
-    } catch (_) { }
+    } catch (_) {
+      try { window.__bypass_sync_proxy__ = false; } catch (__) {}
+    }
 
 
     localStorage.removeItem('activeShift');
@@ -263,10 +268,16 @@ const ShiftManager = () => {
     // عرض تقرير الوردية (يجب أن يحدث قبل تصفير المرتجعات لضمان ظهورها)
     showShiftReport(updatedShift);
 
-    // تصفير تقرير المرتجعات بعد عرض التقرير بقليل
+    // تصفير تقرير المرتجعات محلياً فقط — بدون حذف من السحابة (المرتجعات مؤرشفة في shift.returns)
     setTimeout(() => {
-      try { localStorage.setItem('returns', JSON.stringify([])); } catch (_) { }
-      try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'returns' } })); } catch (_) { }
+      try {
+        window.__bypass_sync_proxy__ = true;
+        localStorage.setItem('returns', JSON.stringify([]));
+        window.__bypass_sync_proxy__ = false;
+        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'returns' } }));
+      } catch (_) {
+        try { window.__bypass_sync_proxy__ = false; } catch (__) {}
+      }
     }, 300);
 
     setMessage('تم إنهاء الوردية بنجاح!');
