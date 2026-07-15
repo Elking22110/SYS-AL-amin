@@ -503,7 +503,7 @@ class SyncManager {
             if (record.createdAt !== undefined) { uploadData.created_at = record.createdAt; delete uploadData.createdAt; }
             if (record.lastLogin !== undefined) { uploadData.last_login = record.lastLogin; delete uploadData.lastLogin; }
             delete uploadData.phone;
-            const effUser = uploadData.username || String(record.id);
+            const effUser = uploadData.username || uploadData.name || String(record.id);
             if (!effUser || !uploadData.password) { console.warn('SyncManager: skip user ' + record.id + ': no username/password'); continue; }
             uploadData.username = effUser;
           }
