@@ -185,11 +185,11 @@ const CustomerDetails = () => {
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <h1 className="text-2xl font-bold text-slate-800">{customer.name}</h1>
-                                <span className={\`text-xs font-bold px-3 py-1 rounded-full shadow-sm \${
+                                <span className={`text-xs font-bold px-3 py-1 rounded-full shadow-sm ${
                                     customer.status === 'VIP' ? 'bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900' :
                                     customer.status === 'نشط' ? 'bg-gradient-to-r from-emerald-200 to-green-400 text-emerald-900' :
                                     'bg-gradient-to-r from-slate-200 to-gray-300 text-slate-700'
-                                }\`}>
+                                }`}>
                                     {customer.status || 'عادي'}
                                 </span>
                             </div>
@@ -230,11 +230,11 @@ const CustomerDetails = () => {
                         <h3 className="text-2xl lg:text-3xl font-black text-slate-800 mt-1">{(customer.totalSpent || 0).toLocaleString('en-US')} ج.م</h3>
                     </div>
                     
-                    <div className={\`bg-white bg-opacity-90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl flex flex-col items-center justify-center relative overflow-hidden group \${(customer.debt || 0) > 0 ? 'ring-2 ring-red-400/50' : ''}\`}>
+                    <div className={`bg-white bg-opacity-90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl flex flex-col items-center justify-center relative overflow-hidden group ${(customer.debt || 0) > 0 ? 'ring-2 ring-red-400/50' : ''}`}>
                         <div className="absolute inset-0 bg-red-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
-                        <DollarSign className={\`h-10 w-10 mb-2 filter drop-shadow-sm \${(customer.debt || 0) > 0 ? 'text-red-500' : 'text-slate-400'}\`} />
+                        <DollarSign className={`h-10 w-10 mb-2 filter drop-shadow-sm ${(customer.debt || 0) > 0 ? 'text-red-500' : 'text-slate-400'}`} />
                         <p className="text-sm text-slate-500 font-bold">إجمالي المديونية (المتبقي)</p>
-                        <h3 className={\`text-2xl lg:text-3xl font-black mt-1 \${(customer.debt || 0) > 0 ? 'text-red-600' : 'text-slate-800'}\`}>{(customer.debt || 0).toLocaleString('en-US')} ج.م</h3>
+                        <h3 className={`text-2xl lg:text-3xl font-black mt-1 ${(customer.debt || 0) > 0 ? 'text-red-600' : 'text-slate-800'}`}>{(customer.debt || 0).toLocaleString('en-US')} ج.م</h3>
                     </div>
                     
                     <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl flex flex-col items-center justify-center relative overflow-hidden group">
@@ -286,11 +286,11 @@ const CustomerDetails = () => {
                                                     )}
                                                 </td>
                                                 <td className="px-6 py-4 text-slate-700 text-sm">
-                                                    <span className={\`text-xs font-bold px-2 py-1 rounded \${
+                                                    <span className={`text-xs font-bold px-2 py-1 rounded ${
                                                         inv.paymentStatus === 'complete' ? 'bg-emerald-100 text-emerald-700' :
                                                         inv.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
                                                         'bg-red-100 text-red-700'
-                                                    }\`}>
+                                                    }`}>
                                                         {inv.paymentStatus === 'complete' ? 'مكتمل' : inv.paymentStatus === 'partial' ? 'جزئي' : 'معلق'}
                                                     </span>
                                                 </td>
