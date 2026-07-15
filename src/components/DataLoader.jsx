@@ -377,6 +377,34 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // MIGRATION: Mark existing IndexedDB records without 'synced' status as 'pending'
+        // ----------------------------------------------------
+        const dbStatusMigrationDone = localStorage.getItem('db_status_sync_migration_v2') === 'true';
+        if (!dbStatusMigrationDone) {
+          console.log('DataLoader: Running database status migration to mark unsynced items as pending...');
+          const STORES_TO_MIGRATE = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
+          for (const storeName of STORES_TO_MIGRATE) {
+            try {
+              const allItems = await databaseManager.getAll(storeName);
+              for (const item of allItems) {
+                if (item && item.sync_status !== 'synced') {
+                  const updatedItem = { ...item };
+                  updatedItem.sync_status = 'pending';
+                  if (!updatedItem.updated_at) {
+                    updatedItem.updated_at = new Date().toISOString();
+                  }
+                  await databaseManager.update(storeName, updatedItem);
+                }
+              }
+            } catch (err) {
+              console.error(`DataLoader: Status migration failed for ${storeName}:`, err);
+            }
+          }
+          localStorage.setItem('db_status_sync_migration_v2', 'true');
+        }
+        // ----------------------------------------------------
+
         setLoadingMessage('جاري التحقق من البيانات...');
         
         // التحقق من صحة البيانات
