@@ -796,9 +796,14 @@ class SyncManager {
       const syncedRecords = localRecords.filter(r => r && r.sync_status === 'synced');
       let lastLocalUpdate = new Date(0).toISOString();
       if (syncedRecords.length > 0) {
-        const times = syncedRecords.map(r => new Date(r.updated_at || 0).getTime());
+        const times = syncedRecords.map(r => {
+          const t = new Date(r.updated_at || 0).getTime();
+          return isNaN(t) ? 0 : t;
+        });
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
+      
+      console.log(`🔍 [SyncManager] جدول: ${storeName} | السجلات المحلية: ${localRecords.length} | المتزامنة: ${syncedRecords.length} | آخر تزامن: ${lastLocalUpdate}`);
 
       let cloudUpdates = [];
       let hasMore = true;
