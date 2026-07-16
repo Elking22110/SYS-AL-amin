@@ -1591,7 +1591,6 @@ const Products = () => {
             <table className="w-full">
               <thead className="bg-white bg-opacity-10">
                 <tr>
-                  <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">الصورة</th>
                   <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">المنتج</th>
                   <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">السعر</th>
                   <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">المخزون</th>
@@ -1602,85 +1601,13 @@ const Products = () => {
               <tbody className="divide-y divide-white divide-opacity-10">
                 {selectedCategory === '' && (
                   <tr>
-                    <td colSpan="6" className="px-6 py-8 text-center text-blue-300 text-sm">
+                    <td colSpan="5" className="px-6 py-8 text-center text-blue-300 text-sm">
                       اختر فئة من الفلترة لعرض المنتجات
                     </td>
                   </tr>
                 )}
                 {displayedProducts.map((product, index) => (
                   <tr key={product.id} className="hover:bg-white hover:bg-opacity-5 transition-all duration-300">
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                      <div className="flex items-center justify-center">
-                        <div className="relative group">
-                          <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden border-2 border-slate-400 hover:border-blue-500 transition-colors duration-300">
-                            {productImages[product.id] ? (
-                              <img
-                                src={productImages[product.id]}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                                onClick={() => openImageModal(product.id)}
-                              />
-                            ) : (
-                              <img
-                                src={ImageManager.getDefaultImage(product.category)}
-                                alt={product.name}
-                                className="w-full h-full object-cover"
-                                onClick={() => openImageModal(product.id)}
-                              />
-                            )}
-                          </div>
-                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 rounded-lg md:rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
-                            <div className="flex space-x-1">
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  document.getElementById(`image-upload-${product.id}`).click();
-                                }}
-                                className="p-1 bg-blue-500 rounded-full hover:bg-blue-600 transition-colors duration-300 min-w-[24px] min-h-[24px] cursor-pointer"
-                                title="رفع صورة"
-                                style={{
-                                  pointerEvents: 'auto',
-                                  zIndex: 10,
-                                  position: 'relative'
-                                }}
-                              >
-                                <Camera className="h-3 w-3 text-slate-800" />
-                              </button>
-                              {productImages[product.id] && (
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleImageDelete(product.id);
-                                  }}
-                                  className="p-1 bg-red-500 rounded-full hover:bg-red-600 transition-colors duration-300 min-w-[24px] min-h-[24px] cursor-pointer"
-                                  title="حذف الصورة"
-                                  style={{
-                                    pointerEvents: 'auto',
-                                    zIndex: 10,
-                                    position: 'relative'
-                                  }}
-                                >
-                                  <X className="h-3 w-3 text-slate-800" />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <input
-                            id={`image-upload-${product.id}`}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              if (e.target.files[0]) {
-                                handleImageUpload(product.id, e.target.files[0]);
-                              }
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                           <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
                             <div className="flex items-center">

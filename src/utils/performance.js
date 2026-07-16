@@ -190,35 +190,53 @@ class PerformanceManager {
   // إنشاء صورة محسنة
   createOptimizedImage(src) {
     return new Promise((resolve) => {
+      // إذا كانت الصورة بصيغة base64 بالفعل، لا داعي لمحاولة تحسينها وتفادي الأخطاء
+      if (src.startsWith('data:')) {
+        resolve(src);
+        return;
+      }
+
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       const img = new Image();
 
       img.onload = () => {
-        // حساب الأبعاد المحسنة
-        const maxWidth = 800;
-        const maxHeight = 600;
-        
-        let { width, height } = img;
-        
-        if (width > maxWidth || height > maxHeight) {
-          const ratio = Math.min(maxWidth / width, maxHeight / height);
-          width *= ratio;
-          height *= ratio;
+        try {
+          // حساب الأبعاد المحسنة
+          const maxWidth = 800;
+          const maxHeight = 600;
+          
+          let { width, height } = img;
+          
+          if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width *= ratio;
+            height *= ratio;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          // رسم الصورة المحسنة
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          // تحويل إلى base64 مع جودة محسنة
+          const optimizedSrc = canvas.toDataURL('image/jpeg', 0.8);
+          resolve(optimizedSrc);
+        } catch (e) {
+          // إذا فشل الرسم بسبب CORS أو غيره، نرجع الصورة الأصلية بأمان بدون إطلاق خطأ
+          console.warn('[PerformanceManager] Failed to optimize image (CORS/Tainting):', src, e);
+          resolve(src);
         }
-
-        canvas.width = width;
-        canvas.height = height;
-
-        // رسم الصورة المحسنة
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // تحويل إلى base64 مع جودة محسنة
-        const optimizedSrc = canvas.toDataURL('image/jpeg', 0.8);
-        resolve(optimizedSrc);
       };
 
       img.onerror = () => resolve(src);
+      
+      // تعيين CORS لتجنب تلوث الكانفاس (Tainted Canvas) عند تحميل صور من Supabase أو نطاق خارجي
+      if (src.startsWith('http') && !src.startsWith(window.location.origin)) {
+        img.crossOrigin = 'anonymous';
+      }
+      
       img.src = src;
     });
   }
