@@ -807,7 +807,19 @@ class SyncManager {
 
       let cloudUpdates = [];
       let hasMore = true;
+      
+      // إضافة 1 مللي ثانية لتجنب مشاكل دقة الميكروثانية (Microsecond Precision) في PostgreSQL
+      // حيث يدعم المتصفح الملي ثانية فقط بينما تدعم السحابة الميكروثانية مما يسبب تحميل نفس السجلات مجدداً
       let lastFetchedTime = lastLocalUpdate;
+      if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
+        try {
+          const ms = new Date(lastLocalUpdate).getTime();
+          if (!isNaN(ms)) {
+            lastFetchedTime = new Date(ms + 1).toISOString();
+          }
+        } catch (_) {}
+      }
+
       const pageSize = 1000;
 
       while (hasMore) {

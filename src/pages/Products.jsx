@@ -1267,13 +1267,13 @@ const Products = () => {
     // الاشتراك في أحداث تغيير المنتجات — تحديث فوري للصفحة بدون انتظار
     const unsubscribe = subscribe(EVENTS.PRODUCTS_CHANGED, (payload) => {
       console.log('📨 استقبال حدث تغيير المنتجات (تحديث فوري):', payload);
-      try { window.location.reload(); } catch (_) { reloadProducts(); }
+      reloadProducts();
     });
 
     // الاشتراك في أحداث تغيير الفئات — تحديث فوري للصفحة بدون انتظار
     const unsubscribeCategories = subscribe(EVENTS.CATEGORIES_CHANGED, (payload) => {
       console.log('📨 استقبال حدث تغيير الفئات (تحديث فوري):', payload);
-      try { window.location.reload(); } catch (_) { reloadCategories(); }
+      reloadCategories();
     });
 
     // الاشتراك في أحداث استيراد البيانات
