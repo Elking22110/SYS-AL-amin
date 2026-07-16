@@ -1324,13 +1324,13 @@ const Reports = () => {
                           </td>
                           <td className="px-6 py-4 text-blue-600 font-extrabold text-sm">{inv.total.toLocaleString('en-US')} ج.م</td>
                           <td className="px-6 py-4">
-                            <div className="flex gap-2 justify-center">
+                            <div className="flex gap-2 justify-center items-center">
                               {/* زر فتح وتعديل الفاتورة */}
                               <button
                                 onClick={() => { soundManager.play('openWindow'); setSelectedInvoice(inv); setShowInvoiceModal(true); }}
-                                className="px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-1"
+                                className="px-4 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-sm font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
                               >
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-5 w-5" />
                                 عرض وتعديل
                               </button>
 
@@ -1338,17 +1338,17 @@ const Reports = () => {
                               {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) ? (
                                 <button
                                   onClick={() => handlePayRemaining(inv.id)}
-                                  className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 cursor-pointer flex items-center gap-1"
+                                  className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold hover:bg-green-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
                                 >
-                                  <Banknote className="h-4 w-4" />
+                                  <Banknote className="h-5 w-5" />
                                   سداد المتبقي
                                 </button>
                               ) : (
                                 <button
-                                  className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold invisible pointer-events-none flex items-center gap-1"
+                                  className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold invisible pointer-events-none flex items-center gap-2"
                                   aria-hidden="true"
                                 >
-                                  <Banknote className="h-4 w-4" />
+                                  <Banknote className="h-5 w-5" />
                                   سداد المتبقي
                                 </button>
                               )}
@@ -1356,19 +1356,19 @@ const Reports = () => {
                               {/* زر الطباعة */}
                               <button
                                 onClick={() => reprintInvoice(inv)}
-                                className="p-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer"
+                                className="p-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
                                 title="طباعة الفاتورة"
                               >
-                                <Printer className="h-4 w-4" />
+                                <Printer className="h-5 w-5" />
                               </button>
 
                               {/* زر الحذف */}
                               <button
                                 onClick={() => handleDeleteInvoice(inv.id)}
-                                className="p-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 cursor-pointer"
+                                className="p-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
                                 title="حذف الفاتورة"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-5 w-5" />
                               </button>
                             </div>
                           </td>
@@ -1630,10 +1630,10 @@ const Reports = () => {
                                 <td className="px-4 py-3 text-center">
                                 <button
                                   onClick={() => { soundManager.play('delete'); deleteItemFromInvoice(selectedInvoice.id, idx); }}
-                                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg cursor-pointer"
+                                  className="p-2.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center hover:bg-red-100 transition-all duration-200"
                                   title="حذف هذا البند بالكامل"
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-5 w-5" />
                                 </button>
                               </td>
                               </tr>
@@ -1704,17 +1704,17 @@ const Reports = () => {
             <div className="p-4 md:p-6 border-t border-slate-200 bg-slate-50 flex flex-wrap gap-2 justify-end shrink-0">
               <button
                 onClick={() => reprintInvoice(selectedInvoice)}
-                className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-sm hover:bg-blue-700 cursor-pointer flex items-center gap-2"
+                className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-base shadow-sm hover:bg-blue-700 cursor-pointer flex items-center gap-2 transition-all duration-200"
               >
-                <Printer className="h-4 w-4" />
+                <Printer className="h-5 w-5" />
                 طباعة الفاتورة
               </button>
 
               <button
                 onClick={() => handleDeleteInvoice(selectedInvoice.id)}
-                className="px-5 py-2.5 bg-red-600 text-white rounded-xl font-bold text-sm shadow-sm hover:bg-red-700 cursor-pointer flex items-center gap-2"
+                className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold text-base shadow-sm hover:bg-red-700 cursor-pointer flex items-center gap-2 transition-all duration-200"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-5 w-5" />
                 حذف الفاتورة بالكامل
               </button>
 

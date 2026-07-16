@@ -1637,14 +1637,14 @@ const Products = () => {
                             soundManager.play('update');
                             handleEditProduct(product);
                           }}
-                          className="p-2 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-blue-300 hover:text-blue-200 min-w-[40px] min-h-[40px] cursor-pointer"
+                          className="p-3 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-blue-300 hover:text-blue-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
                           style={{
                             pointerEvents: 'auto',
                             zIndex: 10,
                             position: 'relative'
                           }}
                         >
-                          <Edit className="h-4 w-4 md:h-5 md:w-5" />
+                          <Edit className="h-5 w-5 md:h-6 md:w-6" />
                         </button>
                         <button
                           onClick={(e) => {
@@ -1653,14 +1653,14 @@ const Products = () => {
                             soundManager.play('delete');
                             handleDeleteProduct(product.id);
                           }}
-                          className="p-2 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-red-300 hover:text-red-200 min-w-[40px] min-h-[40px] cursor-pointer"
+                          className="p-3 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-red-300 hover:text-red-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
                           style={{
                             pointerEvents: 'auto',
                             zIndex: 10,
                             position: 'relative'
                           }}
                         >
-                          <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+                          <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
                         </button>
                       </div>
                     </td>

@@ -687,7 +687,15 @@ class SyncManager {
             if (record.lastLogin !== undefined) { uploadData.last_login = record.lastLogin; delete uploadData.lastLogin; }
             delete uploadData.phone;
             const effUser = uploadData.username || uploadData.name || String(record.id);
-            if (!effUser || !uploadData.password) { console.warn('SyncManager: skip user ' + record.id + ': no username/password'); continue; }
+            if (!effUser || !uploadData.password) {
+              // مستخدم نظام (مثل admin) بدون كلمة مرور - نعلّمه كـ synced محلياً لمنع تكرار المحاولة في كل دورة
+              try {
+                const sysUser = { ...record, sync_status: 'synced' };
+                const tx = databaseManager.db.transaction(['users'], 'readwrite');
+                tx.objectStore('users').put(sysUser);
+              } catch (_) {}
+              continue;
+            }
             uploadData.username = effUser;
           }
 
@@ -803,7 +811,9 @@ class SyncManager {
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
       
-      console.log(`🔍 [SyncManager] جدول: ${storeName} | السجلات المحلية: ${localRecords.length} | المتزامنة: ${syncedRecords.length} | آخر تزامن: ${lastLocalUpdate}`);
+      if (syncedRecords.length < localRecords.length || lastLocalUpdate === new Date(0).toISOString()) {
+        console.log(`🔍 [SyncManager] جدول: ${storeName} | السجلات المحلية: ${localRecords.length} | المتزامنة: ${syncedRecords.length} | آخر تزامن: ${lastLocalUpdate}`);
+      }
 
       let cloudUpdates = [];
       let hasMore = true;

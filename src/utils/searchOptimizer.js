@@ -67,36 +67,58 @@ class SearchOptimizer {
     }
 
     const searchTerm = query.toLowerCase().trim();
-    const words = searchTerm.split(/\s+/);
+    const words = searchTerm.split(/\s+/).filter(w => w.length >= 2);
     
+    if (words.length === 0) {
+      return data;
+    }
+
     // البحث في الكاش أولاً
     const cacheKey = `${searchTerm}_${data.length}`;
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey);
     }
 
-    let results = new Set();
+    let results = null;
     
     // البحث باستخدام الفهرس
     if (this.index.size > 0) {
-      words.forEach(word => {
-        if (this.index.has(word)) {
-          this.index.get(word).forEach(index => {
-            results.add(index);
-          });
-        }
-      });
-    } else {
-      // البحث المباشر إذا لم يكن هناك فهرس
-      data.forEach((item, index) => {
-        const matches = fields.some(field => {
-          if (item[field]) {
-            return item[field].toString().toLowerCase().includes(searchTerm);
+      for (const word of words) {
+        const wordMatches = new Set();
+        
+        // دعم البحث الجزئي بالكلمات (مثل "كوع" يطابق "كوع-سيفون" أو "كوعي")
+        for (const [key, indexSet] of this.index.entries()) {
+          if (key.includes(word)) {
+            for (const idx of indexSet) {
+              wordMatches.add(idx);
+            }
           }
-          return false;
+        }
+        
+        if (results === null) {
+          results = wordMatches;
+        } else {
+          // تقاطع المجموعات (AND logic): يجب أن يطابق المنتج جميع الكلمات المدخلة
+          results = new Set([...results].filter(idx => wordMatches.has(idx)));
+        }
+      }
+      if (results === null) {
+        results = new Set();
+      }
+    } else {
+      // البحث المباشر إذا لم يكن هناك فهرس (دعم منطق AND أيضاً على مستوى الحقول)
+      results = new Set();
+      data.forEach((item, index) => {
+        const matchesAll = words.every(word => {
+          return fields.some(field => {
+            if (item[field]) {
+              return item[field].toString().toLowerCase().includes(word);
+            }
+            return false;
+          });
         });
         
-        if (matches) {
+        if (matchesAll) {
           results.add(index);
         }
       });

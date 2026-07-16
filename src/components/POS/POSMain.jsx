@@ -11,6 +11,7 @@ import storageOptimizer from '../../utils/storageOptimizer.js';
 import { getLocalDateString, formatDateTime, getCurrentDate, formatDateToDDMMYYYY } from '../../utils/dateUtils.js';
 import safeMath from '../../utils/safeMath';
 import { getNextInvoiceId } from '../../utils/sequence';
+import thermalPrinterManager from '../../utils/thermalPrinter.js';
 
 const POSMain = () => {
   const { user, logActivity } = useAuth();
@@ -628,7 +629,6 @@ const POSMain = () => {
                     ? 'انستا باي'
                     : 'غير محدد')
             };
-            const { default: thermalPrinterManager } = await import('../../utils/thermalPrinter.js');
             const ok = await thermalPrinterManager.printReceipt(receiptData);
             if (ok) {
               notifySuccess('تمت الطباعة الحرارية', 'تم إرسال أمر القطع للطابعة');

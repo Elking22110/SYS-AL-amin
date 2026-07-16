@@ -79,9 +79,8 @@ export function getNextInvoiceId() {
   } catch (_) {}
 
   if (activeShiftId && counters.lastShiftId !== activeShiftId) {
-    // بدء وردية جديدة: تصفير عدّاد الفواتير
+    // بدء وردية جديدة: تسجيل معرف الوردية فقط دون تصفير العداد لضمان تفرد أرقام الفواتير ومنع تداخلها
     counters.lastShiftId = activeShiftId;
-    counters.invoice = 1;
   }
 
   const idNum = counters.invoice++;

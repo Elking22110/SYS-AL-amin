@@ -159,7 +159,7 @@ const Customers = () => {
         ...editingCustomer,
         ...newCustomer
       };
-      const updatedCustomers = customers.map(c => c.id === editingCustomer.id ? updatedCustomer : c);
+      const updatedCustomers = customers.map(c => String(c.id) === String(editingCustomer.id) ? updatedCustomer : c);
       setCustomers(updatedCustomers);
 
       // حفظ العملاء في localStorage
@@ -201,7 +201,7 @@ const Customers = () => {
         debt: newDebt
       };
 
-      const updatedCustomers = customers.map(c => c.id === settlingCustomer.id ? updatedCustomer : c);
+      const updatedCustomers = customers.map(c => String(c.id) === String(settlingCustomer.id) ? updatedCustomer : c);
       setCustomers(updatedCustomers);
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
@@ -240,7 +240,7 @@ const Customers = () => {
 
   const handleDeleteCustomer = (id) => {
     if (window.confirm('هل أنت متأكد من حذف هذا العميل؟')) {
-      const updatedCustomers = customers.filter(c => c.id !== id);
+      const updatedCustomers = customers.filter(c => String(c.id) !== String(id));
       setCustomers(updatedCustomers);
 
       // حفظ العملاء في localStorage
@@ -560,27 +560,27 @@ const Customers = () => {
                       </div>
                     </td>
                     <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
-                      <div className="flex space-x-2 space-x-reverse">
+                      <div className="flex space-x-2 space-x-reverse items-center">
                         <button
                           onClick={() => { soundManager.play('openWindow'); navigate(`/customers/${customer.id || customer.phone}`); }}
-                          className="text-emerald-600 hover:text-emerald-500 transition-colors p-2 hover:bg-emerald-500 hover:bg-opacity-20 rounded-lg"
+                          className="text-emerald-600 hover:text-emerald-500 transition-colors p-2.5 hover:bg-emerald-500 hover:bg-opacity-20 rounded-xl min-w-[42px] min-h-[42px] flex items-center justify-center cursor-pointer"
                           title="سجل العميل"
                         >
-                          <ClipboardList className="h-4 w-4" />
+                          <ClipboardList className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => { soundManager.play('update'); handleEditCustomer(customer); }}
-                          className="text-blue-400 hover:text-blue-300 transition-colors p-2 hover:bg-blue-500 hover:bg-opacity-20 rounded-lg"
+                          className="text-blue-400 hover:text-blue-300 transition-colors p-2.5 hover:bg-blue-500 hover:bg-opacity-20 rounded-xl min-w-[42px] min-h-[42px] flex items-center justify-center cursor-pointer"
                           title="تعديل العميل"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-5 w-5" />
                         </button>
                         <button
                           onClick={() => { soundManager.play('delete'); handleDeleteCustomer(customer.id); }}
-                          className="text-red-400 hover:text-red-300 transition-colors p-2 hover:bg-red-500 hover:bg-opacity-20 rounded-lg"
+                          className="text-red-400 hover:text-red-300 transition-colors p-2.5 hover:bg-red-500 hover:bg-opacity-20 rounded-xl min-w-[42px] min-h-[42px] flex items-center justify-center cursor-pointer"
                           title="حذف العميل"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </div>
                     </td>

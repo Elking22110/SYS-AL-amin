@@ -297,14 +297,13 @@ const CustomerDetails = () => {
                                                 <td className="px-6 py-4 text-blue-600 font-extrabold text-sm">{(inv.total || 0).toLocaleString('en-US')} ج.م</td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex gap-2 justify-center">
-                                                        {/* زر فتح وتعديل الفاتورة */}
                                                         <button
                                                             onClick={() => {
                                                                 navigate('/reports', { state: { openInvoiceId: inv.id } });
                                                             }}
-                                                            className="px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg text-xs font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-1 transition-colors"
+                                                            className="px-4 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-sm font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
                                                         >
-                                                            <Eye className="h-4 w-4" />
+                                                            <Eye className="h-5 w-5" />
                                                             عرض وتعديل
                                                         </button>
 
@@ -314,18 +313,18 @@ const CustomerDetails = () => {
                                                                 onClick={() => {
                                                                     navigate('/reports', { state: { settleInvoiceId: inv.id } });
                                                                 }}
-                                                                className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold hover:bg-green-100 cursor-pointer flex items-center gap-1 transition-colors"
+                                                                className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold hover:bg-green-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
                                                                 title="سداد المتبقي من الفاتورة"
                                                             >
-                                                                <Banknote className="h-4 w-4" />
+                                                                <Banknote className="h-5 w-5" />
                                                                 سداد المتبقي
                                                             </button>
                                                         ) : (
                                                             <button
-                                                                className="px-3 py-1.5 bg-green-50 text-green-600 border border-green-200 rounded-lg text-xs font-bold invisible pointer-events-none flex items-center gap-1"
+                                                                className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold invisible pointer-events-none flex items-center gap-2"
                                                                 aria-hidden="true"
                                                             >
-                                                                <Banknote className="h-4 w-4" />
+                                                                <Banknote className="h-5 w-5" />
                                                                 سداد المتبقي
                                                             </button>
                                                         )}
@@ -333,10 +332,10 @@ const CustomerDetails = () => {
                                                         {/* زر الطباعة */}
                                                         <button
                                                             onClick={() => thermalPrinter.printInvoice(inv)}
-                                                            className="p-2 bg-slate-50 text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+                                                            className="p-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
                                                             title="طباعة الفاتورة"
                                                         >
-                                                            <Printer className="h-4 w-4" />
+                                                            <Printer className="h-5 w-5" />
                                                         </button>
 
                                                         {/* زر الحذف */}
@@ -344,10 +343,10 @@ const CustomerDetails = () => {
                                                             onClick={() => {
                                                                 navigate('/reports', { state: { deleteInvoiceId: inv.id } });
                                                             }}
-                                                            className="p-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 cursor-pointer transition-colors"
+                                                            className="p-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
                                                             title="حذف الفاتورة"
                                                         >
-                                                            <Trash2 className="h-4 w-4" />
+                                                            <Trash2 className="h-5 w-5" />
                                                         </button>
                                                     </div>
                                                 </td>

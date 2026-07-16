@@ -19,6 +19,7 @@ import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import { formatDate, formatTimeOnly, formatDateOnly, formatDateTime, getCurrentDate } from '../utils/dateUtils.js';
 import { getNextShiftId } from '../utils/sequence.js';
 import safeMath from '../utils/safeMath.js';
+import databaseManager from '../utils/database.js';
 
 const ShiftManager = () => {
   const [shifts, setShifts] = useState([]);
@@ -156,7 +157,6 @@ const ShiftManager = () => {
 
     // حفظ الوردية في قاعدة البيانات أيضاً للحماية من فقدان البيانات
     try {
-      const databaseManager = (await import('../utils/database')).default;
       await databaseManager.add('shifts', newShift);
       console.log('✅ تم حفظ الوردية في قاعدة البيانات');
     } catch (error) {
@@ -1196,7 +1196,6 @@ const ShiftManager = () => {
 
       // حذف من قاعدة البيانات أيضاً
       try {
-        const databaseManager = (await import('../utils/database')).default;
         await databaseManager.delete('shifts', shiftId);
         console.log('✅ تم حذف الوردية من قاعدة البيانات');
       } catch (error) {
