@@ -1461,6 +1461,22 @@ const Reports = () => {
                           </div>
                         </div>
                       )}
+                      {selectedInvoice.paymentMethod === 'deferred' && (
+                        <div className="pt-2 border-t border-slate-200 space-y-1">
+                          <div className="flex justify-between text-sm text-yellow-800">
+                            <span>إجمالي المبالغ المسددة:</span>
+                            <span className="font-bold">
+                              {((selectedInvoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (selectedInvoice.settlement ? Number(selectedInvoice.settlement.amount) || 0 : 0)).toFixed(2)} ج.م
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm text-red-600">
+                            <span>المبلغ المتبقي المستحق:</span>
+                            <span className="font-bold">
+                              {Math.max(0, safeMath.subtract(selectedInvoice.total, (selectedInvoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (selectedInvoice.settlement ? Number(selectedInvoice.settlement.amount) || 0 : 0))).toFixed(2)} ج.م
+                            </span>
+                          </div>
+                        </div>
+                      )}
                       {(selectedInvoice.settlements || (selectedInvoice.settlement ? [selectedInvoice.settlement] : [])).length > 0 && (
                         <div className="pt-2 border-t border-slate-200 space-y-1">
                           <h5 className="text-xs font-bold text-slate-600 mb-1 border-b pb-1">سجل السداد:</h5>

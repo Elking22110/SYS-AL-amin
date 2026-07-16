@@ -204,7 +204,7 @@ const Dashboard = () => {
               <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><DollarSign className="h-5 w-5" /></div>
             </div>
             <p className="text-2xl font-extrabold text-slate-800">{stats.totalSales.toLocaleString('en-US')} ج.م</p>
-            <p className="text-xs text-slate-400">إجمالي المبالغ المستلمة بالوردية</p>
+            <p className="text-xs text-slate-400">إجمالي قيمة الفواتير المصدرة بالوردية</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-right space-y-2">

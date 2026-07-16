@@ -409,8 +409,20 @@ const ShiftManager = () => {
           paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, receivedAmount);
           paymentMethods[paymentMethod].remaining = safeMath.add(paymentMethods[paymentMethod].remaining, remainingAmount);
           paymentMethods[paymentMethod].count++;
+        } else if (sale.paymentMethod === 'deferred' || paymentMethod === 'آجل') {
+          // فاتورة آجلة بالكامل بدون عربون
+          const receivedAmount = 0;
+          const remainingAmount = sale.total;
+
+          totalRemaining = safeMath.add(totalRemaining, remainingAmount);
+          partialInvoices++; // تعتبر فاتورة آجلة/جزئية
+
+          // تقسيم حسب طريقة الدفع
+          paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, receivedAmount);
+          paymentMethods[paymentMethod].remaining = safeMath.add(paymentMethods[paymentMethod].remaining, remainingAmount);
+          paymentMethods[paymentMethod].count++;
         } else {
-          // فاتورة مكتملة
+          // فاتورة مكتملة (نقدي، انستا باي، محفظة...)
           totalReceived = safeMath.add(totalReceived, sale.total);
           completeInvoices++;
 
@@ -864,24 +876,32 @@ const ShiftManager = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  ${(shift.sales || []).map(sale => `
-                    <tr>
-                      <td><span class="highlight">#${sale.id}</span></td>
-                      <td>${sale.customer.name}</td>
-                      <td><strong>${(sale.total || 0).toFixed(2)} جنيه</strong></td>
-                      <td><strong>${sale.downPayment && sale.downPayment.enabled ? (sale.downPayment.amount || 0).toFixed(2) : (sale.total || 0).toFixed(2)} جنيه</strong></td>
-                      <td><strong>${sale.downPayment && sale.downPayment.enabled ? (sale.downPayment.remaining || ((sale.total || 0) - (sale.downPayment.amount || 0))).toFixed(2) : '0.00'} جنيه</strong></td>
-                      <td>
-                        <span class="status-badge ${sale.type === 'refund' ? 'status-refund' :
-          sale.downPayment && sale.downPayment.enabled ? 'status-partial' : 'status-complete'
-        }">
-                          ${sale.type === 'refund' ? '🔄 مرتجع' :
-          sale.downPayment && sale.downPayment.enabled ? '⏳ عربون' : '✅ مكتمل'}
-                        </span>
-                      </td>
-                      <td>${formatDateTime(sale.timestamp)}</td>
-                    </tr>
-                  `).join('')}
+                  ${(shift.sales || []).map(sale => {
+                    const isDeferred = sale.paymentMethod === 'deferred';
+                    const hasDown = sale.downPayment && sale.downPayment.enabled;
+                    
+                    const recVal = hasDown ? (sale.downPayment.amount || 0) : (isDeferred ? 0 : (sale.total || 0));
+                    const remVal = hasDown ? (sale.downPayment.remaining || ((sale.total || 0) - (sale.downPayment.amount || 0))) : (isDeferred ? (sale.total || 0) : 0);
+                    
+                    return `
+                      <tr>
+                        <td><span class="highlight">#${sale.id}</span></td>
+                        <td>${sale.customer?.name || 'عميل نقدي'}</td>
+                        <td><strong>${(sale.total || 0).toFixed(2)} جنيه</strong></td>
+                        <td><strong>${recVal.toFixed(2)} جنيه</strong></td>
+                        <td><strong>${remVal.toFixed(2)} جنيه</strong></td>
+                        <td>
+                          <span class="status-badge ${sale.type === 'refund' ? 'status-refund' :
+                            hasDown ? 'status-partial' : (isDeferred ? 'status-partial' : 'status-complete')
+                          }">
+                            ${sale.type === 'refund' ? '🔄 مرتجع' :
+                              hasDown ? '⏳ عربون' : (isDeferred ? '⏳ آجل' : '✅ مكتمل')}
+                          </span>
+                        </td>
+                        <td>${formatDateTime(sale.timestamp)}</td>
+                      </tr>
+                    `;
+                  }).join('')}
                 </tbody>
               </table>
             </div>
