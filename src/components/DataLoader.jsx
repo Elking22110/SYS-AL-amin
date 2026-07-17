@@ -587,18 +587,21 @@ const DataLoader = ({ children }) => {
         // PATCH text: Enforce UNIQUE company codes (e.g. 351050001) for BR, Smart, and Kessel products
         // ويقوم بإزالة الأكواد المكررة ومزامنتها تلقائياً مع قاعدة بيانات Supabase السحابية
         // ----------------------------------------------------
-        const companyCodesPatchv39Done = localStorage.getItem('patch_company_codes_v39_all') === 'true';
-        if (!companyCodesPatchv39Done) {
+        const companyCodesPatchv40Done = localStorage.getItem('patch_company_codes_v40_all') === 'true';
+        if (!companyCodesPatchv40Done) {
           try {
-            console.log('[DataLoader] Patch v39: Enforcing unique company codes into BR/Smart/Kessel products with sync triggers...');
-            setLoadingMessage('جاري تنظيف ومزامنة أكواد الشركة الفريدة بمنتجات BR، سمارت، وكيسيل...');
+            console.log('[DataLoader] Patch v40: Enforcing unique company codes and removing duplicates in BR/Smart/Kessel products...');
+            setLoadingMessage('جاري تنظيف ومزامنة أكواد الشركة والمنتجات المكررة...');
             const seedResp = await fetch('/products_seed.json?t=' + Date.now());
             if (seedResp.ok) {
               const seedData = await seedResp.json();
               const seedProducts = seedData.products || [];
               
+              // 1. بناء خريطة الأكواد
               const codeMap = new Map();
+              const seedIds = new Set();
               for (const sp of seedProducts) {
+                seedIds.add(String(sp.id));
                 if (sp.barcode || sp.supplierCode) {
                   codeMap.set(String(sp.id), { 
                     barcode: sp.barcode || null, 
@@ -612,16 +615,28 @@ const DataLoader = ({ children }) => {
               let patchedCount = 0;
               const nowStr = new Date().toISOString();
               
+              // 2. تحديث الأصناف وحذف المكررات الزائدة من IndexedDB
               for (const p of currentProds) {
-                const isTarget = 
+                const pIdStr = String(p.id);
+                
+                // إذا كان الصنف محذوفاً من الـ Seed (لأنه مكرر بالخطأ)
+                const isBRorSmart = 
                   p.mainCategoryId === 'Br' || 
                   p.mainCategoryId === 'اسمارت ابيض' ||
                   p.mainCategoryId === 'كيسيل' ||
-                  (p.name && (p.name.includes('BR') || p.name.includes('سمارت') || p.name.includes('كيسيل') || p.name.includes('كيسل')));
+                  (p.name && (p.name.includes('BR') || p.name.includes('سمارت') || p.name.includes('كيسيل')));
+                  
+                if (isBRorSmart && !seedIds.has(pIdStr)) {
+                  console.log(`[DataLoader] Deleting duplicate product ID: ${p.id} - ${p.name}`);
+                  // حذف الصنف المكرر من IndexedDB
+                  const tx = databaseManager.db.transaction(['products'], 'readwrite');
+                  tx.objectStore('products').delete(p.id);
+                  continue;
+                }
                 
-                if (!isTarget) continue;
+                if (!isBRorSmart) continue;
                 
-                const codes = codeMap.get(String(p.id));
+                const codes = codeMap.get(pIdStr);
                 if (codes !== undefined) {
                   const updated = {
                     ...p,
@@ -634,7 +649,6 @@ const DataLoader = ({ children }) => {
                   await databaseManager.update('products', updated);
                   patchedCount++;
                 } else {
-                  // إذا كان الصنف مكوّداً في السابق بكود مكرر وتم تنظيفه بالـ seed
                   if (p.supplierCode || p.barcode) {
                     const updated = {
                       ...p,
@@ -650,47 +664,57 @@ const DataLoader = ({ children }) => {
                 }
               }
               
-              // Update localStorage products
+              // 3. تحديث localStorage وحذف الأصناف المحذوفة
               const lsProds = JSON.parse(localStorage.getItem('products') || '[]');
-              const updatedLS = lsProds.map(p => {
-                const isTarget = 
-                  p.mainCategoryId === 'Br' || 
-                  p.mainCategoryId === 'اسمارت ابيض' ||
-                  p.mainCategoryId === 'كيسيل' ||
-                  (p.name && (p.name.includes('BR') || p.name.includes('سمارت') || p.name.includes('كيسيل') || p.name.includes('كيسل')));
-                
-                if (!isTarget) return p;
-                
-                const codes = codeMap.get(String(p.id));
-                if (codes !== undefined) {
-                  return { 
-                    ...p, 
-                    barcode: codes.barcode, 
-                    sku: codes.sku,
-                    supplierCode: codes.supplierCode,
-                    sync_status: 'pending',
-                    updated_at: nowStr
-                  };
-                } else {
-                  if (p.supplierCode || p.barcode) {
-                    return {
-                      ...p,
-                      barcode: null,
-                      sku: null,
-                      supplierCode: null,
+              const updatedLS = lsProds
+                .filter(p => {
+                  const isBRorSmart = 
+                    p.mainCategoryId === 'Br' || 
+                    p.mainCategoryId === 'اسمارت ابيض' ||
+                    p.mainCategoryId === 'كيسيل';
+                  if (isBRorSmart && !seedIds.has(String(p.id))) {
+                    return false; // حذف من القائمة
+                  }
+                  return true;
+                })
+                .map(p => {
+                  const isTarget = 
+                    p.mainCategoryId === 'Br' || 
+                    p.mainCategoryId === 'اسمارت ابيض' ||
+                    p.mainCategoryId === 'كيسيل';
+                  
+                  if (!isTarget) return p;
+                  
+                  const codes = codeMap.get(String(p.id));
+                  if (codes !== undefined) {
+                    return { 
+                      ...p, 
+                      barcode: codes.barcode, 
+                      sku: codes.sku,
+                      supplierCode: codes.supplierCode,
                       sync_status: 'pending',
                       updated_at: nowStr
                     };
+                  } else {
+                    if (p.supplierCode || p.barcode) {
+                      return {
+                        ...p,
+                        barcode: null,
+                        sku: null,
+                        supplierCode: null,
+                        sync_status: 'pending',
+                        updated_at: nowStr
+                      };
+                    }
                   }
-                }
-                return p;
-              });
+                  return p;
+                });
               localStorage.setItem('products', JSON.stringify(updatedLS));
-              console.log(`[DataLoader] Patch v39: Enforced unique company codes in ${patchedCount} BR/Smart/Kessel products.`);
+              console.log(`[DataLoader] Patch v40: Enforced unique company codes and removed duplicates in ${patchedCount} BR/Smart/Kessel products.`);
             }
-            localStorage.setItem('patch_company_codes_v39_all', 'true');
+            localStorage.setItem('patch_company_codes_v40_all', 'true');
           } catch (err) {
-            console.error('[DataLoader] Patch v39 failed:', err);
+            console.error('[DataLoader] Patch v40 failed:', err);
           }
         }
         // ----------------------------------------------------

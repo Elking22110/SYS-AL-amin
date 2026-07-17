@@ -1920,15 +1920,6 @@
       "supplierCode": "371099131"
     },
     {
-      "id": 10089,
-      "name": "بكرة تفلون جامبو",
-      "price": 25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٤/٣ بوصة",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
       "id": 10090,
       "name": "عزل سيكا ١٠٧",
       "price": 950,
@@ -3433,18 +3424,6 @@
       "barcode": "351070006",
       "sku": "351070006",
       "supplierCode": "351070006"
-    },
-    {
-      "id": 10218,
-      "name": "م ٢ بوصه بن ١٦ بي ار",
-      "price": 230.5,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331021106",
-      "sku": "331021106",
-      "supplierCode": "331021106"
     },
     {
       "id": 10219,
@@ -20138,60 +20117,6 @@
       "sku": ".947"
     },
     {
-      "id": 171149,
-      "name": "طبة كاب ١/٢",
-      "price": 0,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171150,
-      "name": "كوع لحام ١/٢",
-      "price": 5,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171151,
-      "name": "تى لحام ١/٢",
-      "price": 5,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171152,
-      "name": "كوع لحام مفتوح ١/٢",
-      "price": 6,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171153,
-      "name": "محبس دفن ١/٢",
-      "price": 185,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171154,
-      "name": "محبس بلاكور ١/٢",
-      "price": 50,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
       "id": 171155,
       "name": "جلبة لحام ١/٢",
       "price": 5,
@@ -20210,45 +20135,9 @@
       "minStock": 5
     },
     {
-      "id": 171157,
-      "name": "كوع سن ١/٢",
-      "price": 30,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171158,
-      "name": "تى سن ١/٢",
-      "price": 30,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171159,
-      "name": "جلبة سن خارجي ١/٢",
-      "price": 45,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
       "id": 171160,
       "name": "جلبة سن داخلي ١/٢",
       "price": 30,
-      "mainCategoryId": "قطع اكوا استار",
-      "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171161,
-      "name": "كرنك لحام ١/٢",
-      "price": 10,
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
@@ -21117,126 +21006,9 @@
       "sku": "8"
     },
     {
-      "id": 171248,
-      "name": "محبس زاوية استانلس",
-      "price": 50,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171249,
-      "name": "محبس زاوية p.g",
-      "price": 100,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171250,
-      "name": "محبس زاوية vagner",
-      "price": 90,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171251,
-      "name": "محبس زاوية H.R نحاس",
-      "price": 120,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171252,
-      "name": "محبس زاوية ROVA صغير",
-      "price": 120,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171253,
-      "name": "محبس زاوية p.g plus",
-      "price": 140,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171254,
-      "name": "محبس زاوية ROVA ثقيل",
-      "price": 150,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171255,
-      "name": "محبس زاوية SMART صغير",
-      "price": 105,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171256,
-      "name": "محبس زاوية SMART كبير",
-      "price": 155,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171257,
-      "name": "محبس زاوية SMART بوش",
-      "price": 130,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171258,
-      "name": "محبس زاوية Active اسود",
-      "price": 165,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
       "id": 171259,
       "name": "محبس زاوية ٢ مخرج p.g",
       "price": 240,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171260,
-      "name": "محبس زاوية استانلس MARVEL",
-      "price": 50,
-      "mainCategoryId": "مجموعه حنفيات+نواكل",
-      "subCategoryId": "محبس زاوية",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171261,
-      "name": "محبس زاوية ROVA كبير",
-      "price": 150,
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
@@ -22793,33 +22565,6 @@
       "minStock": 5,
       "barcode": "AL.931",
       "sku": ".931"
-    },
-    {
-      "id": 171412,
-      "name": "وصلة ٣٠ سم تجاري",
-      "price": 20,
-      "mainCategoryId": "وصله متعدده",
-      "subCategoryId": "وصلة مرنة تجاري",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171413,
-      "name": "وصلة ٤٠ سم تجاري",
-      "price": 20,
-      "mainCategoryId": "وصله متعدده",
-      "subCategoryId": "وصلة مرنة تجاري",
-      "stock": 100,
-      "minStock": 5
-    },
-    {
-      "id": 171414,
-      "name": "وصلة ٥٠ سم تجاري",
-      "price": 20,
-      "mainCategoryId": "وصله متعدده",
-      "subCategoryId": "وصلة مرنة تجاري",
-      "stock": 100,
-      "minStock": 5
     },
     {
       "id": 171415,
