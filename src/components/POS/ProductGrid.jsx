@@ -939,6 +939,22 @@ const ProductGrid = ({
                   </div>
                 </div>
 
+                {/* أكواد المنتج */}
+                {(product.supplierCode || product.barcode) && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {product.supplierCode && (
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-600 font-mono border border-blue-200 leading-tight">
+                        🏷 {product.supplierCode}
+                      </span>
+                    )}
+                    {product.barcode && (
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 text-purple-600 font-mono border border-purple-200 leading-tight">
+                        {product.barcode}
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* السعر */}
                 <div className="pt-1 mt-1 border-t border-emerald-100 flex justify-between items-center">
                   <span className="text-slate-400 text-xs font-semibold">السعر</span>

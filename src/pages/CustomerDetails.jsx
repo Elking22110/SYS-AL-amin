@@ -26,6 +26,8 @@ const CustomerDetails = () => {
     const navigate = useNavigate();
     const [customer, setCustomer] = useState(null);
     const [invoices, setInvoices] = useState([]);
+    const [payments, setPayments] = useState([]);
+    const [activeTab, setActiveTab] = useState('invoices'); // 'invoices' | 'payments'
     
     // Settlement Modal state
     const [showSettlementModal, setShowSettlementModal] = useState(false);
@@ -66,9 +68,20 @@ const CustomerDetails = () => {
                 const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
                 const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
                 const historicalSales = shifts.flatMap(shift => shift.sales || []);
+
+                const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
+                const customerPhoneClean = cleanPhone(currentCustomer.phone);
                 
-                // Match by phone since that's how we linked them previously
-                const allInvoices = [...historicalSales, ...activeSales].filter(inv => inv?.customer?.phone === currentCustomer.phone);
+                const allInvoices = [...historicalSales, ...activeSales].filter(inv => {
+                    if (!inv) return false;
+                    const invCustId = inv.customer?.id || inv.customerId || inv.customer_id;
+                    const currentCustId = currentCustomer.id;
+                    if (invCustId && currentCustId && invCustId.toString() === currentCustId.toString()) {
+                        return true;
+                    }
+                    const invPhoneClean = cleanPhone(inv.customer?.phone);
+                    return invPhoneClean === customerPhoneClean && customerPhoneClean !== '';
+                });
                 
                 // Sort by date descending (الأحدث أولاً)
                 allInvoices.sort((a, b) => {
@@ -78,7 +91,131 @@ const CustomerDetails = () => {
                     return (Number(b.id) || 0) - (Number(a.id) || 0);
                 });
                 
-                setInvoices(allInvoices);
+                // Fallback for older invoices that lack paymentStatus
+                const normalizedInvoices = allInvoices.map(inv => {
+                    if (inv.paymentStatus) return inv;
+                    
+                    // Determine status for legacy invoices
+                    let status = 'complete';
+                    const remaining = inv.downPayment?.remaining != null
+                        ? Number(inv.downPayment.remaining)
+                        : (inv.downPayment?.enabled ? safeMath.subtract(inv.total || 0, inv.downPayment.amount || 0) : 0);
+                    
+                    if (inv.paymentMethod === 'deferred' || remaining > 0) {
+                        status = 'partial';
+                    }
+                    return { ...inv, paymentStatus: status };
+                });
+
+                setInvoices(normalizedInvoices);
+
+                // Gather Customer Payments (سجل السداد)
+                const pmtList = [];
+                normalizedInvoices.forEach(inv => {
+                    // 1. Down Payment (عربون الفاتورة)
+                    if (inv.downPayment) {
+                        const dpAmount = parseFloat(inv.downPayment.amount) || 0;
+                        if (dpAmount > 0) {
+                            pmtList.push({
+                                id: `DP-${inv.id}`,
+                                date: inv.timestamp || inv.date,
+                                amount: dpAmount,
+                                method: inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'wallet' ? 'محفظة إلكترونية' : inv.paymentMethod === 'instapay' ? 'انستا باي' : inv.paymentMethod === 'deferred' ? 'آجل' : 'نقدي',
+                                description: `عربون للفاتورة #${inv.id}`,
+                                notes: inv.downPayment.deliveryDate ? `تاريخ التسليم: ${inv.downPayment.deliveryDate}` : ''
+                            });
+                        }
+                    }
+
+                    // 2. Invoice Settlements (تسويات دفعات الفاتورة المتبقية)
+                    if (Array.isArray(inv.settlements)) {
+                        inv.settlements.forEach((settle, sIdx) => {
+                            pmtList.push({
+                                id: `STL-INV-${inv.id}-${sIdx}`,
+                                date: settle.timestamp,
+                                amount: parseFloat(settle.amount) || 0,
+                                method: settle.method || 'نقدي',
+                                description: `سداد متبقي للفاتورة #${inv.id}`,
+                                notes: settle.notes || ''
+                            });
+                        });
+                    }
+                    if (inv.settlement && typeof inv.settlement === 'object') {
+                        const amt = parseFloat(inv.settlement.amount) || 0;
+                        if (amt > 0) {
+                            pmtList.push({
+                                id: `STL-INV-OLD-${inv.id}`,
+                                date: inv.settlement.timestamp,
+                                amount: amt,
+                                method: inv.settlement.method || 'نقدي',
+                                description: `سداد متبقي للفاتورة #${inv.id}`,
+                                notes: inv.settlement.notes || ''
+                            });
+                        }
+                    }
+                });
+
+                // 3. General Debt Settlements from shifts
+                const allShifts = [...shifts];
+                const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+                if (activeShift) {
+                    allShifts.push(activeShift);
+                }
+
+                allShifts.forEach(shift => {
+                    // Extract from customerSettlements
+                    if (Array.isArray(shift.customerSettlements)) {
+                        shift.customerSettlements.forEach(settle => {
+                            const isMatch = (settle.customerId && currentCustomer.id && settle.customerId.toString() === currentCustomer.id.toString()) ||
+                                            (cleanPhone(settle.customerPhone) === customerPhoneClean && customerPhoneClean !== '');
+                            if (isMatch) {
+                                pmtList.push({
+                                    id: settle.id || `STL-GEN-${Date.now()}-${Math.random()}`,
+                                    date: settle.timestamp,
+                                    amount: parseFloat(settle.amount) || 0,
+                                    method: settle.method || 'نقدي',
+                                    description: 'سداد مديونية عامة (حساب العميل)',
+                                    notes: settle.notes || ''
+                                });
+                            }
+                        });
+                    }
+
+                    // Extract from sales with isDebtPayment: true
+                    if (Array.isArray(shift.sales)) {
+                        shift.sales.forEach(sale => {
+                            if (sale.isDebtPayment) {
+                                const isMatch = (sale.customer?.id && currentCustomer.id && sale.customer.id.toString() === currentCustomer.id.toString()) ||
+                                                (cleanPhone(sale.customer?.phone) === customerPhoneClean && customerPhoneClean !== '');
+                                if (isMatch) {
+                                    pmtList.push({
+                                        id: sale.id || `STL-DP-${Date.now()}-${Math.random()}`,
+                                        date: sale.timestamp,
+                                        amount: parseFloat(sale.total) || 0,
+                                        method: sale.paymentMethod === 'cash' ? 'نقدي' : sale.paymentMethod === 'wallet' ? 'محفظة إلكترونية' : sale.paymentMethod === 'instapay' ? 'انستا باي' : 'نقدي',
+                                        description: 'سداد مديونية عامة (قائمة العملاء)',
+                                        notes: sale.notes || ''
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Deduplicate and Sort payments
+                const uniquePaymentsMap = new Map();
+                pmtList.forEach(pmt => {
+                    if (pmt.id) {
+                        uniquePaymentsMap.set(pmt.id, pmt);
+                    }
+                });
+                const sortedPayments = Array.from(uniquePaymentsMap.values()).sort((a, b) => {
+                    const tb = new Date(b.date).getTime();
+                    const ta = new Date(a.date).getTime();
+                    return tb - ta;
+                });
+                setPayments(sortedPayments);
+
             } else {
                 setCustomer(null);
             }
@@ -245,119 +382,196 @@ const CustomerDetails = () => {
                     </div>
                 </div>
 
-                {/* Invoices Table */}
-                <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-                    <div className="p-5 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex justify-between items-center">
-                        <h2 className="text-lg font-bold text-slate-800 flex items-center">
-                            <FileText className="h-5 w-5 ml-2 text-blue-500" />
-                            سجل الفواتير والمشتريات
-                        </h2>
-                    </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-right border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50/80 border-b border-slate-200">
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm">رقم الفاتورة</th>
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm">التاريخ والوقت</th>
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm">طريقة الدفع</th>
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm">حالة الدفع</th>
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm">قيمة الفاتورة</th>
-                                    <th className="px-6 py-4 text-slate-600 font-bold text-sm text-center">الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {invoices.length === 0 ? (
-                                    <tr>
-                                        <td colSpan="6" className="px-6 py-12 text-center text-slate-500 font-medium">لا توجد فواتير أو مشتريات لهذا العميل حتى الآن.</td>
-                                    </tr>
-                                ) : (
-                                    invoices.map((inv, idx) => {
-                                        const remaining = inv.downPayment?.remaining || 0;
-                                        return (
-                                            <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
-                                                <td className="px-6 py-4 font-mono font-bold text-slate-800 text-sm">#{inv.id}</td>
-                                                <td className="px-6 py-4 text-slate-500 text-xs font-medium">{new Date(inv.timestamp || inv.date).toLocaleString('ar-EG')}</td>
-                                                <td className="px-6 py-4 text-slate-700 text-sm font-semibold">
-                                                    {inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'deferred' ? 'آجل' : inv.paymentMethod === 'wallet' ? 'محفظة' : 'انستا باي'}
-                                                    {inv.downPayment?.enabled && remaining > 0 && (
-                                                        <span className="mr-2 inline-block bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
-                                                            متبقي عربون
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 text-slate-700 text-sm">
-                                                    <span className={`text-xs font-bold px-2 py-1 rounded ${
-                                                        inv.paymentStatus === 'complete' ? 'bg-emerald-100 text-emerald-700' :
-                                                        inv.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
-                                                        'bg-red-100 text-red-700'
-                                                    }`}>
-                                                        {inv.paymentStatus === 'complete' ? 'مكتمل' : inv.paymentStatus === 'partial' ? 'جزئي' : 'معلق'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-blue-600 font-extrabold text-sm">{(inv.total || 0).toLocaleString('en-US')} ج.م</td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex gap-2 justify-center">
-                                                        <button
-                                                            onClick={() => {
-                                                                navigate('/reports', { state: { openInvoiceId: inv.id } });
-                                                            }}
-                                                            className="px-4 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-sm font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
-                                                        >
-                                                            <Eye className="h-5 w-5" />
-                                                            عرض وتعديل
-                                                        </button>
+                {/* Tabs Selector */}
+                <div className="flex border-b border-slate-200 bg-white bg-opacity-70 p-2 rounded-2xl backdrop-blur-md shadow-md gap-2 animate-fadeInUp" style={{ animationDelay: '0.15s' }}>
+                    <button
+                        onClick={() => setActiveTab('invoices')}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                            activeTab === 'invoices'
+                                ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+                        }`}
+                    >
+                        <FileText className="h-5 w-5" />
+                        سجل الفواتير والمشتريات ({invoices.length})
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('payments')}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
+                            activeTab === 'payments'
+                                ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md'
+                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-800'
+                        }`}
+                    >
+                        <Banknote className="h-5 w-5" />
+                        سجل السداد والمدفوعات ({payments.length})
+                    </button>
+                </div>
 
-                                                        {/* زر سداد المتبقي */}
-                                                        {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) ? (
+                {/* Content Area */}
+                {activeTab === 'invoices' ? (
+                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                        <div className="p-5 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex justify-between items-center">
+                            <h2 className="text-lg font-bold text-slate-800 flex items-center">
+                                <FileText className="h-5 w-5 ml-2 text-blue-500" />
+                                سجل الفواتير والمشتريات
+                            </h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-right border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50/80 border-b border-slate-200">
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">رقم الفاتورة</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">التاريخ والوقت</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">طريقة الدفع</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">حالة الدفع</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">قيمة الفاتورة</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm text-center">الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {invoices.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-6 py-12 text-center text-slate-500 font-medium">لا توجد فواتير أو مشتريات لهذا العميل حتى الآن.</td>
+                                        </tr>
+                                    ) : (
+                                        invoices.map((inv, idx) => {
+                                            const remaining = inv.downPayment?.remaining || 0;
+                                            return (
+                                                <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                                                    <td className="px-6 py-4 font-mono font-bold text-slate-800 text-sm">#{inv.id}</td>
+                                                    <td className="px-6 py-4 text-slate-500 text-xs font-medium">{new Date(inv.timestamp || inv.date).toLocaleString('ar-EG')}</td>
+                                                    <td className="px-6 py-4 text-slate-700 text-sm font-semibold">
+                                                        {inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'deferred' ? 'آجل' : inv.paymentMethod === 'wallet' ? 'محفظة' : 'انستا باي'}
+                                                        {inv.downPayment?.enabled && remaining > 0 && (
+                                                            <span className="mr-2 inline-block bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold">
+                                                                متبقي عربون
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-slate-700 text-sm">
+                                                        <span className={`text-xs font-bold px-2 py-1 rounded ${
+                                                            inv.paymentStatus === 'complete' ? 'bg-emerald-100 text-emerald-700' :
+                                                            inv.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-700' :
+                                                            'bg-red-100 text-red-700'
+                                                        }`}>
+                                                            {inv.paymentStatus === 'complete' ? 'مكتمل' : inv.paymentStatus === 'partial' ? 'جزئي' : 'معلق'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-blue-600 font-extrabold text-sm">{(inv.total || 0).toLocaleString('en-US')} ج.م</td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex gap-2 justify-center">
                                                             <button
                                                                 onClick={() => {
-                                                                    navigate('/reports', { state: { settleInvoiceId: inv.id } });
+                                                                    navigate('/reports', { state: { openInvoiceId: inv.id, from: `/customers/${id}` } });
                                                                 }}
-                                                                className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold hover:bg-green-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
-                                                                title="سداد المتبقي من الفاتورة"
+                                                                className="px-4 py-2.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-xl text-sm font-bold hover:bg-blue-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
                                                             >
-                                                                <Banknote className="h-5 w-5" />
-                                                                سداد المتبقي
+                                                                <Eye className="h-5 w-5" />
+                                                                عرض وتعديل
                                                             </button>
-                                                        ) : (
+
+                                                            {/* زر سداد المتبقي */}
+                                                            {((inv.downPayment?.enabled && remaining > 0) || (inv.paymentMethod === 'deferred' && inv.paymentStatus !== 'complete')) ? (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        navigate('/reports', { state: { settleInvoiceId: inv.id, from: `/customers/${id}` } });
+                                                                    }}
+                                                                    className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold hover:bg-green-100 cursor-pointer flex items-center gap-2 transition-all duration-200"
+                                                                    title="سداد المتبقي من الفاتورة"
+                                                                >
+                                                                    <Banknote className="h-5 w-5" />
+                                                                    سداد المتبقي
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold invisible pointer-events-none flex items-center gap-2"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <Banknote className="h-5 w-5" />
+                                                                    سداد المتبقي
+                                                                </button>
+                                                            )}
+
+                                                            {/* زر الطباعة */}
                                                             <button
-                                                                className="px-4 py-2.5 bg-green-50 text-green-600 border border-green-200 rounded-xl text-sm font-bold invisible pointer-events-none flex items-center gap-2"
-                                                                aria-hidden="true"
+                                                                onClick={() => thermalPrinter.printInvoice(inv)}
+                                                                className="p-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
+                                                                title="طباعة الفاتورة"
                                                             >
-                                                                <Banknote className="h-5 w-5" />
-                                                                سداد المتبقي
+                                                                <Printer className="h-5 w-5" />
                                                             </button>
-                                                        )}
 
-                                                        {/* زر الطباعة */}
-                                                        <button
-                                                            onClick={() => thermalPrinter.printInvoice(inv)}
-                                                            className="p-3 bg-slate-50 text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
-                                                            title="طباعة الفاتورة"
-                                                        >
-                                                            <Printer className="h-5 w-5" />
-                                                        </button>
-
-                                                        {/* زر الحذف */}
-                                                        <button
-                                                            onClick={() => {
-                                                                navigate('/reports', { state: { deleteInvoiceId: inv.id } });
-                                                            }}
-                                                            className="p-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
-                                                            title="حذف الفاتورة"
-                                                        >
-                                                            <Trash2 className="h-5 w-5" />
-                                                        </button>
-                                                    </div>
+                                                            {/* زر الحذف */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    navigate('/reports', { state: { deleteInvoiceId: inv.id, from: `/customers/${id}` } });
+                                                                }}
+                                                                className="p-3 bg-red-50 text-red-600 border border-red-200 rounded-xl hover:bg-red-100 cursor-pointer min-w-[42px] min-h-[42px] flex items-center justify-center transition-all duration-200"
+                                                                title="حذف الفاتورة"
+                                                            >
+                                                                <Trash2 className="h-5 w-5" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                        <div className="p-5 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex justify-between items-center">
+                            <h2 className="text-lg font-bold text-slate-800 flex items-center">
+                                <Banknote className="h-5 w-5 ml-2 text-blue-500" />
+                                سجل السداد والمدفوعات
+                            </h2>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-right border-collapse border-spacing-0">
+                                <thead>
+                                    <tr className="bg-slate-50/80 border-b border-slate-200">
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">التاريخ والوقت</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">بيان الدفعة</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">طريقة الدفع</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">المبلغ المدفوع</th>
+                                        <th className="px-6 py-4 text-slate-600 font-bold text-sm">ملاحظات</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {payments.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="5" className="px-6 py-12 text-center text-slate-500 font-medium">لا توجد مدفوعات مسجلة لهذا العميل حتى الآن.</td>
+                                        </tr>
+                                    ) : (
+                                        payments.map((pmt, idx) => (
+                                            <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
+                                                <td className="px-6 py-4 text-slate-500 text-xs font-medium">
+                                                    {new Date(pmt.date).toLocaleString('ar-EG')}
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-800 text-sm font-semibold">
+                                                    {pmt.description}
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-700 text-sm font-semibold">
+                                                    {pmt.method}
+                                                </td>
+                                                <td className="px-6 py-4 text-emerald-600 font-extrabold text-sm">
+                                                    {(pmt.amount || 0).toLocaleString('en-US')} ج.م
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-500 text-xs">
+                                                    {pmt.notes || '-'}
                                                 </td>
                                             </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                )}
 
             </div>
 

@@ -231,14 +231,26 @@ const ShiftManager = () => {
     // بدون soft-delete للسحابة — الفواتير تبقى في السحابة وداخل shift.sales للتقارير على كل الأجهزة
     try {
       const allSales = JSON.parse(localStorage.getItem('sales') || '[]');
-      // بعد إنهاء الوردية: نُبقي فقط الفواتير غير المكتملة (مهما كان shiftId)
+      // بعد إنهاء الوردية: نُبقي فقط الفواتير غير المكتملة
       const partialOnly = (allSales || []).filter(inv => {
-        const hasDown = inv?.downPayment?.enabled;
-        if (!hasDown) return false; // مكتملة تُحذف محلياً فقط من قائمة الـ POS
-        const remaining = (inv.downPayment?.remaining != null)
-          ? Number(inv.downPayment.remaining) || 0
-          : (Number(inv.total) || 0) - (Number(inv.downPayment?.amount) || 0);
-        return remaining > 0; // فقط غير المكتملة
+        if (!inv) return false;
+        
+        // 1. إذا كانت حالة الدفع معينة وصريحة كـ مكتملة، فلا داعي للاحتفاظ بها في قائمة المبيعات النشطة
+        if (inv.paymentStatus === 'complete') return false;
+        if (inv.paymentStatus === 'partial') return true;
+
+        // 2. فحص الفواتير الآجلة
+        if (inv.paymentMethod === 'deferred' || inv.paymentMethod === 'آجل') return true;
+
+        // 3. فحص العربون
+        if (inv.downPayment && inv.downPayment.enabled) {
+          const remaining = (inv.downPayment.remaining != null)
+            ? Number(inv.downPayment.remaining) || 0
+            : (Number(inv.total) || 0) - (Number(inv.downPayment.amount) || 0);
+          return remaining > 0;
+        }
+
+        return false;
       });
       window.__bypass_sync_proxy__ = true;
       localStorage.setItem('sales', JSON.stringify(partialOnly));
@@ -395,41 +407,46 @@ const ShiftManager = () => {
           discountInvoices++;
         }
 
-        // حساب المبلغ المستلم والمتبقي
-        if (hasDownPayment) {
-          // فاتورة بعربون
-          const receivedAmount = sale.downPayment.amount;
-          const remainingAmount = sale.downPayment.remaining || safeMath.subtract(sale.total, sale.downPayment.amount);
+        // حساب المبلغ المستلم والمتبقي بدقة بناءً على حالة الاكتمال والتسويات
+        const settlementsSum = (sale.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (sale.settlement ? Number(sale.settlement.amount) || 0 : 0);
+        const legacyRemaining = sale.downPayment?.remaining != null
+          ? Number(sale.downPayment.remaining)
+          : (sale.downPayment?.enabled ? safeMath.subtract(sale.total || 0, sale.downPayment.amount || 0) : 0);
+        
+        const isInvoiceComplete = sale.paymentStatus === 'complete' ||
+          (sale.paymentStatus !== 'partial' && sale.paymentMethod !== 'deferred' && sale.paymentMethod !== 'آجل' && legacyRemaining <= 0);
 
-          totalReceived = safeMath.add(totalReceived, receivedAmount);
-          totalRemaining = safeMath.add(totalRemaining, remainingAmount);
-          partialInvoices++;
+        let receivedAmount = 0;
+        let remainingAmount = 0;
 
-          // تقسيم حسب طريقة الدفع
-          paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, receivedAmount);
-          paymentMethods[paymentMethod].remaining = safeMath.add(paymentMethods[paymentMethod].remaining, remainingAmount);
-          paymentMethods[paymentMethod].count++;
-        } else if (sale.paymentMethod === 'deferred' || paymentMethod === 'آجل') {
-          // فاتورة آجلة بالكامل بدون عربون
-          const receivedAmount = 0;
-          const remainingAmount = sale.total;
-
-          totalRemaining = safeMath.add(totalRemaining, remainingAmount);
-          partialInvoices++; // تعتبر فاتورة آجلة/جزئية
-
-          // تقسيم حسب طريقة الدفع
-          paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, receivedAmount);
-          paymentMethods[paymentMethod].remaining = safeMath.add(paymentMethods[paymentMethod].remaining, remainingAmount);
-          paymentMethods[paymentMethod].count++;
-        } else {
-          // فاتورة مكتملة (نقدي، انستا باي، محفظة...)
-          totalReceived = safeMath.add(totalReceived, sale.total);
+        if (isInvoiceComplete) {
+          receivedAmount = sale.total;
+          remainingAmount = 0;
           completeInvoices++;
-
-          // تقسيم حسب طريقة الدفع
-          paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, sale.total);
-          paymentMethods[paymentMethod].count++;
+        } else if (hasDownPayment) {
+          // فاتورة بعربون غير مكتملة
+          receivedAmount = safeMath.add(sale.downPayment.amount, settlementsSum);
+          remainingAmount = Math.max(0, safeMath.subtract(sale.total, receivedAmount));
+          partialInvoices++;
+        } else if (sale.paymentMethod === 'deferred' || paymentMethod === 'آجل') {
+          // فاتورة آجلة غير مكتملة
+          receivedAmount = settlementsSum;
+          remainingAmount = Math.max(0, safeMath.subtract(sale.total, receivedAmount));
+          partialInvoices++;
+        } else {
+          // فاتورة كاش مكتملة
+          receivedAmount = sale.total;
+          remainingAmount = 0;
+          completeInvoices++;
         }
+
+        totalReceived = safeMath.add(totalReceived, receivedAmount);
+        totalRemaining = safeMath.add(totalRemaining, remainingAmount);
+
+        // تقسيم حسب طريقة الدفع
+        paymentMethods[paymentMethod].received = safeMath.add(paymentMethods[paymentMethod].received, receivedAmount);
+        paymentMethods[paymentMethod].remaining = safeMath.add(paymentMethods[paymentMethod].remaining, remainingAmount);
+        paymentMethods[paymentMethod].count++;
       }
     });
 

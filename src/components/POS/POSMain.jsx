@@ -228,6 +228,11 @@ const POSMain = () => {
   // إتمام البيع
   const confirmSale = useCallback(async (method) => {
     try {
+      if (!activeShift || activeShift.status !== 'active') {
+        notifyError('الوردية مغلقة', 'يجب فتح وردية جديدة أولاً لتتمكن من إتمام المبيعات.');
+        return;
+      }
+
       if (cart.length === 0) {
         notifyError('خطأ في البيع', 'السلة فارغة');
         return;
@@ -292,6 +297,72 @@ const POSMain = () => {
 
       const totalForSale = Math.max(0, safeMath.add(safeMath.subtract(subtotalForSale, discountAmountForSale), taxAmountForSale));
 
+      // تحديث مديونية وبيانات العميل أولاً للحصول على معرف العميل الفريد
+      let finalCustomer = null;
+      try {
+        if (customerInfo.phone && customerInfo.phone.trim() !== '') {
+          const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
+          const phoneTrimmed = customerInfo.phone.trim();
+          const existingCustIndex = savedCustomers.findIndex(c => c.phone.trim() === phoneTrimmed);
+          
+          let addedDebt = 0;
+          if (method === 'deferred' || downPayment.enabled) {
+            const paidNow = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : 0;
+            addedDebt = Math.max(0, safeMath.subtract(totalForSale, paidNow));
+          }
+
+          if (existingCustIndex !== -1) {
+            const existing = savedCustomers[existingCustIndex];
+            finalCustomer = {
+              ...existing,
+              name: customerInfo.name || existing.name,
+              totalSpent: safeMath.add(existing.totalSpent || 0, totalForSale),
+              orders: (existing.orders || 0) + 1,
+              debt: safeMath.add(existing.debt || 0, addedDebt),
+              lastVisit: getCurrentDate().split('T')[0]
+            };
+            savedCustomers[existingCustIndex] = finalCustomer;
+          } else {
+            finalCustomer = {
+              id: Date.now().toString(), // ضمان معرف نصي فريد
+              name: customerInfo.name || 'عميل جديد',
+              phone: phoneTrimmed,
+              email: 'غير محدد',
+              address: 'غير محدد',
+              type: customerInfo.type || 'عميل عادي',
+              debt: addedDebt,
+              totalSpent: totalForSale,
+              orders: 1,
+              lastVisit: getCurrentDate().split('T')[0],
+              joinDate: getCurrentDate().split('T')[0],
+              status: 'جديد'
+            };
+            savedCustomers.push(finalCustomer);
+          }
+          
+          localStorage.setItem('customers', JSON.stringify(savedCustomers));
+          
+          try {
+            publish(EVENTS.CUSTOMERS_CHANGED, {
+              type: existingCustIndex !== -1 ? 'update' : 'create',
+              customer: finalCustomer,
+              customers: savedCustomers
+            });
+          } catch (_) {}
+        }
+      } catch (err) {
+        console.error('Error updating customer debt/stats on sale:', err);
+      }
+
+      // تحديد حالة السداد بدقة للفاتورة
+      let initialPaymentStatus = 'complete';
+      if (downPayment.enabled) {
+        const remaining = Math.max(0, safeMath.subtract(totalForSale, parseFloat(downPayment.amount) || 0));
+        initialPaymentStatus = remaining > 0 ? 'partial' : 'complete';
+      } else if (method === 'deferred') {
+        initialPaymentStatus = 'partial';
+      }
+
       const sale = {
         id: invoiceId,
         date: getCurrentDate(),
@@ -324,8 +395,10 @@ const POSMain = () => {
           deliveryDate: downPayment.deliveryDate,
           remaining: Math.max(0, safeMath.subtract(totalForSale, parseFloat(downPayment.amount) || 0))
         } : null,
-        customer: customerInfo.name || customerInfo.phone ? customerInfo : null,
+        customer: finalCustomer || (customerInfo.name || customerInfo.phone ? customerInfo : null),
+        customerId: finalCustomer ? finalCustomer.id : null,
         paymentMethod: method,
+        paymentStatus: initialPaymentStatus,
         cashier: user?.username || 'غير محدد',
         shiftId: activeShift?.id || null,
         syncStatus: 'pending',
@@ -340,6 +413,7 @@ const POSMain = () => {
         items: sale.items,
         customer: sale.customer,
         paymentMethod: sale.paymentMethod,
+        paymentStatus: sale.paymentStatus,
         subtotal: sale.subtotal,
         discountAmount: sale.discount?.amount || 0,
         taxAmount: sale.tax?.amount || 0,
@@ -354,62 +428,6 @@ const POSMain = () => {
       const updatedSales = [...existingSales, sale];
       storageOptimizer.set('sales', updatedSales);
 
-      // تحديث مديونية وبيانات العميل
-      try {
-        if (customerInfo.phone && customerInfo.phone.trim() !== '') {
-          const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
-          const phoneTrimmed = customerInfo.phone.trim();
-          const existingCustIndex = savedCustomers.findIndex(c => c.phone.trim() === phoneTrimmed);
-          
-          let addedDebt = 0;
-          if (method === 'deferred' || downPayment.enabled) {
-            const paidNow = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : 0;
-            addedDebt = Math.max(0, safeMath.subtract(totalForSale, paidNow));
-          }
-
-          let updatedCust;
-          if (existingCustIndex !== -1) {
-            const existing = savedCustomers[existingCustIndex];
-            updatedCust = {
-              ...existing,
-              name: customerInfo.name || existing.name,
-              totalSpent: safeMath.add(existing.totalSpent || 0, totalForSale),
-              orders: (existing.orders || 0) + 1,
-              debt: safeMath.add(existing.debt || 0, addedDebt),
-              lastVisit: getCurrentDate().split('T')[0]
-            };
-            savedCustomers[existingCustIndex] = updatedCust;
-          } else {
-            updatedCust = {
-              id: Date.now(),
-              name: customerInfo.name || 'عميل جديد',
-              phone: phoneTrimmed,
-              email: 'غير محدد',
-              address: 'غير محدد',
-              type: customerInfo.type || 'عميل عادي',
-              debt: addedDebt,
-              totalSpent: totalForSale,
-              orders: 1,
-              lastVisit: getCurrentDate().split('T')[0],
-              joinDate: getCurrentDate().split('T')[0],
-              status: 'جديد'
-            };
-            savedCustomers.push(updatedCust);
-          }
-          
-          localStorage.setItem('customers', JSON.stringify(savedCustomers));
-          
-          try {
-            publish(EVENTS.CUSTOMERS_CHANGED, {
-              type: existingCustIndex !== -1 ? 'update' : 'create',
-              customer: updatedCust,
-              customers: savedCustomers
-            });
-          } catch (_) {}
-        }
-      } catch (err) {
-        console.error('Error updating customer debt/stats on sale:', err);
-      }
       try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'sales' } })); } catch (_) { }
 
       // Handle remainingQuantity for supplies & delete product if empty

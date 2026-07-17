@@ -98,36 +98,52 @@ const Reports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [periodFilter, setPeriodFilter] = useState('month'); // day | week | month | all
+  const [backUrl, setBackUrl] = useState(null);
 
-  
+  const handleCloseInvoiceModal = () => {
+    soundManager.play('closeWindow');
+    setShowInvoiceModal(false);
+    setSelectedInvoice(null);
+    if (backUrl) {
+      navigate(backUrl);
+      setBackUrl(null);
+    }
+  };
+
   // معالجة التنقل من صفحات أخرى
   useEffect(() => {
-    if (location.state && allSales.length > 0) {
-      if (location.state.openInvoiceId) {
-        const invToOpen = allSales.find(s => s.id === location.state.openInvoiceId);
-        if (invToOpen) {
-          setSelectedInvoice(invToOpen);
-          setShowInvoiceModal(true);
+    if (location.state) {
+      if (location.state.from && !backUrl) {
+        setBackUrl(location.state.from);
+      }
+
+      if (allSales.length > 0) {
+        if (location.state.openInvoiceId) {
+          const invToOpen = allSales.find(s => s.id === location.state.openInvoiceId);
+          if (invToOpen) {
+            setSelectedInvoice(invToOpen);
+            setShowInvoiceModal(true);
+          }
+          // تنظيف الحالة
+          window.history.replaceState({}, document.title);
         }
-        // تنظيف الحالة
-        window.history.replaceState({}, document.title);
-      }
-      
-      if (location.state.deleteInvoiceId) {
-        // ننتظر قليلا حتى تكتمل دورة الرندر وتتوفر الدالة handleDeleteInvoice
-        setTimeout(() => {
-          handleDeleteInvoice(location.state.deleteInvoiceId);
-        }, 100);
-        // تنظيف الحالة
-        window.history.replaceState({}, document.title);
-      }
-      
-      if (location.state.settleInvoiceId) {
-        setTimeout(() => {
-          handlePayRemaining(location.state.settleInvoiceId);
-        }, 100);
-        // تنظيف الحالة
-        window.history.replaceState({}, document.title);
+        
+        if (location.state.deleteInvoiceId) {
+          // ننتظر قليلا حتى تكتمل دورة الرندر وتتوفر الدالة handleDeleteInvoice
+          setTimeout(() => {
+            handleDeleteInvoice(location.state.deleteInvoiceId);
+          }, 100);
+          // تنظيف الحالة
+          window.history.replaceState({}, document.title);
+        }
+        
+        if (location.state.settleInvoiceId) {
+          setTimeout(() => {
+            handlePayRemaining(location.state.settleInvoiceId);
+          }, 100);
+          // تنظيف الحالة
+          window.history.replaceState({}, document.title);
+        }
       }
     }
   }, [location.state, allSales]);
@@ -366,12 +382,33 @@ const Reports = () => {
       // 6. تحديث الحالة المحلية
       // تحديث مديونية العميل في سجل العملاء
       const customerInvoice = allSales.find(s => s.id === invoiceId);
-      if (customerInvoice && customerInvoice.customer?.phone) {
+      if (customerInvoice && (customerInvoice.customer?.phone || customerInvoice.customer?.id || customerInvoice.customerId)) {
         try {
           const customers = JSON.parse(localStorage.getItem('customers') || '[]');
-          const cIndex = customers.findIndex(c => c.phone === customerInvoice.customer.phone);
+          const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
+          const invoicePhoneClean = cleanPhone(customerInvoice.customer?.phone);
+          const invCustId = customerInvoice.customer?.id || customerInvoice.customerId || customerInvoice.customer_id;
+
+          const cIndex = customers.findIndex(c => {
+            if (invCustId && c.id && invCustId.toString() === c.id.toString()) {
+              return true;
+            }
+            return cleanPhone(c.phone) === invoicePhoneClean && invoicePhoneClean !== '';
+          });
+
           if (cIndex !== -1) {
-            customers[cIndex].debt = Math.max(0, safeMath.subtract(customers[cIndex].debt || 0, amountPaid));
+            // حساب فرق المديونية بناءً على تعديل الفاتورة
+            const oldRemaining = invoice.downPayment?.remaining != null
+              ? Number(invoice.downPayment.remaining)
+              : (invoice.paymentMethod === 'deferred' ? Number(invoice.total || 0) : 0);
+            
+            const newRemaining = updatedInvoice.downPayment?.remaining != null
+              ? Number(updatedInvoice.downPayment.remaining)
+              : (updatedInvoice.paymentMethod === 'deferred' ? Number(updatedInvoice.total || 0) : 0);
+
+            const diffRemaining = newRemaining - oldRemaining;
+
+            customers[cIndex].debt = Math.max(0, safeMath.add(customers[cIndex].debt || 0, diffRemaining));
             localStorage.setItem('customers', JSON.stringify(customers));
             try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update' }); } catch (_) {}
           }
@@ -508,6 +545,10 @@ const Reports = () => {
         setSelectedInvoice(null);
         closeConfirmModal();
         notifySuccess('تم حذف الفاتورة بنجاح');
+        if (backUrl) {
+          navigate(backUrl);
+          setBackUrl(null);
+        }
         try { publish(EVENTS.INVOICES_CHANGED, { type: 'delete', invoiceId }); } catch (_) {}
       } catch (error) {
         console.error('Error deleting invoice:', error);
@@ -634,6 +675,10 @@ const Reports = () => {
       setShowInvoiceModal(false);
       setSelectedInvoice(null);
       notifySuccess(isComplete ? 'تم سداد المبلغ المتبقي وإغلاق الفاتورة بنجاح' : `تم سداد ${amountPaid} بنجاح، المتبقي ${newRemaining}`);
+      if (backUrl) {
+        navigate(backUrl);
+        setBackUrl(null);
+      }
       try { publish(EVENTS.INVOICES_CHANGED, { type: 'settled', invoiceId }); } catch (_) {}
     } catch (error) {
       console.error('Error paying remaining:', error);
@@ -1411,7 +1456,7 @@ const Reports = () => {
                 </p>
               </div>
               <button
-                onClick={() => { soundManager.play('closeWindow'); setShowInvoiceModal(false); }}
+                onClick={handleCloseInvoiceModal}
                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 rounded-xl cursor-pointer"
               >
                 <X className="h-6 w-6" />
@@ -1735,7 +1780,7 @@ const Reports = () => {
               </button>
 
               <button
-                onClick={() => { soundManager.play('closeWindow'); setShowInvoiceModal(false); }}
+                onClick={handleCloseInvoiceModal}
                 className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold text-sm cursor-pointer"
               >
                 إغلاق

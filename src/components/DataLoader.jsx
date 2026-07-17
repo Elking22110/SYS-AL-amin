@@ -512,6 +512,190 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // PATCH v23: Inject REAL company codes (e.g. 351050001) for BR & Smart products
+        // يُضيف أكواد الشركة الفعلية من الـ PDF (مثل 351050001) للمنتجات BR وسمارت
+        // ويستبدل أي أكواد مدير قديمة (AL.XXXX) بالأكواد الصحيحة
+        // ----------------------------------------------------
+        const companyCodesPatchDone = localStorage.getItem('patch_company_codes_v23') === 'true';
+        if (!companyCodesPatchDone) {
+          try {
+            console.log('[DataLoader] Patch v23: Injecting real company codes into BR/Smart products...');
+            setLoadingMessage('جاري ربط أكواد الشركة بمنتجات BR وسمارت...');
+            const seedResp = await fetch('/products_seed.json');
+            if (seedResp.ok) {
+              const seedData = await seedResp.json();
+              const seedProducts = seedData.products || [];
+              // بناء map من id → { barcode, sku }
+              // seed الجديد يحتوي على كود الشركة (مثل 351050001) للمنتجات المطابقة
+              // وقيمة undefined للمنتجات غير المطابقة
+              const codeMap = new Map();
+              for (const sp of seedProducts) {
+                // نخزن الكود حتى لو undefined لنعرف أي منتج يجب تصفيره
+                codeMap.set(String(sp.id), { barcode: sp.barcode, sku: sp.sku });
+              }
+              if (codeMap.size > 0) {
+                const currentProds = await databaseManager.getAll('products');
+                let patchedCount = 0;
+                for (const p of currentProds) {
+                  const isBRorSmart = 
+                    p.mainCategoryId === 'Br' || 
+                    p.mainCategoryId === 'اسمارت ابيض' ||
+                    (p.name && (p.name.includes('BR') || p.name.includes('سمارت')));
+                  
+                  if (!isBRorSmart) continue;
+                  
+                  const codes = codeMap.get(String(p.id));
+                  if (codes !== undefined) {
+                    const updated = {
+                      ...p,
+                      barcode: codes.barcode,  // كود الشركة الفعلي أو undefined
+                      sku:     codes.sku,      // نفس الكود
+                    };
+                    await databaseManager.update('products', updated);
+                    patchedCount++;
+                  }
+                }
+                // تحديث localStorage أيضاً
+                const lsProds = JSON.parse(localStorage.getItem('products') || '[]');
+                const updatedLS = lsProds.map(p => {
+                  const isBRorSmart = 
+                    p.mainCategoryId === 'Br' || 
+                    p.mainCategoryId === 'اسمارت ابيض' ||
+                    (p.name && (p.name.includes('BR') || p.name.includes('سمارت')));
+                  
+                  if (!isBRorSmart) return p;
+                  
+                  const codes = codeMap.get(String(p.id));
+                  if (codes !== undefined) return { ...p, barcode: codes.barcode, sku: codes.sku };
+                  return p;
+                });
+                localStorage.setItem('products', JSON.stringify(updatedLS));
+                console.log(`[DataLoader] Patch v23: Updated company codes in ${patchedCount} BR/Smart products.`);
+              }
+            }
+            localStorage.setItem('patch_company_codes_v23', 'true');
+            // تنظيف الفلاجات القديمة
+            localStorage.removeItem('patch_almodeer_barcodes_v22');
+            localStorage.removeItem('patch_almodeer_barcodes_v22b');
+            localStorage.removeItem('patch_almodeer_barcodes_v22c');
+          } catch (err) {
+            console.error('[DataLoader] Patch v23 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+        // PATCH v35: Enforce UNIQUE company codes (e.g. 351050001) for BR, Smart, and Kessel products
+        // ويقوم بإزالة الأكواد المكررة ومزامنتها تلقائياً مع قاعدة بيانات Supabase السحابية
+        // ----------------------------------------------------
+        const companyCodesPatchv35Done = localStorage.getItem('patch_company_codes_v35_all') === 'true';
+        if (!companyCodesPatchv35Done) {
+          try {
+            console.log('[DataLoader] Patch v35: Enforcing unique company codes into BR/Smart/Kessel products with sync triggers...');
+            setLoadingMessage('جاري تنظيف ومزامنة أكواد الشركة الفريدة بمنتجات BR، سمارت، وكيسيل...');
+            const seedResp = await fetch('/products_seed.json?t=' + Date.now());
+            if (seedResp.ok) {
+              const seedData = await seedResp.json();
+              const seedProducts = seedData.products || [];
+              
+              const codeMap = new Map();
+              for (const sp of seedProducts) {
+                if (sp.barcode || sp.supplierCode) {
+                  codeMap.set(String(sp.id), { 
+                    barcode: sp.barcode || null, 
+                    sku: sp.sku || null, 
+                    supplierCode: sp.supplierCode || null 
+                  });
+                }
+              }
+              
+              const currentProds = await databaseManager.getAll('products');
+              let patchedCount = 0;
+              const nowStr = new Date().toISOString();
+              
+              for (const p of currentProds) {
+                const isTarget = 
+                  p.mainCategoryId === 'Br' || 
+                  p.mainCategoryId === 'اسمارت ابيض' ||
+                  p.mainCategoryId === 'كيسيل' ||
+                  (p.name && (p.name.includes('BR') || p.name.includes('سمارت') || p.name.includes('كيسيل') || p.name.includes('كيسل')));
+                
+                if (!isTarget) continue;
+                
+                const codes = codeMap.get(String(p.id));
+                if (codes !== undefined) {
+                  const updated = {
+                    ...p,
+                    barcode: codes.barcode,
+                    sku:     codes.sku,
+                    supplierCode: codes.supplierCode,
+                    sync_status: 'pending', // إطلاق مزامنة سحابية
+                    updated_at: nowStr      // تحديث وقت التعديل
+                  };
+                  await databaseManager.update('products', updated);
+                  patchedCount++;
+                } else {
+                  // إذا كان الصنف مكوّداً في السابق بكود مكرر وتم تنظيفه بالـ seed
+                  if (p.supplierCode || p.barcode) {
+                    const updated = {
+                      ...p,
+                      barcode: null,
+                      sku: null,
+                      supplierCode: null,
+                      sync_status: 'pending',
+                      updated_at: nowStr
+                    };
+                    await databaseManager.update('products', updated);
+                    patchedCount++;
+                  }
+                }
+              }
+              
+              // Update localStorage products
+              const lsProds = JSON.parse(localStorage.getItem('products') || '[]');
+              const updatedLS = lsProds.map(p => {
+                const isTarget = 
+                  p.mainCategoryId === 'Br' || 
+                  p.mainCategoryId === 'اسمارت ابيض' ||
+                  p.mainCategoryId === 'كيسيل' ||
+                  (p.name && (p.name.includes('BR') || p.name.includes('سمارت') || p.name.includes('كيسيل') || p.name.includes('كيسل')));
+                
+                if (!isTarget) return p;
+                
+                const codes = codeMap.get(String(p.id));
+                if (codes !== undefined) {
+                  return { 
+                    ...p, 
+                    barcode: codes.barcode, 
+                    sku: codes.sku,
+                    supplierCode: codes.supplierCode,
+                    sync_status: 'pending',
+                    updated_at: nowStr
+                  };
+                } else {
+                  if (p.supplierCode || p.barcode) {
+                    return {
+                      ...p,
+                      barcode: null,
+                      sku: null,
+                      supplierCode: null,
+                      sync_status: 'pending',
+                      updated_at: nowStr
+                    };
+                  }
+                }
+                return p;
+              });
+              localStorage.setItem('products', JSON.stringify(updatedLS));
+              console.log(`[DataLoader] Patch v35: Enforced unique company codes in ${patchedCount} BR/Smart/Kessel products.`);
+            }
+            localStorage.setItem('patch_company_codes_v35_all', 'true');
+          } catch (err) {
+            console.error('[DataLoader] Patch v35 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
+
         setLoadingMessage('جاري التحقق من البيانات...');
         
         // التحقق من صحة البيانات

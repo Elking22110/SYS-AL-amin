@@ -7,7 +7,7 @@ class DatabaseManager {
   constructor() {
     this.db = null;
     this.dbName = 'POS_Database';
-    this.version = 5;
+    this.version = 6; // رُفع من 5→6 لإصلاح unique constraint على barcode
   }
 
   // تهيئة قاعدة البيانات
@@ -34,8 +34,21 @@ class DatabaseManager {
 
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
+        const oldVersion = event.oldVersion;
 
-        // إنشاء جداول البيانات
+        // ترقية من v5 → v6: إصلاح unique constraint على barcode
+        if (oldVersion < 6 && db.objectStoreNames.contains('products')) {
+          const transaction = event.target.transaction;
+          const productsStore = transaction.objectStore('products');
+          // حذف الـ index القديم (unique) وإعادة إنشائه بدون unique
+          if (productsStore.indexNames.contains('barcode')) {
+            productsStore.deleteIndex('barcode');
+          }
+          productsStore.createIndex('barcode', 'barcode', { unique: false });
+          console.log('[DB v6] barcode index recreated as non-unique');
+        }
+
+        // إنشاء جداول جديدة لو مش موجودة
         this.createStores(db);
       };
     });
@@ -49,7 +62,7 @@ class DatabaseManager {
       const productsStore = db.createObjectStore('products', { keyPath: 'id' });
       productsStore.createIndex('name', 'name', { unique: false });
       productsStore.createIndex('category', 'category', { unique: false });
-      productsStore.createIndex('barcode', 'barcode', { unique: true });
+      productsStore.createIndex('barcode', 'barcode', { unique: false });
     }
 
     // جدول التصنيفات

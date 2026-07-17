@@ -15,7 +15,8 @@ import {
   Camera,
   X,
   Shield,
-  Settings
+  Settings,
+  RefreshCw
 } from 'lucide-react';
 import { useNotifications } from '../components/NotificationSystem';
 import { ImageManager } from '../utils/imageManager';
@@ -27,6 +28,7 @@ import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
 import databaseManager from '../utils/database';
 import storageOptimizer from '../utils/storageOptimizer.js';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
 // دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
 const renderProductTitleAndSize = (name) => {
@@ -320,7 +322,22 @@ const CategoryDrillDownModal = ({
                       <div className="flex-1 min-w-0 pr-3">
                         <div className="font-bold text-sm text-white truncate text-right">{p.name}</div>
                         <div className="flex items-center gap-2 mt-1 justify-start">
-                          <span className="text-[10px] text-slate-400 font-mono">{p.sku || p.barcode || '—'}</span>
+                          {(p.supplierCode || p.barcode || p.sku) ? (
+                            <div className="flex items-center gap-1 flex-wrap">
+                              {p.supplierCode && (
+                                <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30" title="كود المورد">
+                                  🏷 {p.supplierCode}
+                                </span>
+                              )}
+                              {p.barcode && (
+                                <span className="text-[9px] px-1 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono border border-purple-500/30" title="كود المدير">
+                                  {p.barcode}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-[10px] text-slate-500 font-mono">—</span>
+                          )}
                           <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
                             !inventoryEnabled ? 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
                             : (p.stock ?? 0) > 5 ? 'bg-green-500/20 text-green-400'
@@ -465,6 +482,14 @@ const Products = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const productNameInputRef = useRef(null);
 
+  // حالات مستورد الأسعار الجماعي
+  const [showBulkPriceModal, setShowBulkPriceModal] = useState(false);
+  const [bulkInputText, setBulkInputText] = useState('');
+  const [bulkUpdateFields, setBulkUpdateFields] = useState({ price: true, costPrice: true });
+  const [bulkPreview, setBulkPreview] = useState([]);
+  const [bulkImportMessage, setBulkImportMessage] = useState('');
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
+
   // تركيز تلقائي على اسم المنتج عند فتح المودال لتسهيل وسرعة الإضافة
   useEffect(() => {
     if (showAddModal) {
@@ -482,7 +507,9 @@ const Products = () => {
     mainCategoryId: '',
     subCategoryId: '',
     stock: '',
-    minStock: ''
+    minStock: '',
+    barcode: '',
+    supplierCode: ''
   });
   const [productImages, setProductImages] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
@@ -1006,6 +1033,375 @@ const Products = () => {
     return list;
   }, [categories]);
 
+  const handleParseBulkPricesFromText = (textToParse) => {
+    if (!textToParse.trim()) {
+      setBulkPreview([]);
+      setBulkImportMessage('برجاء إدخال بيانات أولاً');
+      return;
+    }
+
+    const lines = textToParse.split('\n');
+    const matches = [];
+    let matchCount = 0;
+    let unchangedCount = 0;
+    let notFoundCount = 0;
+
+    lines.forEach(line => {
+      const cleaned = line.trim();
+      if (!cleaned) return;
+
+      // تقسيم ذكي بالتوكنز والـ Fallback
+      let parts = [];
+      const tokens = cleaned.split(/\s+/);
+      
+      // نبحث عن كود الصنف (رقم بطول 5 إلى 15 رقم)
+      const codeIdx = tokens.findIndex(t => /^\d{5,15}$/.test(t));
+      if (codeIdx !== -1) {
+        // نبحث عن السعر من اليمين إلى اليسار (من نهاية السطر) لتفادي أرقام الزاوية/المقاسات مثل 90 أو 45 أو 0
+        let foundPrice = null;
+        let priceIdx = -1;
+        for (let idx = tokens.length - 1; idx > codeIdx; idx--) {
+          const token = tokens[idx];
+          // السعر يجب أن يكون رقم موجب أكبر من 0 (قد يحتوي على كسر)
+          if (/^\d+(\.\d{1,2})?$/.test(token)) {
+            const val = parseFloat(token);
+            if (val > 0) {
+              foundPrice = token;
+              priceIdx = idx;
+              break;
+            }
+          }
+        }
+        
+        if (foundPrice !== null) {
+          // إذا وجدنا سعراً، نحدد التكلفة أيضاً إذا كانت موجودة بعد السعر
+          let foundCost = '';
+          if (priceIdx < tokens.length - 1 && /^\d+(\.\d{1,2})?$/.test(tokens[priceIdx + 1])) {
+            foundCost = tokens[priceIdx + 1];
+          }
+          parts = [tokens[codeIdx], foundPrice, foundCost];
+        }
+      }
+      
+      // fallback إذا لم تنجح طريقة التوكنز وكان النص مقسماً بـ tab أو فاصلة
+      if (parts.length < 2) {
+        let rawParts = cleaned.split('\t');
+        if (rawParts.length < 2) rawParts = cleaned.split(/\s{2,}/);
+        if (rawParts.length < 2) rawParts = cleaned.split(',');
+        if (rawParts.length >= 2) {
+          const codeVal = rawParts[0].replace(/[^\d]/g, '');
+          const priceVal = rawParts[1].replace(/[^\d.]/g, '');
+          if (/^\d{5,15}$/.test(codeVal) && parseFloat(priceVal) > 0) {
+            parts = [codeVal, priceVal, rawParts[2] || ''];
+          }
+        }
+      }
+
+      if (parts.length >= 2) {
+        const codeToken = parts[0].trim();
+        const priceToken = parts[1];
+        const costToken = parts[2] || '';
+
+        const newPriceVal = parseFloat(priceToken);
+        const newCostVal = costToken ? parseFloat(costToken) : NaN;
+
+        if (codeToken && !isNaN(newPriceVal)) {
+          // البحث عن كافة المنتجات المطابقة بالكود
+          let matchedProds = products.filter(p =>
+            (p.supplierCode && String(p.supplierCode).trim() === codeToken) ||
+            (p.sku && String(p.sku).trim() === codeToken) ||
+            (p.barcode && String(p.barcode).trim() === codeToken)
+          );
+
+          // في حالة عدم المطابقة بالكود، نبحث بالاسم الموحد لتفادي اختلافات الكتابة أو المسافات
+          if (matchedProds.length === 0) {
+            const normalize = (str) => String(str || '')
+              .replace(/[أإآا]/g, 'ا')
+              .replace(/ة/g, 'ه')
+              .replace(/ى/g, 'ي')
+              .replace(/\s+/g, '')
+              .toLowerCase();
+            const normalizedToken = normalize(codeToken);
+            const foundByName = products.find(p => p.name && normalize(p.name) === normalizedToken);
+            if (foundByName) {
+              matchedProds.push(foundByName);
+            }
+          }
+
+          if (matchedProds.length > 0) {
+            matchedProds.forEach(found => {
+              const mainCatId = String(found.mainCategoryId || '').toLowerCase();
+              const catName = String(found.category || '').toLowerCase();
+              const isBROrSmart = 
+                mainCatId.includes('br') || 
+                mainCatId.includes('smart') || 
+                mainCatId.includes('سمارت') || 
+                mainCatId.includes('اسمارت') ||
+                mainCatId.includes('كيسيل') ||
+                mainCatId.includes('كيسل') ||
+                catName.includes('br') || 
+                catName.includes('smart') || 
+                catName.includes('سمارت') || 
+                catName.includes('اسمارت') ||
+                catName.includes('كيسيل') ||
+                catName.includes('كيسل');
+
+              if (isBROrSmart) {
+                const oldPrice = found.price || 0;
+                const isUnchanged = Math.abs(oldPrice - newPriceVal) < 0.01;
+                if (isUnchanged) {
+                  unchangedCount++;
+                } else {
+                  matchCount++;
+                }
+
+                matches.push({
+                  product: found,
+                  code: codeToken,
+                  oldPrice: oldPrice,
+                  oldCostPrice: found.costPrice || 0,
+                  newPrice: newPriceVal,
+                  newCostPrice: !isNaN(newCostVal) ? newCostVal : found.costPrice || 0,
+                  status: isUnchanged ? 'no_change' : 'match'
+                });
+              } else {
+                matches.push({
+                  product: found,
+                  code: codeToken,
+                  oldPrice: found.price || 0,
+                  oldCostPrice: found.costPrice || 0,
+                  newPrice: newPriceVal,
+                  newCostPrice: !isNaN(newCostVal) ? newCostVal : found.costPrice || 0,
+                  status: 'excluded_category'
+                });
+              }
+            });
+          } else {
+            notFoundCount++;
+            matches.push({
+              product: null,
+              code: codeToken,
+              oldPrice: 0,
+              oldCostPrice: 0,
+              newPrice: newPriceVal,
+              newCostPrice: !isNaN(newCostVal) ? newCostVal : 0,
+              status: 'not_found'
+            });
+          }
+        }
+      }
+    });
+
+    setBulkPreview(matches);
+    setBulkImportMessage(
+      `📊 تحليل القائمة: سيتم تحديث ${matchCount} منتج | ⏭️ ${unchangedCount} بدون تغيير | ⚠️ ${notFoundCount} غير موجود بالسيستم.`
+    );
+  };
+
+  const handleParseBulkPrices = () => {
+    handleParseBulkPricesFromText(bulkInputText);
+  };
+
+  const handlePdfUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setIsParsingPdf(true);
+    setBulkImportMessage('⏳ جاري تحميل محرك الـ PDF وتحليل الصفحات... برجاء الانتظار');
+    
+    try {
+      // 1. تحميل PDF.js وديناميكياً
+      const pdfjsLib = await new Promise((resolve, reject) => {
+        if (window.pdfjsLib) {
+          resolve(window.pdfjsLib);
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
+        script.onload = () => {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+          resolve(window.pdfjsLib);
+        };
+        script.onerror = () => reject(new Error('Failed to load PDF.js'));
+        document.head.appendChild(script);
+      });
+
+      // 2. قراءة الملف
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const buffer = event.target.result;
+          const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+          let extractedText = '';
+          
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            
+            // تجميع النص حسب إحداثيات السطر لمنع تداخل النصوص والكسور
+            const items = textContent.items;
+            const linesMap = {};
+            items.forEach(item => {
+              const y = Math.round(item.transform[5]);
+              if (!linesMap[y]) linesMap[y] = [];
+              linesMap[y].push(item);
+            });
+            
+            const sortedY = Object.keys(linesMap).map(Number).sort((a, b) => b - a);
+            sortedY.forEach(y => {
+              const lineItems = linesMap[y].sort((a, b) => a.transform[4] - b.transform[4]);
+              const lineStr = lineItems.map(item => item.str).join(' ');
+              extractedText += lineStr + '\n';
+            });
+          }
+
+          setBulkInputText(extractedText);
+          setIsParsingPdf(false);
+          // تحليل فوري بعد القراءة
+          setTimeout(() => {
+            handleParseBulkPricesFromText(extractedText);
+          }, 100);
+        } catch (err) {
+          console.error(err);
+          setIsParsingPdf(false);
+          setBulkImportMessage('❌ حدث خطأ أثناء تحليل ملف الـ PDF. تأكد من أن الملف سليم.');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } catch (err) {
+      console.error(err);
+      setIsParsingPdf(false);
+      setBulkImportMessage('❌ فشل تحميل محرك قراءة الـ PDF. تأكد من الاتصال بالإنترنت.');
+    }
+  };
+
+  const handleApplyBulkPrices = async () => {
+    const matchedItems = bulkPreview.filter(m => m.status === 'match');
+    const matchedCount = matchedItems.length;
+    if (matchedCount === 0) {
+      alert('لم يتم العثور على أي منتجات مطابقة لتحديث أسعارها');
+      return;
+    }
+
+    // حفظ نسخة احتياطية للتراجع قبل تطبيق الأسعار
+    localStorage.setItem('products_backup_before_bulk', JSON.stringify(products));
+
+    let autoLinkedCount = 0;
+    const updatedProducts = products.map(p => {
+      const match = bulkPreview.find(m => m.status === 'match' && m.product && m.product.id === p.id);
+      if (match) {
+        const updated = { ...p };
+        if (bulkUpdateFields.price) {
+          updated.price = match.newPrice;
+        }
+        if (bulkUpdateFields.costPrice) {
+          updated.costPrice = match.newCostPrice;
+        }
+        // ربط كود المورد تلقائياً بحقل supplierCode المخصص للمورد
+        // (حقل barcode محجوز لكود المدير AL.XXXX لا نكتب فوقه)
+        // المرات الجاية ستتطابق بـ supplierCode مباشرة بدقة 100%
+        const codeIsNumeric = /^\d{5,15}$/.test(match.code);
+        if (codeIsNumeric && !p.supplierCode) {
+          updated.supplierCode = match.code;
+          autoLinkedCount++;
+        }
+        return updated;
+      }
+      return p;
+    });
+
+    // حفظ سجل التغييرات في قاعدة البيانات
+    const logEntries = matchedItems.map(m => ({
+      code: m.code,
+      product_name: m.product.name,
+      old_price: m.oldPrice,
+      new_price: m.newPrice,
+      change_percent: m.oldPrice > 0 ? parseFloat((((m.newPrice - m.oldPrice) / m.oldPrice) * 100).toFixed(2)) : 0,
+      cashier: user?.username || 'مدير'
+    }));
+
+    if (isKeysConfigured && supabase) {
+      try {
+        const { error } = await supabase.from('price_logs').insert(logEntries);
+        if (error) {
+          console.warn('⚠️ فشل حفظ السجل في جدول price_logs، سيتم الحفظ محلياً:', error);
+          const localLogs = JSON.parse(localStorage.getItem('price_update_logs') || '[]');
+          localStorage.setItem('price_update_logs', JSON.stringify([...localLogs, ...logEntries]));
+        }
+      } catch (err) {
+        console.error('❌ خطأ أثناء حفظ السجل بالداتابيز:', err);
+        const localLogs = JSON.parse(localStorage.getItem('price_update_logs') || '[]');
+        localStorage.setItem('price_update_logs', JSON.stringify([...localLogs, ...logEntries]));
+      }
+    } else {
+      const localLogs = JSON.parse(localStorage.getItem('price_update_logs') || '[]');
+      localStorage.setItem('price_update_logs', JSON.stringify([...localLogs, ...logEntries]));
+    }
+
+    setProducts(updatedProducts);
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    storageOptimizer.clearCache();
+
+    // إرسال الإشارات لتحديث المزامنة ونقاط البيع
+    window.dispatchEvent(new CustomEvent('productsUpdated', {
+      detail: {
+        action: 'updated',
+        products: updatedProducts
+      }
+    }));
+
+    publish(EVENTS.PRODUCTS_CHANGED, {
+      type: 'update_bulk',
+      products: updatedProducts
+    });
+
+    notifyProductUpdated(`تحديث جماعي لأسعار ${matchedCount} منتج`);
+    setShowBulkPriceModal(false);
+    setBulkInputText('');
+    setBulkPreview([]);
+    setBulkImportMessage('');
+    const autoLinkMsg = autoLinkedCount > 0 ? `\n🔗 تم ربط كود المورد تلقائياً بـ ${autoLinkedCount} منتج — المرات الجاية ستتم المطابقة بالكود مباشرة بدقة 100%.` : '';
+    alert(`✅ تم تحديث أسعار ${matchedCount} منتج بنجاح ومزامنتها وأرشفتها!${autoLinkMsg}\n\n⏪ تم حفظ نسخة احتياطية للتراجع عنها في أي وقت من أعلى الصفحة.`);
+  };
+
+  const handleRollbackPrices = () => {
+    try {
+      const backupDataStr = localStorage.getItem('products_backup_before_bulk');
+      if (!backupDataStr) {
+        alert('لا توجد نسخة احتياطية للتراجع عنها');
+        return;
+      }
+      const backupProducts = JSON.parse(backupDataStr);
+      if (!Array.isArray(backupProducts)) {
+        alert('بيانات النسخة الاحتياطية غير صالحة');
+        return;
+      }
+
+      setProducts(backupProducts);
+      localStorage.setItem('products', JSON.stringify(backupProducts));
+      localStorage.removeItem('products_backup_before_bulk');
+      storageOptimizer.clearCache();
+
+      // إرسال الإشارات لتحديث المزامنة ونقاط البيع
+      window.dispatchEvent(new CustomEvent('productsUpdated', {
+        detail: {
+          action: 'updated',
+          products: backupProducts
+        }
+      }));
+
+      publish(EVENTS.PRODUCTS_CHANGED, {
+        type: 'update_bulk_rollback',
+        products: backupProducts
+      });
+
+      alert('⏪ تم التراجع واستعادة الأسعار السابقة بنجاح!');
+    } catch (err) {
+      console.error(err);
+      alert('حدث خطأ أثناء استعادة النسخة الاحتياطية');
+    }
+  };
+
   const handleAddProduct = () => {
     // التحقق من صحة البيانات
     if (!newProduct.name.trim()) {
@@ -1091,7 +1487,9 @@ const Products = () => {
       mainCategoryId: '',
       subCategoryId: '',
       stock: '',
-      minStock: ''
+      minStock: '',
+      barcode: '',
+      supplierCode: ''
     });
     setShowAddModal(false);
 
@@ -1357,6 +1755,7 @@ const Products = () => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                soundManager.play('openWindow');
                 setShowAddCategoryModal(true);
               }}
               className="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-700 hover:to-purple-600 text-slate-800 px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-xs lg:text-sm font-semibold transition-all duration-300 flex items-center min-h-[40px] cursor-pointer"
@@ -1368,6 +1767,23 @@ const Products = () => {
             >
               <FolderPlus className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
               إضافة فئة جديدة
+            </button>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                soundManager.play('openWindow');
+                setShowBulkPriceModal(true);
+              }}
+              className="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-xs lg:text-sm font-semibold transition-all duration-300 flex items-center min-h-[40px] cursor-pointer"
+              style={{
+                pointerEvents: 'auto',
+                zIndex: 10,
+                position: 'relative'
+              }}
+            >
+              <RefreshCw className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3" />
+              تحديث الأسعار الجماعي ⚡
             </button>
             <button
               onClick={(e) => {
@@ -1387,6 +1803,42 @@ const Products = () => {
             </button>
           </div>
         </div>
+
+        {/* زر التراجع عن التعديل الجماعي في حالة وجود نسخة احتياطية */}
+        {localStorage.getItem('products_backup_before_bulk') && (
+          <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-right">
+            <div>
+              <h4 className="font-bold text-amber-300 text-sm flex items-center gap-1.5">
+                ⚠️ هل تريد التراجع عن التحديث الجماعي الأخير للأسعار؟
+              </h4>
+              <p className="text-slate-400 text-xs mt-1">
+                تم حفظ نسخة احتياطية تلقائياً لأسعارك قبل إجراء التحديث الجماعي الأخير لمنتجات BR وسمارت. يمكنك استعادتها الآن بضغطة زر.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  soundManager.play('click');
+                  handleRollbackPrices();
+                }}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                ↩️ تراجع واستعادة الأسعار السابقة
+              </button>
+              <button
+                onClick={() => {
+                  soundManager.play('click');
+                  localStorage.removeItem('products_backup_before_bulk');
+                  // إجبار المكون على إعادة الرسم لإخفاء الشريط
+                  setProducts([...products]);
+                }}
+                className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+              >
+                تجاهل وتأكيد الأسعار
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 ipad-grid ipad-pro-grid gap-3 md:gap-4 lg:gap-6 xl:gap-8">
@@ -1869,6 +2321,36 @@ const Products = () => {
                 />
               </div>
 
+              {/* حقول الأكواد */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-purple-200 mb-2">
+                    كود المنتج (باركود)
+                    <span className="text-slate-400 font-normal text-xs mr-1">— كود المدير</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newProduct.barcode || ''}
+                    onChange={(e) => setNewProduct({ ...newProduct, barcode: e.target.value })}
+                    className="input-modern w-full px-3 md:px-4 py-2.5 text-sm text-right font-mono"
+                    placeholder="AL.XXXX أو باركود المنتج"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-purple-200 mb-2">
+                    كود المورد
+                    <span className="text-slate-400 font-normal text-xs mr-1">— من قائمة الأسعار</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newProduct.supplierCode || ''}
+                    onChange={(e) => setNewProduct({ ...newProduct, supplierCode: e.target.value })}
+                    className="input-modern w-full px-3 md:px-4 py-2.5 text-sm text-right font-mono"
+                    placeholder="مثال: 331010001"
+                  />
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">السعر</label>
@@ -2143,6 +2625,242 @@ const Products = () => {
                 style={{ background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)', boxShadow: '0 4px 15px rgba(99,102,241,0.4)' }}
               >
                 ✓ إضافة الفئة
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Price Update Modal - خارج الكارد الرئيسي تماماً */}
+      {showBulkPriceModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-[9999] backdrop-blur-sm"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}
+        >
+          <div
+            className="glass-card p-6 w-full max-w-5xl mx-4 animate-fadeInUp"
+            style={{
+              position: 'relative',
+              zIndex: 10000,
+              backgroundColor: 'rgba(15, 23, 42, 0.98)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.9)',
+              maxHeight: '92vh',
+              overflowY: 'auto'
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800" style={{ direction: 'rtl' }}>
+              <h3 className="text-xl font-bold flex items-center gap-2" style={{ background: 'linear-gradient(to left, #fbbf24, #f59e0b)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                ⚡ تحديث الأسعار الجماعي الذكي (Excel / PDF)
+              </h3>
+              <button
+                onClick={() => {
+                  soundManager.play('closeWindow');
+                  setShowBulkPriceModal(false);
+                  setBulkInputText('');
+                  setBulkPreview([]);
+                  setBulkImportMessage('');
+                }}
+                className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-all cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-6" style={{ direction: 'rtl' }}>
+              {/* تعليمات الاستخدام */}
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 text-xs md:text-sm text-amber-200">
+                <p className="font-bold mb-1">💡 طريقة الاستخدام الذكية:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li><strong>الطريقة الأسهل:</strong> ارفع ملف الـ PDF الخاص بأسعار المورد مباشرة، وسيقوم النظام بقراءته واستخراج البيانات تلقائياً.</li>
+                  <li><strong>نسخ ولصق:</strong> يمكنك أيضاً نسخ أعمدة الأكواد والأسعار من ملف Excel ولصقها في المربع أدناه.</li>
+                </ul>
+              </div>
+
+              {/* مدخل النص والمربع والخيارات */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-sm font-semibold text-slate-300">الصق جدول البيانات هنا (أو سيتم ملؤه تلقائياً عند رفع PDF):</label>
+                    {isParsingPdf && (
+                      <span className="text-xs text-amber-400 font-bold animate-pulse">⏳ جاري المعالجة...</span>
+                    )}
+                  </div>
+                  <textarea
+                    value={bulkInputText}
+                    onChange={(e) => setBulkInputText(e.target.value)}
+                    disabled={isParsingPdf}
+                    className="w-full h-48 p-4 rounded-xl border border-slate-700 bg-slate-900 text-slate-100 font-mono text-sm focus:border-amber-500 focus:outline-none placeholder-slate-600 resize-none disabled:opacity-50"
+                    placeholder={`مثال:\n331010001\t177.25\n331010002\t269.75`}
+                  />
+                </div>
+
+                <div className="space-y-4 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+                  <h4 className="text-sm font-bold text-slate-200 mb-2 border-b border-slate-800 pb-2">⚙️ خيارات ومصدر الملف</h4>
+
+                  {/* رفع ملف PDF */}
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-400">ملف الأسعار للمورد (PDF):</label>
+                    <label className="flex items-center justify-center gap-2 py-3 px-4 bg-blue-600/80 hover:bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md transition-all duration-200 cursor-pointer w-full text-center border border-blue-500/30">
+                      📂 رفع ملف PDF مباشرة
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        onChange={handlePdfUpload}
+                        disabled={isParsingPdf}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  <hr className="border-slate-800" />
+                  
+                  {/* تحديد الأعمدة المراد تحديثها */}
+                  <div className="space-y-3">
+                    <label className="block text-xs font-bold text-slate-400">الحقول المراد تحديثها:</label>
+                    <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={bulkUpdateFields.price}
+                        onChange={(e) => setBulkUpdateFields({ ...bulkUpdateFields, price: e.target.checked })}
+                        className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-0"
+                      />
+                      تحديث سعر البيع الحالي
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={bulkUpdateFields.costPrice}
+                        onChange={(e) => setBulkUpdateFields({ ...bulkUpdateFields, costPrice: e.target.checked })}
+                        className="rounded border-slate-700 bg-slate-900 text-amber-500 focus:ring-0"
+                      />
+                      تحديث سعر التكلفة/الشراء
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={() => { soundManager.play('click'); handleParseBulkPrices(); }}
+                    disabled={isParsingPdf}
+                    className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 rounded-xl text-sm font-bold transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    معاينة وتحليل الأسعار 🔍
+                  </button>
+                </div>
+              </div>
+
+              {/* رسالة التحليل */}
+              {bulkImportMessage && (
+                <div className={`p-4 rounded-xl text-sm font-bold ${bulkPreview.filter(m => m.status === 'match').length > 0 ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300' : 'bg-amber-500/10 border border-amber-500/20 text-amber-300'}`}>
+                  {bulkImportMessage}
+                </div>
+              )}
+
+              {/* جدول المعاينة */}
+              {bulkPreview.length > 0 && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-300">📊 معاينة ومقارنة الأسعار ونسبة الزيادة:</label>
+                  <div className="border border-slate-800 rounded-2xl overflow-hidden max-h-72 overflow-y-auto">
+                    <table className="w-full text-right text-xs md:text-sm text-slate-300">
+                      <thead className="bg-slate-900 sticky top-0 z-10 text-slate-400 font-semibold border-b border-slate-800">
+                        <tr>
+                          <th className="p-3">كود الصنف</th>
+                          <th className="p-3">اسم المنتج بالسيستم</th>
+                          {bulkUpdateFields.price && <th className="p-3 text-center">سعر البيع (القديم 👈 الجديد)</th>}
+                          <th className="p-3 text-center">نسبة التغيير</th>
+                          <th className="p-3 text-center">الحالة</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800">
+                        {bulkPreview.map((item, idx) => {
+                          const oldP = item.oldPrice || 0;
+                          const newP = item.newPrice || 0;
+                          const changePct = oldP > 0 ? (((newP - oldP) / oldP) * 100) : 0;
+                          
+                          return (
+                            <tr key={idx} className="hover:bg-slate-900/50 transition-colors">
+                              <td className="p-3 font-mono font-bold text-slate-400">{item.code}</td>
+                              <td className="p-3 font-bold text-slate-200">
+                                {item.product ? (
+                                  <div className="flex flex-col">
+                                    <span>{item.product.name}</span>
+                                    <span className="text-[10px] text-slate-500 font-mono">الفئة: {item.product.category}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-slate-500 italic">غير مسجل بالنظام</span>
+                                )}
+                              </td>
+                              {bulkUpdateFields.price && (
+                                <td className="p-3 text-center font-bold">
+                                  {item.product ? (
+                                    <>
+                                      <span className="text-slate-500 line-through text-xs ml-1.5">{item.oldPrice.toFixed(2)}</span>
+                                      <span className="text-emerald-400">{item.newPrice.toFixed(2)} جنيه</span>
+                                    </>
+                                  ) : (
+                                    <span className="text-slate-600">—</span>
+                                  )}
+                                </td>
+                              )}
+                              <td className="p-3 text-center font-extrabold font-mono">
+                                {item.product && item.status !== 'excluded_category' ? (
+                                  changePct > 0 ? (
+                                    <span className="text-rose-400">+{changePct.toFixed(2)}% 📈</span>
+                                  ) : changePct < 0 ? (
+                                    <span className="text-emerald-400">{changePct.toFixed(2)}% 📉</span>
+                                  ) : (
+                                    <span className="text-slate-500">0.00%</span>
+                                  )
+                                ) : (
+                                  <span className="text-slate-600">—</span>
+                                )}
+                              </td>
+                              <td className="p-3 text-center">
+                                <span className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                                  item.status === 'match' ? 'bg-emerald-500/10 text-emerald-400' :
+                                  item.status === 'no_change' ? 'bg-slate-500/10 text-slate-400' :
+                                  item.status === 'excluded_category' ? 'bg-amber-500/10 text-amber-400' :
+                                  'bg-rose-500/10 text-rose-400'
+                                }`}>
+                                  {item.status === 'match' ? '✅ سيتم التحديث' :
+                                   item.status === 'no_change' ? '⏭️ لا تغيير' :
+                                   item.status === 'excluded_category' ? '⚠️ مستبعد (فئة أخرى)' :
+                                   '❌ غير مسجل'}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-800" style={{ direction: 'rtl' }}>
+              <button
+                onClick={() => {
+                  soundManager.play('closeWindow');
+                  setShowBulkPriceModal(false);
+                  setBulkInputText('');
+                  setBulkPreview([]);
+                  setBulkImportMessage('');
+                }}
+                className="px-5 py-2.5 text-slate-400 hover:text-white text-sm font-semibold transition-colors cursor-pointer"
+              >
+                إلغاء
+              </button>
+              <button
+                onClick={() => { soundManager.play('save'); handleApplyBulkPrices(); }}
+                disabled={bulkPreview.filter(m => m.status === 'match').length === 0 || isParsingPdf}
+                className="px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 text-white disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', boxShadow: '0 4px 15px rgba(245,158,11,0.4)' }}
+              >
+                ✓ اعتماد تطبيق الزيادات
               </button>
             </div>
           </div>

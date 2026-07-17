@@ -1150,7 +1150,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.115",
+      "sku": ".115"
     },
     {
       "id": 10022,
@@ -1159,7 +1161,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.121",
+      "sku": ".121"
     },
     {
       "id": 10023,
@@ -1168,7 +1172,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.122",
+      "sku": ".122"
     },
     {
       "id": 10024,
@@ -1243,7 +1249,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة تجاري",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102025",
+      "sku": "0102025"
     },
     {
       "id": 10031,
@@ -1264,9 +1272,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020001",
-      "sku": "351020001",
-      "supplierCode": "351020001"
+      "barcode": "AL0102001",
+      "sku": "0102001"
     },
     {
       "id": 10033,
@@ -1276,9 +1283,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050001",
-      "sku": "351050001",
-      "supplierCode": "351050001"
+      "barcode": "AL0102002",
+      "sku": "0102002"
     },
     {
       "id": 10034,
@@ -1288,9 +1294,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070001",
-      "sku": "351070001",
-      "supplierCode": "351070001"
+      "barcode": "AL0102003",
+      "sku": "0102003"
     },
     {
       "id": 10035,
@@ -1300,9 +1305,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080001",
-      "sku": "351080001",
-      "supplierCode": "351080001"
+      "barcode": "AL0102004",
+      "sku": "0102004"
     },
     {
       "id": 10036,
@@ -1312,9 +1316,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351030001",
-      "sku": "351030001",
-      "supplierCode": "351030001"
+      "barcode": "AL0102005",
+      "sku": "0102005"
     },
     {
       "id": 10037,
@@ -1324,9 +1327,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010001",
-      "sku": "361010001",
-      "supplierCode": "361010001"
+      "barcode": "AL0102006",
+      "sku": "0102006"
     },
     {
       "id": 10038,
@@ -1336,9 +1338,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361030001",
-      "sku": "361030001",
-      "supplierCode": "361030001"
+      "barcode": "AL0102007",
+      "sku": "0102007"
     },
     {
       "id": 10039,
@@ -1348,9 +1349,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060010",
-      "sku": "361060010",
-      "supplierCode": "361060010"
+      "barcode": "AL0102008",
+      "sku": "0102008"
     },
     {
       "id": 10040,
@@ -1359,10 +1359,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050009",
-      "sku": "361050009",
-      "supplierCode": "361050009"
+      "minStock": 5
     },
     {
       "id": 10041,
@@ -1372,9 +1369,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040025",
-      "sku": "371040025",
-      "supplierCode": "371040025"
+      "barcode": "AL0102010",
+      "sku": "0102010"
     },
     {
       "id": 10042,
@@ -1384,9 +1380,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361040001",
-      "sku": "361040001",
-      "supplierCode": "361040001"
+      "barcode": "AL0102011",
+      "sku": "0102011"
     },
     {
       "id": 10043,
@@ -1396,9 +1391,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060001",
-      "sku": "371060001",
-      "supplierCode": "371060001"
+      "barcode": "AL0102012",
+      "sku": "0102012"
     },
     {
       "id": 10044,
@@ -1408,9 +1402,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351010001",
-      "sku": "351010001",
-      "supplierCode": "351010001"
+      "barcode": "AL0102013",
+      "sku": "0102013"
     },
     {
       "id": 10045,
@@ -1420,9 +1413,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371073001",
-      "sku": "371073001",
-      "supplierCode": "371073001"
+      "barcode": "AL0102014",
+      "sku": "0102014"
     },
     {
       "id": 10046,
@@ -1432,9 +1424,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010001",
-      "sku": "361010001",
-      "supplierCode": "361010001"
+      "barcode": "AL0102016",
+      "sku": "0102016"
     },
     {
       "id": 10047,
@@ -1443,10 +1434,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080012",
-      "sku": "351080012",
-      "supplierCode": "351080012"
+      "minStock": 5
     },
     {
       "id": 10048,
@@ -1455,10 +1443,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371040025",
-      "sku": "371040025",
-      "supplierCode": "371040025"
+      "minStock": 5
     },
     {
       "id": 10049,
@@ -1468,9 +1453,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351030011",
-      "sku": "351030011",
-      "supplierCode": "351030011"
+      "barcode": "AL0102020",
+      "sku": "0102020"
     },
     {
       "id": 10050,
@@ -1480,9 +1464,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020001",
-      "sku": "331020001",
-      "supplierCode": "331020001"
+      "barcode": "AL0102021",
+      "sku": "0102021"
     },
     {
       "id": 10051,
@@ -1492,9 +1475,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020001",
-      "sku": "331020001",
-      "supplierCode": "331020001"
+      "barcode": "AL0102022",
+      "sku": "0102022"
     },
     {
       "id": 10052,
@@ -1503,10 +1485,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073011",
-      "sku": "371073011",
-      "supplierCode": "371073011"
+      "minStock": 5
     },
     {
       "id": 10053,
@@ -1515,7 +1494,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102024",
+      "sku": "0102024"
     },
     {
       "id": 10054,
@@ -1525,9 +1506,8 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060008",
-      "sku": "361060008",
-      "supplierCode": "361060008"
+      "barcode": "AL0102025",
+      "sku": "0102025"
     },
     {
       "id": 10055,
@@ -1536,7 +1516,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102026",
+      "sku": "0102026"
     },
     {
       "id": 10056,
@@ -1545,7 +1527,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102027",
+      "sku": "0102027"
     },
     {
       "id": 10057,
@@ -1554,7 +1538,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.1103",
+      "sku": ".1103"
     },
     {
       "id": 10058,
@@ -1563,7 +1549,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102029",
+      "sku": "0102029"
     },
     {
       "id": 10059,
@@ -1572,7 +1560,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0103038",
+      "sku": "0103038"
     },
     {
       "id": 10060,
@@ -1582,9 +1572,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010002",
-      "sku": "361010002",
-      "supplierCode": "361010002"
+      "barcode": "AL.1387",
+      "sku": ".1387"
     },
     {
       "id": 10061,
@@ -1594,9 +1583,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020002",
-      "sku": "351020002",
-      "supplierCode": "351020002"
+      "barcode": "AL7001000021",
+      "sku": "7001000021"
     },
     {
       "id": 10062,
@@ -1606,9 +1594,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050002",
-      "sku": "351050002",
-      "supplierCode": "351050002"
+      "barcode": "AL7001000022",
+      "sku": "7001000022"
     },
     {
       "id": 10063,
@@ -1618,9 +1605,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020002",
-      "sku": "331020002",
-      "supplierCode": "331020002"
+      "barcode": "AL14",
+      "sku": "14"
     },
     {
       "id": 10064,
@@ -1630,9 +1616,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040025",
-      "sku": "371040025",
-      "supplierCode": "371040025"
+      "barcode": "AL70010000236",
+      "sku": "70010000236"
     },
     {
       "id": 10065,
@@ -1641,10 +1626,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070002",
-      "sku": "351070002",
-      "supplierCode": "351070002"
+      "minStock": 5
     },
     {
       "id": 10066,
@@ -1653,10 +1635,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060002",
-      "sku": "371060002",
-      "supplierCode": "371060002"
+      "minStock": 5
     },
     {
       "id": 10067,
@@ -1665,10 +1644,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080002",
-      "sku": "351080002",
-      "supplierCode": "351080002"
+      "minStock": 5
     },
     {
       "id": 10068,
@@ -1677,10 +1653,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361010002",
-      "sku": "361010002",
-      "supplierCode": "361010002"
+      "minStock": 5
     },
     {
       "id": 10069,
@@ -1690,9 +1663,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361030012",
-      "sku": "361030012",
-      "supplierCode": "361030012"
+      "barcode": "AL70010000230",
+      "sku": "70010000230"
     },
     {
       "id": 10070,
@@ -1701,10 +1673,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060002",
-      "sku": "361060002",
-      "supplierCode": "361060002"
+      "minStock": 5
     },
     {
       "id": 10071,
@@ -1713,10 +1682,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050002",
-      "sku": "361050002",
-      "supplierCode": "361050002"
+      "minStock": 5
     },
     {
       "id": 10072,
@@ -1726,9 +1692,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040026",
-      "sku": "371040026",
-      "supplierCode": "371040026"
+      "barcode": "AL70010000236",
+      "sku": "70010000236"
     },
     {
       "id": 10073,
@@ -1737,10 +1702,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361010004",
-      "sku": "361010004",
-      "supplierCode": "361010004"
+      "minStock": 5
     },
     {
       "id": 10074,
@@ -1750,9 +1712,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361030004",
-      "sku": "361030004",
-      "supplierCode": "361030004"
+      "barcode": "AL70010000230",
+      "sku": "70010000230"
     },
     {
       "id": 10075,
@@ -1761,10 +1722,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060004",
-      "sku": "361060004",
-      "supplierCode": "361060004"
+      "minStock": 5
     },
     {
       "id": 10076,
@@ -1773,10 +1731,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050004",
-      "sku": "361050004",
-      "supplierCode": "361050004"
+      "minStock": 5
     },
     {
       "id": 10077,
@@ -1785,10 +1740,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10078,
@@ -1797,10 +1749,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040001",
-      "sku": "351040001",
-      "supplierCode": "351040001"
+      "minStock": 5
     },
     {
       "id": 10079,
@@ -1810,9 +1759,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050004",
-      "sku": "361050004",
-      "supplierCode": "361050004"
+      "barcode": "AL0103017",
+      "sku": "0103017"
     },
     {
       "id": 10080,
@@ -1822,9 +1770,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060004",
-      "sku": "361060004",
-      "supplierCode": "361060004"
+      "barcode": "AL0103018",
+      "sku": "0103018"
     },
     {
       "id": 10081,
@@ -1834,9 +1781,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361040002",
-      "sku": "361040002",
-      "supplierCode": "361040002"
+      "barcode": "AL70010000236",
+      "sku": "70010000236"
     },
     {
       "id": 10082,
@@ -1846,9 +1792,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351010002",
-      "sku": "351010002",
-      "supplierCode": "351010002"
+      "barcode": "AL0103021",
+      "sku": "0103021"
     },
     {
       "id": 10083,
@@ -1857,10 +1802,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060002",
-      "sku": "371060002",
-      "supplierCode": "371060002"
+      "minStock": 5
     },
     {
       "id": 10084,
@@ -1869,10 +1811,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080002",
-      "sku": "351080002",
-      "supplierCode": "351080002"
+      "minStock": 5
     },
     {
       "id": 10085,
@@ -1882,9 +1821,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351030004",
-      "sku": "351030004",
-      "supplierCode": "351030004"
+      "barcode": "AL0103025",
+      "sku": "0103025"
     },
     {
       "id": 10086,
@@ -1893,10 +1831,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020002",
-      "sku": "331020002",
-      "supplierCode": "331020002"
+      "minStock": 5
     },
     {
       "id": 10087,
@@ -1905,7 +1840,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102024",
+      "sku": "0102024"
     },
     {
       "id": 10088,
@@ -1915,9 +1852,8 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371099131",
-      "sku": "371099131",
-      "supplierCode": "371099131"
+      "barcode": "AL0103029",
+      "sku": "0103029"
     },
     {
       "id": 10089,
@@ -1926,7 +1862,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102026",
+      "sku": "0102026"
     },
     {
       "id": 10090,
@@ -1935,7 +1873,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.1390",
+      "sku": ".1390"
     },
     {
       "id": 10091,
@@ -1962,10 +1902,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096401",
-      "sku": "353096401",
-      "supplierCode": "353096401"
+      "minStock": 5
     },
     {
       "id": 10094,
@@ -1974,10 +1911,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096204",
-      "sku": "353096204",
-      "supplierCode": "353096204"
+      "minStock": 5
     },
     {
       "id": 10095,
@@ -1987,9 +1921,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353096201",
-      "sku": "353096201",
-      "supplierCode": "353096201"
+      "barcode": "AL.988",
+      "sku": ".988"
     },
     {
       "id": 10096,
@@ -1999,9 +1932,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "385010005",
-      "sku": "385010005",
-      "supplierCode": "385010005"
+      "barcode": "AL0101011",
+      "sku": "0101011"
     },
     {
       "id": 10097,
@@ -2010,10 +1942,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "385010006",
-      "sku": "385010006",
-      "supplierCode": "385010006"
+      "minStock": 5
     },
     {
       "id": 10098,
@@ -2022,7 +1951,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0101030",
+      "sku": "0101030"
     },
     {
       "id": 10099,
@@ -2032,9 +1963,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "385010008",
-      "sku": "385010008",
-      "supplierCode": "385010008"
+      "barcode": "AL0101033",
+      "sku": "0101033"
     },
     {
       "id": 10100,
@@ -2044,9 +1974,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040038",
-      "sku": "371040038",
-      "supplierCode": "371040038"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10101,
@@ -2056,9 +1985,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "376010019",
-      "sku": "376010019",
-      "supplierCode": "376010019"
+      "barcode": "AL0101041",
+      "sku": "0101041"
     },
     {
       "id": 10102,
@@ -2068,9 +1996,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "375100001",
-      "sku": "375100001",
-      "supplierCode": "375100001"
+      "barcode": "AL0101045",
+      "sku": "0101045"
     },
     {
       "id": 10103,
@@ -2079,10 +2006,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096205",
-      "sku": "353096205",
-      "supplierCode": "353096205"
+      "minStock": 5
     },
     {
       "id": 10104,
@@ -2092,9 +2016,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040037",
-      "sku": "371040037",
-      "supplierCode": "371040037"
+      "barcode": "AL101036",
+      "sku": "101036"
     },
     {
       "id": 10105,
@@ -2104,9 +2027,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040093",
-      "sku": "371040093",
-      "supplierCode": "371040093"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10106,
@@ -2116,9 +2038,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040090",
-      "sku": "371040090",
-      "supplierCode": "371040090"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10107,
@@ -2128,9 +2049,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040091",
-      "sku": "371040091",
-      "supplierCode": "371040091"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10108,
@@ -2140,9 +2060,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040094",
-      "sku": "371040094",
-      "supplierCode": "371040094"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10109,
@@ -2152,9 +2071,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040095",
-      "sku": "371040095",
-      "supplierCode": "371040095"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10110,
@@ -2164,9 +2082,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040058",
-      "sku": "371040058",
-      "supplierCode": "371040058"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10111,
@@ -2176,9 +2093,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040097",
-      "sku": "371040097",
-      "supplierCode": "371040097"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10112,
@@ -2188,9 +2104,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040051",
-      "sku": "371040051",
-      "supplierCode": "371040051"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10113,
@@ -2200,9 +2115,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040096",
-      "sku": "371040096",
-      "supplierCode": "371040096"
+      "barcode": "AL19010015",
+      "sku": "19010015"
     },
     {
       "id": 10114,
@@ -2211,7 +2125,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL56656556",
+      "sku": "56656556"
     },
     {
       "id": 10115,
@@ -2221,9 +2137,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353096205",
-      "sku": "353096205",
-      "supplierCode": "353096205"
+      "barcode": "AL64654443",
+      "sku": "64654443"
     },
     {
       "id": 10116,
@@ -2232,7 +2147,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7655443",
+      "sku": "7655443"
     },
     {
       "id": 10117,
@@ -2241,7 +2158,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL98755455",
+      "sku": "98755455"
     },
     {
       "id": 10118,
@@ -2250,10 +2169,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096201",
-      "sku": "353096201",
-      "supplierCode": "353096201"
+      "minStock": 5
     },
     {
       "id": 10119,
@@ -2263,9 +2179,8 @@
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353096210",
-      "sku": "353096210",
-      "supplierCode": "353096210"
+      "barcode": "AL98755457",
+      "sku": "98755457"
     },
     {
       "id": 10120,
@@ -2275,9 +2190,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020004",
-      "sku": "351020004",
-      "supplierCode": "351020004"
+      "barcode": "AL0104001",
+      "sku": "0104001"
     },
     {
       "id": 10121,
@@ -2287,9 +2201,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050003",
-      "sku": "351050003",
-      "supplierCode": "351050003"
+      "barcode": "AL0104002",
+      "sku": "0104002"
     },
     {
       "id": 10122,
@@ -2299,9 +2212,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070003",
-      "sku": "351070003",
-      "supplierCode": "351070003"
+      "barcode": "AL0104003",
+      "sku": "0104003"
     },
     {
       "id": 10123,
@@ -2311,9 +2223,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080003",
-      "sku": "351080003",
-      "supplierCode": "351080003"
+      "barcode": "AL0104004",
+      "sku": "0104004"
     },
     {
       "id": 10124,
@@ -2323,9 +2234,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010006",
-      "sku": "361010006",
-      "supplierCode": "361010006"
+      "barcode": "AL0104007",
+      "sku": "0104007"
     },
     {
       "id": 10125,
@@ -2335,9 +2245,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361030006",
-      "sku": "361030006",
-      "supplierCode": "361030006"
+      "barcode": "AL0104008",
+      "sku": "0104008"
     },
     {
       "id": 10126,
@@ -2346,10 +2255,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060006",
-      "sku": "361060006",
-      "supplierCode": "361060006"
+      "minStock": 5
     },
     {
       "id": 10127,
@@ -2358,10 +2264,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050006",
-      "sku": "361050006",
-      "supplierCode": "361050006"
+      "minStock": 5
     },
     {
       "id": 10128,
@@ -2371,9 +2274,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351010003",
-      "sku": "351010003",
-      "supplierCode": "351010003"
+      "barcode": "AL0104011",
+      "sku": "0104011"
     },
     {
       "id": 10129,
@@ -2382,10 +2284,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060002",
-      "sku": "351060002",
-      "supplierCode": "351060002"
+      "minStock": 5
     },
     {
       "id": 10130,
@@ -2394,10 +2293,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070004",
-      "sku": "351070004",
-      "supplierCode": "351070004"
+      "minStock": 5
     },
     {
       "id": 10131,
@@ -2406,10 +2302,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060003",
-      "sku": "351060003",
-      "supplierCode": "351060003"
+      "minStock": 5
     },
     {
       "id": 10132,
@@ -2418,10 +2311,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040003",
-      "sku": "351040003",
-      "supplierCode": "351040003"
+      "minStock": 5
     },
     {
       "id": 10133,
@@ -2430,10 +2320,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073013",
-      "sku": "371073013",
-      "supplierCode": "371073013"
+      "minStock": 5
     },
     {
       "id": 10134,
@@ -2442,10 +2329,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073003",
-      "sku": "371073003",
-      "supplierCode": "371073003"
+      "minStock": 5
     },
     {
       "id": 10135,
@@ -2454,10 +2338,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361010004",
-      "sku": "361010004",
-      "supplierCode": "361010004"
+      "minStock": 5
     },
     {
       "id": 10136,
@@ -2466,10 +2347,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361030005",
-      "sku": "361030005",
-      "supplierCode": "361030005"
+      "minStock": 5
     },
     {
       "id": 10137,
@@ -2478,10 +2356,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060004",
-      "sku": "361060004",
-      "supplierCode": "361060004"
+      "minStock": 5
     },
     {
       "id": 10138,
@@ -2490,10 +2365,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050004",
-      "sku": "361050004",
-      "supplierCode": "361050004"
+      "minStock": 5
     },
     {
       "id": 10139,
@@ -2502,10 +2374,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361010006",
-      "sku": "361010006",
-      "supplierCode": "361010006"
+      "minStock": 5
     },
     {
       "id": 10140,
@@ -2514,10 +2383,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060003",
-      "sku": "371060003",
-      "supplierCode": "371060003"
+      "minStock": 5
     },
     {
       "id": 10141,
@@ -2526,10 +2392,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020003",
-      "sku": "331020003",
-      "supplierCode": "331020003"
+      "minStock": 5
     },
     {
       "id": 10142,
@@ -2539,9 +2402,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020003",
-      "sku": "331020003",
-      "supplierCode": "331020003"
+      "barcode": "AL0104027",
+      "sku": "0104027"
     },
     {
       "id": 10143,
@@ -2551,9 +2413,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331021103",
-      "sku": "331021103",
-      "supplierCode": "331021103"
+      "barcode": "AL0104028",
+      "sku": "0104028"
     },
     {
       "id": 10144,
@@ -2563,9 +2424,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060033",
-      "sku": "371060033",
-      "supplierCode": "371060033"
+      "barcode": "AL0104030",
+      "sku": "0104030"
     },
     {
       "id": 10145,
@@ -2575,9 +2435,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060032",
-      "sku": "371060032",
-      "supplierCode": "371060032"
+      "barcode": "AL0104031",
+      "sku": "0104031"
     },
     {
       "id": 10146,
@@ -2587,9 +2446,8 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060031",
-      "sku": "371060031",
-      "supplierCode": "371060031"
+      "barcode": "AL0104032",
+      "sku": "0104032"
     },
     {
       "id": 10147,
@@ -2598,7 +2456,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040333",
+      "sku": "01040333"
     },
     {
       "id": 10148,
@@ -2607,7 +2467,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040334",
+      "sku": "01040334"
     },
     {
       "id": 10149,
@@ -2616,7 +2478,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040335",
+      "sku": "01040335"
     },
     {
       "id": 10150,
@@ -2625,10 +2489,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020004",
-      "sku": "351020004",
-      "supplierCode": "351020004"
+      "minStock": 5
     },
     {
       "id": 10151,
@@ -2637,10 +2498,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020004",
-      "sku": "331020004",
-      "supplierCode": "331020004"
+      "minStock": 5
     },
     {
       "id": 10152,
@@ -2650,9 +2508,8 @@
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020007",
-      "sku": "331020007",
-      "supplierCode": "331020007"
+      "barcode": "AL01050014",
+      "sku": "01050014"
     },
     {
       "id": 10153,
@@ -2661,10 +2518,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040010",
-      "sku": "351040010",
-      "supplierCode": "351040010"
+      "minStock": 5
     },
     {
       "id": 10154,
@@ -2673,10 +2527,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351050004",
-      "sku": "351050004",
-      "supplierCode": "351050004"
+      "minStock": 5
     },
     {
       "id": 10155,
@@ -2685,10 +2536,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070004",
-      "sku": "351070004",
-      "supplierCode": "351070004"
+      "minStock": 5
     },
     {
       "id": 10156,
@@ -2697,10 +2545,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080004",
-      "sku": "351080004",
-      "supplierCode": "351080004"
+      "minStock": 5
     },
     {
       "id": 10157,
@@ -2709,10 +2554,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060008",
-      "sku": "361060008",
-      "supplierCode": "361060008"
+      "minStock": 5
     },
     {
       "id": 10158,
@@ -2721,10 +2563,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050007",
-      "sku": "361050007",
-      "supplierCode": "361050007"
+      "minStock": 5
     },
     {
       "id": 10159,
@@ -2733,10 +2572,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060004",
-      "sku": "371060004",
-      "supplierCode": "371060004"
+      "minStock": 5
     },
     {
       "id": 10160,
@@ -2745,10 +2581,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060014",
-      "sku": "351060014",
-      "supplierCode": "351060014"
+      "minStock": 5
     },
     {
       "id": 10161,
@@ -2757,10 +2590,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060005",
-      "sku": "351060005",
-      "supplierCode": "351060005"
+      "minStock": 5
     },
     {
       "id": 10162,
@@ -2769,10 +2599,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060006",
-      "sku": "351060006",
-      "supplierCode": "351060006"
+      "minStock": 5
     },
     {
       "id": 10163,
@@ -2781,10 +2608,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10164,
@@ -2793,10 +2617,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10165,
@@ -2805,10 +2626,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020005",
-      "sku": "331020005",
-      "supplierCode": "331020005"
+      "minStock": 5
     },
     {
       "id": 10166,
@@ -2817,10 +2635,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020005",
-      "sku": "351020005",
-      "supplierCode": "351020005"
+      "minStock": 5
     },
     {
       "id": 10167,
@@ -2829,10 +2644,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351050005",
-      "sku": "351050005",
-      "supplierCode": "351050005"
+      "minStock": 5
     },
     {
       "id": 10168,
@@ -2841,10 +2653,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "358091004",
-      "sku": "358091004",
-      "supplierCode": "358091004"
+      "minStock": 5
     },
     {
       "id": 10169,
@@ -2853,10 +2662,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "358091003",
-      "sku": "358091003",
-      "supplierCode": "358091003"
+      "minStock": 5
     },
     {
       "id": 10170,
@@ -2865,10 +2671,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070005",
-      "sku": "351070005",
-      "supplierCode": "351070005"
+      "minStock": 5
     },
     {
       "id": 10171,
@@ -2877,10 +2680,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080005",
-      "sku": "351080005",
-      "supplierCode": "351080005"
+      "minStock": 5
     },
     {
       "id": 10172,
@@ -2889,10 +2689,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060007",
-      "sku": "351060007",
-      "supplierCode": "351060007"
+      "minStock": 5
     },
     {
       "id": 10173,
@@ -2901,10 +2698,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10174,
@@ -2913,10 +2707,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060010",
-      "sku": "361060010",
-      "supplierCode": "361060010"
+      "minStock": 5
     },
     {
       "id": 10175,
@@ -2925,10 +2716,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050009",
-      "sku": "361050009",
-      "supplierCode": "361050009"
+      "minStock": 5
     },
     {
       "id": 10176,
@@ -2937,10 +2725,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060005",
-      "sku": "371060005",
-      "supplierCode": "371060005"
+      "minStock": 5
     },
     {
       "id": 10177,
@@ -2949,10 +2734,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351010005",
-      "sku": "351010005",
-      "supplierCode": "351010005"
+      "minStock": 5
     },
     {
       "id": 10178,
@@ -2961,10 +2743,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060008",
-      "sku": "351060008",
-      "supplierCode": "351060008"
+      "minStock": 5
     },
     {
       "id": 10179,
@@ -2973,10 +2752,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10180,
@@ -2985,10 +2761,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060009",
-      "sku": "351060009",
-      "supplierCode": "351060009"
+      "minStock": 5
     },
     {
       "id": 10181,
@@ -2997,10 +2770,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10182,
@@ -3009,10 +2779,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020005",
-      "sku": "331020005",
-      "supplierCode": "331020005"
+      "minStock": 5
     },
     {
       "id": 10183,
@@ -3021,10 +2788,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020005",
-      "sku": "331020005",
-      "supplierCode": "331020005"
+      "minStock": 5
     },
     {
       "id": 10184,
@@ -3033,10 +2797,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060034",
-      "sku": "371060034",
-      "supplierCode": "371060034"
+      "minStock": 5
     },
     {
       "id": 10185,
@@ -3045,10 +2806,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073015",
-      "sku": "371073015",
-      "supplierCode": "371073015"
+      "minStock": 5
     },
     {
       "id": 10186,
@@ -3057,10 +2815,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073005",
-      "sku": "371073005",
-      "supplierCode": "371073005"
+      "minStock": 5
     },
     {
       "id": 10187,
@@ -3069,10 +2824,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020005",
-      "sku": "331020005",
-      "supplierCode": "331020005"
+      "minStock": 5
     },
     {
       "id": 10188,
@@ -3081,10 +2833,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "358091004",
-      "sku": "358091004",
-      "supplierCode": "358091004"
+      "minStock": 5
     },
     {
       "id": 10189,
@@ -3093,10 +2842,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331080106",
-      "sku": "331080106",
-      "supplierCode": "331080106"
+      "minStock": 5
     },
     {
       "id": 10190,
@@ -3106,9 +2852,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020006",
-      "sku": "351020006",
-      "supplierCode": "351020006"
+      "barcode": "AL0107001",
+      "sku": "0107001"
     },
     {
       "id": 10191,
@@ -3118,9 +2863,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050006",
-      "sku": "351050006",
-      "supplierCode": "351050006"
+      "barcode": "AL0107002",
+      "sku": "0107002"
     },
     {
       "id": 10192,
@@ -3130,9 +2874,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331021106",
-      "sku": "331021106",
-      "supplierCode": "331021106"
+      "barcode": "AL01070025",
+      "sku": "01070025"
     },
     {
       "id": 10193,
@@ -3142,9 +2885,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020007",
-      "sku": "331020007",
-      "supplierCode": "331020007"
+      "barcode": "AL01070027",
+      "sku": "01070027"
     },
     {
       "id": 10194,
@@ -3154,9 +2896,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020003",
-      "sku": "351020003",
-      "supplierCode": "351020003"
+      "barcode": "AL01070028",
+      "sku": "01070028"
     },
     {
       "id": 10195,
@@ -3166,9 +2907,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070007",
-      "sku": "351070007",
-      "supplierCode": "351070007"
+      "barcode": "AL01070029",
+      "sku": "01070029"
     },
     {
       "id": 10196,
@@ -3178,9 +2918,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070006",
-      "sku": "351070006",
-      "supplierCode": "351070006"
+      "barcode": "AL0107003",
+      "sku": "0107003"
     },
     {
       "id": 10197,
@@ -3189,10 +2928,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040016",
-      "sku": "351040016",
-      "supplierCode": "351040016"
+      "minStock": 5
     },
     {
       "id": 10198,
@@ -3202,9 +2938,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080006",
-      "sku": "351080006",
-      "supplierCode": "351080006"
+      "barcode": "AL0107004",
+      "sku": "0107004"
     },
     {
       "id": 10199,
@@ -3214,9 +2949,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060011",
-      "sku": "361060011",
-      "supplierCode": "361060011"
+      "barcode": "AL0107005",
+      "sku": "0107005"
     },
     {
       "id": 10200,
@@ -3226,9 +2960,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050010",
-      "sku": "361050010",
-      "supplierCode": "361050010"
+      "barcode": "AL0107006",
+      "sku": "0107006"
     },
     {
       "id": 10201,
@@ -3237,10 +2970,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060006",
-      "sku": "371060006",
-      "supplierCode": "371060006"
+      "minStock": 5
     },
     {
       "id": 10202,
@@ -3249,10 +2979,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060011",
-      "sku": "351060011",
-      "supplierCode": "351060011"
+      "minStock": 5
     },
     {
       "id": 10203,
@@ -3261,10 +2988,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060012",
-      "sku": "351060012",
-      "supplierCode": "351060012"
+      "minStock": 5
     },
     {
       "id": 10204,
@@ -3273,10 +2997,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060013",
-      "sku": "351060013",
-      "supplierCode": "351060013"
+      "minStock": 5
     },
     {
       "id": 10205,
@@ -3285,10 +3006,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060014",
-      "sku": "351060014",
-      "supplierCode": "351060014"
+      "minStock": 5
     },
     {
       "id": 10206,
@@ -3297,10 +3015,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060015",
-      "sku": "351060015",
-      "supplierCode": "351060015"
+      "minStock": 5
     },
     {
       "id": 10207,
@@ -3309,10 +3024,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10208,
@@ -3321,10 +3033,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10209,
@@ -3333,10 +3042,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10210,
@@ -3345,10 +3051,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10211,
@@ -3357,10 +3060,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060001",
-      "sku": "351060001",
-      "supplierCode": "351060001"
+      "minStock": 5
     },
     {
       "id": 10212,
@@ -3369,10 +3069,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351010006",
-      "sku": "351010006",
-      "supplierCode": "351010006"
+      "minStock": 5
     },
     {
       "id": 10213,
@@ -3382,9 +3079,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331020006",
-      "sku": "331020006",
-      "supplierCode": "331020006"
+      "barcode": "AL0107001",
+      "sku": "0107001"
     },
     {
       "id": 10214,
@@ -3393,10 +3089,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020006",
-      "sku": "331020006",
-      "supplierCode": "331020006"
+      "minStock": 5
     },
     {
       "id": 10215,
@@ -3405,10 +3098,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070006",
-      "sku": "351070006",
-      "supplierCode": "351070006"
+      "minStock": 5
     },
     {
       "id": 10216,
@@ -3417,10 +3107,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020006",
-      "sku": "351020006",
-      "supplierCode": "351020006"
+      "minStock": 5
     },
     {
       "id": 10217,
@@ -3429,10 +3116,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070006",
-      "sku": "351070006",
-      "supplierCode": "351070006"
+      "minStock": 5
     },
     {
       "id": 10218,
@@ -3442,9 +3126,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331021106",
-      "sku": "331021106",
-      "supplierCode": "331021106"
+      "barcode": "AL01070025",
+      "sku": "01070025"
     },
     {
       "id": 10219,
@@ -3454,9 +3137,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060006",
-      "sku": "371060006",
-      "supplierCode": "371060006"
+      "barcode": "AL0107025",
+      "sku": "0107025"
     },
     {
       "id": 10220,
@@ -3466,9 +3148,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060006",
-      "sku": "371060006",
-      "supplierCode": "371060006"
+      "barcode": "AL0107026",
+      "sku": "0107026"
     },
     {
       "id": 10221,
@@ -3478,9 +3159,8 @@
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050007",
-      "sku": "351050007",
-      "supplierCode": "351050007"
+      "barcode": "AL0107030",
+      "sku": "0107030"
     },
     {
       "id": 10222,
@@ -3489,10 +3169,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060018",
-      "sku": "351060018",
-      "supplierCode": "351060018"
+      "minStock": 5
     },
     {
       "id": 10223,
@@ -3501,10 +3178,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371020001",
-      "sku": "371020001",
-      "supplierCode": "371020001"
+      "minStock": 5
     },
     {
       "id": 10224,
@@ -3513,10 +3187,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020002",
-      "sku": "351020002",
-      "supplierCode": "351020002"
+      "minStock": 5
     },
     {
       "id": 10225,
@@ -3525,10 +3196,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351050002",
-      "sku": "351050002",
-      "supplierCode": "351050002"
+      "minStock": 5
     },
     {
       "id": 10226,
@@ -3537,10 +3205,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070002",
-      "sku": "351070002",
-      "supplierCode": "351070002"
+      "minStock": 5
     },
     {
       "id": 10227,
@@ -3549,10 +3214,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080002",
-      "sku": "351080002",
-      "supplierCode": "351080002"
+      "minStock": 5
     },
     {
       "id": 10228,
@@ -3562,9 +3224,8 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371073002",
-      "sku": "371073002",
-      "supplierCode": "371073002"
+      "barcode": "AL0108005",
+      "sku": "0108005"
     },
     {
       "id": 10229,
@@ -3574,9 +3235,8 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060041",
-      "sku": "371060041",
-      "supplierCode": "371060041"
+      "barcode": "AL0108006",
+      "sku": "0108006"
     },
     {
       "id": 10230,
@@ -3586,9 +3246,8 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "331080102",
-      "sku": "331080102",
-      "supplierCode": "331080102"
+      "barcode": "AL0108007",
+      "sku": "0108007"
     },
     {
       "id": 10231,
@@ -3598,9 +3257,8 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020002",
-      "sku": "351020002",
-      "supplierCode": "351020002"
+      "barcode": "AL0108008",
+      "sku": "0108008"
     },
     {
       "id": 10232,
@@ -3609,10 +3267,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331021105",
-      "sku": "331021105",
-      "supplierCode": "331021105"
+      "minStock": 5
     },
     {
       "id": 10233,
@@ -3621,10 +3276,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351050005",
-      "sku": "351050005",
-      "supplierCode": "351050005"
+      "minStock": 5
     },
     {
       "id": 10234,
@@ -3633,10 +3285,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070005",
-      "sku": "351070005",
-      "supplierCode": "351070005"
+      "minStock": 5
     },
     {
       "id": 10235,
@@ -3645,10 +3294,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080005",
-      "sku": "351080005",
-      "supplierCode": "351080005"
+      "minStock": 5
     },
     {
       "id": 10236,
@@ -3657,10 +3303,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060009",
-      "sku": "351060009",
-      "supplierCode": "351060009"
+      "minStock": 5
     },
     {
       "id": 10237,
@@ -3669,10 +3312,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040009",
-      "sku": "351040009",
-      "supplierCode": "351040009"
+      "minStock": 5
     },
     {
       "id": 10238,
@@ -3681,10 +3321,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060010",
-      "sku": "361060010",
-      "supplierCode": "361060010"
+      "minStock": 5
     },
     {
       "id": 10239,
@@ -3693,10 +3330,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361050009",
-      "sku": "361050009",
-      "supplierCode": "361050009"
+      "minStock": 5
     },
     {
       "id": 10240,
@@ -3705,10 +3339,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073015",
-      "sku": "371073015",
-      "supplierCode": "371073015"
+      "minStock": 5
     },
     {
       "id": 10241,
@@ -3717,10 +3348,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073005",
-      "sku": "371073005",
-      "supplierCode": "371073005"
+      "minStock": 5
     },
     {
       "id": 10242,
@@ -3729,10 +3357,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371060005",
-      "sku": "371060005",
-      "supplierCode": "371060005"
+      "minStock": 5
     },
     {
       "id": 10243,
@@ -3741,10 +3366,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020005",
-      "sku": "351020005",
-      "supplierCode": "351020005"
+      "minStock": 5
     },
     {
       "id": 10244,
@@ -3753,7 +3375,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "افيز اسمارت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0111001",
+      "sku": "0111001"
     },
     {
       "id": 10245,
@@ -3762,7 +3386,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "افيز اسمارت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0111002",
+      "sku": "0111002"
     },
     {
       "id": 10246,
@@ -3780,7 +3406,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "افيز اسمارت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0111004",
+      "sku": "0111004"
     },
     {
       "id": 10248,
@@ -3798,7 +3426,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "افيز اسمارت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0111007",
+      "sku": "0111007"
     },
     {
       "id": 10250,
@@ -3807,7 +3437,9 @@
       "mainCategoryId": "Br",
       "subCategoryId": "افيز اسمارت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0111008",
+      "sku": "0111008"
     },
     {
       "id": 10251,
@@ -3816,10 +3448,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351020004",
-      "sku": "351020004",
-      "supplierCode": "351020004"
+      "minStock": 5
     },
     {
       "id": 10252,
@@ -3828,10 +3457,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351050003",
-      "sku": "351050003",
-      "supplierCode": "351050003"
+      "minStock": 5
     },
     {
       "id": 10253,
@@ -3840,10 +3466,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351070003",
-      "sku": "351070003",
-      "supplierCode": "351070003"
+      "minStock": 5
     },
     {
       "id": 10254,
@@ -3852,10 +3475,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351080003",
-      "sku": "351080003",
-      "supplierCode": "351080003"
+      "minStock": 5
     },
     {
       "id": 10255,
@@ -3864,10 +3484,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351060003",
-      "sku": "351060003",
-      "supplierCode": "351060003"
+      "minStock": 5
     },
     {
       "id": 10256,
@@ -3877,9 +3494,8 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050006",
-      "sku": "361050006",
-      "supplierCode": "361050006"
+      "barcode": "AL01090006",
+      "sku": "01090006"
     },
     {
       "id": 10257,
@@ -3888,10 +3504,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060006",
-      "sku": "361060006",
-      "supplierCode": "361060006"
+      "minStock": 5
     },
     {
       "id": 10258,
@@ -3900,10 +3513,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371073003",
-      "sku": "371073003",
-      "supplierCode": "371073003"
+      "minStock": 5
     },
     {
       "id": 10259,
@@ -3913,9 +3523,8 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371073013",
-      "sku": "371073013",
-      "supplierCode": "371073013"
+      "barcode": "AL01090009",
+      "sku": "01090009"
     },
     {
       "id": 10260,
@@ -3925,9 +3534,8 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060003",
-      "sku": "371060003",
-      "supplierCode": "371060003"
+      "barcode": "AL01090010",
+      "sku": "01090010"
     },
     {
       "id": 10261,
@@ -3936,10 +3544,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "351040003",
-      "sku": "351040003",
-      "supplierCode": "351040003"
+      "minStock": 5
     },
     {
       "id": 10262,
@@ -3948,10 +3553,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "355060002",
-      "sku": "355060002",
-      "supplierCode": "355060002"
+      "minStock": 5
     },
     {
       "id": 10263,
@@ -3960,10 +3562,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "331020003",
-      "sku": "331020003",
-      "supplierCode": "331020003"
+      "minStock": 5
     },
     {
       "id": 10264,
@@ -3973,9 +3572,8 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060031",
-      "sku": "371060031",
-      "supplierCode": "371060031"
+      "barcode": "AL01090015",
+      "sku": "01090015"
     },
     {
       "id": 10265,
@@ -3985,9 +3583,8 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351010003",
-      "sku": "351010003",
-      "supplierCode": "351010003"
+      "barcode": "AL01090016",
+      "sku": "01090016"
     },
     {
       "id": 20000,
@@ -3996,10 +3593,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080011",
-      "sku": "353080011",
-      "supplierCode": "353080011"
+      "minStock": 5
     },
     {
       "id": 20001,
@@ -4008,10 +3602,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333040002",
-      "sku": "333040002",
-      "supplierCode": "333040002"
+      "minStock": 5
     },
     {
       "id": 20002,
@@ -4020,10 +3611,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333040003",
-      "sku": "333040003",
-      "supplierCode": "333040003"
+      "minStock": 5
     },
     {
       "id": 20003,
@@ -4032,10 +3620,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "375020003",
-      "sku": "375020003",
-      "supplierCode": "375020003"
+      "minStock": 5
     },
     {
       "id": 20004,
@@ -4044,10 +3629,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333040004",
-      "sku": "333040004",
-      "supplierCode": "333040004"
+      "minStock": 5
     },
     {
       "id": 20005,
@@ -4056,10 +3638,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091001",
-      "sku": "353091001",
-      "supplierCode": "353091001"
+      "minStock": 5
     },
     {
       "id": 20006,
@@ -4068,10 +3647,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020004",
-      "sku": "353020004",
-      "supplierCode": "353020004"
+      "minStock": 5
     },
     {
       "id": 20007,
@@ -4080,10 +3656,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353030003",
-      "sku": "353030003",
-      "supplierCode": "353030003"
+      "minStock": 5
     },
     {
       "id": 20008,
@@ -4092,10 +3665,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020002",
-      "sku": "353020002",
-      "supplierCode": "353020002"
+      "minStock": 5
     },
     {
       "id": 20009,
@@ -4104,10 +3674,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092002",
-      "sku": "353092002",
-      "supplierCode": "353092002"
+      "minStock": 5
     },
     {
       "id": 20010,
@@ -4116,10 +3683,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353099929",
-      "sku": "353099929",
-      "supplierCode": "353099929"
+      "minStock": 5
     },
     {
       "id": 20011,
@@ -4128,10 +3692,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090003",
-      "sku": "353090003",
-      "supplierCode": "353090003"
+      "minStock": 5
     },
     {
       "id": 20012,
@@ -4140,10 +3701,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090002",
-      "sku": "353090002",
-      "supplierCode": "353090002"
+      "minStock": 5
     },
     {
       "id": 20013,
@@ -4152,10 +3710,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060005",
-      "sku": "353060005",
-      "supplierCode": "353060005"
+      "minStock": 5
     },
     {
       "id": 20014,
@@ -4164,10 +3719,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353070001",
-      "sku": "353070001",
-      "supplierCode": "353070001"
+      "minStock": 5
     },
     {
       "id": 20015,
@@ -4176,10 +3728,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092002",
-      "sku": "353092002",
-      "supplierCode": "353092002"
+      "minStock": 5
     },
     {
       "id": 20016,
@@ -4188,10 +3737,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080003",
-      "sku": "353080003",
-      "supplierCode": "353080003"
+      "minStock": 5
     },
     {
       "id": 20017,
@@ -4200,10 +3746,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090003",
-      "sku": "353090003",
-      "supplierCode": "353090003"
+      "minStock": 5
     },
     {
       "id": 20018,
@@ -4212,10 +3755,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080002",
-      "sku": "353080002",
-      "supplierCode": "353080002"
+      "minStock": 5
     },
     {
       "id": 20019,
@@ -4224,10 +3764,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373050028",
-      "sku": "373050028",
-      "supplierCode": "373050028"
+      "minStock": 5
     },
     {
       "id": 20020,
@@ -4236,10 +3773,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373050025",
-      "sku": "373050025",
-      "supplierCode": "373050025"
+      "minStock": 5
     },
     {
       "id": 20021,
@@ -4248,10 +3782,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093004",
-      "sku": "353093004",
-      "supplierCode": "353093004"
+      "minStock": 5
     },
     {
       "id": 20022,
@@ -4260,10 +3791,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095010",
-      "sku": "353095010",
-      "supplierCode": "353095010"
+      "minStock": 5
     },
     {
       "id": 20023,
@@ -4272,10 +3800,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095003",
-      "sku": "353095003",
-      "supplierCode": "353095003"
+      "minStock": 5
     },
     {
       "id": 20024,
@@ -4284,10 +3809,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373040001",
-      "sku": "373040001",
-      "supplierCode": "373040001"
+      "minStock": 5
     },
     {
       "id": 20025,
@@ -4296,10 +3818,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353094001",
-      "sku": "353094001",
-      "supplierCode": "353094001"
+      "minStock": 5
     },
     {
       "id": 20026,
@@ -4308,10 +3827,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091031",
-      "sku": "353091031",
-      "supplierCode": "353091031"
+      "minStock": 5
     },
     {
       "id": 20027,
@@ -4320,10 +3836,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091031",
-      "sku": "353091031",
-      "supplierCode": "353091031"
+      "minStock": 5
     },
     {
       "id": 20028,
@@ -4332,10 +3845,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091030",
-      "sku": "353091030",
-      "supplierCode": "353091030"
+      "minStock": 5
     },
     {
       "id": 20029,
@@ -4344,10 +3854,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353010013",
-      "sku": "353010013",
-      "supplierCode": "353010013"
+      "minStock": 5
     },
     {
       "id": 20030,
@@ -4356,10 +3863,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353030007",
-      "sku": "353030007",
-      "supplierCode": "353030007"
+      "minStock": 5
     },
     {
       "id": 20031,
@@ -4368,10 +3872,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099914",
-      "sku": "373099914",
-      "supplierCode": "373099914"
+      "minStock": 5
     },
     {
       "id": 20032,
@@ -4380,10 +3881,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353094001",
-      "sku": "353094001",
-      "supplierCode": "353094001"
+      "minStock": 5
     },
     {
       "id": 20033,
@@ -4392,10 +3890,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010039",
-      "sku": "373010039",
-      "supplierCode": "373010039"
+      "minStock": 5
     },
     {
       "id": 20034,
@@ -4404,10 +3899,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099905",
-      "sku": "373099905",
-      "supplierCode": "373099905"
+      "minStock": 5
     },
     {
       "id": 20035,
@@ -4416,10 +3908,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099907",
-      "sku": "373099907",
-      "supplierCode": "373099907"
+      "minStock": 5
     },
     {
       "id": 20036,
@@ -4428,10 +3917,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099909",
-      "sku": "373099909",
-      "supplierCode": "373099909"
+      "minStock": 5
     },
     {
       "id": 20037,
@@ -4441,9 +3927,8 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095010",
-      "sku": "353095010",
-      "supplierCode": "353095010"
+      "barcode": "AL0402039",
+      "sku": "0402039"
     },
     {
       "id": 20038,
@@ -4452,10 +3937,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099916",
-      "sku": "373099916",
-      "supplierCode": "373099916"
+      "minStock": 5
     },
     {
       "id": 20039,
@@ -4464,10 +3946,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096101",
-      "sku": "353096101",
-      "supplierCode": "353096101"
+      "minStock": 5
     },
     {
       "id": 20040,
@@ -4476,10 +3955,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096103",
-      "sku": "353096103",
-      "supplierCode": "353096103"
+      "minStock": 5
     },
     {
       "id": 20041,
@@ -4488,10 +3964,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096104",
-      "sku": "353096104",
-      "supplierCode": "353096104"
+      "minStock": 5
     },
     {
       "id": 20042,
@@ -4500,10 +3973,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333050001",
-      "sku": "333050001",
-      "supplierCode": "333050001"
+      "minStock": 5
     },
     {
       "id": 20043,
@@ -4512,10 +3982,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091002",
-      "sku": "353091002",
-      "supplierCode": "353091002"
+      "minStock": 5
     },
     {
       "id": 20044,
@@ -4524,10 +3991,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333050002",
-      "sku": "333050002",
-      "supplierCode": "333050002"
+      "minStock": 5
     },
     {
       "id": 20045,
@@ -4537,9 +4001,8 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353096211",
-      "sku": "353096211",
-      "supplierCode": "353096211"
+      "barcode": "AL04010020",
+      "sku": "04010020"
     },
     {
       "id": 20046,
@@ -4549,9 +4012,8 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095018",
-      "sku": "353095018",
-      "supplierCode": "353095018"
+      "barcode": "AL04010021",
+      "sku": "04010021"
     },
     {
       "id": 20047,
@@ -4561,9 +4023,8 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "332020010",
-      "sku": "332020010",
-      "supplierCode": "332020010"
+      "barcode": "AL04010022",
+      "sku": "04010022"
     },
     {
       "id": 20048,
@@ -4572,10 +4033,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020005",
-      "sku": "353020005",
-      "supplierCode": "353020005"
+      "minStock": 5
     },
     {
       "id": 20049,
@@ -4584,10 +4042,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353030004",
-      "sku": "353030004",
-      "supplierCode": "353030004"
+      "minStock": 5
     },
     {
       "id": 20050,
@@ -4596,10 +4051,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020005",
-      "sku": "353020005",
-      "supplierCode": "353020005"
+      "minStock": 5
     },
     {
       "id": 20051,
@@ -4608,10 +4060,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060006",
-      "sku": "353060006",
-      "supplierCode": "353060006"
+      "minStock": 5
     },
     {
       "id": 20052,
@@ -4620,10 +4069,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090004",
-      "sku": "353090004",
-      "supplierCode": "353090004"
+      "minStock": 5
     },
     {
       "id": 20053,
@@ -4632,10 +4078,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060006",
-      "sku": "353060006",
-      "supplierCode": "353060006"
+      "minStock": 5
     },
     {
       "id": 20054,
@@ -4644,10 +4087,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353070005",
-      "sku": "353070005",
-      "supplierCode": "353070005"
+      "minStock": 5
     },
     {
       "id": 20055,
@@ -4656,10 +4096,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092004",
-      "sku": "353092004",
-      "supplierCode": "353092004"
+      "minStock": 5
     },
     {
       "id": 20056,
@@ -4668,10 +4105,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080004",
-      "sku": "353080004",
-      "supplierCode": "353080004"
+      "minStock": 5
     },
     {
       "id": 20057,
@@ -4680,10 +4114,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373050006",
-      "sku": "373050006",
-      "supplierCode": "373050006"
+      "minStock": 5
     },
     {
       "id": 20058,
@@ -4692,10 +4123,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093005",
-      "sku": "353093005",
-      "supplierCode": "353093005"
+      "minStock": 5
     },
     {
       "id": 20059,
@@ -4704,10 +4132,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095004",
-      "sku": "353095004",
-      "supplierCode": "353095004"
+      "minStock": 5
     },
     {
       "id": 20060,
@@ -4717,9 +4142,8 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095004",
-      "sku": "353095004",
-      "supplierCode": "353095004"
+      "barcode": "AL40410019",
+      "sku": "40410019"
     },
     {
       "id": 20061,
@@ -4728,10 +4152,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020018",
-      "sku": "353020018",
-      "supplierCode": "353020018"
+      "minStock": 5
     },
     {
       "id": 20062,
@@ -4740,10 +4161,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353099903",
-      "sku": "353099903",
-      "supplierCode": "353099903"
+      "minStock": 5
     },
     {
       "id": 20063,
@@ -4752,10 +4170,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353099914",
-      "sku": "353099914",
-      "supplierCode": "353099914"
+      "minStock": 5
     },
     {
       "id": 20064,
@@ -4764,10 +4179,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093008",
-      "sku": "353093008",
-      "supplierCode": "353093008"
+      "minStock": 5
     },
     {
       "id": 20065,
@@ -4776,10 +4188,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333020001",
-      "sku": "333020001",
-      "supplierCode": "333020001"
+      "minStock": 5
     },
     {
       "id": 20066,
@@ -4789,9 +4198,8 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "373040003",
-      "sku": "373040003",
-      "supplierCode": "373040003"
+      "barcode": "AL5307022",
+      "sku": "5307022"
     },
     {
       "id": 20067,
@@ -4800,10 +4208,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333020002",
-      "sku": "333020002",
-      "supplierCode": "333020002"
+      "minStock": 5
     },
     {
       "id": 20068,
@@ -4812,10 +4217,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020002",
-      "sku": "353020002",
-      "supplierCode": "353020002"
+      "minStock": 5
     },
     {
       "id": 20069,
@@ -4824,10 +4226,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353030001",
-      "sku": "353030001",
-      "supplierCode": "353030001"
+      "minStock": 5
     },
     {
       "id": 20070,
@@ -4836,10 +4235,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020002",
-      "sku": "353020002",
-      "supplierCode": "353020002"
+      "minStock": 5
     },
     {
       "id": 20071,
@@ -4848,10 +4244,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060003",
-      "sku": "353060003",
-      "supplierCode": "353060003"
+      "minStock": 5
     },
     {
       "id": 20072,
@@ -4860,10 +4253,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090001",
-      "sku": "353090001",
-      "supplierCode": "353090001"
+      "minStock": 5
     },
     {
       "id": 20073,
@@ -4872,10 +4262,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090001",
-      "sku": "353090001",
-      "supplierCode": "353090001"
+      "minStock": 5
     },
     {
       "id": 20074,
@@ -4884,10 +4271,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010022",
-      "sku": "373010022",
-      "supplierCode": "373010022"
+      "minStock": 5
     },
     {
       "id": 20075,
@@ -4896,10 +4280,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010032",
-      "sku": "373010032",
-      "supplierCode": "373010032"
+      "minStock": 5
     },
     {
       "id": 20076,
@@ -4908,10 +4289,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373050001",
-      "sku": "373050001",
-      "supplierCode": "373050001"
+      "minStock": 5
     },
     {
       "id": 20077,
@@ -4921,9 +4299,8 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095001",
-      "sku": "353095001",
-      "supplierCode": "353095001"
+      "barcode": "AL0404012",
+      "sku": "0404012"
     },
     {
       "id": 20078,
@@ -4933,9 +4310,8 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371099133",
-      "sku": "371099133",
-      "supplierCode": "371099133"
+      "barcode": "AL0404013",
+      "sku": "0404013"
     },
     {
       "id": 20079,
@@ -4944,10 +4320,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010022",
-      "sku": "373010022",
-      "supplierCode": "373010022"
+      "minStock": 5
     },
     {
       "id": 20080,
@@ -4957,9 +4330,8 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095025",
-      "sku": "353095025",
-      "supplierCode": "353095025"
+      "barcode": "AL5307008",
+      "sku": "5307008"
     },
     {
       "id": 20081,
@@ -4969,9 +4341,8 @@
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353093009",
-      "sku": "353093009",
-      "supplierCode": "353093009"
+      "barcode": "AL.369",
+      "sku": ".369"
     },
     {
       "id": 20082,
@@ -4981,9 +4352,8 @@
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353093003",
-      "sku": "353093003",
-      "supplierCode": "353093003"
+      "barcode": "AL.370",
+      "sku": ".370"
     },
     {
       "id": 20083,
@@ -4992,10 +4362,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333030005",
-      "sku": "333030005",
-      "supplierCode": "333030005"
+      "minStock": 5
     },
     {
       "id": 20084,
@@ -5004,10 +4371,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333030003",
-      "sku": "333030003",
-      "supplierCode": "333030003"
+      "minStock": 5
     },
     {
       "id": 20085,
@@ -5016,10 +4380,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353091013",
-      "sku": "353091013",
-      "supplierCode": "353091013"
+      "minStock": 5
     },
     {
       "id": 20086,
@@ -5028,10 +4389,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333030004",
-      "sku": "333030004",
-      "supplierCode": "333030004"
+      "minStock": 5
     },
     {
       "id": 20087,
@@ -5040,10 +4398,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020003",
-      "sku": "353020003",
-      "supplierCode": "353020003"
+      "minStock": 5
     },
     {
       "id": 20088,
@@ -5052,10 +4407,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353030002",
-      "sku": "353030002",
-      "supplierCode": "353030002"
+      "minStock": 5
     },
     {
       "id": 20089,
@@ -5064,10 +4416,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020003",
-      "sku": "353020003",
-      "supplierCode": "353020003"
+      "minStock": 5
     },
     {
       "id": 20090,
@@ -5077,9 +4426,8 @@
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "373020002",
-      "sku": "373020002",
-      "supplierCode": "373020002"
+      "barcode": "AL0403009",
+      "sku": "0403009"
     },
     {
       "id": 20091,
@@ -5088,10 +4436,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373020003",
-      "sku": "373020003",
-      "supplierCode": "373020003"
+      "minStock": 5
     },
     {
       "id": 20092,
@@ -5100,10 +4445,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060004",
-      "sku": "353060004",
-      "supplierCode": "353060004"
+      "minStock": 5
     },
     {
       "id": 20093,
@@ -5112,10 +4454,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353090002",
-      "sku": "353090002",
-      "supplierCode": "353090002"
+      "minStock": 5
     },
     {
       "id": 20094,
@@ -5124,10 +4463,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060004",
-      "sku": "353060004",
-      "supplierCode": "353060004"
+      "minStock": 5
     },
     {
       "id": 20095,
@@ -5136,10 +4472,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010012",
-      "sku": "373010012",
-      "supplierCode": "373010012"
+      "minStock": 5
     },
     {
       "id": 20096,
@@ -5148,10 +4481,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010029",
-      "sku": "373010029",
-      "supplierCode": "373010029"
+      "minStock": 5
     },
     {
       "id": 20097,
@@ -5160,10 +4490,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080001",
-      "sku": "353080001",
-      "supplierCode": "353080001"
+      "minStock": 5
     },
     {
       "id": 20098,
@@ -5172,10 +4499,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092001",
-      "sku": "353092001",
-      "supplierCode": "353092001"
+      "minStock": 5
     },
     {
       "id": 20099,
@@ -5184,10 +4508,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373050021",
-      "sku": "373050021",
-      "supplierCode": "373050021"
+      "minStock": 5
     },
     {
       "id": 20100,
@@ -5196,10 +4517,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092001",
-      "sku": "353092001",
-      "supplierCode": "353092001"
+      "minStock": 5
     },
     {
       "id": 20101,
@@ -5208,10 +4526,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080001",
-      "sku": "353080001",
-      "supplierCode": "353080001"
+      "minStock": 5
     },
     {
       "id": 20102,
@@ -5220,10 +4535,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093003",
-      "sku": "353093003",
-      "supplierCode": "353093003"
+      "minStock": 5
     },
     {
       "id": 20103,
@@ -5232,10 +4544,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095002",
-      "sku": "353095002",
-      "supplierCode": "353095002"
+      "minStock": 5
     },
     {
       "id": 20104,
@@ -5244,10 +4553,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373040002",
-      "sku": "373040002",
-      "supplierCode": "373040002"
+      "minStock": 5
     },
     {
       "id": 20105,
@@ -5256,10 +4562,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092003",
-      "sku": "352092003",
-      "supplierCode": "352092003"
+      "minStock": 5
     },
     {
       "id": 20106,
@@ -5268,10 +4571,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099913",
-      "sku": "373099913",
-      "supplierCode": "373099913"
+      "minStock": 5
     },
     {
       "id": 20107,
@@ -5280,10 +4580,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099906",
-      "sku": "373099906",
-      "supplierCode": "373099906"
+      "minStock": 5
     },
     {
       "id": 20108,
@@ -5292,10 +4589,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095006",
-      "sku": "353095006",
-      "supplierCode": "353095006"
+      "minStock": 5
     },
     {
       "id": 20109,
@@ -5304,10 +4598,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333010001",
-      "sku": "333010001",
-      "supplierCode": "333010001"
+      "minStock": 5
     },
     {
       "id": 20110,
@@ -5316,10 +4607,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371099135",
-      "sku": "371099135",
-      "supplierCode": "371099135"
+      "minStock": 5
     },
     {
       "id": 20111,
@@ -5328,10 +4616,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095012",
-      "sku": "353095012",
-      "supplierCode": "353095012"
+      "minStock": 5
     },
     {
       "id": 20112,
@@ -5340,10 +4625,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333010002",
-      "sku": "333010002",
-      "supplierCode": "333010002"
+      "minStock": 5
     },
     {
       "id": 20113,
@@ -5352,10 +4634,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020001",
-      "sku": "353020001",
-      "supplierCode": "353020001"
+      "minStock": 5
     },
     {
       "id": 20114,
@@ -5364,10 +4643,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020001",
-      "sku": "353020001",
-      "supplierCode": "353020001"
+      "minStock": 5
     },
     {
       "id": 20115,
@@ -5376,10 +4652,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353040002",
-      "sku": "353040002",
-      "supplierCode": "353040002"
+      "minStock": 5
     },
     {
       "id": 20116,
@@ -5388,10 +4661,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353040002",
-      "sku": "353040002",
-      "supplierCode": "353040002"
+      "minStock": 5
     },
     {
       "id": 20117,
@@ -5400,10 +4670,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060001",
-      "sku": "353060001",
-      "supplierCode": "353060001"
+      "minStock": 5
     },
     {
       "id": 20118,
@@ -5412,10 +4679,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060001",
-      "sku": "353060001",
-      "supplierCode": "353060001"
+      "minStock": 5
     },
     {
       "id": 20119,
@@ -5424,10 +4688,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371099132",
-      "sku": "371099132",
-      "supplierCode": "371099132"
+      "minStock": 5
     },
     {
       "id": 20120,
@@ -5437,9 +4698,8 @@
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "373099901",
-      "sku": "373099901",
-      "supplierCode": "373099901"
+      "barcode": "AL0405010",
+      "sku": "0405010"
     },
     {
       "id": 20121,
@@ -5448,10 +4708,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093001",
-      "sku": "353093001",
-      "supplierCode": "353093001"
+      "minStock": 5
     },
     {
       "id": 20122,
@@ -5460,10 +4717,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333060007",
-      "sku": "333060007",
-      "supplierCode": "333060007"
+      "minStock": 5
     },
     {
       "id": 20123,
@@ -5472,10 +4726,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353095020",
-      "sku": "353095020",
-      "supplierCode": "353095020"
+      "minStock": 5
     },
     {
       "id": 20124,
@@ -5484,10 +4735,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333060008",
-      "sku": "333060008",
-      "supplierCode": "333060008"
+      "minStock": 5
     },
     {
       "id": 20125,
@@ -5496,10 +4744,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020007",
-      "sku": "353020007",
-      "supplierCode": "353020007"
+      "minStock": 5
     },
     {
       "id": 20126,
@@ -5508,10 +4753,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353020007",
-      "sku": "353020007",
-      "supplierCode": "353020007"
+      "minStock": 5
     },
     {
       "id": 20127,
@@ -5520,10 +4762,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093007",
-      "sku": "353093007",
-      "supplierCode": "353093007"
+      "minStock": 5
     },
     {
       "id": 20128,
@@ -5532,10 +4771,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353050007",
-      "sku": "353050007",
-      "supplierCode": "353050007"
+      "minStock": 5
     },
     {
       "id": 20129,
@@ -5544,10 +4780,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353060000",
-      "sku": "353060000",
-      "supplierCode": "353060000"
+      "minStock": 5
     },
     {
       "id": 20130,
@@ -5556,10 +4789,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092008",
-      "sku": "352092008",
-      "supplierCode": "352092008"
+      "minStock": 5
     },
     {
       "id": 30000,
@@ -6979,10 +6209,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020001",
-      "sku": "332020001",
-      "supplierCode": "332020001"
+      "minStock": 5
     },
     {
       "id": 40001,
@@ -6991,10 +6218,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020002",
-      "sku": "332020002",
-      "supplierCode": "332020002"
+      "minStock": 5
     },
     {
       "id": 40002,
@@ -7003,10 +6227,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020003",
-      "sku": "332020003",
-      "supplierCode": "332020003"
+      "minStock": 5
     },
     {
       "id": 40003,
@@ -7015,10 +6236,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020004",
-      "sku": "332020004",
-      "supplierCode": "332020004"
+      "minStock": 5
     },
     {
       "id": 40004,
@@ -7027,10 +6245,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "342030001",
-      "sku": "342030001",
-      "supplierCode": "342030001"
+      "minStock": 5
     },
     {
       "id": 40005,
@@ -7040,9 +6255,8 @@
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342020001",
-      "sku": "342020001",
-      "supplierCode": "342020001"
+      "barcode": "AL0901011",
+      "sku": "0901011"
     },
     {
       "id": 40006,
@@ -7051,10 +6265,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "342020002",
-      "sku": "342020002",
-      "supplierCode": "342020002"
+      "minStock": 5
     },
     {
       "id": 40007,
@@ -7063,10 +6274,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "342020005",
-      "sku": "342020005",
-      "supplierCode": "342020005"
+      "minStock": 5
     },
     {
       "id": 40008,
@@ -7075,10 +6283,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "342020010",
-      "sku": "342020010",
-      "supplierCode": "342020010"
+      "minStock": 5
     },
     {
       "id": 40009,
@@ -7088,9 +6293,8 @@
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342010022",
-      "sku": "342010022",
-      "supplierCode": "342010022"
+      "barcode": "AL1447",
+      "sku": "1447"
     },
     {
       "id": 40010,
@@ -7100,9 +6304,8 @@
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371040029",
-      "sku": "371040029",
-      "supplierCode": "371040029"
+      "barcode": "AL1463",
+      "sku": "1463"
     },
     {
       "id": 40011,
@@ -7111,10 +6314,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020020",
-      "sku": "332020020",
-      "supplierCode": "332020020"
+      "minStock": 5
     },
     {
       "id": 40012,
@@ -7123,10 +6323,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010011",
-      "sku": "352010011",
-      "supplierCode": "352010011"
+      "minStock": 5
     },
     {
       "id": 40013,
@@ -7135,10 +6332,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010015",
-      "sku": "352010015",
-      "supplierCode": "352010015"
+      "minStock": 5
     },
     {
       "id": 40014,
@@ -7147,10 +6341,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040014",
-      "sku": "352040014",
-      "supplierCode": "352040014"
+      "minStock": 5
     },
     {
       "id": 40015,
@@ -7159,10 +6350,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040010",
-      "sku": "352040010",
-      "supplierCode": "352040010"
+      "minStock": 5
     },
     {
       "id": 40016,
@@ -7171,10 +6359,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080004",
-      "sku": "352080004",
-      "supplierCode": "352080004"
+      "minStock": 5
     },
     {
       "id": 40017,
@@ -7183,10 +6368,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092006",
-      "sku": "352092006",
-      "supplierCode": "352092006"
+      "minStock": 5
     },
     {
       "id": 40018,
@@ -7195,10 +6377,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070009",
-      "sku": "352070009",
-      "supplierCode": "352070009"
+      "minStock": 5
     },
     {
       "id": 40019,
@@ -7207,10 +6386,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020004",
-      "sku": "332020004",
-      "supplierCode": "332020004"
+      "minStock": 5
     },
     {
       "id": 40020,
@@ -7219,10 +6395,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010006",
-      "sku": "352010006",
-      "supplierCode": "352010006"
+      "minStock": 5
     },
     {
       "id": 40021,
@@ -7231,10 +6404,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010006",
-      "sku": "352010006",
-      "supplierCode": "352010006"
+      "minStock": 5
     },
     {
       "id": 40022,
@@ -7243,10 +6413,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040006",
-      "sku": "352040006",
-      "supplierCode": "352040006"
+      "minStock": 5
     },
     {
       "id": 40023,
@@ -7255,10 +6422,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040012",
-      "sku": "352040012",
-      "supplierCode": "352040012"
+      "minStock": 5
     },
     {
       "id": 40024,
@@ -7267,10 +6431,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040014",
-      "sku": "352040014",
-      "supplierCode": "352040014"
+      "minStock": 5
     },
     {
       "id": 40025,
@@ -7279,10 +6440,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080007",
-      "sku": "352080007",
-      "supplierCode": "352080007"
+      "minStock": 5
     },
     {
       "id": 40026,
@@ -7291,10 +6449,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092009",
-      "sku": "352092009",
-      "supplierCode": "352092009"
+      "minStock": 5
     },
     {
       "id": 40027,
@@ -7303,10 +6458,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020010",
-      "sku": "332020010",
-      "supplierCode": "332020010"
+      "minStock": 5
     },
     {
       "id": 40028,
@@ -7315,10 +6467,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010009",
-      "sku": "352010009",
-      "supplierCode": "352010009"
+      "minStock": 5
     },
     {
       "id": 40029,
@@ -7327,10 +6476,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010009",
-      "sku": "352010009",
-      "supplierCode": "352010009"
+      "minStock": 5
     },
     {
       "id": 40030,
@@ -7339,10 +6485,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040009",
-      "sku": "352040009",
-      "supplierCode": "352040009"
+      "minStock": 5
     },
     {
       "id": 40031,
@@ -7351,10 +6494,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050015",
-      "sku": "352050015",
-      "supplierCode": "352050015"
+      "minStock": 5
     },
     {
       "id": 40032,
@@ -7363,10 +6503,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040018",
-      "sku": "352040018",
-      "supplierCode": "352040018"
+      "minStock": 5
     },
     {
       "id": 40033,
@@ -7375,10 +6512,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040017",
-      "sku": "352040017",
-      "supplierCode": "352040017"
+      "minStock": 5
     },
     {
       "id": 40034,
@@ -7387,10 +6521,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080009",
-      "sku": "352080009",
-      "supplierCode": "352080009"
+      "minStock": 5
     },
     {
       "id": 40035,
@@ -7399,10 +6530,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092011",
-      "sku": "352092011",
-      "supplierCode": "352092011"
+      "minStock": 5
     },
     {
       "id": 40036,
@@ -7411,10 +6539,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "333020011",
-      "sku": "333020011",
-      "supplierCode": "333020011"
+      "minStock": 5
     },
     {
       "id": 40037,
@@ -7424,9 +6549,8 @@
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020010",
-      "sku": "352020010",
-      "supplierCode": "352020010"
+      "barcode": "AL0902002",
+      "sku": "0902002"
     },
     {
       "id": 40038,
@@ -7435,10 +6559,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020010",
-      "sku": "352020010",
-      "supplierCode": "352020010"
+      "minStock": 5
     },
     {
       "id": 40039,
@@ -7448,9 +6569,8 @@
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080010",
-      "sku": "352080010",
-      "supplierCode": "352080010"
+      "barcode": "AL0902004",
+      "sku": "0902004"
     },
     {
       "id": 40040,
@@ -7460,9 +6580,8 @@
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093002",
-      "sku": "352093002",
-      "supplierCode": "352093002"
+      "barcode": "AL0902005",
+      "sku": "0902005"
     },
     {
       "id": 40041,
@@ -7471,10 +6590,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352060001",
-      "sku": "352060001",
-      "supplierCode": "352060001"
+      "minStock": 5
     },
     {
       "id": 40042,
@@ -7483,10 +6599,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050002",
-      "sku": "352050002",
-      "supplierCode": "352050002"
+      "minStock": 5
     },
     {
       "id": 40043,
@@ -7495,10 +6608,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092013",
-      "sku": "352092013",
-      "supplierCode": "352092013"
+      "minStock": 5
     },
     {
       "id": 40044,
@@ -7507,10 +6617,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092012",
-      "sku": "352092012",
-      "supplierCode": "352092012"
+      "minStock": 5
     },
     {
       "id": 40045,
@@ -7519,10 +6626,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080018",
-      "sku": "352080018",
-      "supplierCode": "352080018"
+      "minStock": 5
     },
     {
       "id": 40046,
@@ -7531,10 +6635,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "377020020",
-      "sku": "377020020",
-      "supplierCode": "377020020"
+      "minStock": 5
     },
     {
       "id": 40047,
@@ -7543,10 +6644,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "377020021",
-      "sku": "377020021",
-      "supplierCode": "377020021"
+      "minStock": 5
     },
     {
       "id": 40048,
@@ -7555,10 +6653,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "377020022",
-      "sku": "377020022",
-      "supplierCode": "377020022"
+      "minStock": 5
     },
     {
       "id": 40049,
@@ -7567,10 +6662,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352091007",
-      "sku": "352091007",
-      "supplierCode": "352091007"
+      "minStock": 5
     },
     {
       "id": 40050,
@@ -7579,10 +6671,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020004",
-      "sku": "352020004",
-      "supplierCode": "352020004"
+      "minStock": 5
     },
     {
       "id": 40051,
@@ -7591,10 +6680,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010002",
-      "sku": "352010002",
-      "supplierCode": "352010002"
+      "minStock": 5
     },
     {
       "id": 40052,
@@ -7603,10 +6689,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080002",
-      "sku": "352080002",
-      "supplierCode": "352080002"
+      "minStock": 5
     },
     {
       "id": 40053,
@@ -7615,10 +6698,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352091002",
-      "sku": "352091002",
-      "supplierCode": "352091002"
+      "minStock": 5
     },
     {
       "id": 40054,
@@ -7627,10 +6707,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020002",
-      "sku": "352020002",
-      "supplierCode": "352020002"
+      "minStock": 5
     },
     {
       "id": 40055,
@@ -7640,9 +6717,8 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091002",
-      "sku": "352091002",
-      "supplierCode": "352091002"
+      "barcode": "AL09040010",
+      "sku": "09040010"
     },
     {
       "id": 40056,
@@ -7651,10 +6727,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010002",
-      "sku": "352010002",
-      "supplierCode": "352010002"
+      "minStock": 5
     },
     {
       "id": 40057,
@@ -7664,9 +6737,8 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080002",
-      "sku": "352080002",
-      "supplierCode": "352080002"
+      "barcode": "AL0904003",
+      "sku": "0904003"
     },
     {
       "id": 40058,
@@ -7675,10 +6747,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040005",
-      "sku": "352040005",
-      "supplierCode": "352040005"
+      "minStock": 5
     },
     {
       "id": 40059,
@@ -7688,9 +6757,8 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093001",
-      "sku": "352093001",
-      "supplierCode": "352093001"
+      "barcode": "AL0904005",
+      "sku": "0904005"
     },
     {
       "id": 40060,
@@ -7700,9 +6768,8 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080012",
-      "sku": "352080012",
-      "supplierCode": "352080012"
+      "barcode": "AL0904006",
+      "sku": "0904006"
     },
     {
       "id": 40061,
@@ -7712,9 +6779,8 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020007",
-      "sku": "352020007",
-      "supplierCode": "352020007"
+      "barcode": "AL0904007",
+      "sku": "0904007"
     },
     {
       "id": 40062,
@@ -7723,10 +6789,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093001",
-      "sku": "352093001",
-      "supplierCode": "352093001"
+      "minStock": 5
     },
     {
       "id": 40063,
@@ -7735,10 +6798,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080017",
-      "sku": "352080017",
-      "supplierCode": "352080017"
+      "minStock": 5
     },
     {
       "id": 40064,
@@ -7748,9 +6808,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352094003",
-      "sku": "352094003",
-      "supplierCode": "352094003"
+      "barcode": "AL.1385",
+      "sku": ".1385"
     },
     {
       "id": 40065,
@@ -7759,10 +6818,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010003",
-      "sku": "352010003",
-      "supplierCode": "352010003"
+      "minStock": 5
     },
     {
       "id": 40066,
@@ -7771,10 +6827,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040006",
-      "sku": "352040006",
-      "supplierCode": "352040006"
+      "minStock": 5
     },
     {
       "id": 40067,
@@ -7784,9 +6837,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040013",
-      "sku": "352040013",
-      "supplierCode": "352040013"
+      "barcode": "AL090500027",
+      "sku": "090500027"
     },
     {
       "id": 40068,
@@ -7795,10 +6847,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093002",
-      "sku": "352093002",
-      "supplierCode": "352093002"
+      "minStock": 5
     },
     {
       "id": 40069,
@@ -7808,9 +6857,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091003",
-      "sku": "352091003",
-      "supplierCode": "352091003"
+      "barcode": "AL09050020",
+      "sku": "09050020"
     },
     {
       "id": 40070,
@@ -7819,10 +6867,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092002",
-      "sku": "352092002",
-      "supplierCode": "352092002"
+      "minStock": 5
     },
     {
       "id": 40071,
@@ -7832,9 +6877,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352030004",
-      "sku": "352030004",
-      "supplierCode": "352030004"
+      "barcode": "AL09050026",
+      "sku": "09050026"
     },
     {
       "id": 40072,
@@ -7843,10 +6887,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070002",
-      "sku": "352070002",
-      "supplierCode": "352070002"
+      "minStock": 5
     },
     {
       "id": 40073,
@@ -7855,10 +6896,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040006",
-      "sku": "352040006",
-      "supplierCode": "352040006"
+      "minStock": 5
     },
     {
       "id": 40074,
@@ -7867,10 +6905,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050005",
-      "sku": "352050005",
-      "supplierCode": "352050005"
+      "minStock": 5
     },
     {
       "id": 40075,
@@ -7880,9 +6915,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080003",
-      "sku": "352080003",
-      "supplierCode": "352080003"
+      "barcode": "AL0905006",
+      "sku": "0905006"
     },
     {
       "id": 40076,
@@ -7891,10 +6925,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070002",
-      "sku": "352070002",
-      "supplierCode": "352070002"
+      "minStock": 5
     },
     {
       "id": 40077,
@@ -7903,10 +6934,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070001",
-      "sku": "352070001",
-      "supplierCode": "352070001"
+      "minStock": 5
     },
     {
       "id": 40078,
@@ -7915,10 +6943,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020003",
-      "sku": "352020003",
-      "supplierCode": "352020003"
+      "minStock": 5
     },
     {
       "id": 40079,
@@ -7928,9 +6953,8 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080019",
-      "sku": "352080019",
-      "supplierCode": "352080019"
+      "barcode": "AL59050002",
+      "sku": "59050002"
     },
     {
       "id": 40080,
@@ -7939,10 +6963,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099939",
-      "sku": "373099939",
-      "supplierCode": "373099939"
+      "minStock": 5
     },
     {
       "id": 40081,
@@ -7951,10 +6972,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020004",
-      "sku": "352020004",
-      "supplierCode": "352020004"
+      "minStock": 5
     },
     {
       "id": 40082,
@@ -7964,9 +6982,8 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352030005",
-      "sku": "352030005",
-      "supplierCode": "352030005"
+      "barcode": "AL09060002",
+      "sku": "09060002"
     },
     {
       "id": 40083,
@@ -7975,10 +6992,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352030003",
-      "sku": "352030003",
-      "supplierCode": "352030003"
+      "minStock": 5
     },
     {
       "id": 40084,
@@ -7987,10 +7001,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050001",
-      "sku": "352050001",
-      "supplierCode": "352050001"
+      "minStock": 5
     },
     {
       "id": 40085,
@@ -7999,10 +7010,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080004",
-      "sku": "352080004",
-      "supplierCode": "352080004"
+      "minStock": 5
     },
     {
       "id": 40086,
@@ -8011,10 +7019,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070006",
-      "sku": "352070006",
-      "supplierCode": "352070006"
+      "minStock": 5
     },
     {
       "id": 40087,
@@ -8024,9 +7029,8 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080013",
-      "sku": "352080013",
-      "supplierCode": "352080013"
+      "barcode": "AL09060007",
+      "sku": "09060007"
     },
     {
       "id": 40088,
@@ -8035,10 +7039,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352099905",
-      "sku": "352099905",
-      "supplierCode": "352099905"
+      "minStock": 5
     },
     {
       "id": 40089,
@@ -8047,10 +7048,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092003",
-      "sku": "352092003",
-      "supplierCode": "352092003"
+      "minStock": 5
     },
     {
       "id": 40090,
@@ -8059,10 +7057,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092004",
-      "sku": "352092004",
-      "supplierCode": "352092004"
+      "minStock": 5
     },
     {
       "id": 40091,
@@ -8072,9 +7067,8 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091004",
-      "sku": "352091004",
-      "supplierCode": "352091004"
+      "barcode": "AL09060011",
+      "sku": "09060011"
     },
     {
       "id": 40092,
@@ -8083,10 +7077,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093003",
-      "sku": "352093003",
-      "supplierCode": "352093003"
+      "minStock": 5
     },
     {
       "id": 40093,
@@ -8095,10 +7086,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040007",
-      "sku": "352040007",
-      "supplierCode": "352040007"
+      "minStock": 5
     },
     {
       "id": 40094,
@@ -8107,10 +7095,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040008",
-      "sku": "352040008",
-      "supplierCode": "352040008"
+      "minStock": 5
     },
     {
       "id": 40095,
@@ -8119,10 +7104,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040009",
-      "sku": "352040009",
-      "supplierCode": "352040009"
+      "minStock": 5
     },
     {
       "id": 40096,
@@ -8131,10 +7113,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050007",
-      "sku": "352050007",
-      "supplierCode": "352050007"
+      "minStock": 5
     },
     {
       "id": 40097,
@@ -8143,10 +7122,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070005",
-      "sku": "352070005",
-      "supplierCode": "352070005"
+      "minStock": 5
     },
     {
       "id": 40098,
@@ -8155,10 +7131,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070003",
-      "sku": "352070003",
-      "supplierCode": "352070003"
+      "minStock": 5
     },
     {
       "id": 40099,
@@ -8167,10 +7140,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070004",
-      "sku": "352070004",
-      "supplierCode": "352070004"
+      "minStock": 5
     },
     {
       "id": 40100,
@@ -8179,10 +7149,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040017",
-      "sku": "352040017",
-      "supplierCode": "352040017"
+      "minStock": 5
     },
     {
       "id": 40101,
@@ -8191,10 +7158,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040016",
-      "sku": "352040016",
-      "supplierCode": "352040016"
+      "minStock": 5
     },
     {
       "id": 40102,
@@ -8203,10 +7167,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352060002",
-      "sku": "352060002",
-      "supplierCode": "352060002"
+      "minStock": 5
     },
     {
       "id": 40103,
@@ -8215,10 +7176,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070007",
-      "sku": "352070007",
-      "supplierCode": "352070007"
+      "minStock": 5
     },
     {
       "id": 40104,
@@ -8227,10 +7185,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092003",
-      "sku": "352092003",
-      "supplierCode": "352092003"
+      "minStock": 5
     },
     {
       "id": 40105,
@@ -8239,10 +7194,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092004",
-      "sku": "352092004",
-      "supplierCode": "352092004"
+      "minStock": 5
     },
     {
       "id": 40106,
@@ -8252,9 +7204,8 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352094001",
-      "sku": "352094001",
-      "supplierCode": "352094001"
+      "barcode": "AL09060026",
+      "sku": "09060026"
     },
     {
       "id": 40107,
@@ -8263,10 +7214,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050019",
-      "sku": "352050019",
-      "supplierCode": "352050019"
+      "minStock": 5
     },
     {
       "id": 40108,
@@ -8275,10 +7223,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050009",
-      "sku": "352050009",
-      "supplierCode": "352050009"
+      "minStock": 5
     },
     {
       "id": 40109,
@@ -8287,10 +7232,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040023",
-      "sku": "352040023",
-      "supplierCode": "352040023"
+      "minStock": 5
     },
     {
       "id": 40110,
@@ -8299,10 +7241,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040018",
-      "sku": "352040018",
-      "supplierCode": "352040018"
+      "minStock": 5
     },
     {
       "id": 40111,
@@ -8312,9 +7251,8 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020005",
-      "sku": "352020005",
-      "supplierCode": "352020005"
+      "barcode": "AL09070001",
+      "sku": "09070001"
     },
     {
       "id": 40112,
@@ -8323,10 +7261,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020010",
-      "sku": "332020010",
-      "supplierCode": "332020010"
+      "minStock": 5
     },
     {
       "id": 40113,
@@ -8336,9 +7271,8 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352094002",
-      "sku": "352094002",
-      "supplierCode": "352094002"
+      "barcode": "AL090700012",
+      "sku": "090700012"
     },
     {
       "id": 40114,
@@ -8348,9 +7282,8 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080008",
-      "sku": "352080008",
-      "supplierCode": "352080008"
+      "barcode": "AL090700013",
+      "sku": "090700013"
     },
     {
       "id": 40115,
@@ -8359,10 +7292,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050003",
-      "sku": "352050003",
-      "supplierCode": "352050003"
+      "minStock": 5
     },
     {
       "id": 40116,
@@ -8372,9 +7302,8 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020005",
-      "sku": "352020005",
-      "supplierCode": "352020005"
+      "barcode": "AL09070002",
+      "sku": "09070002"
     },
     {
       "id": 40117,
@@ -8383,10 +7312,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040015",
-      "sku": "352040015",
-      "supplierCode": "352040015"
+      "minStock": 5
     },
     {
       "id": 40118,
@@ -8395,10 +7321,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352050012",
-      "sku": "352050012",
-      "supplierCode": "352050012"
+      "minStock": 5
     },
     {
       "id": 40119,
@@ -8407,10 +7330,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093005",
-      "sku": "352093005",
-      "supplierCode": "352093005"
+      "minStock": 5
     },
     {
       "id": 40120,
@@ -8419,10 +7339,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093004",
-      "sku": "352093004",
-      "supplierCode": "352093004"
+      "minStock": 5
     },
     {
       "id": 40121,
@@ -8431,10 +7348,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080005",
-      "sku": "352080005",
-      "supplierCode": "352080005"
+      "minStock": 5
     },
     {
       "id": 40122,
@@ -8443,10 +7357,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092005",
-      "sku": "352092005",
-      "supplierCode": "352092005"
+      "minStock": 5
     },
     {
       "id": 40123,
@@ -8456,9 +7367,8 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080014",
-      "sku": "352080014",
-      "supplierCode": "352080014"
+      "barcode": "AL09070010",
+      "sku": "09070010"
     },
     {
       "id": 40124,
@@ -8467,10 +7377,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352030005",
-      "sku": "352030005",
-      "supplierCode": "352030005"
+      "minStock": 5
     },
     {
       "id": 40125,
@@ -8479,10 +7386,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "377020020",
-      "sku": "377020020",
-      "supplierCode": "377020020"
+      "minStock": 5
     },
     {
       "id": 40126,
@@ -8491,10 +7395,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "375029908",
-      "sku": "375029908",
-      "supplierCode": "375029908"
+      "minStock": 5
     },
     {
       "id": 40127,
@@ -8503,10 +7404,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099939",
-      "sku": "373099939",
-      "supplierCode": "373099939"
+      "minStock": 5
     },
     {
       "id": 40128,
@@ -8516,9 +7414,8 @@
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342020001",
-      "sku": "342020001",
-      "supplierCode": "342020001"
+      "barcode": "AL09080003",
+      "sku": "09080003"
     },
     {
       "id": 40129,
@@ -8528,9 +7425,8 @@
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342020010",
-      "sku": "342020010",
-      "supplierCode": "342020010"
+      "barcode": "AL09080004",
+      "sku": "09080004"
     },
     {
       "id": 40130,
@@ -8540,9 +7436,8 @@
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "375020002",
-      "sku": "375020002",
-      "supplierCode": "375020002"
+      "barcode": "AL09080005",
+      "sku": "09080005"
     },
     {
       "id": 40131,
@@ -8551,10 +7446,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "375020029",
-      "sku": "375020029",
-      "supplierCode": "375020029"
+      "minStock": 5
     },
     {
       "id": 40132,
@@ -8563,10 +7455,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352092007",
-      "sku": "352092007",
-      "supplierCode": "352092007"
+      "minStock": 5
     },
     {
       "id": 40133,
@@ -8575,10 +7464,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020001",
-      "sku": "332020001",
-      "supplierCode": "332020001"
+      "minStock": 5
     },
     {
       "id": 40134,
@@ -8587,10 +7473,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020001",
-      "sku": "352020001",
-      "supplierCode": "352020001"
+      "minStock": 5
     },
     {
       "id": 40135,
@@ -8599,10 +7482,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352020008",
-      "sku": "352020008",
-      "supplierCode": "352020008"
+      "minStock": 5
     },
     {
       "id": 40136,
@@ -8611,10 +7491,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352080009",
-      "sku": "352080009",
-      "supplierCode": "352080009"
+      "minStock": 5
     },
     {
       "id": 40137,
@@ -8623,10 +7500,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040001",
-      "sku": "352040001",
-      "supplierCode": "352040001"
+      "minStock": 5
     },
     {
       "id": 40138,
@@ -8635,10 +7509,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352093001",
-      "sku": "352093001",
-      "supplierCode": "352093001"
+      "minStock": 5
     },
     {
       "id": 40139,
@@ -8648,9 +7519,8 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091006",
-      "sku": "352091006",
-      "supplierCode": "352091006"
+      "barcode": "AL0909007",
+      "sku": "0909007"
     },
     {
       "id": 50000,
@@ -9554,7 +8424,9 @@
       "mainCategoryId": "مجموعه دروفت +ايديال",
       "subCategoryId": "طابق بانيو + حوض",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.734",
+      "sku": ".734"
     },
     {
       "id": 50096,
@@ -10342,7 +9214,9 @@
       "mainCategoryId": "خلاطات",
       "subCategoryId": "خلاط مطبخ الشيف",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.980",
+      "sku": ".980"
     },
     {
       "id": 60059,
@@ -10362,7 +9236,9 @@
       "mainCategoryId": "خلاطات",
       "subCategoryId": "خلاط مطبخ الشيف",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.982",
+      "sku": ".982"
     },
     {
       "id": 60061,
@@ -10427,7 +9303,9 @@
       "mainCategoryId": "خلاطات",
       "subCategoryId": "خلاطات شواي",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.1002",
+      "sku": ".1002"
     },
     {
       "id": 60068,
@@ -10560,7 +9438,9 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "أفيز فيشر",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL53120195",
+      "sku": "53120195"
     },
     {
       "id": 70005,
@@ -10569,7 +9449,9 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "أفيز فيشر",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040335",
+      "sku": "01040335"
     },
     {
       "id": 70006,
@@ -10670,7 +9552,9 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "طقم مسمار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.488",
+      "sku": ".488"
     },
     {
       "id": 70017,
@@ -10816,7 +9700,9 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "تفلون + غراء + سيليكون",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102029",
+      "sku": "0102029"
     },
     {
       "id": 70031,
@@ -12714,7 +11600,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ٤/٣ بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040334",
+      "sku": "01040334"
     },
     {
       "id": 80153,
@@ -12723,7 +11611,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ٤/٣ بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040333",
+      "sku": "01040333"
     },
     {
       "id": 80154,
@@ -12926,7 +11816,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL53120195",
+      "sku": "53120195"
     },
     {
       "id": 80175,
@@ -12968,7 +11860,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040335",
+      "sku": "01040335"
     },
     {
       "id": 80179,
@@ -12999,7 +11893,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040333",
+      "sku": "01040333"
     },
     {
       "id": 80182,
@@ -13008,7 +11904,9 @@
       "mainCategoryId": "الاهرام بولي+صرف",
       "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040334",
+      "sku": "01040334"
     },
     {
       "id": 80183,
@@ -13495,7 +12393,9 @@
       "subCategoryId": "صينى سان بيور ليسيكو",
       "mainCategoryId": "سانبيور+ديروفيت+ايديال+ليسكو",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0119",
+      "sku": "0119"
     },
     {
       "id": 90021,
@@ -14259,7 +13159,9 @@
       "subCategoryId": "سداري سوفت",
       "mainCategoryId": "سانبيور+ديروفيت+ايديال+ليسكو",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0744",
+      "sku": "0744"
     },
     {
       "id": 90093,
@@ -14323,7 +13225,9 @@
       "subCategoryId": "مرحاض معلق سانبيور",
       "mainCategoryId": "سانبيور+ديروفيت+ايديال+ليسكو",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0748",
+      "sku": "0748"
     },
     {
       "id": 90099,
@@ -14773,7 +13677,9 @@
       "subCategoryId": "اتوماتيك ماتور",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0212",
+      "sku": "0212"
     },
     {
       "id": 100024,
@@ -15129,7 +14035,9 @@
       "subCategoryId": "جهاز ماتور",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0226",
+      "sku": "0226"
     },
     {
       "id": 100058,
@@ -15149,7 +14057,9 @@
       "subCategoryId": "جهاز ماتور",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0228",
+      "sku": "0228"
     },
     {
       "id": 100060,
@@ -15191,7 +14101,9 @@
       "subCategoryId": "ماتور ١ حصان",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0303",
+      "sku": "0303"
     },
     {
       "id": 100064,
@@ -15211,7 +14123,9 @@
       "subCategoryId": "ماتور ١ حصان",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0304",
+      "sku": "0304"
     },
     {
       "id": 100066,
@@ -15275,7 +14189,9 @@
       "subCategoryId": "ماتور ١ حصان",
       "mainCategoryId": "مجموعه مواتير",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0311",
+      "sku": "0311"
     },
     {
       "id": 110001,
@@ -17104,7 +16020,9 @@
       "subCategoryId": "قطع صرف رمادي ضغط 80",
       "mainCategoryId": "قطع صرف 6 بوصه",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL70010000237",
+      "sku": "70010000237"
     },
     {
       "id": 140091,
@@ -17699,7 +16617,9 @@
       "mainCategoryId": "جوليت صيني",
       "subCategoryId": "جوليت صيني",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL66010013",
+      "sku": "66010013"
     },
     {
       "id": 150014,
@@ -17770,7 +16690,9 @@
       "mainCategoryId": "جوليت صيني",
       "subCategoryId": "جوليت صيني",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL6601003",
+      "sku": "6601003"
     },
     {
       "id": 150021,
@@ -17823,7 +16745,9 @@
       "mainCategoryId": "جوليت صيني",
       "subCategoryId": "جوليت صيني",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL6601008",
+      "sku": "6601008"
     },
     {
       "id": 150026,
@@ -18316,7 +17240,9 @@
       "mainCategoryId": "مكن كومبينيشمن",
       "subCategoryId": "سيديلى + مسمار تثبيت",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.498",
+      "sku": ".498"
     },
     {
       "id": 160047,
@@ -18941,7 +17867,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "جلب بلاكور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.11",
+      "sku": ".11"
     },
     {
       "id": 171033,
@@ -19116,7 +18044,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "جلب بلاكور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.30",
+      "sku": ".30"
     },
     {
       "id": 171050,
@@ -19526,7 +18456,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.55",
+      "sku": ".55"
     },
     {
       "id": 171090,
@@ -19579,7 +18511,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.62",
+      "sku": ".62"
     },
     {
       "id": 171095,
@@ -19588,7 +18522,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.60",
+      "sku": ".60"
     },
     {
       "id": 171096,
@@ -19630,7 +18566,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171100,
@@ -19650,7 +18588,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171102,
@@ -19659,7 +18599,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171103,
@@ -19690,7 +18632,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171106,
@@ -19699,7 +18643,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171107,
@@ -19708,7 +18654,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171108,
@@ -19717,7 +18665,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "محبس بلية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.70",
+      "sku": ".70"
     },
     {
       "id": 171109,
@@ -19746,7 +18696,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171112,
@@ -19755,7 +18707,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171113,
@@ -19764,7 +18718,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171114,
@@ -19773,7 +18729,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171115,
@@ -19782,7 +18740,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171116,
@@ -19802,7 +18762,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.109",
+      "sku": ".109"
     },
     {
       "id": 171118,
@@ -19844,7 +18806,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.89",
+      "sku": ".89"
     },
     {
       "id": 171122,
@@ -19886,7 +18850,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.94",
+      "sku": ".94"
     },
     {
       "id": 171126,
@@ -19939,7 +18905,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف نحاس",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.99",
+      "sku": ".99"
     },
     {
       "id": 171131,
@@ -20025,7 +18993,9 @@
       "mainCategoryId": "قطع بلاكور+محابس+شيك بلف",
       "subCategoryId": "شيك بلف سخان",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.113",
+      "sku": ".113"
     },
     {
       "id": 171139,
@@ -20144,7 +19114,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL20",
+      "sku": "20"
     },
     {
       "id": 171150,
@@ -20153,7 +19125,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000011",
+      "sku": "7001000011"
     },
     {
       "id": 171151,
@@ -20162,7 +19136,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000012",
+      "sku": "7001000012"
     },
     {
       "id": 171152,
@@ -20171,7 +19147,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL70010000120",
+      "sku": "70010000120"
     },
     {
       "id": 171153,
@@ -20180,7 +19158,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL70010000121",
+      "sku": "70010000121"
     },
     {
       "id": 171154,
@@ -20189,7 +19169,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL70010000122",
+      "sku": "70010000122"
     },
     {
       "id": 171155,
@@ -20216,7 +19198,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000013",
+      "sku": "7001000013"
     },
     {
       "id": 171158,
@@ -20225,7 +19209,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000014",
+      "sku": "7001000014"
     },
     {
       "id": 171159,
@@ -20234,7 +19220,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000015",
+      "sku": "7001000015"
     },
     {
       "id": 171160,
@@ -20252,7 +19240,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000017",
+      "sku": "7001000017"
     },
     {
       "id": 171162,
@@ -20261,7 +19251,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000018",
+      "sku": "7001000018"
     },
     {
       "id": 171163,
@@ -20270,7 +19262,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000019",
+      "sku": "7001000019"
     },
     {
       "id": 171164,
@@ -20310,7 +19304,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ٣/٤ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL7001000029",
+      "sku": "7001000029"
     },
     {
       "id": 171168,
@@ -20794,7 +19790,9 @@
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١,٥ بوصة اكوا استار",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL70010000351",
+      "sku": "70010000351"
     },
     {
       "id": 171216,
@@ -21123,7 +20121,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.114",
+      "sku": ".114"
     },
     {
       "id": 171249,
@@ -21132,7 +20132,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.115",
+      "sku": ".115"
     },
     {
       "id": 171250,
@@ -21141,7 +20143,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.116",
+      "sku": ".116"
     },
     {
       "id": 171251,
@@ -21150,7 +20154,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.117",
+      "sku": ".117"
     },
     {
       "id": 171252,
@@ -21159,7 +20165,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.121",
+      "sku": ".121"
     },
     {
       "id": 171253,
@@ -21168,7 +20176,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.119",
+      "sku": ".119"
     },
     {
       "id": 171254,
@@ -21177,7 +20187,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.115",
+      "sku": ".115"
     },
     {
       "id": 171255,
@@ -21186,7 +20198,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.121",
+      "sku": ".121"
     },
     {
       "id": 171256,
@@ -21195,7 +20209,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.122",
+      "sku": ".122"
     },
     {
       "id": 171257,
@@ -21204,7 +20220,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.123",
+      "sku": ".123"
     },
     {
       "id": 171258,
@@ -21213,7 +20231,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.124",
+      "sku": ".124"
     },
     {
       "id": 171259,
@@ -21222,7 +20242,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.295",
+      "sku": ".295"
     },
     {
       "id": 171260,
@@ -21231,7 +20253,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.861",
+      "sku": ".861"
     },
     {
       "id": 171261,
@@ -21240,7 +20264,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.122",
+      "sku": ".122"
     },
     {
       "id": 171262,
@@ -21249,7 +20275,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040334",
+      "sku": "01040334"
     },
     {
       "id": 171263,
@@ -21258,7 +20286,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.998",
+      "sku": ".998"
     },
     {
       "id": 171264,
@@ -21267,7 +20297,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL01040333",
+      "sku": "01040333"
     },
     {
       "id": 171265,
@@ -21764,7 +20796,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "قلب+اوكرة+قنطرة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.155",
+      "sku": ".155"
     },
     {
       "id": 171312,
@@ -21968,7 +21002,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "قلب+اوكرة+قنطرة",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.225",
+      "sku": ".225"
     },
     {
       "id": 171332,
@@ -22054,7 +21090,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.196",
+      "sku": ".196"
     },
     {
       "id": 171340,
@@ -22176,7 +21214,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.199",
+      "sku": ".199"
     },
     {
       "id": 171352,
@@ -22194,7 +21234,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.189",
+      "sku": ".189"
     },
     {
       "id": 171354,
@@ -22203,7 +21245,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.189",
+      "sku": ".189"
     },
     {
       "id": 171355,
@@ -22294,7 +21338,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.191",
+      "sku": ".191"
     },
     {
       "id": 171364,
@@ -22303,7 +21349,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "نبل + مساليب نيكل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.191",
+      "sku": ".191"
     },
     {
       "id": 171365,
@@ -22721,7 +21769,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات غساله",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.128",
+      "sku": ".128"
     },
     {
       "id": 171405,
@@ -22730,7 +21780,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات غساله",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.129",
+      "sku": ".129"
     },
     {
       "id": 171406,
@@ -22750,7 +21802,9 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "حنفيات غساله",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.128",
+      "sku": ".128"
     },
     {
       "id": 171408,
@@ -22801,7 +21855,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة تجاري",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.228",
+      "sku": ".228"
     },
     {
       "id": 171413,
@@ -22810,7 +21866,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة تجاري",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL0102025",
+      "sku": "0102025"
     },
     {
       "id": 171414,
@@ -22819,7 +21877,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة تجاري",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.230",
+      "sku": ".230"
     },
     {
       "id": 171415,
@@ -23059,7 +22119,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة اصيل",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.244",
+      "sku": ".244"
     },
     {
       "id": 171439,
@@ -23077,7 +22139,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.254",
+      "sku": ".254"
     },
     {
       "id": 171441,
@@ -23086,7 +22150,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.255",
+      "sku": ".255"
     },
     {
       "id": 171442,
@@ -23095,7 +22161,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.256",
+      "sku": ".256"
     },
     {
       "id": 171443,
@@ -23104,7 +22172,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.257",
+      "sku": ".257"
     },
     {
       "id": 171444,
@@ -23113,7 +22183,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.258",
+      "sku": ".258"
     },
     {
       "id": 171445,
@@ -23122,7 +22194,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة مرنة Smart hom",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.259",
+      "sku": ".259"
     },
     {
       "id": 171446,
@@ -23314,7 +22388,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة سوستة شاور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.286",
+      "sku": ".286"
     },
     {
       "id": 171464,
@@ -23334,7 +22410,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة سوستة شاور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.287",
+      "sku": ".287"
     },
     {
       "id": 171466,
@@ -23376,7 +22454,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة سوستة شاور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.266",
+      "sku": ".266"
     },
     {
       "id": 171470,
@@ -23418,7 +22498,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة سوستة شاور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.271",
+      "sku": ".271"
     },
     {
       "id": 171474,
@@ -23427,7 +22509,9 @@
       "mainCategoryId": "وصله متعدده",
       "subCategoryId": "وصلة سوستة شاور",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.272",
+      "sku": ".272"
     },
     {
       "id": 171475,
@@ -23935,7 +23019,9 @@
       "mainCategoryId": "شاور+مساطر",
       "subCategoryId": "سماعة دش فردي",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.320",
+      "sku": ".320"
     },
     {
       "id": 171527,
@@ -23944,7 +23030,9 @@
       "mainCategoryId": "شاور+مساطر",
       "subCategoryId": "سماعة دش فردي",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.315",
+      "sku": ".315"
     },
     {
       "id": 171528,
@@ -24427,7 +23515,9 @@
       "mainCategoryId": "شاور+مساطر",
       "subCategoryId": "شطاف خارجي",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "AL.363",
+      "sku": ".363"
     },
     {
       "id": 171577,
