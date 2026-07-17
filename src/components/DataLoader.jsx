@@ -584,13 +584,13 @@ const DataLoader = ({ children }) => {
           }
         }
         // ----------------------------------------------------
-        // PATCH v35: Enforce UNIQUE company codes (e.g. 351050001) for BR, Smart, and Kessel products
+        // PATCH text: Enforce UNIQUE company codes (e.g. 351050001) for BR, Smart, and Kessel products
         // ويقوم بإزالة الأكواد المكررة ومزامنتها تلقائياً مع قاعدة بيانات Supabase السحابية
         // ----------------------------------------------------
-        const companyCodesPatchv35Done = localStorage.getItem('patch_company_codes_v35_all') === 'true';
-        if (!companyCodesPatchv35Done) {
+        const companyCodesPatchv39Done = localStorage.getItem('patch_company_codes_v39_all') === 'true';
+        if (!companyCodesPatchv39Done) {
           try {
-            console.log('[DataLoader] Patch v35: Enforcing unique company codes into BR/Smart/Kessel products with sync triggers...');
+            console.log('[DataLoader] Patch v39: Enforcing unique company codes into BR/Smart/Kessel products with sync triggers...');
             setLoadingMessage('جاري تنظيف ومزامنة أكواد الشركة الفريدة بمنتجات BR، سمارت، وكيسيل...');
             const seedResp = await fetch('/products_seed.json?t=' + Date.now());
             if (seedResp.ok) {
@@ -686,11 +686,11 @@ const DataLoader = ({ children }) => {
                 return p;
               });
               localStorage.setItem('products', JSON.stringify(updatedLS));
-              console.log(`[DataLoader] Patch v35: Enforced unique company codes in ${patchedCount} BR/Smart/Kessel products.`);
+              console.log(`[DataLoader] Patch v39: Enforced unique company codes in ${patchedCount} BR/Smart/Kessel products.`);
             }
-            localStorage.setItem('patch_company_codes_v35_all', 'true');
+            localStorage.setItem('patch_company_codes_v39_all', 'true');
           } catch (err) {
-            console.error('[DataLoader] Patch v35 failed:', err);
+            console.error('[DataLoader] Patch v39 failed:', err);
           }
         }
         // ----------------------------------------------------
