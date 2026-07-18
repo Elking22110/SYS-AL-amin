@@ -1116,11 +1116,9 @@ const Products = () => {
         const newCostVal = costToken ? parseFloat(costToken) : NaN;
 
         if (codeToken && !isNaN(newPriceVal)) {
-          // البحث عن كافة المنتجات المطابقة بالكود
+          // البحث عن كافة المنتجات المطابقة بالباركود فقط
           let matchedProds = products.filter(p =>
-            (p.supplierCode && String(p.supplierCode).trim() === codeToken) ||
-            (p.sku && String(p.sku).trim() === codeToken) ||
-            (p.barcode && String(p.barcode).trim() === codeToken)
+            p.barcode && String(p.barcode).trim() === codeToken
           );
 
           // المطابقة الصارمة بالباركود وأكواد الموردين فقط
