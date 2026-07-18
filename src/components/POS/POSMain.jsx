@@ -1198,6 +1198,17 @@ const POSMain = () => {
                     alert('نسبة الخصم يجب أن تكون بين 0 و 100');
                     return;
                   }
+                  
+                  // توزيع نسبة الخصم تلقائياً على الأصناف بالسلة
+                  if (discounts.type === 'percentage' && !isNaN(num) && num >= 0) {
+                    setCart(prevCart => prevCart.map(item => ({
+                      ...item,
+                      itemDiscount: num
+                    })));
+                    // تصفير الخصم الكلي لمنع الحساب المزدوج
+                    setDiscounts({ ...discounts, percentage: '', fixed: '' });
+                  }
+                  
                   setShowDiscountModal(false);
                 }}
                 className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-2 px-4 rounded-lg transition-colors font-semibold"

@@ -73,6 +73,25 @@ const CartManager = ({
     }
   }, [onUpdateQuantity, onRemoveFromCart]);
 
+  // التنقل بالأسهم لأعلى وأسفل بين حقول نفس النوع عبر المنتجات
+  const handleKeyDown = useCallback((e, fieldType, currentIndex) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextInput = document.querySelector(`[data-field-type="${fieldType}"][data-item-index="${currentIndex + 1}"]`);
+      if (nextInput) {
+        nextInput.focus();
+        nextInput.select();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevInput = document.querySelector(`[data-field-type="${fieldType}"][data-item-index="${currentIndex - 1}"]`);
+      if (prevInput) {
+        prevInput.focus();
+        prevInput.select();
+      }
+    }
+  }, []);
+
   // حذف منتج
   const removeFromCart = useCallback((id) => {
     soundManager.play('removeProduct');
@@ -139,7 +158,7 @@ const CartManager = ({
   }, [customerInfo, setCustomerInfo]);
 
   return (
-    <div className="w-full bg-white border border-slate-200 rounded-2xl shadow-lg">
+    <div className="w-full bg-white border border-slate-200 rounded-2xl shadow-lg pb-4">
 
       {/* ── Header ── */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-gradient-to-l from-blue-50 to-white">
@@ -172,7 +191,7 @@ const CartManager = ({
             <p className="text-slate-300 text-xs mt-1">أضف منتجات للبدء</p>
           </div>
         ) : (
-          cart.map((item) => {
+          cart.map((item, index) => {
             const qtyValue = editingQty[item.id] !== undefined ? editingQty[item.id] : item.quantity;
             const priceValue = editingPrice[item.id] !== undefined ? editingPrice[item.id] : item.price;
             const discValue = editingDiscount[item.id] !== undefined ? editingDiscount[item.id] : (item.itemDiscount || '');
@@ -213,6 +232,9 @@ const CartManager = ({
                     <input
                       type="number"
                       value={priceValue}
+                      data-field-type="price"
+                      data-item-index={index}
+                      onKeyDown={(e) => handleKeyDown(e, 'price', index)}
                       onChange={(e) => {
                         const val = e.target.value;
                         setEditingPrice(prev => ({ ...prev, [item.id]: val }));
@@ -246,6 +268,9 @@ const CartManager = ({
                         max="100"
                         step="0.5"
                         value={discValue}
+                        data-field-type="discount"
+                        data-item-index={index}
+                        onKeyDown={(e) => handleKeyDown(e, 'discount', index)}
                         onChange={(e) => {
                           const val = e.target.value;
                           setEditingDiscount(prev => ({ ...prev, [item.id]: val }));
@@ -294,6 +319,9 @@ const CartManager = ({
                       <input
                         type="number"
                         value={qtyValue}
+                        data-field-type="qty"
+                        data-item-index={index}
+                        onKeyDown={(e) => handleKeyDown(e, 'qty', index)}
                         onChange={(e) => {
                           const val = e.target.value;
                           setEditingQty(prev => ({ ...prev, [item.id]: val }));
