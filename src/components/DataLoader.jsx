@@ -719,6 +719,77 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // PATCH v41: Sync all product data, names, prices and new items from products_seed.json
+        // to IndexedDB and localStorage, and trigger cloud sync for updated/added items.
+        // ----------------------------------------------------
+        const patchV41Done = localStorage.getItem('patch_company_codes_v41_all_v2') === 'true';
+        if (!patchV41Done) {
+          try {
+            console.log('[DataLoader] Patch v41: Syncing all products (prices, names, new items) from products_seed.json...');
+            setLoadingMessage('جاري مزامنة أسعار وأسماء المنتجات الجديدة مع السيستم...');
+            const seedResp = await fetch('/products_seed.json?t=' + Date.now());
+            if (seedResp.ok) {
+              const seedData = await seedResp.json();
+              const seedProducts = seedData.products || [];
+              
+              const currentProds = await databaseManager.getAll('products');
+              const currentProdsMap = new Map(currentProds.map(p => [String(p.id), p]));
+              
+              const nowStr = new Date().toISOString();
+              let updatedCount = 0;
+              let addedCount = 0;
+
+              for (const sp of seedProducts) {
+                const spIdStr = String(sp.id);
+                const existing = currentProdsMap.get(spIdStr);
+                
+                if (existing) {
+                  const needsUpdate = 
+                    existing.name !== sp.name ||
+                    existing.price !== sp.price ||
+                    existing.barcode !== sp.barcode ||
+                    existing.mainCategoryId !== sp.mainCategoryId ||
+                    existing.subCategoryId !== sp.subCategoryId;
+                    
+                  if (needsUpdate) {
+                    const updated = {
+                      ...existing,
+                      name: sp.name,
+                      price: sp.price,
+                      barcode: sp.barcode || null,
+                      mainCategoryId: sp.mainCategoryId,
+                      subCategoryId: sp.subCategoryId,
+                      sync_status: 'pending',
+                      updated_at: nowStr
+                    };
+                    await databaseManager.update('products', updated);
+                    updatedCount++;
+                  }
+                } else {
+                  const newProduct = {
+                    ...sp,
+                    sync_status: 'pending',
+                    created_at: nowStr,
+                    updated_at: nowStr
+                  };
+                  await databaseManager.update('products', newProduct);
+                  addedCount++;
+                }
+              }
+              
+              const freshProds = await databaseManager.getAll('products');
+              localStorage.setItem('products', JSON.stringify(freshProds));
+              
+              console.log(`[DataLoader] Patch v41: Added ${addedCount} and updated ${updatedCount} products.`);
+            }
+            localStorage.setItem('patch_company_codes_v41_all_v2', 'true');
+          } catch (err) {
+            console.error('[DataLoader] Patch v41 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
         
