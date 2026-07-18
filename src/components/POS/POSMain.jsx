@@ -130,11 +130,21 @@ const POSMain = () => {
     };
   }, []);
 
+  // حساب الإجمالي الفرعي مع خصومات الأصناف الفردية
+  const calcSubtotalWithItemDiscounts = (cartItems) => {
+    return (cartItems || cart).reduce((sum, item) => {
+      const linePrice = safeMath.multiply(item.price, item.quantity);
+      const itemDiscPct = Number(item.itemDiscount) || 0;
+      const itemDiscAmt = safeMath.multiply(linePrice, itemDiscPct / 100);
+      return safeMath.add(sum, safeMath.subtract(linePrice, itemDiscAmt));
+    }, 0);
+  };
+
   // حسابات محسنة بالأداء
   const calculateTotal = () => {
-    const subtotal = safeMath.calculateSubtotal(cart);
+    const subtotal = calcSubtotalWithItemDiscounts();
 
-    // حساب الخصم
+    // حساب الخصم الكلي (على المجموع بعد خصومات الأصناف)
     const discountAmount = discounts.type === 'fixed'
       ? Number(discounts.fixed) || 0
       : safeMath.calculatePercentage(subtotal, parseFloat(discounts.percentage) || 0);
@@ -148,7 +158,7 @@ const POSMain = () => {
   };
 
   const calculateSubtotal = () => {
-    return safeMath.calculateSubtotal(cart);
+    return calcSubtotalWithItemDiscounts();
   };
 
   const getTotal = useMemo(() => calculateTotal(), [cart, discounts, taxes]);
@@ -283,8 +293,13 @@ const POSMain = () => {
 
       // إنشاء الفاتورة
       const invoiceId = getNextInvoiceId();
-      // Calculate snapshot values using safeMath
-      const subtotalForSale = safeMath.calculateSubtotal(cart);
+      // Calculate snapshot values using safeMath (including per-item discounts)
+      const subtotalForSale = cart.reduce((sum, item) => {
+        const linePrice = safeMath.multiply(item.price, item.quantity);
+        const itemDiscPct = Number(item.itemDiscount) || 0;
+        const itemDiscAmt = safeMath.multiply(linePrice, itemDiscPct / 100);
+        return safeMath.add(sum, safeMath.subtract(linePrice, itemDiscAmt));
+      }, 0);
 
       const discountAmountForSale = discounts.type === 'fixed'
         ? (Number(discounts.fixed) || 0)
@@ -1083,7 +1098,7 @@ const POSMain = () => {
         {/* المحتوى الرئيسي */}
         <div className="flex flex-row gap-4 lg:gap-6 items-start w-full" dir="rtl">
           {/* إدارة السلة والدفع - تظهر على اليمين في RTL لأنها الأولى في JSX */}
-          <div className="flex flex-col gap-4 lg:gap-6 w-80 xl:w-96 sticky top-4 h-[calc(100vh-32px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
+          <div className="flex flex-col gap-4 lg:gap-6 w-[24rem] xl:w-[28rem] sticky top-4 h-[calc(100vh-32px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
             <CartManager
               cart={cart}
               setCart={setCart}
