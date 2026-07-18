@@ -26,11 +26,9 @@ const DataLoader = ({ children }) => {
           const categories = seedData.categories || [];
           const products = seedData.products || [];
 
-          // مسح كل البيانات القديمة
+          // مسح مفاتيح التهجير القديمة فقط — لا نمسح أبداً sales أو customers أو shifts لحماية البيانات التشغيلية
           const keysToClear = [
-            'products', 'productCategories', 'sales', 'customers',
-            'suppliers', 'supplier_supplies', 'supplier_payments',
-            'shifts', 'activeShift', 'notifications',
+            'products', 'productCategories',
             'reseed_done_msgroupplast_v3', 'reseed_done_msgroupplast_v2',
             'reseed_done_msgroupplast_v1', 'pos-settings', 
             'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2',

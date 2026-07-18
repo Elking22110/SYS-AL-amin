@@ -708,23 +708,37 @@ class DatabaseManager {
           continue;
         }
 
+        // الجداول التشغيلية لا يجوز مسحها أبداً — نستخدم put (upsert) فقط لحماية الفواتير والعملاء والورديات
+        const PROTECTED_STORES = new Set(['sales', 'customers', 'shifts', 'returns', 'users']);
+
         if (items && items.length > 0) {
           const transaction = this.db.transaction([storeName], 'readwrite');
           const store = transaction.objectStore(storeName);
 
-          // مسح البيانات الموجودة أولاً
-          await new Promise((resolve, reject) => {
-            const clearRequest = store.clear();
-            clearRequest.onsuccess = () => resolve();
-            clearRequest.onerror = () => reject(clearRequest.error);
-          });
-
-          for (const item of items) {
+          if (PROTECTED_STORES.has(storeName)) {
+            // جداول محمية: نستخدم put فقط (upsert) بدون مسح البيانات الموجودة
+            for (const item of items) {
+              await new Promise((resolve, reject) => {
+                const request = store.put(item);
+                request.onsuccess = () => resolve();
+                request.onerror = () => resolve(); // تجاهل الخطأ للمتابعة
+              });
+            }
+          } else {
+            // جداول الكتالوج (منتجات، أصناف): مسح وإعادة بناء مسموح به
             await new Promise((resolve, reject) => {
-              const request = store.put(item);
-              request.onsuccess = () => resolve();
-              request.onerror = () => reject(request.error);
+              const clearRequest = store.clear();
+              clearRequest.onsuccess = () => resolve();
+              clearRequest.onerror = () => reject(clearRequest.error);
             });
+
+            for (const item of items) {
+              await new Promise((resolve, reject) => {
+                const request = store.put(item);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+              });
+            }
           }
         }
       }
