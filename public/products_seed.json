@@ -1155,7 +1155,7 @@
     {
       "id": 10022,
       "name": "محبس زاوية SMART صغير",
-      "price": 105,
+      "price": 158,
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
@@ -1167,7 +1167,7 @@
     {
       "id": 10023,
       "name": "محبس زاوية SMART كبير",
-      "price": 155,
+      "price": 172,
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
@@ -2807,7 +2807,7 @@
     {
       "id": 10169,
       "name": "بطاريه ١,٥ * ١ بي ار",
-      "price": 0,
+      "price": 1146.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
@@ -3023,7 +3023,7 @@
     {
       "id": 10188,
       "name": "بطاريه ٥٠ * ٣٢ مللي",
-      "price": 1145.25,
+      "price": 1244,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
@@ -3431,7 +3431,7 @@
     {
       "id": 10229,
       "name": "مانع ٣/٤ معزول",
-      "price": 575,
+      "price": 544.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
@@ -8205,7 +8205,7 @@
     {
       "id": 40131,
       "name": "بلاعه 15 * 15 تطويل كيسيل بى الغطه",
-      "price": 0,
+      "price": 606,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
@@ -28658,6 +28658,456 @@
       "barcode": "371080003",
       "mainCategoryId": "بي ار لحام",
       "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172045,
+      "name": "مم25صليبة لحام",
+      "price": 91.25,
+      "barcode": "351050062",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172046,
+      "name": "مم32صليبة لحام",
+      "price": 96.25,
+      "barcode": "351050063",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172047,
+      "name": "مم لحام بدون سوكت32/مم63بطارية",
+      "price": 1403.75,
+      "barcode": "358091001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172048,
+      "name": "مم لحام بسوكت32/مم63بطارية",
+      "price": 1540.25,
+      "barcode": "358091002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172049,
+      "name": "مم بسوكت63 /مم32بطارية قصيرة لحام 0 0",
+      "price": 1173.5,
+      "barcode": "358091102",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172050,
+      "name": "مم بسوكت32 /مم25بطارية قصيرة لحام 00 00",
+      "price": 374,
+      "barcode": "358091103",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172051,
+      "name": "مم بسوكت50 /مم32بطارية قصيرة لحام 00 00",
+      "price": 1009,
+      "barcode": "358091104",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172052,
+      "name": "مم بسوكت50 /مم25بطارية قصيرة لحام",
+      "price": 928.75,
+      "barcode": "358091105",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172053,
+      "name": "مم بسوكت63 /مم25بطارية قصيرة لحام",
+      "price": 1089.75,
+      "barcode": "358091107",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172054,
+      "name": "بوصة15 /مم50مانع ارتداد بﻼكور أنثي",
+      "price": 1795.25,
+      "barcode": "371060035",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172055,
+      "name": "بوصة15 /مم50مانع ارتداد بﻼكور ذكر",
+      "price": 1869.75,
+      "barcode": "371060036",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172056,
+      "name": "مم50مانع ارتداد أسود بﻼكور",
+      "price": 1378.25,
+      "barcode": "371060134",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172057,
+      "name": "مم25مانع ارتداد أسود بﻼكور 00 00",
+      "price": 575,
+      "barcode": "371060141",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172058,
+      "name": "غطاء خزان دفن كروم مربع FT",
+      "price": 1076.25,
+      "barcode": "375100008",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172059,
+      "name": "غطاء خزان دفن كروم دائري FT",
+      "price": 1076.25,
+      "barcode": "375100009",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172060,
+      "name": "غطاء خزان دفن اسود مربع FT",
+      "price": 1076.25,
+      "barcode": "375100010",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172061,
+      "name": "غطاء خزان دفن نحاسى مربع FT",
+      "price": 1076.25,
+      "barcode": "375100011",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172062,
+      "name": "غطاء خزان دفن شامبين مربع FT",
+      "price": 1076.25,
+      "barcode": "375100012",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172063,
+      "name": "مم75 مخرج63 مدخل3بيبة 00 00",
+      "price": 336,
+      "barcode": "375020002",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172064,
+      "name": "مانع رائحة دائرى",
+      "price": 198.25,
+      "barcode": "375020010",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172065,
+      "name": "مم50 مخرج من أسفل107صفاية مربعة",
+      "price": 1136.25,
+      "barcode": "375020030",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172066,
+      "name": "مم75 مخرج من أسفل107صفاية مربعة 00 00",
+      "price": 1348,
+      "barcode": "375020031",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172067,
+      "name": "مم50 مخرج من أسفل150صفاية مربعة 00 00",
+      "price": 1216,
+      "barcode": "375020032",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172068,
+      "name": "مم75 مخرج من أسفل150صفاية مربعة 00 00",
+      "price": 1454,
+      "barcode": "375020033",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172069,
+      "name": "مم75 مخرج من أسفل150صفاية مربعة بﻼطة",
+      "price": 1493.25,
+      "barcode": "375020034",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172070,
+      "name": "مم50 مخرج من أسفل150صفاية مربعة بﻼطة",
+      "price": 1242.25,
+      "barcode": "375020035",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172071,
+      "name": "مم75 مخرج من أسفل107صفاية مربعة بﻼطة 0 0",
+      "price": 1374.5,
+      "barcode": "375020036",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172072,
+      "name": "مم50 مخرج من أسفل107صفاية مربعة بﻼطة",
+      "price": 1162.75,
+      "barcode": "375020037",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172073,
+      "name": "رقبة طويلة بمصفاه وغطاء مغلق 0 0",
+      "price": 292.5,
+      "barcode": "375020401",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172074,
+      "name": "رقبة طويلة بمصفاه وغطاء مفتوح 00 00",
+      "price": 290,
+      "barcode": "375020402",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172075,
+      "name": "رقبة طويلة 0 0",
+      "price": 66.5,
+      "barcode": "375020404",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172076,
+      "name": "برقع بيبة كيسيل بجوان",
+      "price": 50.75,
+      "barcode": "375029910",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172077,
+      "name": "غطاء بيبة استانلس 00 00",
+      "price": 529,
+      "barcode": "375029911",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172078,
+      "name": "مم فضية75صفاية بمخرج جانبى 0 0",
+      "price": 2176.5,
+      "barcode": "375029966",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172079,
+      "name": "مم غطاء استانلس50صفاية مخرج من أسفل",
+      "price": 2041.25,
+      "barcode": "375029971",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172080,
+      "name": "مسمار و فيشر+ مم 60حديد مجلفن قفيز",
+      "price": 46.25,
+      "barcode": "353096501",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172081,
+      "name": "مسمار و فيشر+ مم 75حديد مجلفن قفيز",
+      "price": 65.75,
+      "barcode": "353096502",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172082,
+      "name": "مسمار و فيشر+ مم 110حديد مجلفن قفيز",
+      "price": 79.25,
+      "barcode": "353096503",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172083,
+      "name": "مسمار و فيشر+ مم 160حديد مجلفن قفيز",
+      "price": 83.75,
+      "barcode": "353096504",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172084,
+      "name": "مسمار و فيشر+ مم 50حديد مجلفن قفيز 00 00",
+      "price": 41,
+      "barcode": "353096505",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172085,
+      "name": "مسمار و فيشر+ مم 32حديد مجلفن قفيز 00 00",
+      "price": 31,
+      "barcode": "353096506",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172086,
+      "name": "مسمار و فيشر+ مم 25حديد مجلفن قفيز",
+      "price": 26.25,
+      "barcode": "353096507",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172087,
+      "name": "سم سمارت هوم تشمل طلبمة6060غرفة رفع 00 00",
+      "price": 33740,
+      "barcode": "353099922",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172088,
+      "name": "سمارت هوم كاملة بدون طلمبة6060غرفة رفع",
+      "price": 9189.75,
+      "barcode": "353099924",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172089,
+      "name": "سم بطول نصف متر20غطاء زهر لمجرى 0 0",
+      "price": 1495.5,
+      "barcode": "373099924",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
       "unit": "قطعة",
       "status": "active"
     }
