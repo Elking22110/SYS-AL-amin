@@ -2552,7 +2552,7 @@ select.input-modern {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   padding: 8px 10px !important;
   border-radius: 10px !important;
-  height: 110px !important;
+  height: 155px !important;
   overflow: hidden !important;
 }
 

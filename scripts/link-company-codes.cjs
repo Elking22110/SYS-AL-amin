@@ -234,22 +234,47 @@ function parseCompanyLine(line) {
   let lp = null;
   
   for (const b of BRANDS) {
-    const r1 = new RegExp('\\b' + b + '\\s+(\\d+(?:\\.\\d+)?)\\b', 'i');
-    const r2 = new RegExp('\\b(\\d+(?:\\.\\d+)?)\\s+' + b + '\\b', 'i');
-    
-    let m = cleanLine.match(r1);
-    if (m) { brand = b; lp = parseFloat(m[1]); cleanLine = cleanLine.replace(r1,'').trim(); break; }
-    m = cleanLine.match(r2);
-    if (m) { brand = b; lp = parseFloat(m[1]); cleanLine = cleanLine.replace(r2,'').trim(); break; }
+    const r1 = new RegExp('\\b' + b + '\\s+(\\d+(?:\\.\\d+)?)\\b', 'gi');
+    const r2 = new RegExp('\\b(\\d+(?:\\.\\d+)?)\\s+' + b + '\\b', 'gi');
+    const r1All = [...cleanLine.matchAll(r1)];
+    const r2All = [...cleanLine.matchAll(r2)];
+
+    // Prefer the last non-zero price (PDF format: "...BR 0 BR 109.00")
+    const priceFromBrand = [...r1All, ...r2All]
+      .map(m => parseFloat(m[1]))
+      .filter(p => p > 0);
+    if (priceFromBrand.length > 0) {
+      brand = b;
+      lp = priceFromBrand[priceFromBrand.length - 1];
+      break;
+    }
+
+    if (r1All.length > 0 || r2All.length > 0) {
+      brand = b;
+      lp = parseFloat((r1All[0] || r2All[0])[1]);
+      break;
+    }
   }
-  
+
   if (!brand) {
     const bm = cleanLine.match(/\b(BR|KS|SM|SG|SL|NC|MX|BU|FT|MP)\b/);
     if (!bm) return null;
     brand = bm[1];
     cleanLine = cleanLine.replace(/\b(BR|KS|SM|SG|SL|NC|MX|BU|FT|MP)\b/,'').trim();
   }
-  
+
+  // Fallback: last decimal price token on the line
+  if (!lp || lp === 0) {
+    const priceTokens = line.match(/\d+\.\d{2}\b/g);
+    if (priceTokens) lp = parseFloat(priceTokens[priceTokens.length - 1]);
+  }
+
+  cleanLine = cleanLine
+    .replace(/\b(BR|KS|SM|SG|SL|NC|MX|BU|FT|MP)\s+\d+(?:\.\d+)?\b/gi, '')
+    .replace(/\b\d+(?:\.\d+)?\s+(BR|KS|SM|SG|SL|NC|MX|BU|FT|MP)\b/gi, '')
+    .replace(/\b(BR|KS|SM|SG|SL|NC|MX|BU|FT|MP)\b/gi, '')
+    .trim();
+
   const name = cleanLine.replace(/[*]+/g,'').trim().replace(/\s+/g,' ');
   return { code, name, brand, lp };
 }
@@ -327,6 +352,15 @@ function matchBR(product) {
     if (!!pMale  === !!cMale)   score += 1;
     if (!!pFemale === !!cFemale) score += 1;
     score += similarity(pName, comp.name) * 2;
+
+    // Price tiebreaker: strongly prefer company items whose LP matches system price
+    const sysPrice = product.price || 0;
+    if (sysPrice > 0 && comp.lp > 0) {
+      const priceDiff = Math.abs(sysPrice - comp.lp) / sysPrice;
+      if (priceDiff < 0.05) score += 8;
+      else if (priceDiff < 0.15) score += 4;
+      else if (priceDiff > 0.40) score -= 6;
+    }
     
     if (score > bestScore) { bestScore = score; best = comp; }
   }

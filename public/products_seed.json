@@ -1159,7 +1159,10 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "371040035",
+      "sku": "371040035",
+      "supplierCode": "371040035"
     },
     {
       "id": 10023,
@@ -1168,7 +1171,10 @@
       "mainCategoryId": "مجموعه حنفيات+نواكل",
       "subCategoryId": "محبس زاوية",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "371040031",
+      "sku": "371040031",
+      "supplierCode": "371040031"
     },
     {
       "id": 10024,
@@ -1307,7 +1313,7 @@
     {
       "id": 10036,
       "name": "كرنك لحام ٢/١ بوصة BR",
-      "price": 40.5,
+      "price": 25.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1324,9 +1330,9 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010001",
-      "sku": "361010001",
-      "supplierCode": "361010001"
+      "barcode": "361020001",
+      "sku": "361020001",
+      "supplierCode": "361020001"
     },
     {
       "id": 10038,
@@ -1348,9 +1354,9 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060010",
-      "sku": "361060010",
-      "supplierCode": "361060010"
+      "barcode": "361060001",
+      "sku": "361060001",
+      "supplierCode": "361060001"
     },
     {
       "id": 10040,
@@ -1360,9 +1366,9 @@
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050009",
-      "sku": "361050009",
-      "supplierCode": "361050009"
+      "barcode": "361050001",
+      "sku": "361050001",
+      "supplierCode": "361050001"
     },
     {
       "id": 10041,
@@ -1379,7 +1385,7 @@
     {
       "id": 10042,
       "name": "تى محبس دفن ٢/١ بوصة BR",
-      "price": 0,
+      "price": 156.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1415,7 +1421,7 @@
     {
       "id": 10045,
       "name": "لاكور تجميع ٢/١ بوصة BR",
-      "price": 0,
+      "price": 158.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1427,7 +1433,7 @@
     {
       "id": 10046,
       "name": "كوع بسن خارجي ٢/١ بوصة BR",
-      "price": 162.75,
+      "price": 180.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1439,7 +1445,7 @@
     {
       "id": 10047,
       "name": "طبه ٢/١ بوصه BR اختبار",
-      "price": 7.25,
+      "price": 8,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1451,19 +1457,16 @@
     {
       "id": 10048,
       "name": "قلب محبس دفن ٢/١ B.R",
-      "price": 0,
+      "price": 622,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371040025",
-      "sku": "371040025",
-      "supplierCode": "371040025"
+      "minStock": 5
     },
     {
       "id": 10049,
       "name": "كرنك ٢/١ قصير BR",
-      "price": 50.25,
+      "price": 40.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1499,7 +1502,7 @@
     {
       "id": 10052,
       "name": "جلبة ٢/١ ذكر لاكور PR",
-      "price": 0,
+      "price": 185.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
@@ -1524,10 +1527,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢/١",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "361060008",
-      "sku": "361060008",
-      "supplierCode": "361060008"
+      "minStock": 5
     },
     {
       "id": 10055,
@@ -1577,14 +1577,14 @@
     {
       "id": 10060,
       "name": "كوع بسن خارجي 4/3*2/1",
-      "price": 188.25,
+      "price": 125.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010002",
-      "sku": "361010002",
-      "supplierCode": "361010002"
+      "barcode": "361020002",
+      "sku": "361020002",
+      "supplierCode": "361020002"
     },
     {
       "id": 10061,
@@ -1625,14 +1625,11 @@
     {
       "id": 10064,
       "name": "مشتمل B.R محبس دفن ٣/٤",
-      "price": 390,
+      "price": 622,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "371040025",
-      "sku": "371040025",
-      "supplierCode": "371040025"
+      "minStock": 5
     },
     {
       "id": 10065,
@@ -1649,7 +1646,7 @@
     {
       "id": 10066,
       "name": "محبس B.R 3/4 بلاكور معزول",
-      "price": 575,
+      "price": 601.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1685,7 +1682,7 @@
     {
       "id": 10069,
       "name": "تى بسن ٣/٤ بوصة * 2/1",
-      "price": 167,
+      "price": 199.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1733,7 +1730,7 @@
     {
       "id": 10073,
       "name": "كوع بسن ٣/٤ بوصة * 4/3",
-      "price": 185,
+      "price": 202.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1781,7 +1778,7 @@
     {
       "id": 10077,
       "name": "تى لحام مسلوبة 4/3 * 2/1 BR",
-      "price": 46.5,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1805,31 +1802,31 @@
     {
       "id": 10079,
       "name": "جلبة بلاكور خارجي 4/3 BR",
-      "price": 252.25,
+      "price": 206,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050004",
+      "barcode": "",
       "sku": "361050004",
       "supplierCode": "361050004"
     },
     {
       "id": 10080,
       "name": "جلبة لاكور داخلي 4/3 BR",
-      "price": 212.5,
+      "price": 163.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060004",
+      "barcode": "",
       "sku": "361060004",
       "supplierCode": "361060004"
     },
     {
       "id": 10081,
       "name": "تى محبس دفن ٣/٤ BR",
-      "price": 140,
+      "price": 174.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1858,21 +1855,9 @@
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060002",
+      "barcode": "",
       "sku": "371060002",
       "supplierCode": "371060002"
-    },
-    {
-      "id": 10084,
-      "name": "طبه ٣/٤ بوصه BR بولى",
-      "price": 7.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٤/٣ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351080002",
-      "sku": "351080002",
-      "supplierCode": "351080002"
     },
     {
       "id": 10085,
@@ -1910,7 +1895,7 @@
     {
       "id": 10088,
       "name": "وصلة ٤٠سم نيكل",
-      "price": 25,
+      "price": 63.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٤/٣ بوصة",
       "stock": 100,
@@ -1973,7 +1958,7 @@
     {
       "id": 10095,
       "name": "مجرة بلاستيك عادة ١ متر",
-      "price": 110,
+      "price": 632.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2054,7 +2039,7 @@
     {
       "id": 10102,
       "name": "خزان دفن اسمارت",
-      "price": 7820,
+      "price": 6744.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2066,7 +2051,7 @@
     {
       "id": 10103,
       "name": "مخرج ماء جانبي ٣ بوصه اسمارت",
-      "price": 65,
+      "price": 73.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2090,7 +2075,7 @@
     {
       "id": 10105,
       "name": "خلاط دفن ٢ مخرج - سمارت اسود",
-      "price": 3727,
+      "price": 3879.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2114,7 +2099,7 @@
     {
       "id": 10107,
       "name": "خلاط دفن مربع اسود ٢ مخرج",
-      "price": 0,
+      "price": 3727,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2138,7 +2123,7 @@
     {
       "id": 10109,
       "name": "خلاط دفن مدور نيكل ٢ مخرج",
-      "price": 3374,
+      "price": 3374.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2150,7 +2135,7 @@
     {
       "id": 10110,
       "name": "طقم تطويل خلاط دفن مربع ١ مخرج نيكل",
-      "price": 688,
+      "price": 688.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2186,7 +2171,7 @@
     {
       "id": 10113,
       "name": "طقم تطويل خلاط دفن مربع ٢ مخرج اسود",
-      "price": 1575,
+      "price": 1575.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
@@ -2211,10 +2196,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096205",
-      "sku": "353096205",
-      "supplierCode": "353096205"
+      "minStock": 5
     },
     {
       "id": 10116,
@@ -2241,10 +2223,7 @@
       "mainCategoryId": "Br",
       "subCategoryId": "قطع مشكله BR اسمارت و",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353096201",
-      "sku": "353096201",
-      "supplierCode": "353096201"
+      "minStock": 5
     },
     {
       "id": 10119,
@@ -2261,7 +2240,7 @@
     {
       "id": 10120,
       "name": "كوع لحام ١ بوصه BR",
-      "price": 42,
+      "price": 83,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
@@ -2309,7 +2288,7 @@
     {
       "id": 10124,
       "name": "كوع بسن ١ بوصه BR",
-      "price": 387.5,
+      "price": 444.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
@@ -2381,12 +2360,12 @@
     {
       "id": 10130,
       "name": "بوش لحام BR بوصه 1*2/1",
-      "price": 31.25,
+      "price": 55.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070004",
+      "barcode": "",
       "sku": "351070004",
       "supplierCode": "351070004"
     },
@@ -2446,9 +2425,9 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010004",
-      "sku": "361010004",
-      "supplierCode": "361010004"
+      "barcode": "361010005",
+      "sku": "361010005",
+      "supplierCode": "361010005"
     },
     {
       "id": 10136,
@@ -2470,9 +2449,9 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060004",
-      "sku": "361060004",
-      "supplierCode": "361060004"
+      "barcode": "361060005",
+      "sku": "361060005",
+      "supplierCode": "361060005"
     },
     {
       "id": 10138,
@@ -2482,21 +2461,21 @@
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050004",
-      "sku": "361050004",
-      "supplierCode": "361050004"
+      "barcode": "361050005",
+      "sku": "361050005",
+      "supplierCode": "361050005"
     },
     {
       "id": 10139,
       "name": "كوع بسن خارجي ١ * ١ بوصه BR",
-      "price": 444.75,
+      "price": 280,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361010006",
-      "sku": "361010006",
-      "supplierCode": "361010006"
+      "barcode": "361020006",
+      "sku": "361020006",
+      "supplierCode": "361020006"
     },
     {
       "id": 10140,
@@ -2612,19 +2591,19 @@
     {
       "id": 10150,
       "name": "كوع لحام BR بوصه 1.25",
-      "price": 27.04,
+      "price": 83,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020004",
+      "barcode": "",
       "sku": "351020004",
       "supplierCode": "351020004"
     },
     {
       "id": 10151,
       "name": "م ١,٢٥ BR",
-      "price": 54.49,
+      "price": 156,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2636,7 +2615,7 @@
     {
       "id": 10152,
       "name": "م ٧٥ BR",
-      "price": 140.67,
+      "price": 471.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2648,7 +2627,7 @@
     {
       "id": 10153,
       "name": "مسلوب ٥٠ * ٤٠ بي ار",
-      "price": 29.39,
+      "price": 89.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2660,7 +2639,7 @@
     {
       "id": 10154,
       "name": "تى لحام ١,٢٥ بوصه",
-      "price": 36.69,
+      "price": 106,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2672,7 +2651,7 @@
     {
       "id": 10155,
       "name": "جلبة لحام BR بوصه 1.25",
-      "price": 19.13,
+      "price": 55.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2684,7 +2663,7 @@
     {
       "id": 10156,
       "name": "طبه لحام BR بوصه 1.25",
-      "price": 19.49,
+      "price": 59,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2696,7 +2675,7 @@
     {
       "id": 10157,
       "name": "جلبة بسن داخلى ١,٢٥ بوصه BR",
-      "price": 172.1,
+      "price": 526.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2708,7 +2687,7 @@
     {
       "id": 10158,
       "name": "جلبة بسن خارجي ١,٢٥ بوصه BR",
-      "price": 179.06,
+      "price": 547.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2720,7 +2699,7 @@
     {
       "id": 10159,
       "name": "محبس بليه ٢ لاكور ١,٢٥ بوصه BR",
-      "price": 1032.25,
+      "price": 1369.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2732,7 +2711,7 @@
     {
       "id": 10160,
       "name": "تى لحام BR مسلوبه ١,٢٥ * ٢",
-      "price": 39.92,
+      "price": 262.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2744,7 +2723,7 @@
     {
       "id": 10161,
       "name": "تى لحام BR مسلوبه ١,٢٥ * ٤ بوصه ٣",
-      "price": 39.92,
+      "price": 122,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2756,7 +2735,7 @@
     {
       "id": 10162,
       "name": "تى لحام BR مسلوبه ١,٢٥ * ١ بوصه",
-      "price": 39.92,
+      "price": 122,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
@@ -2768,24 +2747,24 @@
     {
       "id": 10163,
       "name": "نقاص لحام BR مسلوب ١,٢٥ * ٤ بوصه ٣",
-      "price": 20.23,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
     {
       "id": 10164,
       "name": "نقاص BR لحام ١,٢٥ * ١ بوصه",
-      "price": 20.23,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٢٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
@@ -2804,7 +2783,7 @@
     {
       "id": 10166,
       "name": "كوع لحام ١,٥ بوصه BR",
-      "price": 154,
+      "price": 154.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
@@ -2824,18 +2803,6 @@
       "barcode": "351050005",
       "sku": "351050005",
       "supplierCode": "351050005"
-    },
-    {
-      "id": 10168,
-      "name": "بطاريه لحام ١,٥ * ١ سوكت BR",
-      "price": 0,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "358091004",
-      "sku": "358091004",
-      "supplierCode": "358091004"
     },
     {
       "id": 10169,
@@ -2888,12 +2855,12 @@
     {
       "id": 10173,
       "name": "نقاص BR لحام ١,٥ * ٢/١ بوصه",
-      "price": 89,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
@@ -2924,7 +2891,7 @@
     {
       "id": 10176,
       "name": "محبس بليه ٢ لاكور ١,٥ بوصه BR",
-      "price": 2033,
+      "price": 2033.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
@@ -2960,12 +2927,12 @@
     {
       "id": 10179,
       "name": "نقاص BR لحام ١,٥ * ٣/٤ بوصه",
-      "price": 88.75,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
@@ -2984,26 +2951,14 @@
     {
       "id": 10181,
       "name": "نقاص BR لحام ١,٥ * ١ بوصه",
-      "price": 89,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
-    },
-    {
-      "id": 10182,
-      "name": "م ١,٥ BR",
-      "price": 227,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331020005",
-      "sku": "331020005",
-      "supplierCode": "331020005"
     },
     {
       "id": 10183,
@@ -3080,7 +3035,7 @@
     {
       "id": 10189,
       "name": "BR م ٢ المونيا",
-      "price": 274,
+      "price": 623.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3126,21 +3081,9 @@
       "supplierCode": "331021106"
     },
     {
-      "id": 10193,
-      "name": "متر ٧٥ بي ار بن 20",
-      "price": 355.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331020007",
-      "sku": "331020007",
-      "supplierCode": "331020007"
-    },
-    {
       "id": 10194,
       "name": "كوع ٧٥ بي ار",
-      "price": 198.25,
+      "price": 42,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3152,7 +3095,7 @@
     {
       "id": 10195,
       "name": "جلبة ٧٥ بي ار",
-      "price": 170.25,
+      "price": 226,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3176,7 +3119,7 @@
     {
       "id": 10197,
       "name": "مسلوب ٧٥ * ١,٥ بي ار",
-      "price": 159,
+      "price": 211,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3212,7 +3155,7 @@
     {
       "id": 10200,
       "name": "جلبة بسن خارجي ٢ بوصه BR",
-      "price": 1086.75,
+      "price": 1086.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3248,7 +3191,7 @@
     {
       "id": 10203,
       "name": "تى لحام BR مسلوبه ٢ * ٤/٣",
-      "price": 265,
+      "price": 262.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3260,7 +3203,7 @@
     {
       "id": 10204,
       "name": "تى لحام BR مسلوبه ٢ * ١",
-      "price": 260.25,
+      "price": 262.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3270,21 +3213,9 @@
       "supplierCode": "351060013"
     },
     {
-      "id": 10205,
-      "name": "تى لحام BR مسلوبه ٢ * 1.25",
-      "price": 262.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351060014",
-      "sku": "351060014",
-      "supplierCode": "351060014"
-    },
-    {
       "id": 10206,
       "name": "تى لحام BR مسلوبه ٢ * ١,٥",
-      "price": 210.25,
+      "price": 262.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3296,60 +3227,60 @@
     {
       "id": 10207,
       "name": "نقاص BR لحام ٢ * ٢/١",
-      "price": 111,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
     {
       "id": 10208,
       "name": "نقاص BR لحام ٢ * ٤/٣",
-      "price": 109.75,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
     {
       "id": 10209,
       "name": "نقاص BR لحام ٢ * ١",
-      "price": 146.5,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
     {
       "id": 10210,
       "name": "نقاص BR لحام ٢ * ١,٢٥",
-      "price": 146.5,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
     {
       "id": 10211,
       "name": "نقاص BR لحام ٢ * ١,٥",
-      "price": 117.5,
+      "price": 46.25,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351060001",
+      "barcode": "",
       "sku": "351060001",
       "supplierCode": "351060001"
     },
@@ -3368,7 +3299,7 @@
     {
       "id": 10213,
       "name": "م ٢ بوصه BR",
-      "price": 257.5,
+      "price": 341.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3376,83 +3307,35 @@
       "barcode": "331020006",
       "sku": "331020006",
       "supplierCode": "331020006"
-    },
-    {
-      "id": 10214,
-      "name": "م ٢ بوصه مغلف BR",
-      "price": 423.75,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331020006",
-      "sku": "331020006",
-      "supplierCode": "331020006"
-    },
-    {
-      "id": 10215,
-      "name": "جلبة ٢ بوصه معزول",
-      "price": 130,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351070006",
-      "sku": "351070006",
-      "supplierCode": "351070006"
-    },
-    {
-      "id": 10216,
-      "name": "كوع ٢ بوصه معزول",
-      "price": 176.5,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351020006",
-      "sku": "351020006",
-      "supplierCode": "351020006"
-    },
-    {
-      "id": 10217,
-      "name": "جلبة ٢ بوصه دبل معزول",
-      "price": 974.5,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ٢ بوصة",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351070006",
-      "sku": "351070006",
-      "supplierCode": "351070006"
     },
     {
       "id": 10219,
       "name": "محبس ٢ بوصه بي ار معزول",
-      "price": 2558.5,
+      "price": 3586.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060006",
-      "sku": "371060006",
-      "supplierCode": "371060006"
+      "barcode": "371061116",
+      "sku": "371061116",
+      "supplierCode": "371061116"
     },
     {
       "id": 10220,
       "name": "محبس ٢ لاكور مدل بي ار",
-      "price": 2006.66,
+      "price": 3394.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060006",
+      "barcode": "",
       "sku": "371060006",
       "supplierCode": "371060006"
     },
     {
       "id": 10221,
       "name": "تى ٧٥ بي ار",
-      "price": 291.5,
+      "price": 386.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3464,7 +3347,7 @@
     {
       "id": 10222,
       "name": "تى ٧٥ * ١ بي ار",
-      "price": 309.75,
+      "price": 410.75,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ٢ بوصة",
       "stock": 100,
@@ -3488,14 +3371,14 @@
     {
       "id": 10224,
       "name": "كوع ٣/٤ لحام BR معزول",
-      "price": 36,
+      "price": 41,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351020002",
-      "sku": "351020002",
-      "supplierCode": "351020002"
+      "barcode": "355010002",
+      "sku": "355010002",
+      "supplierCode": "355010002"
     },
     {
       "id": 10225,
@@ -3505,9 +3388,9 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351050002",
-      "sku": "351050002",
-      "supplierCode": "351050002"
+      "barcode": "355050002",
+      "sku": "355050002",
+      "supplierCode": "355050002"
     },
     {
       "id": 10226,
@@ -3517,9 +3400,9 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070002",
-      "sku": "351070002",
-      "supplierCode": "351070002"
+      "barcode": "355070002",
+      "sku": "355070002",
+      "supplierCode": "355070002"
     },
     {
       "id": 10227,
@@ -3529,14 +3412,14 @@
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080002",
-      "sku": "351080002",
-      "supplierCode": "351080002"
+      "barcode": "355080002",
+      "sku": "355080002",
+      "supplierCode": "355080002"
     },
     {
       "id": 10228,
       "name": "جلبة ٣/٤ لاكور معزول",
-      "price": 0,
+      "price": 212.5,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
@@ -3560,7 +3443,7 @@
     {
       "id": 10230,
       "name": "م ٣/٤ المونيا بي ار",
-      "price": 90.25,
+      "price": 110,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع اسواد ٣/٤",
       "stock": 100,
@@ -3570,42 +3453,6 @@
       "supplierCode": "331080102"
     },
     {
-      "id": 10231,
-      "name": "كوع مفتوح ٣/٤ معزول",
-      "price": 41,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع اسواد ٣/٤",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351020002",
-      "sku": "351020002",
-      "supplierCode": "351020002"
-    },
-    {
-      "id": 10232,
-      "name": "م ١,٥ معزول بن ١٦ بي ار",
-      "price": 321.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331050028",
-      "sku": "331050028",
-      "supplierCode": "331050028"
-    },
-    {
-      "id": 10233,
-      "name": "تى ١,٥ لحام BR معزول",
-      "price": 199.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351050005",
-      "sku": "351050005",
-      "supplierCode": "351050005"
-    },
-    {
       "id": 10234,
       "name": "جلبة ١,٥ لحام BR معزول",
       "price": 111.75,
@@ -3613,9 +3460,9 @@
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070005",
-      "sku": "351070005",
-      "supplierCode": "351070005"
+      "barcode": "355070005",
+      "sku": "355070005",
+      "supplierCode": "355070005"
     },
     {
       "id": 10235,
@@ -3625,26 +3472,14 @@
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080005",
-      "sku": "351080005",
-      "supplierCode": "351080005"
-    },
-    {
-      "id": 10236,
-      "name": "تى مسلوب لحام معزول ١ * ١.٥ BR",
-      "price": 221.75,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351060009",
-      "sku": "351060009",
-      "supplierCode": "351060009"
+      "barcode": "355080005",
+      "sku": "355080005",
+      "supplierCode": "355080005"
     },
     {
       "id": 10237,
       "name": "مسلوب ١ * ١.٥ لحام معزول",
-      "price": 102,
+      "price": 89,
       "mainCategoryId": "Br",
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
@@ -3661,9 +3496,9 @@
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060010",
-      "sku": "361060010",
-      "supplierCode": "361060010"
+      "barcode": "365060010",
+      "sku": "365060010",
+      "supplierCode": "365060010"
     },
     {
       "id": 10239,
@@ -3673,9 +3508,9 @@
       "subCategoryId": "قطع ١,٥ اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050009",
-      "sku": "361050009",
-      "supplierCode": "361050009"
+      "barcode": "365050009",
+      "sku": "365050009",
+      "supplierCode": "365050009"
     },
     {
       "id": 10240,
@@ -3712,18 +3547,6 @@
       "barcode": "371061115",
       "sku": "371061115",
       "supplierCode": "371061115"
-    },
-    {
-      "id": 10243,
-      "name": "كوع ١,٥ لحام BR معزول",
-      "price": 183.75,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١,٥ اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351020005",
-      "sku": "351020005",
-      "supplierCode": "351020005"
     },
     {
       "id": 10244,
@@ -3789,30 +3612,6 @@
       "minStock": 5
     },
     {
-      "id": 10251,
-      "name": "كوع ١ بوصه لحام BR معزول",
-      "price": 51.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١ بوصه اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351020004",
-      "sku": "351020004",
-      "supplierCode": "351020004"
-    },
-    {
-      "id": 10252,
-      "name": "تى ١ بوصه معزول BR",
-      "price": 61,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١ بوصه اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351050003",
-      "sku": "351050003",
-      "supplierCode": "351050003"
-    },
-    {
       "id": 10253,
       "name": "جلبة ١ بوصه BR معزول",
       "price": 35.25,
@@ -3820,9 +3619,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351070003",
-      "sku": "351070003",
-      "supplierCode": "351070003"
+      "barcode": "355070003",
+      "sku": "355070003",
+      "supplierCode": "355070003"
     },
     {
       "id": 10254,
@@ -3832,21 +3631,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351080003",
-      "sku": "351080003",
-      "supplierCode": "351080003"
-    },
-    {
-      "id": 10255,
-      "name": "تى ١ * ٣/٤ لحام BR معزول",
-      "price": 73.75,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١ بوصه اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351060003",
-      "sku": "351060003",
-      "supplierCode": "351060003"
+      "barcode": "355080003",
+      "sku": "355080003",
+      "supplierCode": "355080003"
     },
     {
       "id": 10256,
@@ -3856,9 +3643,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361050006",
-      "sku": "361050006",
-      "supplierCode": "361050006"
+      "barcode": "365050006",
+      "sku": "365050006",
+      "supplierCode": "365050006"
     },
     {
       "id": 10257,
@@ -3868,9 +3655,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "361060006",
-      "sku": "361060006",
-      "supplierCode": "361060006"
+      "barcode": "365060006",
+      "sku": "365060006",
+      "supplierCode": "365060006"
     },
     {
       "id": 10258,
@@ -3909,18 +3696,6 @@
       "supplierCode": "371061113"
     },
     {
-      "id": 10261,
-      "name": "مسلوب ١ * ٣/٤ BR لحام معزول",
-      "price": 36,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١ بوصه اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "351040003",
-      "sku": "351040003",
-      "supplierCode": "351040003"
-    },
-    {
       "id": 10262,
       "name": "تى ١ * ٢/١ اسود بي ار",
       "price": 83,
@@ -3933,18 +3708,6 @@
       "supplierCode": "355060002"
     },
     {
-      "id": 10263,
-      "name": "م ١ بوصه معزول بن بي ار",
-      "price": 134.25,
-      "mainCategoryId": "Br",
-      "subCategoryId": "قطع ١ بوصه اسود",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "331050026",
-      "sku": "331050026",
-      "supplierCode": "331050026"
-    },
-    {
       "id": 10264,
       "name": "م مانع ١ بوصه معزول بي ار",
       "price": 709.75,
@@ -3952,9 +3715,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "371060031",
-      "sku": "371060031",
-      "supplierCode": "371060031"
+      "barcode": "371060131",
+      "sku": "371060131",
+      "supplierCode": "371060131"
     },
     {
       "id": 10265,
@@ -3964,9 +3727,9 @@
       "subCategoryId": "قطع ١ بوصه اسود",
       "stock": 100,
       "minStock": 5,
-      "barcode": "351010003",
-      "sku": "351010003",
-      "supplierCode": "351010003"
+      "barcode": "355010003",
+      "sku": "355010003",
+      "supplierCode": "355010003"
     },
     {
       "id": 20000,
@@ -4007,7 +3770,7 @@
     {
       "id": 20003,
       "name": "مجمع صرف ٤*١,٥*١,٥ اسمارت هوم",
-      "price": 180.75,
+      "price": 187,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4072,9 +3835,9 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020002",
-      "sku": "353020002",
-      "supplierCode": "353020002"
+      "barcode": "353010004",
+      "sku": "353010004",
+      "supplierCode": "353010004"
     },
     {
       "id": 20009,
@@ -4084,14 +3847,14 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353092002",
-      "sku": "353092002",
-      "supplierCode": "353092002"
+      "barcode": "353070001",
+      "sku": "353070001",
+      "supplierCode": "353070001"
     },
     {
       "id": 20010,
       "name": "كوع سيفون ٤ بوصه سمارت ابيض",
-      "price": 266,
+      "price": 289,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4108,9 +3871,9 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353090003",
-      "sku": "353090003",
-      "supplierCode": "353090003"
+      "barcode": "353060005",
+      "sku": "353060005",
+      "supplierCode": "353060005"
     },
     {
       "id": 20012,
@@ -4120,9 +3883,9 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353090002",
-      "sku": "353090002",
-      "supplierCode": "353090002"
+      "barcode": "353090003",
+      "sku": "353090003",
+      "supplierCode": "353090003"
     },
     {
       "id": 20013,
@@ -4132,19 +3895,19 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353060005",
-      "sku": "353060005",
-      "supplierCode": "353060005"
+      "barcode": "353050004",
+      "sku": "353050004",
+      "supplierCode": "353050004"
     },
     {
       "id": 20014,
       "name": "مشترك مسلوب ٤ * ٢ بوصه عاده سمارت ابيض",
-      "price": 289,
+      "price": 297.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353070001",
+      "barcode": "",
       "sku": "353070001",
       "supplierCode": "353070001"
     },
@@ -4180,26 +3943,23 @@
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353090003",
+      "barcode": "353092003",
       "sku": "353090003",
       "supplierCode": "353090003"
     },
     {
       "id": 20018,
       "name": "مشترك مسلوب ٤ * ٢ بوصه مفتوح سمارت ابيض",
-      "price": 315.25,
+      "price": 297.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353080002",
-      "sku": "353080002",
-      "supplierCode": "353080002"
+      "minStock": 5
     },
     {
       "id": 20019,
       "name": "نقاص ٤ * ٣ بوصه سمارت ابيض",
-      "price": 119,
+      "price": 113.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4211,7 +3971,7 @@
     {
       "id": 20020,
       "name": "نقاص ٤ * ٢ بوصه سمارت ابيض",
-      "price": 119,
+      "price": 107.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4235,7 +3995,7 @@
     {
       "id": 20022,
       "name": "طبة لصق ٤ بوصه ابيض",
-      "price": 30,
+      "price": 134.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4271,7 +4031,7 @@
     {
       "id": 20025,
       "name": "صليبه ٤ * ٤٥ د اسمارت هوم",
-      "price": 375,
+      "price": 528,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4283,7 +4043,7 @@
     {
       "id": 20026,
       "name": "صليبه ٤*٣*٤٥ د اسمارت هوم",
-      "price": 418.25,
+      "price": 479.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4295,19 +4055,19 @@
     {
       "id": 20027,
       "name": "صليبه ٤*٣*٩٠ د اسمارت هوم",
-      "price": 399.25,
+      "price": 440.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353091031",
-      "sku": "353091031",
-      "supplierCode": "353091031"
+      "barcode": "353091010",
+      "sku": "353091010",
+      "supplierCode": "353091010"
     },
     {
       "id": 20028,
       "name": "صليبه ٤*٤*٩٠ د اسمارت هوم",
-      "price": 440,
+      "price": 436.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4319,7 +4079,7 @@
     {
       "id": 20029,
       "name": "كوع ٤ بوصه قصير اسمارت هوم",
-      "price": 146.5,
+      "price": 187,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4355,19 +4115,16 @@
     {
       "id": 20032,
       "name": "صليبه ٤ بوصه ٤٥ د اسمارت هوم",
-      "price": 475.75,
+      "price": 528,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353094001",
-      "sku": "353094001",
-      "supplierCode": "353094001"
+      "minStock": 5
     },
     {
       "id": 20033,
       "name": "مجمع ٤ * ٣ اسمارت هوم",
-      "price": 0,
+      "price": 289,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4379,7 +4136,7 @@
     {
       "id": 20034,
       "name": "قشره ١١٠ * ١١٤ اسمارت هوم",
-      "price": 0,
+      "price": 10,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4415,19 +4172,19 @@
     {
       "id": 20037,
       "name": "بلف ٤ اسمارت",
-      "price": 927.25,
+      "price": 245.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095010",
-      "sku": "353095010",
-      "supplierCode": "353095010"
+      "barcode": "352099904",
+      "sku": "352099904",
+      "supplierCode": "352099904"
     },
     {
       "id": 20038,
       "name": "جلبة ٤ بوصه بدون وصله اسمارت",
-      "price": 0,
+      "price": 143,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4451,7 +4208,7 @@
     {
       "id": 20040,
       "name": "جليتراب ١١٠ * ١١٠ S مفتوح",
-      "price": 998.25,
+      "price": 966.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 4",
       "stock": 100,
@@ -4487,7 +4244,7 @@
     {
       "id": 20043,
       "name": "صليبه ٦ بوصه اسمارت هوم",
-      "price": 0,
+      "price": 747.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4511,7 +4268,7 @@
     {
       "id": 20045,
       "name": "مجره عملاقه اسمارت",
-      "price": 0,
+      "price": 1049.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4523,7 +4280,7 @@
     {
       "id": 20046,
       "name": "بلف ٦ بوصه اسمارت",
-      "price": 1236,
+      "price": 178.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4535,7 +4292,7 @@
     {
       "id": 20047,
       "name": "متر ٨ بوصه برتقالى",
-      "price": 429.75,
+      "price": 570,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4576,9 +4333,9 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020005",
-      "sku": "353020005",
-      "supplierCode": "353020005"
+      "barcode": "353010005",
+      "sku": "353010005",
+      "supplierCode": "353010005"
     },
     {
       "id": 20051,
@@ -4595,7 +4352,7 @@
     {
       "id": 20052,
       "name": "مشترك ٦ بوصه بباب سمارت أبيض",
-      "price": 652.5,
+      "price": 724.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4612,14 +4369,14 @@
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353060006",
-      "sku": "353060006",
-      "supplierCode": "353060006"
+      "barcode": "353050005",
+      "sku": "353050005",
+      "supplierCode": "353050005"
     },
     {
       "id": 20054,
       "name": "مشترك مسلوب ٦ * ٤ بوصه عاده سمارت أبيض",
-      "price": 611.5,
+      "price": 796.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4643,7 +4400,7 @@
     {
       "id": 20056,
       "name": "مشترك مسلوب ٦ * ٤ بوصه مفتوح سمارت أبيض",
-      "price": 796.5,
+      "price": 611.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
@@ -4691,12 +4448,12 @@
     {
       "id": 20060,
       "name": "طبة ٦ بوصه عميه",
-      "price": 160.75,
+      "price": 188.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 6",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353095004",
+      "barcode": "353095023",
       "sku": "353095004",
       "supplierCode": "353095004"
     },
@@ -4739,7 +4496,7 @@
     {
       "id": 20064,
       "name": "قشرة سمارت رمادي 60*63",
-      "price": 35.15,
+      "price": 37.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
@@ -4816,9 +4573,9 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020002",
-      "sku": "353020002",
-      "supplierCode": "353020002"
+      "barcode": "353010002",
+      "sku": "353010002",
+      "supplierCode": "353010002"
     },
     {
       "id": 20071,
@@ -4852,14 +4609,14 @@
       "subCategoryId": "بوصه 2",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353090001",
-      "sku": "353090001",
-      "supplierCode": "353090001"
+      "barcode": "353050002",
+      "sku": "353050002",
+      "supplierCode": "353050002"
     },
     {
       "id": 20074,
       "name": "بيبة ٢ * ١,٥ بوصه سمارت أبيض",
-      "price": 226,
+      "price": 159.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
@@ -4907,7 +4664,7 @@
     {
       "id": 20078,
       "name": "جلبة لصق ٢ بوصه سمارت أبيض",
-      "price": 36,
+      "price": 78,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
@@ -4923,15 +4680,12 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373010022",
-      "sku": "373010022",
-      "supplierCode": "373010022"
+      "minStock": 5
     },
     {
       "id": 20080,
       "name": "طبة ٢ بوصه",
-      "price": 25,
+      "price": 61.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 2",
       "stock": 100,
@@ -4943,7 +4697,7 @@
     {
       "id": 20081,
       "name": "جلبة بسن ٣ بوصه داخلي",
-      "price": 130,
+      "price": 78,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -4955,7 +4709,7 @@
     {
       "id": 20082,
       "name": "جلبة بسن ٣ بوصه خارجي",
-      "price": 130,
+      "price": 63.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -4967,7 +4721,7 @@
     {
       "id": 20083,
       "name": "متر مواسير ٣ بوصه ٣مم سمارت ابيض",
-      "price": 145.5,
+      "price": 154.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -4991,7 +4745,7 @@
     {
       "id": 20085,
       "name": "صليبه ٣ بوصه اسمارت هوم",
-      "price": 266,
+      "price": 369,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5015,14 +4769,14 @@
     {
       "id": 20087,
       "name": "كوع ٣ بوصه عاده سمارت أبيض",
-      "price": 79.75,
+      "price": 75.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020003",
-      "sku": "353020003",
-      "supplierCode": "353020003"
+      "barcode": "353010003",
+      "sku": "353010003",
+      "supplierCode": "353010003"
     },
     {
       "id": 20088,
@@ -5039,7 +4793,7 @@
     {
       "id": 20089,
       "name": "كوع ٣ بوصه مفتوح سمارت أبيض",
-      "price": 75.5,
+      "price": 79.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5051,7 +4805,7 @@
     {
       "id": 20090,
       "name": "رقبة بيبه ١٥*١٥ سمارت",
-      "price": 0,
+      "price": 117.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5063,7 +4817,7 @@
     {
       "id": 20091,
       "name": "رقبة بيبه ٢٠*٣٠ سمارت",
-      "price": 103.5,
+      "price": 137,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5075,14 +4829,14 @@
     {
       "id": 20092,
       "name": "مشترك ٣ بوصه عاده سمارت أبيض",
-      "price": 134.25,
+      "price": 154.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353060004",
-      "sku": "353060004",
-      "supplierCode": "353060004"
+      "barcode": "353050003",
+      "sku": "353050003",
+      "supplierCode": "353050003"
     },
     {
       "id": 20093,
@@ -5099,19 +4853,19 @@
     {
       "id": 20094,
       "name": "مشترك ٣ بوصه مفتوح سمارت أبيض",
-      "price": 154.5,
+      "price": 197.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353060004",
-      "sku": "353060004",
-      "supplierCode": "353060004"
+      "barcode": "353080001",
+      "sku": "353080001",
+      "supplierCode": "353080001"
     },
     {
       "id": 20095,
       "name": "بيبة ٣ * ١,٥ بوصه سمارت أبيض",
-      "price": 266,
+      "price": 213.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5123,7 +4877,7 @@
     {
       "id": 20096,
       "name": "بيبة ٣ * ٢ بوصه سمارت أبيض",
-      "price": 226,
+      "price": 177.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5140,14 +4894,14 @@
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353080001",
-      "sku": "353080001",
-      "supplierCode": "353080001"
+      "barcode": "373050002",
+      "sku": "373050002",
+      "supplierCode": "373050002"
     },
     {
       "id": 20098,
       "name": "مشترك مسلوب ٣ * ١.٥ بوصه بباب سمارت أبيض",
-      "price": 0,
+      "price": 211.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5159,7 +4913,7 @@
     {
       "id": 20099,
       "name": "مشترك مسلوب ٣ * ٢ بوصه عاده سمارت أبيض",
-      "price": 178.25,
+      "price": 88.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5175,10 +4929,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353092001",
-      "sku": "353092001",
-      "supplierCode": "353092001"
+      "minStock": 5
     },
     {
       "id": 20101,
@@ -5188,9 +4939,9 @@
       "subCategoryId": "بوصه 3",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353080001",
-      "sku": "353080001",
-      "supplierCode": "353080001"
+      "barcode": "373050003",
+      "sku": "373050003",
+      "supplierCode": "373050003"
     },
     {
       "id": 20102,
@@ -5199,10 +4950,7 @@
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353093003",
-      "sku": "353093003",
-      "supplierCode": "353093003"
+      "minStock": 5
     },
     {
       "id": 20103,
@@ -5231,7 +4979,7 @@
     {
       "id": 20105,
       "name": "بيبة ٣ * ٣ * ٨ سم اسمارت هوم",
-      "price": 177.5,
+      "price": 78.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5267,7 +5015,7 @@
     {
       "id": 20108,
       "name": "طبة ٣ بوصه عميه",
-      "price": 25,
+      "price": 132.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه 3",
       "stock": 100,
@@ -5291,7 +5039,7 @@
     {
       "id": 20110,
       "name": "جلبة ١,٥ بسن اسمارت هوم",
-      "price": 33,
+      "price": 143.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5303,7 +5051,7 @@
     {
       "id": 20111,
       "name": "طبة ١,٥ عميه",
-      "price": 20,
+      "price": 22.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5332,14 +5080,14 @@
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020001",
-      "sku": "353020001",
-      "supplierCode": "353020001"
+      "barcode": "353020116",
+      "sku": "353020116",
+      "supplierCode": "353020116"
     },
     {
       "id": 20114,
       "name": "كوع ١,٥ بوصه مفتوح سمارت أبيض",
-      "price": 34.25,
+      "price": 28.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5351,7 +5099,7 @@
     {
       "id": 20115,
       "name": "كوع ١,٥ بوصه بسن سمارت أبيض",
-      "price": 39,
+      "price": 39.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5363,14 +5111,11 @@
     {
       "id": 20116,
       "name": "كوع ١,٢٥ * ١.٥ بوصه بسن سمارت أبيض",
-      "price": 62,
+      "price": 39.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "353040002",
-      "sku": "353040002",
-      "supplierCode": "353040002"
+      "minStock": 5
     },
     {
       "id": 20117,
@@ -5392,14 +5137,14 @@
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353060001",
-      "sku": "353060001",
-      "supplierCode": "353060001"
+      "barcode": "353050001",
+      "sku": "353050001",
+      "supplierCode": "353050001"
     },
     {
       "id": 20119,
       "name": "جلبة لصق ١,٥ بوصه سمارت أبيض",
-      "price": 28.5,
+      "price": 70.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5411,7 +5156,7 @@
     {
       "id": 20120,
       "name": "بيبه صفايه اسمارت هوم",
-      "price": 0,
+      "price": 185.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5423,7 +5168,7 @@
     {
       "id": 20121,
       "name": "قشره ٥٠ اسمارت * 48 هوم",
-      "price": 26,
+      "price": 28.5,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "بوصه ١,٥",
       "stock": 100,
@@ -5435,7 +5180,7 @@
     {
       "id": 20122,
       "name": "م ١ بوصه ١.٨ اسمارت هوم",
-      "price": 35.75,
+      "price": 39.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
@@ -5447,7 +5192,7 @@
     {
       "id": 20123,
       "name": "طبة ١ بوصه اسمارت هوم",
-      "price": 13.5,
+      "price": 17,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
@@ -5459,7 +5204,7 @@
     {
       "id": 20124,
       "name": "م ١ بوصه سمك ٢.٤ اسمارت هوم",
-      "price": 69.5,
+      "price": 64,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
@@ -5471,14 +5216,14 @@
     {
       "id": 20125,
       "name": "كوع ١ بوصه اسمارت هوم",
-      "price": 18.75,
+      "price": 18.25,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
       "minStock": 5,
-      "barcode": "353020007",
-      "sku": "353020007",
-      "supplierCode": "353020007"
+      "barcode": "353020000",
+      "sku": "353020000",
+      "supplierCode": "353020000"
     },
     {
       "id": 20126,
@@ -5519,7 +5264,7 @@
     {
       "id": 20129,
       "name": "مشترك ١ بوصه اسمارت هوم",
-      "price": 27.75,
+      "price": 26,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
@@ -5531,7 +5276,7 @@
     {
       "id": 20130,
       "name": "بوش ١,٥ * ١ اسمارت هوم",
-      "price": 32.5,
+      "price": 33.75,
       "mainCategoryId": "اسمارت ابيض",
       "subCategoryId": "١بوصه",
       "stock": 100,
@@ -6954,7 +6699,7 @@
     {
       "id": 40000,
       "name": "م مواسير كيسل ٥٠ مم",
-      "price": 66.25,
+      "price": 73.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
@@ -6995,9 +6740,9 @@
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "332020004",
-      "sku": "332020004",
-      "supplierCode": "332020004"
+      "barcode": "332020005",
+      "sku": "332020005",
+      "supplierCode": "332020005"
     },
     {
       "id": 40004,
@@ -7038,7 +6783,7 @@
     {
       "id": 40007,
       "name": "يارده ٥٠ سم ١١٠ مم",
-      "price": 104,
+      "price": 115.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
@@ -7074,7 +6819,7 @@
     {
       "id": 40010,
       "name": "محبس زاوية كبير - Active",
-      "price": 120,
+      "price": 115,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "مواسير كيسل",
       "stock": 100,
@@ -7091,9 +6836,9 @@
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "332020020",
-      "sku": "332020020",
-      "supplierCode": "332020020"
+      "barcode": "332020017",
+      "sku": "332020017",
+      "supplierCode": "332020017"
     },
     {
       "id": 40012,
@@ -7122,7 +6867,7 @@
     {
       "id": 40014,
       "name": "مشترك ٨٧.٥ درجة (مدفون) 110",
-      "price": 183.75,
+      "price": 349,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
@@ -7151,9 +6896,9 @@
       "subCategoryId": "نظام كيسيل المدفون ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080004",
-      "sku": "352080004",
-      "supplierCode": "352080004"
+      "barcode": "352080011",
+      "sku": "352080011",
+      "supplierCode": "352080011"
     },
     {
       "id": 40017,
@@ -7187,9 +6932,9 @@
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "332020004",
-      "sku": "332020004",
-      "supplierCode": "332020004"
+      "barcode": "332020006",
+      "sku": "332020006",
+      "supplierCode": "332020006"
     },
     {
       "id": 40020,
@@ -7206,19 +6951,16 @@
     {
       "id": 40021,
       "name": "كوع ٨٧.٥ درجة (مدفون) ١٦٠",
-      "price": 246.5,
+      "price": 223.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010006",
-      "sku": "352010006",
-      "supplierCode": "352010006"
+      "minStock": 5
     },
     {
       "id": 40022,
       "name": "مشترك ٨٧.٥ درجة (مدفون) 160",
-      "price": 422,
+      "price": 95.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
@@ -7230,7 +6972,7 @@
     {
       "id": 40023,
       "name": "مشترك ٤٥ درجة (مدفون) 160",
-      "price": 194,
+      "price": 432,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
@@ -7246,10 +6988,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسيل المدفون ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040014",
-      "sku": "352040014",
-      "supplierCode": "352040014"
+      "minStock": 5
     },
     {
       "id": 40025,
@@ -7278,19 +7017,16 @@
     {
       "id": 40027,
       "name": "متر ماسورة برتقالى (مدفون) 200 * 6.7",
-      "price": 513.5,
+      "price": 570,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020010",
-      "sku": "332020010",
-      "supplierCode": "332020010"
+      "minStock": 5
     },
     {
       "id": 40028,
       "name": "كوع ٤٥ درجة (مدفون) ٢٠٠",
-      "price": 307,
+      "price": 340.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
@@ -7302,31 +7038,28 @@
     {
       "id": 40029,
       "name": "كوع ٨٧.٥ درجة (مدفون) ٢٠٠",
-      "price": 351,
+      "price": 340.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352010009",
-      "sku": "352010009",
-      "supplierCode": "352010009"
+      "minStock": 5
     },
     {
       "id": 40030,
       "name": "مشترك ٨٧.٥ درجة (مدفون) 200",
-      "price": 491,
+      "price": 545,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040009",
-      "sku": "352040009",
-      "supplierCode": "352040009"
+      "barcode": "352050014",
+      "sku": "352050014",
+      "supplierCode": "352050014"
     },
     {
       "id": 40031,
       "name": "مشترك ٨٧.٥ درجة (مدفون) 200 * 160",
-      "price": 417.25,
+      "price": 463.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
@@ -7338,7 +7071,7 @@
     {
       "id": 40032,
       "name": "مشترك ٤٥ درجة (مدفون) 200",
-      "price": 472,
+      "price": 617.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
@@ -7350,7 +7083,7 @@
     {
       "id": 40033,
       "name": "مشترك ٤٥ درجة (مدفون) 200 * 160",
-      "price": 556,
+      "price": 524,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
@@ -7360,21 +7093,9 @@
       "supplierCode": "352040017"
     },
     {
-      "id": 40034,
-      "name": "جلبة (مدفون) 200",
-      "price": 303,
-      "mainCategoryId": "كيسيل",
-      "subCategoryId": "نظام كيسل المدفون ٢٠٠",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "352080009",
-      "sku": "352080009",
-      "supplierCode": "352080009"
-    },
-    {
       "id": 40035,
       "name": "مسلوب (مدفون) 200 * 110",
-      "price": 185,
+      "price": 205.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "نظام كيسل المدفون ٢٠٠",
       "stock": 100,
@@ -7386,7 +7107,7 @@
     {
       "id": 40036,
       "name": "م ٦٣ بدون كيسل",
-      "price": 88.5,
+      "price": 108.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
@@ -7415,9 +7136,9 @@
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020010",
-      "sku": "352020010",
-      "supplierCode": "352020010"
+      "barcode": "352010010",
+      "sku": "352010010",
+      "supplierCode": "352010010"
     },
     {
       "id": 40039,
@@ -7434,7 +7155,7 @@
     {
       "id": 40040,
       "name": "واي ٦٣ بجون كيسل",
-      "price": 85.75,
+      "price": 43.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
@@ -7451,9 +7172,9 @@
       "subCategoryId": "قطع ٦٣ كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352060001",
-      "sku": "352060001",
-      "supplierCode": "352060001"
+      "barcode": "352050017",
+      "sku": "352050017",
+      "supplierCode": "352050017"
     },
     {
       "id": 40042,
@@ -7554,7 +7275,7 @@
     {
       "id": 40050,
       "name": "كوع ٩٠ مم",
-      "price": 0,
+      "price": 83,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
@@ -7566,7 +7287,7 @@
     {
       "id": 40051,
       "name": "كوع ٤٥",
-      "price": 0,
+      "price": 34.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
@@ -7578,7 +7299,7 @@
     {
       "id": 40052,
       "name": "جلبة ٤٠ مم",
-      "price": 0,
+      "price": 40.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
@@ -7590,7 +7311,7 @@
     {
       "id": 40053,
       "name": "طبة كبس ٤٠ مم",
-      "price": 0,
+      "price": 35,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٤٠ كيسل",
       "stock": 100,
@@ -7602,7 +7323,7 @@
     {
       "id": 40054,
       "name": "كوع ٥٠ مم ٩٠ د كيسيل",
-      "price": 33.5,
+      "price": 33.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
@@ -7614,12 +7335,12 @@
     {
       "id": 40055,
       "name": "طبه ٥٠ ملى كيسل",
-      "price": 35,
+      "price": 46,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091002",
+      "barcode": "352091003",
       "sku": "352091002",
       "supplierCode": "352091002"
     },
@@ -7631,7 +7352,7 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352010002",
+      "barcode": "",
       "sku": "352010002",
       "supplierCode": "352010002"
     },
@@ -7643,21 +7364,21 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352080002",
+      "barcode": "",
       "sku": "352080002",
       "supplierCode": "352080002"
     },
     {
       "id": 40058,
       "name": "مشترك ٥٠ مم ٩٠ د كيسيل",
-      "price": 62,
+      "price": 68.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040005",
-      "sku": "352040005",
-      "supplierCode": "352040005"
+      "barcode": "352050003",
+      "sku": "352050003",
+      "supplierCode": "352050003"
     },
     {
       "id": 40059,
@@ -7667,9 +7388,9 @@
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093001",
-      "sku": "352093001",
-      "supplierCode": "352093001"
+      "barcode": "352040003",
+      "sku": "352040003",
+      "supplierCode": "352040003"
     },
     {
       "id": 40060,
@@ -7686,7 +7407,7 @@
     {
       "id": 40061,
       "name": "كوع بسن كيسل",
-      "price": 30.5,
+      "price": 33.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ٥٠",
       "stock": 100,
@@ -7751,9 +7472,9 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040006",
-      "sku": "352040006",
-      "supplierCode": "352040006"
+      "barcode": "352050006",
+      "sku": "352050006",
+      "supplierCode": "352050006"
     },
     {
       "id": 40067,
@@ -7763,9 +7484,9 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040013",
-      "sku": "352040013",
-      "supplierCode": "352040013"
+      "barcode": "352060003",
+      "sku": "352060003",
+      "supplierCode": "352060003"
     },
     {
       "id": 40068,
@@ -7775,7 +7496,7 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093002",
+      "barcode": "",
       "sku": "352093002",
       "supplierCode": "352093002"
     },
@@ -7787,7 +7508,7 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352091003",
+      "barcode": "",
       "sku": "352091003",
       "supplierCode": "352091003"
     },
@@ -7823,9 +7544,9 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352070002",
-      "sku": "352070002",
-      "supplierCode": "352070002"
+      "barcode": "",
+      "sku": "352040006",
+      "supplierCode": "352040006"
     },
     {
       "id": 40073,
@@ -7835,9 +7556,9 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040006",
-      "sku": "352040006",
-      "supplierCode": "352040006"
+      "barcode": "352040005",
+      "sku": "352040005",
+      "supplierCode": "352040005"
     },
     {
       "id": 40074,
@@ -7883,9 +7604,9 @@
       "subCategoryId": "قطع ٧٥",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352070001",
-      "sku": "352070001",
-      "supplierCode": "352070001"
+      "barcode": "352070007",
+      "sku": "352070007",
+      "supplierCode": "352070007"
     },
     {
       "id": 40078,
@@ -7926,19 +7647,19 @@
     {
       "id": 40081,
       "name": "كوع ٤ بوصه كيسل",
-      "price": 83,
+      "price": 83.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020004",
-      "sku": "352020004",
-      "supplierCode": "352020004"
+      "barcode": "352010004",
+      "sku": "352010004",
+      "supplierCode": "352010004"
     },
     {
       "id": 40082,
       "name": "كوع ٤ مفتوح كيسل",
-      "price": 83.5,
+      "price": 254.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
@@ -7967,9 +7688,9 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352050001",
-      "sku": "352050001",
-      "supplierCode": "352050001"
+      "barcode": "352050008",
+      "sku": "352050008",
+      "supplierCode": "352050008"
     },
     {
       "id": 40085,
@@ -7991,9 +7712,9 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352070006",
-      "sku": "352070006",
-      "supplierCode": "352070006"
+      "barcode": "352070008",
+      "sku": "352070008",
+      "supplierCode": "352070008"
     },
     {
       "id": 40087,
@@ -8010,7 +7731,7 @@
     {
       "id": 40088,
       "name": "سيفون ٤ كيسل",
-      "price": 245.75,
+      "price": 274.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
@@ -8027,7 +7748,7 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352092003",
+      "barcode": "",
       "sku": "352092003",
       "supplierCode": "352092003"
     },
@@ -8118,7 +7839,7 @@
     {
       "id": 40097,
       "name": "صليبه ١١٠ * ٧٥ مم ٤٥ د كيسيل",
-      "price": 351.5,
+      "price": 348.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
@@ -8130,7 +7851,7 @@
     {
       "id": 40098,
       "name": "صليبه ١١٠ * ٥٠ مم ٤٥ د كيسيل",
-      "price": 0,
+      "price": 343.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
@@ -8159,21 +7880,21 @@
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040017",
-      "sku": "352040017",
-      "supplierCode": "352040017"
+      "barcode": "352060004",
+      "sku": "352060004",
+      "supplierCode": "352060004"
     },
     {
       "id": 40101,
       "name": "مشترك ١١٠ * ٥٠ باب كيسيل",
-      "price": 153.25,
+      "price": 170,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040016",
-      "sku": "352040016",
-      "supplierCode": "352040016"
+      "barcode": "352060001",
+      "sku": "352060001",
+      "supplierCode": "352060001"
     },
     {
       "id": 40102,
@@ -8194,34 +7915,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١١٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352070007",
-      "sku": "352070007",
-      "supplierCode": "352070007"
-    },
-    {
-      "id": 40104,
-      "name": "مسلوب كيسل ١١٠ * ٥٠ * ٥٠",
-      "price": 71,
-      "mainCategoryId": "كيسيل",
-      "subCategoryId": "قطع ١١٠",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "352092003",
-      "sku": "352092003",
-      "supplierCode": "352092003"
-    },
-    {
-      "id": 40105,
-      "name": "مسلوب ١١٠ * ٧٥ كيسل (ثانية)",
-      "price": 80.75,
-      "mainCategoryId": "كيسيل",
-      "subCategoryId": "قطع ١١٠",
-      "stock": 100,
-      "minStock": 5,
-      "barcode": "352092004",
-      "sku": "352092004",
-      "supplierCode": "352092004"
+      "minStock": 5
     },
     {
       "id": 40106,
@@ -8273,20 +7967,20 @@
     },
     {
       "id": 40110,
-      "name": "مشترك ٦ * ٣ باب كيسل",
+      "name": "مشترك ٦ * ٦ باب كيسل",
       "price": 465.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040018",
-      "sku": "352040018",
-      "supplierCode": "352040018"
+      "barcode": "352060006",
+      "sku": "352060006",
+      "supplierCode": "352060006"
     },
     {
       "id": 40111,
       "name": "كوع ٦ بوصه عاده كيسل",
-      "price": 246.5,
+      "price": 196.5,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
@@ -8298,14 +7992,11 @@
     {
       "id": 40112,
       "name": "م ٨ بوصه كيسل",
-      "price": 429.75,
+      "price": 570,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "332020010",
-      "sku": "332020010",
-      "supplierCode": "332020010"
+      "minStock": 5
     },
     {
       "id": 40113,
@@ -8322,7 +8013,7 @@
     {
       "id": 40114,
       "name": "جلبة ٨ بوصه كيسل",
-      "price": 253.5,
+      "price": 336.25,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
@@ -8339,9 +8030,9 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352050003",
-      "sku": "352050003",
-      "supplierCode": "352050003"
+      "barcode": "352060005",
+      "sku": "352060005",
+      "supplierCode": "352060005"
     },
     {
       "id": 40116,
@@ -8351,21 +8042,18 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020005",
-      "sku": "352020005",
-      "supplierCode": "352020005"
+      "barcode": "352010005",
+      "sku": "352010005",
+      "supplierCode": "352010005"
     },
     {
       "id": 40117,
       "name": "مشترك عاده 160 * 160 كيسل",
-      "price": 422,
+      "price": 71,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352040015",
-      "sku": "352040015",
-      "supplierCode": "352040015"
+      "minStock": 5
     },
     {
       "id": 40118,
@@ -8387,9 +8075,9 @@
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093005",
-      "sku": "352093005",
-      "supplierCode": "352093005"
+      "barcode": "352040011",
+      "sku": "352040011",
+      "supplierCode": "352040011"
     },
     {
       "id": 40120,
@@ -8446,10 +8134,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١٦٠",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "352030005",
-      "sku": "352030005",
-      "supplierCode": "352030005"
+      "minStock": 5
     },
     {
       "id": 40125,
@@ -8458,15 +8143,12 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "377020020",
-      "sku": "377020020",
-      "supplierCode": "377020020"
+      "minStock": 5
     },
     {
       "id": 40126,
       "name": "بيبه ١٠ * ١٠ شوار كيسل",
-      "price": 1156,
+      "price": 33.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
@@ -8482,10 +8164,7 @@
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
-      "minStock": 5,
-      "barcode": "373099939",
-      "sku": "373099939",
-      "supplierCode": "373099939"
+      "minStock": 5
     },
     {
       "id": 40128,
@@ -8495,9 +8174,9 @@
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342020001",
-      "sku": "342020001",
-      "supplierCode": "342020001"
+      "barcode": "375020012",
+      "sku": "375020012",
+      "supplierCode": "375020012"
     },
     {
       "id": 40129,
@@ -8507,21 +8186,21 @@
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "342020010",
-      "sku": "342020010",
-      "supplierCode": "342020010"
+      "barcode": "375020011",
+      "sku": "375020011",
+      "supplierCode": "375020011"
     },
     {
       "id": 40130,
       "name": "بيبة شاور ركنة",
-      "price": 1188,
+      "price": 1188.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "بلاعات كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "375020002",
-      "sku": "375020002",
-      "supplierCode": "375020002"
+      "barcode": "375020017",
+      "sku": "375020017",
+      "supplierCode": "375020017"
     },
     {
       "id": 40131,
@@ -8555,9 +8234,9 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "332020001",
-      "sku": "332020001",
-      "supplierCode": "332020001"
+      "barcode": "332020009",
+      "sku": "332020009",
+      "supplierCode": "332020009"
     },
     {
       "id": 40134,
@@ -8567,9 +8246,9 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020001",
-      "sku": "352020001",
-      "supplierCode": "352020001"
+      "barcode": "352020008",
+      "sku": "352020008",
+      "supplierCode": "352020008"
     },
     {
       "id": 40135,
@@ -8579,9 +8258,9 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352020008",
-      "sku": "352020008",
-      "supplierCode": "352020008"
+      "barcode": "352010008",
+      "sku": "352010008",
+      "supplierCode": "352010008"
     },
     {
       "id": 40136,
@@ -8603,9 +8282,9 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352040001",
-      "sku": "352040001",
-      "supplierCode": "352040001"
+      "barcode": "352050016",
+      "sku": "352050016",
+      "supplierCode": "352050016"
     },
     {
       "id": 40138,
@@ -8615,14 +8294,14 @@
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
       "minStock": 5,
-      "barcode": "352093001",
-      "sku": "352093001",
-      "supplierCode": "352093001"
+      "barcode": "352040015",
+      "sku": "352040015",
+      "supplierCode": "352040015"
     },
     {
       "id": 40139,
       "name": "طبه ١ بوصه كيسل",
-      "price": 11.5,
+      "price": 12.75,
       "mainCategoryId": "كيسيل",
       "subCategoryId": "قطع ١بوصه كيسل",
       "stock": 100,
@@ -10869,7 +10548,10 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "تفلون + غراء + سيليكون",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "377090006",
+      "sku": "377090006",
+      "supplierCode": "377090006"
     },
     {
       "id": 70039,
@@ -10923,7 +10605,10 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "تفلون + غراء + سيليكون",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "377090007",
+      "sku": "377090007",
+      "supplierCode": "377090007"
     },
     {
       "id": 70045,
@@ -10932,7 +10617,10 @@
       "mainCategoryId": "افيز+تثبيت+غراء",
       "subCategoryId": "تفلون + غراء + سيليكون",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "barcode": "377090008",
+      "sku": "377090008",
+      "supplierCode": "377090008"
     },
     {
       "id": 70046,
@@ -24422,6 +24110,4556 @@
       "minStock": 5,
       "barcode": "AL.973",
       "sku": ".973"
+    },
+    {
+      "id": 40150,
+      "name": "مشترك بباب ١١٠مم زاوية ٨٧.٥ درجة مدفون كيسيل",
+      "price": 248,
+      "barcode": "352060011",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40151,
+      "name": "مشترك بباب ١١٠ / ٧٥ مم زاوية ٨٧.٥ درجة مدفون كيسيل",
+      "price": 212,
+      "barcode": "352060012",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40160,
+      "name": "مشترك ٤٥ درجة ١١٠ / ١٦٠ مم كيسيل",
+      "price": 327.25,
+      "barcode": "352040013",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١٦٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40161,
+      "name": "مشترك ٤٥ درجة ٦٣ مم كيسيل",
+      "price": 85.75,
+      "barcode": "352040016",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ٦٣ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40162,
+      "name": "مشترك ٤٥ درجة ٦٣ / ٧٥ مم كيسيل",
+      "price": 92.25,
+      "barcode": "352040022",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ٧٥ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40163,
+      "name": "مشترك ٩٠ درجة ١٦٠ / ١٦٠ مم كيسيل",
+      "price": 415.25,
+      "barcode": "352050010",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١٦٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40164,
+      "name": "مشترك ٩٠ درجة ١٦٠ / ١٦٠ مم مدفون كيسيل",
+      "price": 422,
+      "barcode": "352050011",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١٦٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40165,
+      "name": "مشترك ٩٠ درجة ١١٠ / ١٦٠ مم مدفون كيسيل",
+      "price": 361,
+      "barcode": "352050013",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١٦٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40166,
+      "name": "مشترك ٩٠ درجة مدفون ١١٠ مم كيسيل",
+      "price": 183.75,
+      "barcode": "352050018",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40167,
+      "name": "مشترك ٩٠ درجة ٦٣ / ٧٥ مم كيسيل",
+      "price": 88.5,
+      "barcode": "352050020",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ٧٥ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40168,
+      "name": "مشترك ١١٠ / ٧٥ مم زاوية ٨٧.٥ درجة مدفون كيسيل",
+      "price": 173.25,
+      "barcode": "352050024",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40169,
+      "name": "مشترك صليبة ٥٠ / ٥٠ مم كيسيل",
+      "price": 277.5,
+      "barcode": "352070001",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ٥٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40170,
+      "name": "مشترك صليبة ٤٥ درجة ٧٥ / ١١٠ مم كيسيل",
+      "price": 351.5,
+      "barcode": "352070006",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40171,
+      "name": "مشترك صليبة زاوية ٨٧.٥ درجة مدفون ١١٠ مم كيسيل",
+      "price": 439.5,
+      "barcode": "352070010",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40180,
+      "name": "كوع ٩٠ درجة مدفون ١٦٠ مم كيسيل",
+      "price": 246.5,
+      "barcode": "352020006",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١٦٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40181,
+      "name": "كوع زاوية ٨٧.٥ درجة مدفون ٢٠٠ مم كيسيل",
+      "price": 389.5,
+      "barcode": "352020009",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ٢٠٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40182,
+      "name": "كوع زاوية ٩٠ درجة مدفون ١١٠ مم كيسيل",
+      "price": 112.5,
+      "barcode": "352020011",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 40183,
+      "name": "كوع زاوية ٨٧.٥ درجة بباب كشف مدفون ١١٠ مم كيسيل",
+      "price": 185.75,
+      "barcode": "352030013",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع ١١٠ كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171602,
+      "name": "PPR-DR11-PN10 -م4-مم50-مواسيرلحام",
+      "price": 177.25,
+      "barcode": "331010001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171603,
+      "name": "PPR-DR11-PN10 -م4-مم63-مواسيرلحام",
+      "price": 269.75,
+      "barcode": "331010002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171604,
+      "name": "PPR-DR11-PN10 -م4-مم75-مواسيرلحام 38700",
+      "price": 387,
+      "barcode": "331010003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171605,
+      "name": "PPR-DR11-PN10 -م4-مم90-مواسيرلحام 52900",
+      "price": 529,
+      "barcode": "331010004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171606,
+      "name": "PPR-DR11-PN10 -م4-مم110-مواسيرلحام 0",
+      "price": 753.5,
+      "barcode": "331010005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171607,
+      "name": "PPR-DR11-PN10 -م4-مم160-مواسيرلحام 0",
+      "price": 1905.5,
+      "barcode": "331010007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171608,
+      "name": "PPR-DR11-PN10 -م4-مم32-مواسيرلحام",
+      "price": 68.75,
+      "barcode": "331010010",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171609,
+      "name": "PPR-DR6-PN20 -م4-مم90-مواسيرلحام 0",
+      "price": 706.5,
+      "barcode": "331020008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171610,
+      "name": "PPR-DR6-PN20 -م4-مم110-مواسيرلحام",
+      "price": 1001.75,
+      "barcode": "331020009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171611,
+      "name": "PPR-DR6-PN20 -م4-مم160-مواسيرلحام 365800",
+      "price": 3658,
+      "barcode": "331020011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171612,
+      "name": "PPR-DR74-PN16 -م4-مم20-مواسيرلحام",
+      "price": 35.25,
+      "barcode": "331021101",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171613,
+      "name": "PPR-DR74-PN16 -م4-مم25-مواسيرلحام",
+      "price": 60.75,
+      "barcode": "331021102",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171614,
+      "name": "PPR-DR74-PN16 -م4-مم40-مواسيرلحام 0",
+      "price": 139.5,
+      "barcode": "331021104",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171615,
+      "name": "PPR-DR74-PN16 -م4-مم75-مواسيرلحام 0",
+      "price": 418.5,
+      "barcode": "331021107",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171616,
+      "name": "PPR-DR74-PN16 -م4-مم90-مواسيرلحام 63400",
+      "price": 634,
+      "barcode": "331021108",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171617,
+      "name": "PPR-DR74-PN16-م4-مم110-مواسيرلحام",
+      "price": 895.25,
+      "barcode": "331021109",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171618,
+      "name": "PPR-DR74-PN16-م4-مم160-مواسيرلحام",
+      "price": 3058.25,
+      "barcode": "331021111",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171619,
+      "name": "PPRCTDR11PN16-م4مم160مواسير لحام",
+      "price": 3058.25,
+      "barcode": "331040211",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171620,
+      "name": "PPR-DR6-PN20 -مم20-مواسيرفايبرأسود",
+      "price": 66.25,
+      "barcode": "331050001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171621,
+      "name": "PPR-DR6-PN20 -مم25-مواسيرفايبرأسود",
+      "price": 100.25,
+      "barcode": "331050002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171622,
+      "name": "PPR-DR6-PN20 -مم32-مواسيرفايبرأسود",
+      "price": 146.25,
+      "barcode": "331050003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171623,
+      "name": "PPR-DR6-PN20 -مم40-مواسيرفايبرأسود 24300",
+      "price": 243,
+      "barcode": "331050004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171624,
+      "name": "PPR-DR6-PN20 -مم50-مواسيرفايبرأسود 0",
+      "price": 358.5,
+      "barcode": "331050005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171625,
+      "name": "PPR-DR6-PN20 -مم63-مواسيرفايبرأسود 56200",
+      "price": 562,
+      "barcode": "331050006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171626,
+      "name": "PPR-DR6-PN20 -مم75-مواسيرفايبرأسود",
+      "price": 850.25,
+      "barcode": "331050007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171627,
+      "name": "PPR-DR6-PN20 -مم90-مواسيرفايبرأسود",
+      "price": 1129.25,
+      "barcode": "331050008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171628,
+      "name": "PPR-DR6-PN20 -مم110-مواسيرفايبرأسود",
+      "price": 1803.25,
+      "barcode": "331050009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171629,
+      "name": "PPR-DR74-PN16-مم40-مواسيرفايبرأسود 0",
+      "price": 217.5,
+      "barcode": "331050027",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171630,
+      "name": "PPR-DR74-PN16-مم63-مواسيرفايبرأسود 0",
+      "price": 502.5,
+      "barcode": "331050029",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171631,
+      "name": "PPR-DR74-PN16-مم75-مواسيرفايبرأسود",
+      "price": 766.75,
+      "barcode": "331050030",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171632,
+      "name": "PPR-DR74-PN16-مم90-مواسيرفايبرأسود",
+      "price": 1038.25,
+      "barcode": "331050031",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171633,
+      "name": "PPR-DR74-PN16-مم110-مواسيرفايبرأسود",
+      "price": 1651.75,
+      "barcode": "331050032",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171634,
+      "name": "PPR-DR74PN16-م4مم25مواسيرالومنيوم أسود 0 00",
+      "price": 399,
+      "barcode": "331080002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171635,
+      "name": "PPR-DR74PN16-م4مم32مواسيرالومنيوم أسود 0 0",
+      "price": 573.5,
+      "barcode": "331080003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171636,
+      "name": "PPR-DR6-PN20-م4مم20-مواسيرالومنيوم أسود",
+      "price": 73.25,
+      "barcode": "331080101",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171637,
+      "name": "PPR-DR6-PN20-م4مم32-مواسيرالومنيوم أسود 16100",
+      "price": 161,
+      "barcode": "331080103",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171638,
+      "name": "PPR-DR6-PN20-م4مم50-مواسيرالومنيوم أسود 39700",
+      "price": 397,
+      "barcode": "331080105",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171639,
+      "name": "مم40 درجة45كوع لحام",
+      "price": 94.25,
+      "barcode": "351010004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171640,
+      "name": "مم75 درجة45كوع لحام 0 0",
+      "price": 272.5,
+      "barcode": "351010007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171641,
+      "name": "مم90 درجة45كوع لحام",
+      "price": 538.25,
+      "barcode": "351010008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171642,
+      "name": "مم110 درجة45كوع لحام 0 0",
+      "price": 1086.5,
+      "barcode": "351010009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171643,
+      "name": "مم160 درجة45كوع لحام 0 0",
+      "price": 2306.5,
+      "barcode": "351010011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171644,
+      "name": "45مم20كوع لحام ذكر 0 00",
+      "price": 27,
+      "barcode": "351010061",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171645,
+      "name": "45مم25كوع لحام ذكر",
+      "price": 31.25,
+      "barcode": "351010062",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171646,
+      "name": "90 مم75كوع لحام 0 00",
+      "price": 263,
+      "barcode": "351020007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171647,
+      "name": "90 مم90كوع لحام 0 0",
+      "price": 554.5,
+      "barcode": "351020008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171648,
+      "name": "90 مم110كوع لحام",
+      "price": 1029.75,
+      "barcode": "351020009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171649,
+      "name": "90 مم160كوع لحام 0 0",
+      "price": 2493.5,
+      "barcode": "351020011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171650,
+      "name": "90مم20كوع لحام ذكر 0 00",
+      "price": 17,
+      "barcode": "351020061",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171651,
+      "name": "90ممكوع لحام ذكر 0 2500",
+      "price": 25,
+      "barcode": "351020062",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171652,
+      "name": "مم25كوع لحام كرنك 0 00",
+      "price": 50,
+      "barcode": "351020203",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171653,
+      "name": "مم25كرنك لحام 0 00",
+      "price": 44,
+      "barcode": "351030002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171654,
+      "name": "مم32كرنك لحام 0 0",
+      "price": 60.5,
+      "barcode": "351030003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171655,
+      "name": "مم32كرنك قصير",
+      "price": 67.75,
+      "barcode": "351030013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171656,
+      "name": "20/32مسلوب لحام",
+      "price": 31.25,
+      "barcode": "351040002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171657,
+      "name": "20/40مسلوب لحام 0 00",
+      "price": 63,
+      "barcode": "351040004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171658,
+      "name": "25/40مسلوب لحام 0 0",
+      "price": 61.5,
+      "barcode": "351040005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171659,
+      "name": "32/40مسلوب لحام 0 0",
+      "price": 61.5,
+      "barcode": "351040006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171660,
+      "name": "20/50مسلوب لحام 0 00",
+      "price": 89,
+      "barcode": "351040007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171661,
+      "name": "25/50مسلوب لحام",
+      "price": 88.75,
+      "barcode": "351040008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171662,
+      "name": "20/63مسلوب لحام 0 00",
+      "price": 147,
+      "barcode": "351040011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171663,
+      "name": "25/63مسلوب لحام",
+      "price": 145.75,
+      "barcode": "351040012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171664,
+      "name": "32/63مسلوب لحام",
+      "price": 144.25,
+      "barcode": "351040013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171665,
+      "name": "40/63مسلوب لحام 0 0",
+      "price": 146.5,
+      "barcode": "351040014",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171666,
+      "name": "50/63مسلوب لحام 0 0",
+      "price": 146.5,
+      "barcode": "351040015",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171667,
+      "name": "63/75مسلوب لحام 0 00",
+      "price": 211,
+      "barcode": "351040017",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171668,
+      "name": "63/90مسلوب لحام 0 0",
+      "price": 281.5,
+      "barcode": "351040018",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171669,
+      "name": "75/90مسلوب لحام 0 0",
+      "price": 281.5,
+      "barcode": "351040019",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171670,
+      "name": "63/110مسلوب لحام",
+      "price": 691.25,
+      "barcode": "351040020",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171671,
+      "name": "75/110مسلوب لحام",
+      "price": 691.25,
+      "barcode": "351040021",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171672,
+      "name": "90/110مسلوب لحام 0 00",
+      "price": 744,
+      "barcode": "351040022",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171673,
+      "name": "B مم110/160مسلوب لحام 0 00",
+      "price": 1940,
+      "barcode": "351040026",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171674,
+      "name": "مم90تى لحام",
+      "price": 740.75,
+      "barcode": "351050008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171675,
+      "name": "مم110تى لحام 0 0",
+      "price": 1144.5,
+      "barcode": "351050009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171676,
+      "name": "مم160تى لحام 0 0",
+      "price": 3180.5,
+      "barcode": "351050011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171677,
+      "name": "مم25تى مزدوج لحام 0 0",
+      "price": 42.5,
+      "barcode": "351050022",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171678,
+      "name": "مم25تى لحام كورنر 0 00",
+      "price": 31,
+      "barcode": "351050202",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171679,
+      "name": "20/40تى لحام مسلوب 0 00",
+      "price": 122,
+      "barcode": "351060004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171680,
+      "name": "40/50تى لحام مسلوب",
+      "price": 200.25,
+      "barcode": "351060010",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171681,
+      "name": "20/75تى لحام مسلوب 0 0",
+      "price": 399.5,
+      "barcode": "351060016",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171682,
+      "name": "25/75تى لحام مسلوب",
+      "price": 410.75,
+      "barcode": "351060017",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171683,
+      "name": "40/75تى لحام مسلوب",
+      "price": 408.75,
+      "barcode": "351060019",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171684,
+      "name": "50/75تى لحام مسلوب",
+      "price": 408.75,
+      "barcode": "351060020",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171685,
+      "name": "63/75تى لحام مسلوب",
+      "price": 408.75,
+      "barcode": "351060021",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171686,
+      "name": "63/90تى لحام مسلوب",
+      "price": 742.75,
+      "barcode": "351060022",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171687,
+      "name": "75/90تى لحام مسلوب",
+      "price": 742.75,
+      "barcode": "351060023",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171688,
+      "name": "63/110تى لحام مسلوب",
+      "price": 1157.75,
+      "barcode": "351060024",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171689,
+      "name": "75/110تى لحام مسلوب",
+      "price": 1188.75,
+      "barcode": "351060025",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171690,
+      "name": "90/110تى لحام مسلوب",
+      "price": 1377.25,
+      "barcode": "351060026",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171691,
+      "name": "90/160تى لحام مسلوب",
+      "price": 3646.75,
+      "barcode": "351060027",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171692,
+      "name": "110/160تى لحام مسلوب 0 00",
+      "price": 3797,
+      "barcode": "351060028",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171693,
+      "name": "مم90جلبه لحام 0 00",
+      "price": 306,
+      "barcode": "351070008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171694,
+      "name": "مم110جلبة لحام",
+      "price": 693.75,
+      "barcode": "351070009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171695,
+      "name": "1/2 *20جلبة بصامولة متحركة",
+      "price": 139.25,
+      "barcode": "351070021",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171696,
+      "name": "3/4 *20جلبة بصامولة متحركة 0 0",
+      "price": 164.5,
+      "barcode": "351070062",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171697,
+      "name": "3/4 *25جلبة بصامولة متحركة 0 00",
+      "price": 226,
+      "barcode": "351070063",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171698,
+      "name": "مم75طبة لحام 0 0",
+      "price": 214.5,
+      "barcode": "351080007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171699,
+      "name": "مم90طبة لحام",
+      "price": 283.25,
+      "barcode": "351080008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171700,
+      "name": "مم110طبة لحام",
+      "price": 544.25,
+      "barcode": "351080009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171701,
+      "name": "مم160طبة لحام",
+      "price": 2056.25,
+      "barcode": "351080011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171702,
+      "name": "مم63فﻼنشة لحام",
+      "price": 245.75,
+      "barcode": "351090001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171703,
+      "name": "مم75فﻼنشة لحام",
+      "price": 467.25,
+      "barcode": "351090002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171704,
+      "name": "مم90فﻼنشة لحام",
+      "price": 540.75,
+      "barcode": "351090003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171705,
+      "name": "PP-Rمم20بردة لحام محبس بلية 0 00",
+      "price": 7,
+      "barcode": "351091001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171706,
+      "name": "PP-Rمم25بردة لحام محبس بلية",
+      "price": 8.25,
+      "barcode": "351091002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171707,
+      "name": "PP-Rمم32بردة لحام محبس بلية 0 00",
+      "price": 12,
+      "barcode": "351091003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171708,
+      "name": "PP-Rمم50بردة لحام محبس بلية 0 0",
+      "price": 28.5,
+      "barcode": "351091004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171709,
+      "name": "PP-Rمم63بردة لحام محبس بلية 0 0",
+      "price": 34.5,
+      "barcode": "351091005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171710,
+      "name": "UV اسودPP-Rمم20بردة لحام محبس بلية",
+      "price": 7.25,
+      "barcode": "351095001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171711,
+      "name": "UV اسودPP-Rمم25بردة لحام محبس بلية",
+      "price": 9.75,
+      "barcode": "351095002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171712,
+      "name": "UV اسودPP-Rمم32بردة لحام محبس بلية",
+      "price": 12.75,
+      "barcode": "351095003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171713,
+      "name": "UV اسودPP-Rمم50بردة لحام محبس بلية 0 00",
+      "price": 30,
+      "barcode": "351095004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171714,
+      "name": "UV اسودPP-Rمم63بردة لحام محبس بلية 0 0",
+      "price": 35.5,
+      "barcode": "351095005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171715,
+      "name": "UV اسودPP-Rمم63بردة لحام محبس بلية 0 0",
+      "price": 35.5,
+      "barcode": "351095006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171716,
+      "name": "PPR مم20قفيز",
+      "price": 5.75,
+      "barcode": "351099945",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171717,
+      "name": "PPRمم25قفيز 0 0",
+      "price": 7.5,
+      "barcode": "351099946",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171718,
+      "name": "PPRمم32قفيز 0 0",
+      "price": 9.5,
+      "barcode": "351099947",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171719,
+      "name": "°90 مم25كوع لحام طويل",
+      "price": 25.25,
+      "barcode": "351120002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171720,
+      "name": "°90 مم32كوع لحام طويل",
+      "price": 47.75,
+      "barcode": "351120003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171721,
+      "name": "UV أسود90 مم25كوع لحام 0 0",
+      "price": 35.5,
+      "barcode": "355020002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171722,
+      "name": "UV أسود90 مم32كوع لحام",
+      "price": 51.25,
+      "barcode": "355020003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171723,
+      "name": "UV أسود90 مم40كوع لحام 0 0",
+      "price": 95.5,
+      "barcode": "355020004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171724,
+      "name": "UV أسود90 مم50كوع لحام",
+      "price": 183.75,
+      "barcode": "355020005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171725,
+      "name": "UV أسود90 مم63كوع لحام",
+      "price": 234.25,
+      "barcode": "355020006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171726,
+      "name": "UV أسود20/32مسلوب لحام 0 00",
+      "price": 36,
+      "barcode": "355040002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171727,
+      "name": "UV أسود25/32مسلوب لحام 0 00",
+      "price": 36,
+      "barcode": "355040003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171728,
+      "name": "UV أسود32/50مسلوب لحام 0 00",
+      "price": 102,
+      "barcode": "355040009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171729,
+      "name": "UV أسود40/50مسلوب لحام 0 0",
+      "price": 103.5,
+      "barcode": "355040010",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171730,
+      "name": "UV أسود50/63مسلوب لحام 0 00",
+      "price": 170,
+      "barcode": "355040015",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171731,
+      "name": "UV مم أسود32تى لحام 0 00",
+      "price": 61,
+      "barcode": "355050003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171732,
+      "name": "UV مم أسود40تى لحام 0 00",
+      "price": 116,
+      "barcode": "355050004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171733,
+      "name": "UV مم أسود50تى لحام",
+      "price": 199.25,
+      "barcode": "355050005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171734,
+      "name": "UV مم أسود63تى لحام 0 00",
+      "price": 280,
+      "barcode": "355050006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171735,
+      "name": "UV مم اسود25تى مزدوج لحام",
+      "price": 47.75,
+      "barcode": "355050022",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171736,
+      "name": "UVمم اسود25صليبة لحام",
+      "price": 109.25,
+      "barcode": "355050062",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171737,
+      "name": "UVمم اسود32صليبة لحام 0 0",
+      "price": 115.5,
+      "barcode": "355050063",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171738,
+      "name": "UV أسود25/32تى لحام مسلوب",
+      "price": 81.75,
+      "barcode": "355060003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171739,
+      "name": "UV أسود32/40تى لحام مسلوب 0 0",
+      "price": 146.5,
+      "barcode": "355060006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171740,
+      "name": "UV أسود25/50تى لحام مسلوب",
+      "price": 205.75,
+      "barcode": "355060008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171741,
+      "name": "UV أسود32/50تى لحام مسلوب",
+      "price": 221.75,
+      "barcode": "355060009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171742,
+      "name": "UV أسود32/63تى لحام مسلوب 0 00",
+      "price": 245,
+      "barcode": "355060013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171743,
+      "name": "UV أسود50/63تى لحام مسلوب",
+      "price": 286.75,
+      "barcode": "355060015",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171744,
+      "name": "UV مم أسود40جلبة لحام 0 00",
+      "price": 64,
+      "barcode": "355070004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171745,
+      "name": "UV مم أسود63جلبه لحام",
+      "price": 172.25,
+      "barcode": "355070006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171746,
+      "name": "UV مم أسود40طبة لحام",
+      "price": 66.25,
+      "barcode": "355080004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171747,
+      "name": "UV مم أسود63طبه لحام",
+      "price": 179.75,
+      "barcode": "355080006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171748,
+      "name": "UVاسود°90 مم25كوع لحام طويل 0 00",
+      "price": 40,
+      "barcode": "355120002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171749,
+      "name": "UVاسود°90 مم32كوع لحام طويل",
+      "price": 55.75,
+      "barcode": "355120003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171750,
+      "name": "1/2 *20بطارية متغيرة بسن",
+      "price": 279.75,
+      "barcode": "358091008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171751,
+      "name": "1/2 *25بطارية متغيرة بسن",
+      "price": 333.25,
+      "barcode": "358091009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171752,
+      "name": "UVمم لحام بدون سوكت أسود32/مم63بطارية",
+      "price": 1606.75,
+      "barcode": "358091011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171753,
+      "name": "UVمم لحام بسوكت أسود32/مم63بطارية 0 0",
+      "price": 1731.5,
+      "barcode": "358091012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171754,
+      "name": "UVمم لحام بدون سوكت أسود32/مم50بطارية",
+      "price": 1289.25,
+      "barcode": "358091013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171755,
+      "name": "UVمم لحام بسوكت أسود32/مم50بطارية",
+      "price": 1411.25,
+      "barcode": "358091014",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171756,
+      "name": "UVمم بسوكت أسود63/مم32بطارية قصيرة لحام",
+      "price": 1312.75,
+      "barcode": "358091112",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171757,
+      "name": "UVمم بسوكت أسود50/مم32بطارية قصيرة لحام",
+      "price": 1141.25,
+      "barcode": "358091114",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171758,
+      "name": "UVمم بسوكت أسود50/مم25بطارية قصيرة لحام 0 00",
+      "price": 1062,
+      "barcode": "358091115",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171759,
+      "name": "UVمم بسوكت أسود63/مم25بطارية قصيرة لحام 0 00",
+      "price": 1229,
+      "barcode": "358091117",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171760,
+      "name": "2/1 *25كوع بسن خارجى",
+      "price": 188.25,
+      "barcode": "361010003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171761,
+      "name": "4/3 *25كوع بسن داخلى 0 00",
+      "price": 185,
+      "barcode": "361020003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171762,
+      "name": "4/3 *32كوع بسن داخلى",
+      "price": 227.25,
+      "barcode": "361020004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171763,
+      "name": "1 *32كوع بسن داخلى 0 0",
+      "price": 387.5,
+      "barcode": "361020005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171764,
+      "name": "1/2 *20كوع مزدوج 0 00",
+      "price": 236,
+      "barcode": "361020007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171765,
+      "name": "1/2 *25تى بسن داخلى 0 00",
+      "price": 167,
+      "barcode": "361030003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171766,
+      "name": "1/2 *20تى بسن خارجى",
+      "price": 150.75,
+      "barcode": "361030011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171767,
+      "name": "1/2 *25تى بسن خارجى",
+      "price": 193.25,
+      "barcode": "361030013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171768,
+      "name": "3/4 *25تى بسن خارجى",
+      "price": 260.25,
+      "barcode": "361030014",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171769,
+      "name": "\" 2/1 * 25تى مزدوج سن داخلى",
+      "price": 286.75,
+      "barcode": "361030203",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171770,
+      "name": "3/4 *32تى محبس 0 0",
+      "price": 356.5,
+      "barcode": "361040003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171771,
+      "name": "بسوكت1/2*20واى فلتر 0 0",
+      "price": 155.5,
+      "barcode": "361040011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171772,
+      "name": "بسوكت3/4*25واى فلتر 0 0",
+      "price": 257.5,
+      "barcode": "361040012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171773,
+      "name": "بسوكت3/4*32واى فلتر",
+      "price": 320.75,
+      "barcode": "361040013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171774,
+      "name": "1/2 *25وصله بسن خارجى",
+      "price": 168.75,
+      "barcode": "361050003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171775,
+      "name": "1/2 -2*75وصله بسن خارجى",
+      "price": 1525.75,
+      "barcode": "361050011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171776,
+      "name": "3 *90وصله بسن خارجى",
+      "price": 2480.75,
+      "barcode": "361050012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171777,
+      "name": "4 *110وصلة بسن خارجى",
+      "price": 4917.75,
+      "barcode": "361050013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171778,
+      "name": "1/2 *25وصلة بسن داخلى 0 00",
+      "price": 152,
+      "barcode": "361060003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171779,
+      "name": "1/2 -2*75وصله بسن داخلى",
+      "price": 1482.75,
+      "barcode": "361060012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171780,
+      "name": "3 *90وصلة بسن داخلى",
+      "price": 2464.25,
+      "barcode": "361060013",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171781,
+      "name": "4 *110وصلة بسن داخلى",
+      "price": 4535.75,
+      "barcode": "361060014",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171782,
+      "name": "UV أسود3/4*32تى بسن داخلى",
+      "price": 334.75,
+      "barcode": "365030005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171783,
+      "name": "UV أسود1*32تى بسن داخلى",
+      "price": 478.25,
+      "barcode": "365030006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171784,
+      "name": "UV أسود4/3*32وصلة بسن خارجى",
+      "price": 398.75,
+      "barcode": "365050005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171785,
+      "name": "UV أسود4/1-1*40وصلة بسن خارجى 0 0",
+      "price": 641.5,
+      "barcode": "365050007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171786,
+      "name": "UV أسود2*63وصله بسن خارجى 0 0",
+      "price": 1292.5,
+      "barcode": "365050010",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171787,
+      "name": "UV أسود3/4*32وصله بسن داخلى",
+      "price": 367.75,
+      "barcode": "365060005",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171788,
+      "name": "UV أسود4/1-1*40وصلة بسن داخلى 0 00",
+      "price": 564,
+      "barcode": "365060008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171789,
+      "name": "UV أسود2*63وصله بسن داخلى 0 00",
+      "price": 1199,
+      "barcode": "365060011",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171790,
+      "name": "3/4محبس طارة خضراء 0 00",
+      "price": 327,
+      "barcode": "371020006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171791,
+      "name": "Elite 3/4*20محبس دفن 0 0",
+      "price": 733.5,
+      "barcode": "371040040",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171792,
+      "name": "مم75 ﻻكور2محبس بلية 0 00",
+      "price": 5593,
+      "barcode": "371060007",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171793,
+      "name": "مم90 ﻻكور2محبس بلية 0 00",
+      "price": 8482,
+      "barcode": "371060008",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171794,
+      "name": "مم110 ﻻكور2محبس بلية 0 00",
+      "price": 12900,
+      "barcode": "371060009",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171795,
+      "name": "بوصة3/4 –مم25مانع ارتداد بﻼكور أنثي 0 0",
+      "price": 715.5,
+      "barcode": "371060037",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171796,
+      "name": "بوصة3/4 –مم25مانع ارتداد بﻼكور ذكر 0 00",
+      "price": 781,
+      "barcode": "371060038",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171797,
+      "name": "بسوكت1/2*20محبس واى بيد طارة خضراء",
+      "price": 491.75,
+      "barcode": "371060051",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171798,
+      "name": "بسوكت3/4*25محبس واى بيد طارة خضراء 0 00",
+      "price": 570,
+      "barcode": "371060052",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171799,
+      "name": "بسوكت3/4*32محبس واى بيد طارة خضراء 0 00",
+      "price": 759,
+      "barcode": "371060053",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171800,
+      "name": "3/4 –مم25مانع ارتداد أسود بﻼكور أنثي 0 0",
+      "price": 753.5,
+      "barcode": "371060137",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171801,
+      "name": "3/4 –مم25مانع ارتداد أسود بﻼكور ذكر 0 00",
+      "price": 819,
+      "barcode": "371060138",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171802,
+      "name": "مم40 ﻻكور2محبس بلية أسود 0 0",
+      "price": 1419.5,
+      "barcode": "371061114",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171803,
+      "name": "\"11/4 * 40 ﻻكور تجميع بسن داخلى طويل",
+      "price": 529.25,
+      "barcode": "371073004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171804,
+      "name": "3/4 *25 ﻻكور تجميع بسن خارجى طويل",
+      "price": 252.25,
+      "barcode": "371073012",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "قطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171805,
+      "name": "H EG200حصان2طلمبة مياه",
+      "price": 17062.75,
+      "barcode": "376010020",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171806,
+      "name": "H EG300حصان3طلمبة مياه",
+      "price": 26480.25,
+      "barcode": "376010021",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171807,
+      "name": "GRAY FOR15205 م125غراء ضغوط سمارت 0 00",
+      "price": 143,
+      "barcode": "377060006",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171808,
+      "name": "GRAY FOR15204م250غراء ضغوط سمارت 0 0",
+      "price": 222.5,
+      "barcode": "377060007",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171809,
+      "name": "917473 - م500غراء ضغوط سمارت",
+      "price": 397.25,
+      "barcode": "377060008",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171810,
+      "name": "CLEARFOR PVC 15123- مل125غراء بارد سمارت",
+      "price": 146.75,
+      "barcode": "377080006",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171811,
+      "name": "CLEARFOR PVC15122-مل250غراء بارد سمارت",
+      "price": 202.75,
+      "barcode": "377080007",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171812,
+      "name": "CLEAR PVC15121 مل500غراء بارد سمارت",
+      "price": 360.25,
+      "barcode": "377080008",
+      "mainCategoryId": "أصناف متنوعة",
+      "subCategoryId": "عام",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171813,
+      "name": "متر6 طولPP مم صرف160مواسير 0",
+      "price": 413.5,
+      "barcode": "332020004",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171814,
+      "name": "مم29*75مواسير كيسيل 11200",
+      "price": 112,
+      "barcode": "332020007",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171815,
+      "name": "مم41*110مواسير كيسيل 0",
+      "price": 224.5,
+      "barcode": "332020008",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171816,
+      "name": "متر6 طولPPمم صرف67*200مواسير برتقالى 57000",
+      "price": 570,
+      "barcode": "332020015",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171817,
+      "name": "PP مم24*50مواسير كيسيل",
+      "price": 83.75,
+      "barcode": "332020018",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171818,
+      "name": "PP متر6مم كيسيل27 *مم110مواسير",
+      "price": 201.75,
+      "barcode": "332020020",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171819,
+      "name": "pp سم75 مم50ياردة 0 0",
+      "price": 66.5,
+      "barcode": "342010002",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171820,
+      "name": "PP سم50 مم63ياردة",
+      "price": 48.75,
+      "barcode": "342010021",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171821,
+      "name": "PP مم110وصلة بباب كشف",
+      "price": 215.25,
+      "barcode": "352090003",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171822,
+      "name": "PP مم160طبة بيبة",
+      "price": 126.25,
+      "barcode": "352091005",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171823,
+      "name": "PPمم50غطاء مواسير كيسيل",
+      "price": 30.75,
+      "barcode": "352091008",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171824,
+      "name": "PPمم75غطاء مواسير كيسيل 0 00",
+      "price": 42,
+      "barcode": "352091009",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171825,
+      "name": "PPمم110غطاء مواسير كيسيل",
+      "price": 60.25,
+      "barcode": "352091010",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171826,
+      "name": "PPمم160غطاء مواسير كيسيل 0 0",
+      "price": 113.5,
+      "barcode": "352091011",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171827,
+      "name": "PP -مم32غطاء مواسير",
+      "price": 15.25,
+      "barcode": "352091012",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171828,
+      "name": "PP -مم63غطاء مواسير 0 00",
+      "price": 36,
+      "barcode": "352091013",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171829,
+      "name": "PP 50/40مسلوب",
+      "price": 36.25,
+      "barcode": "352092001",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171830,
+      "name": "PP مم برتقالى50*75*110مجمع صرف مغلق 0 0",
+      "price": 249.5,
+      "barcode": "375020004",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171831,
+      "name": "107 * 107صفاية مربعة 0 00",
+      "price": 1156,
+      "barcode": "375020013",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171832,
+      "name": "150 *150صفاية مربعة",
+      "price": 1353.75,
+      "barcode": "375020014",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171833,
+      "name": "107 *107صفاية مربعة بﻼطة 0 00",
+      "price": 1156,
+      "barcode": "375020015",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171834,
+      "name": "150 *150صفاية مربعة بﻼطة",
+      "price": 1353.75,
+      "barcode": "375020016",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171835,
+      "name": "150 *150عﻼية صفاية مربعة بﻼطة 0 0",
+      "price": 241.5,
+      "barcode": "375020018",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171836,
+      "name": "OTTEDمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020020",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171837,
+      "name": "TILEABLEمم107عﻼية بغطاء مربعة بﻼطة",
+      "price": 549.75,
+      "barcode": "375020021",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171838,
+      "name": "OTTEDمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020022",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171839,
+      "name": "TILEABLEمم150عﻼية بغطاء مربعة بﻼطة 0 0",
+      "price": 659.5,
+      "barcode": "375020023",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171840,
+      "name": "107 *107عﻼية صفاية مربعة بﻼطة",
+      "price": 195.25,
+      "barcode": "375020027",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171841,
+      "name": "WAVEمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020040",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171842,
+      "name": "DARTمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020041",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171843,
+      "name": "GRILLمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020042",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171844,
+      "name": "TICKEمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020043",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171845,
+      "name": "CRECENTمم107عﻼية بغطاء مفتوح مربعة",
+      "price": 549.75,
+      "barcode": "375020044",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171846,
+      "name": "CRECENTمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020045",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171847,
+      "name": "DARTمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020046",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171848,
+      "name": "GRILLمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020047",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171849,
+      "name": "TICKEمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020048",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171850,
+      "name": "WAVEمم150عﻼية بغطاء مفتوح مربعة 0 0",
+      "price": 659.5,
+      "barcode": "375020049",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171851,
+      "name": "TICKEمم107مم بغطاء50صفاية مخرج جانبى 0 00",
+      "price": 1156,
+      "barcode": "375020060",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171852,
+      "name": "WAVEمم107مم بغطاء50صفاية مخرج جانبى 0 00",
+      "price": 1156,
+      "barcode": "375020061",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171853,
+      "name": "DARTمم107مم بغطاء50صفاية مخرج جانبى 0 00",
+      "price": 1156,
+      "barcode": "375020062",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171854,
+      "name": "GRILLمم107مم بغطاء50صفاية مخرج جانبى 0 00",
+      "price": 1156,
+      "barcode": "375020063",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171855,
+      "name": "CRECENTمم107مم بغطاء50صفاية مخرج جانبى 0 00",
+      "price": 1156,
+      "barcode": "375020064",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171856,
+      "name": "TICKEمم150مم بغطاء50صفاية مخرج جانبى",
+      "price": 1353.75,
+      "barcode": "375020065",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171857,
+      "name": "WAVEمم150مم بغطاء50صفاية مخرج جانبى",
+      "price": 1353.75,
+      "barcode": "375020066",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171858,
+      "name": "DARTمم150مم بغطاء50صفاية مخرج جانبى",
+      "price": 1353.75,
+      "barcode": "375020067",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171859,
+      "name": "GRILLمم150مم بغطاء50صفاية مخرج جانبى",
+      "price": 1353.75,
+      "barcode": "375020068",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171860,
+      "name": "CRECENTمم150مم بغطاء50صفاية مخرج جانبى",
+      "price": 1353.75,
+      "barcode": "375020069",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171861,
+      "name": "10 *10 بغطاء50سم مخرج جانبي7صفاية قصيرة",
+      "price": 1122.25,
+      "barcode": "375020080",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171862,
+      "name": "15 *15غطاء بيبة مغلق 0 00",
+      "price": 227,
+      "barcode": "375020204",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171863,
+      "name": "15 *15غطاء بيبة مفتوح 0 00",
+      "price": 225,
+      "barcode": "375020206",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171864,
+      "name": "رقبة طويلة15*15غطاء بيبة نيكل",
+      "price": 860.25,
+      "barcode": "375020208",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171865,
+      "name": "300غطاء استانلس لصفاية طولية",
+      "price": 459.75,
+      "barcode": "375029912",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171866,
+      "name": "650غطاء استانلس لصفاية طولية",
+      "price": 804.25,
+      "barcode": "375029913",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171867,
+      "name": "مم غطاء استانلس75صفاية مخرج من أسفل",
+      "price": 3025.75,
+      "barcode": "375029970",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171868,
+      "name": "مم75صفاية بمخرج من أسفل",
+      "price": 1851.75,
+      "barcode": "375029972",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171869,
+      "name": "مم فضى50 مم مخرج40صفاية مدخل 0 00",
+      "price": 1794,
+      "barcode": "375029974",
+      "mainCategoryId": "كيسيل",
+      "subCategoryId": "قطع كيسيل",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171870,
+      "name": "باﻻكرة بدون روزيته4/3*2/1حنفية الغسالة 0 0",
+      "price": 143.5,
+      "barcode": "353099960",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171871,
+      "name": "باﻻكرة4/3 * 2/1حنفية الغسالة 0 00",
+      "price": 158,
+      "barcode": "353099927",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171872,
+      "name": "سم30وصلة مرنة سمارت هوم 0 00",
+      "price": 58,
+      "barcode": "371099130",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171873,
+      "name": "سم بسن خﻼط40وصلة مرنة 0 00",
+      "price": 132,
+      "barcode": "371099134",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171874,
+      "name": "سم بسن خﻼط60 وصلة مرنة",
+      "price": 150.75,
+      "barcode": "371099136",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171875,
+      "name": "سم80وصلة مرنة سمارت هوم",
+      "price": 90.75,
+      "barcode": "371099137",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171876,
+      "name": "سم100وصلة مرنة سمارت هوم",
+      "price": 99.25,
+      "barcode": "371099138",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171877,
+      "name": "مخرج1خﻼط دفن دائرى أسود 0 00",
+      "price": 3445,
+      "barcode": "371040092",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171878,
+      "name": "3/ مم75مواسير 0",
+      "price": 145.5,
+      "barcode": "333030002",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171879,
+      "name": "18/ مم32مواسير",
+      "price": 35.75,
+      "barcode": "333060001",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171880,
+      "name": "24/ مم32مواسير 0",
+      "price": 63.5,
+      "barcode": "333060002",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171881,
+      "name": "32 / بوصة1مواسير 0",
+      "price": 69.5,
+      "barcode": "333060009",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171882,
+      "name": "-متر6-مم29* بوصة3/4مواسير 0",
+      "price": 56.5,
+      "barcode": "333060020",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171883,
+      "name": "ML مم4*110مواسير 29700",
+      "price": 297,
+      "barcode": "333140001",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171884,
+      "name": "ML مم4*75مواسير 20000",
+      "price": 200,
+      "barcode": "333140014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171885,
+      "name": "ML مم5*110مواسير",
+      "price": 353.75,
+      "barcode": "333140015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171886,
+      "name": "ML مم4*160مواسير 41600",
+      "price": 416,
+      "barcode": "333140017",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171887,
+      "name": "ML مم5*160مواسير",
+      "price": 525.25,
+      "barcode": "333140018",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171888,
+      "name": "ML مم3*75مواسير 17000",
+      "price": 170,
+      "barcode": "333140021",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171889,
+      "name": "مم32 درجة45كوع",
+      "price": 18.25,
+      "barcode": "353010000",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171890,
+      "name": "مم48 درجة45كوع",
+      "price": 34.25,
+      "barcode": "353010001",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171892,
+      "name": "بوصة1 درجة45كوع",
+      "price": 18.75,
+      "barcode": "353010007",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171893,
+      "name": "مم63 درجة45كوع 0 0",
+      "price": 52.5,
+      "barcode": "353010008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171894,
+      "name": "مم90 درجة45كوع 0 00",
+      "price": 104,
+      "barcode": "353010009",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171895,
+      "name": "-°45-\"3/4-كوع",
+      "price": 15.75,
+      "barcode": "353010010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171897,
+      "name": "-°875 -مم63-كوع قصير 0 0",
+      "price": 48.5,
+      "barcode": "353020008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171898,
+      "name": "875 مم زاوية90كوع قصير 0 00",
+      "price": 121,
+      "barcode": "353020009",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171899,
+      "name": "-°875-\"3/4-كوع",
+      "price": 15.25,
+      "barcode": "353020010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171900,
+      "name": "مم قصير110 درجة90كوع 0 0",
+      "price": 146.5,
+      "barcode": "353020013",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171901,
+      "name": "-°875 -مم75-كوع قصير 0 00",
+      "price": 79,
+      "barcode": "353020014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171902,
+      "name": "-°875 -مم60-كوع قصير 0 00",
+      "price": 44,
+      "barcode": "353020015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171903,
+      "name": "-°875 -مم48-كوع قصير",
+      "price": 27.25,
+      "barcode": "353020016",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171904,
+      "name": "مم قصير90 درجة90كوع بباب كشف 0 00",
+      "price": 173,
+      "barcode": "353030008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171905,
+      "name": "2/1-1*60كوع بسن داخلى بانيو 0 0",
+      "price": 62.5,
+      "barcode": "353040005",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171907,
+      "name": "45 مم زاوية63مشترك 0 0",
+      "price": 93.5,
+      "barcode": "353050008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171908,
+      "name": "45 مم زاوية90مشترك",
+      "price": 175.75,
+      "barcode": "353050009",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171909,
+      "name": "-°45- \"3/4مشترك",
+      "price": 24.75,
+      "barcode": "353050010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171910,
+      "name": "مم32 درجة45مشترك",
+      "price": 30.25,
+      "barcode": "353050012",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171911,
+      "name": "مم75 درجة90مشترك",
+      "price": 134.25,
+      "barcode": "353060004",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171912,
+      "name": "بوصة1 درجة90مشترك",
+      "price": 27.75,
+      "barcode": "353060007",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171913,
+      "name": "875 مم زاوية63مشترك 0 00",
+      "price": 66,
+      "barcode": "353060008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171914,
+      "name": "875 مم زاوية90مشترك",
+      "price": 175.75,
+      "barcode": "353060009",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171915,
+      "name": "-°875- \"3/4مشترك 0 00",
+      "price": 21,
+      "barcode": "353060010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171916,
+      "name": "مم75/110 درجة45مشترك مسلوب",
+      "price": 315.25,
+      "barcode": "353070002",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171917,
+      "name": "60/110 درجة90مشترك مسلوب 0 00",
+      "price": 289,
+      "barcode": "353080002",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171918,
+      "name": "-°875-مم90/110-مشترك قصير 0 0",
+      "price": 393.5,
+      "barcode": "353080012",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171919,
+      "name": "-°875-مم75/110-مشترك قصير 0 0",
+      "price": 271.5,
+      "barcode": "353080013",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171920,
+      "name": "-°875-مم63/110-مشترك قصير 0 00",
+      "price": 264,
+      "barcode": "353080014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171921,
+      "name": "-°875-مم60/110-مشترك قصير 0 00",
+      "price": 264,
+      "barcode": "353080015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171922,
+      "name": "-°875-مم48/110-مشترك قصير 0 0",
+      "price": 196.5,
+      "barcode": "353080017",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171923,
+      "name": "مم75مشترك صليبة 0 00",
+      "price": 266,
+      "barcode": "353091003",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171924,
+      "name": "مم110مشترك صليبة جانبي",
+      "price": 378.25,
+      "barcode": "353091004",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171925,
+      "name": "110/60 درجة90مشترك صليبة مسلوب",
+      "price": 399.25,
+      "barcode": "353091011",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171926,
+      "name": "-°875-مم63/90-مشترك صليبة قصير",
+      "price": 337.75,
+      "barcode": "353091014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171927,
+      "name": "-°875-مم60/60-مشترك صليبة قصير",
+      "price": 230.25,
+      "barcode": "353091015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171928,
+      "name": "-°875-مم63/63-مشترك صليبة قصير 0 0",
+      "price": 236.5,
+      "barcode": "353091016",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171929,
+      "name": "110/75 درجة45مشترك صليبة مسلوب",
+      "price": 464.25,
+      "barcode": "353091020",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171930,
+      "name": "110/60 درجة45مشترك صليبة مسلوب",
+      "price": 416.25,
+      "barcode": "353091021",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171931,
+      "name": "-°875-مم75/110-مشترك صليبة قصير",
+      "price": 469.25,
+      "barcode": "353091032",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171932,
+      "name": "-°875- مم63/110-مشترك صليبة قصير 0 00",
+      "price": 397,
+      "barcode": "353091033",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171933,
+      "name": "-°875-مم60/110-مشترك صليبة قصير 0 00",
+      "price": 397,
+      "barcode": "353091034",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171934,
+      "name": "-°875-مم48/110-مشترك صليبة قصير 0 00",
+      "price": 302,
+      "barcode": "353091036",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171935,
+      "name": "مم75/110 درجة90مشترك مسلوب بباب",
+      "price": 305.75,
+      "barcode": "",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171936,
+      "name": "-مم48/110-مشترك قصير بباب كشف",
+      "price": 221.25,
+      "barcode": "353092101",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171937,
+      "name": "-مم60/110-مشترك قصير بباب كشف 0 00",
+      "price": 279,
+      "barcode": "353092102",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171938,
+      "name": "-مم75/110-مشترك قصير بباب كشف",
+      "price": 289.25,
+      "barcode": "353092103",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171939,
+      "name": "-مم110/110-مشترك قصير بباب كشف 0 00",
+      "price": 238,
+      "barcode": "353092104",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171940,
+      "name": "-مم90/90-مشترك قصير بباب كشف",
+      "price": 249.25,
+      "barcode": "353092106",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171941,
+      "name": "-مم90/110-مشترك قصير بباب كشف 0 00",
+      "price": 302,
+      "barcode": "353092107",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171942,
+      "name": "مم32جلبة صرف 0 00",
+      "price": 16,
+      "barcode": "353093000",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171943,
+      "name": "مم60جلبة صرف 0 00",
+      "price": 36,
+      "barcode": "353093002",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171944,
+      "name": "-\"3/4جلبة 0 00",
+      "price": 12,
+      "barcode": "353093010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171945,
+      "name": "مم63طبة تسليك 0 00",
+      "price": 78,
+      "barcode": "353095005",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171946,
+      "name": "مم60طبة قطع الصرف 0 00",
+      "price": 50,
+      "barcode": "353095014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171947,
+      "name": "- مم63-طبة بيبة 0 00",
+      "price": 50,
+      "barcode": "353095016",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171948,
+      "name": "- مم75-طبة بيبة 0 00",
+      "price": 79,
+      "barcode": "353095017",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171949,
+      "name": "-مم32-طبة مواسير 0 00",
+      "price": 17,
+      "barcode": "353095019",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171950,
+      "name": "-مم75-طبة مواسير",
+      "price": 75.75,
+      "barcode": "353095022",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171951,
+      "name": "-مم160-طبة مواسير",
+      "price": 188.75,
+      "barcode": "",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171952,
+      "name": "مم48طبة مواسير 0 00",
+      "price": 51,
+      "barcode": "353095024",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171953,
+      "name": "- بوصة3/4طبة مواسير",
+      "price": 13.25,
+      "barcode": "353095026",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171954,
+      "name": "-مم90طبة مواسير 0 0",
+      "price": 118.5,
+      "barcode": "353095028",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171955,
+      "name": "مغلق110 مخرج75/75/110جاليتراب",
+      "price": 1478.75,
+      "barcode": "353096102",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171956,
+      "name": "سم20عﻼية إضافية للجاليتراب طول",
+      "price": 227.75,
+      "barcode": "353096105",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171957,
+      "name": "مم110/75حاجز مائى جاليتراب اسود 0 0",
+      "price": 108.5,
+      "barcode": "353096108",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171958,
+      "name": "مخرج+ كيس بداية ونهاية 0 0",
+      "price": 302.5,
+      "barcode": "353096203",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171959,
+      "name": "مم للمجرى المائى75مخرج جانبى 0 0",
+      "price": 64.5,
+      "barcode": "353096212",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171960,
+      "name": "- سم بدون غطاء20*متر1 -مجرى مائى",
+      "price": 851.25,
+      "barcode": "353096213",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171961,
+      "name": "- سم بغطاء زهر20*متر1 -مجرى مائى",
+      "price": 3583.25,
+      "barcode": "353096218",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171962,
+      "name": "متر1*سم12مجرى مائى متعددة بغطاء ستانلس",
+      "price": 1719.75,
+      "barcode": "353096220",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171963,
+      "name": "متر1*سم12مجرى مائى متعددة 0 0",
+      "price": 872.5,
+      "barcode": "353096221",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171964,
+      "name": "درجة لمجرى مائى متعددة225وصلة زاوية 0 0",
+      "price": 124.5,
+      "barcode": "353096222",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171965,
+      "name": "بدايةونهاية+مم مجر مائى متعدد75مخرج ذكر 0 0",
+      "price": 124.5,
+      "barcode": "353096223",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171966,
+      "name": "بدايةونهاية+مم مجرمائى متعدد75مخرج انثى 0 0",
+      "price": 124.5,
+      "barcode": "353096224",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171967,
+      "name": "بدايةونهاية+جوان110/75مسلوب ﻻمركز قصير",
+      "price": 249.25,
+      "barcode": "353096225",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171968,
+      "name": "15 مم بسن48جلبة صرف 0 00",
+      "price": 33,
+      "barcode": "353096301",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171969,
+      "name": "15 مم بسن60جلبة صرف 0 0",
+      "price": 60.5,
+      "barcode": "353096302",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171970,
+      "name": "مم110ســيفون 0 00",
+      "price": 266,
+      "barcode": "353099901",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171971,
+      "name": "-مم75-سيفون 0 0",
+      "price": 210.5,
+      "barcode": "353099902",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171972,
+      "name": "رقبة تطويل غرفة تفتيش 0 00",
+      "price": 423,
+      "barcode": "353099908",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171973,
+      "name": "بقاعدة الغطاء غطاء غرفة تفتيش 0 00",
+      "price": 1564,
+      "barcode": "353099909",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171974,
+      "name": "بالطبب والجوانات جسم غرفة تفتيش 0 00",
+      "price": 1217,
+      "barcode": "353099910",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171975,
+      "name": "سم50 *سم50غطاء بالفريم 0 00",
+      "price": 1295,
+      "barcode": "353099911",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171976,
+      "name": "سم60*60عﻼية مصمتة لغرفة تفتيش 0 0",
+      "price": 1413.5,
+      "barcode": "353099915",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171977,
+      "name": "سم60*60مم لغرفة تفتيش110عﻼية بمدخلين 0 00",
+      "price": 1181,
+      "barcode": "353099916",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171978,
+      "name": "-سم بالفريم60*60غطاء",
+      "price": 1369.25,
+      "barcode": "353099917",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171979,
+      "name": "سم60*60قاعدة غرفة تفتيش+سم60*60غطاء",
+      "price": 1789.25,
+      "barcode": "353099918",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171980,
+      "name": "سم اخضر60 *سم60غطاء بالفريم",
+      "price": 1360.25,
+      "barcode": "353099920",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171981,
+      "name": "بدون عﻼية60*60غرفة تفتيش 0 00",
+      "price": 2702,
+      "barcode": "353099921",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171982,
+      "name": "- بباب كشف110/114سيفون",
+      "price": 327.75,
+      "barcode": "353099931",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171983,
+      "name": "- بباب كشف75سيفون",
+      "price": 236.25,
+      "barcode": "353099932",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171984,
+      "name": "- 63سيفون 0 0",
+      "price": 170.5,
+      "barcode": "353099933",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171985,
+      "name": "-مم110مانع ارتداد",
+      "price": 927.25,
+      "barcode": "353099940",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171986,
+      "name": "-مم160مانع ارتداد 0 00",
+      "price": 1236,
+      "barcode": "353099941",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171987,
+      "name": "مم315جسم غرفة تفتيش",
+      "price": 1183.75,
+      "barcode": "353099951",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171988,
+      "name": "مم315عﻼية غرفة تفتيش 0 0",
+      "price": 747.5,
+      "barcode": "353099952",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171989,
+      "name": "مم مفتوح المخارج60/110مجمع",
+      "price": 180.75,
+      "barcode": "373010010",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171990,
+      "name": "سم7 مم مفتوحة ارتفاع63/50بيبه",
+      "price": 159.25,
+      "barcode": "373010013",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171991,
+      "name": "مم مفتوحه المخارج160/110بيبه",
+      "price": 411.25,
+      "barcode": "373010015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171992,
+      "name": "مم مفتوح المخارج48/110مجمع 0 0",
+      "price": 158.5,
+      "barcode": "373010023",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171993,
+      "name": "مفتوحة المخارج60/75بيبه بالبرقع 0 00",
+      "price": 226,
+      "barcode": "373010031",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171994,
+      "name": "مفتوحة المخارج60/48بيبه بالبرقع 0 00",
+      "price": 226,
+      "barcode": "373010033",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171995,
+      "name": "مفتوحة المخارج48/75بيبه بالبرقع 0 00",
+      "price": 226,
+      "barcode": "373010034",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171996,
+      "name": "مم75/60/48عﻼية بيبه مدرجه 0 00",
+      "price": 102,
+      "barcode": "373020004",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171997,
+      "name": "20*20غطاء بيبة مغلق باليد",
+      "price": 70.75,
+      "barcode": "373030003",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 171998,
+      "name": "20*20غطاء بيبة مفتوح باليد 0 0",
+      "price": 70.5,
+      "barcode": "373030004",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172001,
+      "name": "مم110/60مسلوب 0 00",
+      "price": 119,
+      "barcode": "373050004",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172002,
+      "name": "مم75/110مسلوب 0 00",
+      "price": 119,
+      "barcode": "373050005",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172003,
+      "name": "مم50/48مسلوب",
+      "price": 25.25,
+      "barcode": "373050007",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172004,
+      "name": "مم48/32مسلوب 0 0",
+      "price": 32.5,
+      "barcode": "373050008",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172005,
+      "name": "مم48 / بوصة1مسلوب 0 0",
+      "price": 32.5,
+      "barcode": "373050011",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172006,
+      "name": "-مم90/ بوصة3مسلوب",
+      "price": 91.75,
+      "barcode": "373050013",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172007,
+      "name": "-مم75/ بوصة3مسلوب 0 00",
+      "price": 64,
+      "barcode": "373050014",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172008,
+      "name": "-مم32 / \"3/4مسلوب 0 00",
+      "price": 27,
+      "barcode": "373050015",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172009,
+      "name": "- \"1 / \"3/4مسلوب 0 00",
+      "price": 27,
+      "barcode": "373050016",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172010,
+      "name": "-مم60/ 63-مسلوب ﻻ مركزى بجوان",
+      "price": 91.75,
+      "barcode": "373050017",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172011,
+      "name": "63/60مسلوب مركزى 0 0",
+      "price": 73.5,
+      "barcode": "373050018",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172012,
+      "name": "-مم90/75مسلوب مركزى 0 0",
+      "price": 104.5,
+      "barcode": "373050019",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172013,
+      "name": "مم90/63مسلوب ﻻ مركزى 0 00",
+      "price": 94,
+      "barcode": "373050022",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172014,
+      "name": "مم90/75مسلوب ﻻ مركزى 0 0",
+      "price": 99.5,
+      "barcode": "373050023",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172015,
+      "name": "مم110/63مسلوب ﻻ مركزى",
+      "price": 107.75,
+      "barcode": "373050026",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172016,
+      "name": "مم110/75مسلوب ﻻ مركزى 0 00",
+      "price": 109,
+      "barcode": "373050027",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172017,
+      "name": "-مم48/110-مسلوب ﻻ مركزى 0 0",
+      "price": 111.5,
+      "barcode": "373050029",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172018,
+      "name": "-مم110/160-مسلوب ﻻ مركزى 0 0",
+      "price": 178.5,
+      "barcode": "373050030",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172019,
+      "name": "-مم50/ 63-مسلوب ﻻ مركزى بجوان",
+      "price": 87.25,
+      "barcode": "373050031",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172020,
+      "name": "-مم50/ 60-مسلوب ﻻ مركزى بجوان",
+      "price": 87.25,
+      "barcode": "373050032",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172021,
+      "name": "-مم90/110مسلوب مركزى 0 0",
+      "price": 125.5,
+      "barcode": "373050033",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172022,
+      "name": "-مم48/مسلوب مركزى 0 11000",
+      "price": 110,
+      "barcode": "373050034",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172023,
+      "name": "-مم أسود بجوان90/110مسلوب 0 0",
+      "price": 124.5,
+      "barcode": "373050101",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172024,
+      "name": "مم75وصلة تمدد",
+      "price": 84.75,
+      "barcode": "373099908",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172025,
+      "name": "-مم160-وصلة تمدد 0 0",
+      "price": 178.5,
+      "barcode": "373099910",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172026,
+      "name": "مم بدون وصلة تمدد160جلبة إصﻼح",
+      "price": 237.25,
+      "barcode": "373099915",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172027,
+      "name": "-مم160-جلبة إصﻼح بوصلة تمدد",
+      "price": 377.75,
+      "barcode": "373099917",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172028,
+      "name": "سم20*سم50غطاء مجرى مائي 0 0",
+      "price": 419.5,
+      "barcode": "373099920",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172029,
+      "name": "مم75برقع بيبة 0 00",
+      "price": 61,
+      "barcode": "373099923",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172030,
+      "name": "(يد+سلة+غطاء مفتوح+رقبة )رقبة جاليتراب",
+      "price": 617.75,
+      "barcode": "373099927",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172031,
+      "name": "سم50غطاء مجرى مائى",
+      "price": 94.25,
+      "barcode": "373099935",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172032,
+      "name": "(يد+سلة+غطاء مغلق+رقبة )رقبة جاليتراب",
+      "price": 617.75,
+      "barcode": "373099942",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172033,
+      "name": "-107عﻼية بيبةرمادى بغطاء استانلس مفتوح",
+      "price": 424.25,
+      "barcode": "375020101",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172034,
+      "name": "-150عﻼية بيبةرمادى بغطاء استانلس مفتوح",
+      "price": 532.75,
+      "barcode": "375020102",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172035,
+      "name": "15 *15 سمارت هوم304وش استانلس",
+      "price": 532.75,
+      "barcode": "375029990",
+      "mainCategoryId": "اسمارت ابيض",
+      "subCategoryId": "قطع سمارت",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172036,
+      "name": "جلبة تطويل نحاس بي أر",
+      "price": 138.25,
+      "barcode": "371010001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172037,
+      "name": "جلبة تطويل نحاس للمحبس اﻹيليت بي أر",
+      "price": 345,
+      "barcode": "371010002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172039,
+      "name": "فلانشة لحام 110 مم BR",
+      "price": 899,
+      "barcode": "351090004",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "فلانشات وقطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172040,
+      "name": "بردة لحام 160 مم BR",
+      "price": 2752,
+      "barcode": "351090006",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "فلانشات وقطع بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172041,
+      "name": "كوع بلاكور 32*1 بسن خارجى BR",
+      "price": 436.25,
+      "barcode": "371074001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172042,
+      "name": "لاكور لحام 20 مم BR",
+      "price": 147,
+      "barcode": "371080001",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172043,
+      "name": "لاكور لحام 25 مم BR",
+      "price": 181.25,
+      "barcode": "371080002",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
+    },
+    {
+      "id": 172044,
+      "name": "لاكور لحام 32 مم BR",
+      "price": 236,
+      "barcode": "371080003",
+      "mainCategoryId": "بي ار لحام",
+      "subCategoryId": "محابس ووصلات بولي",
+      "unit": "قطعة",
+      "status": "active"
     }
   ]
 }

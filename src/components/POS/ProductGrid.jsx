@@ -756,7 +756,30 @@ const ProductGrid = ({
 
     let searchResults = processedProducts;
     if (searchTerm.trim().length > 1) {
-      searchResults = searchOptimizer.performSearch(searchTerm, processedProducts, ['name', 'sku', 'barcode', 'description']);
+      const term = searchTerm.toLowerCase().trim();
+      // بحث ذكي من الـ searchOptimizer
+      const optResults = searchOptimizer.performSearch(searchTerm, processedProducts, ['name', 'sku', 'barcode', 'description']);
+      
+      // بحث مباشر دقيق أو جزئي بالكود / الباركود لضمان ظهور الصنف فوراً
+      const directResults = processedProducts.filter(product => {
+        return (
+          String(product.id).includes(term) ||
+          (product.barcode && String(product.barcode).toLowerCase().includes(term)) ||
+          (product.supplierCode && String(product.supplierCode).toLowerCase().includes(term)) ||
+          (product.sku && String(product.sku).toLowerCase().includes(term))
+        );
+      });
+
+      // دمج النتائج بدون تكرار
+      const combined = [...directResults];
+      optResults.forEach(p => {
+        if (p && p.id !== undefined) {
+          if (!combined.some(x => x && x.id === p.id)) {
+            combined.push(p);
+          }
+        }
+      });
+      searchResults = combined;
     }
 
     return searchResults.filter(product => {

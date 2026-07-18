@@ -929,7 +929,13 @@ const Products = () => {
   }, [searchTerm, selectedMainCategory, selectedSubCategory]);
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const matchesSearch = 
+      product.name.toLowerCase().includes(term) ||
+      String(product.id).includes(term) ||
+      (product.barcode && String(product.barcode).includes(term)) ||
+      (product.supplierCode && String(product.supplierCode).includes(term)) ||
+      (product.sku && String(product.sku).includes(term));
     
     // 1. تصفية الفئة الرئيسية
     let matchesMain = true;
