@@ -1056,49 +1056,53 @@ const Products = () => {
       const cleaned = line.trim();
       if (!cleaned) return;
 
-      // تقسيم ذكي بالتوكنز والـ Fallback
+      // تقسيم ذكي بالتوكنز والـ Fallback المتطور لمنع تداخل التصاق الأرقام بالنصوص في الـ PDF
       let parts = [];
-      const tokens = cleaned.split(/\s+/);
       
-      // نبحث عن كود الصنف (رقم بطول 5 إلى 15 رقم)
-      const codeIdx = tokens.findIndex(t => /^\d{5,15}$/.test(t));
-      if (codeIdx !== -1) {
-        // نبحث عن السعر من اليمين إلى اليسار (من نهاية السطر) لتفادي أرقام الزاوية/المقاسات مثل 90 أو 45 أو 0
-        let foundPrice = null;
-        let priceIdx = -1;
-        for (let idx = tokens.length - 1; idx > codeIdx; idx--) {
-          const token = tokens[idx];
-          // السعر يجب أن يكون رقم موجب أكبر من 0 (قد يحتوي على كسر)
-          if (/^\d+(\.\d{1,2})?$/.test(token)) {
-            const val = parseFloat(token);
-            if (val > 0) {
-              foundPrice = token;
-              priceIdx = idx;
-              break;
-            }
+      // 1. محاولة استخراج كود الصنف المكون من 5 إلى 15 رقم متتالي (حتى لو كان ملتصقاً بنص)
+      const codeMatch = cleaned.match(/(\d{5,15})/);
+      if (codeMatch) {
+        const codeToken = codeMatch[1];
+        // إزالة الكود من السطر لتجنب التداخل مع تحليل السعر والتكلفة
+        const remaining = cleaned.replace(codeToken, '').trim();
+        
+        // استخلاص السعر والتكلفة من نهاية السطر المتبقي
+        const tokens = remaining.split(/\s+/);
+        const numericTokens = [];
+        for (let i = tokens.length - 1; i >= 0; i--) {
+          const t = tokens[i];
+          if (/^\d+(\.\d+)?$/.test(t)) {
+            numericTokens.push({ val: t, idx: i });
           }
         }
         
-        if (foundPrice !== null) {
-          // إذا وجدنا سعراً، نحدد التكلفة أيضاً إذا كانت موجودة بعد السعر
-          let foundCost = '';
-          if (priceIdx < tokens.length - 1 && /^\d+(\.\d{1,2})?$/.test(tokens[priceIdx + 1])) {
-            foundCost = tokens[priceIdx + 1];
+        if (numericTokens.length > 0) {
+          // إذا وجدنا رقمين متجاورين في نهاية السطر، فالأول سعر والثاني تكلفة
+          if (numericTokens.length >= 2 && numericTokens[0].idx === numericTokens[1].idx + 1) {
+            parts = [codeToken, numericTokens[1].val, numericTokens[0].val];
+          } else {
+            parts = [codeToken, numericTokens[0].val, ''];
           }
-          parts = [tokens[codeIdx], foundPrice, foundCost];
         }
       }
       
-      // fallback إذا لم تنجح طريقة التوكنز وكان النص مقسماً بـ tab أو فاصلة
+      // 2. fallback متطور إذا لم تنجح طريقة الـ Regex (للحفاظ على مطابقة الأسماء الملصقة بأسعار)
       if (parts.length < 2) {
         let rawParts = cleaned.split('\t');
         if (rawParts.length < 2) rawParts = cleaned.split(/\s{2,}/);
         if (rawParts.length < 2) rawParts = cleaned.split(',');
+        
         if (rawParts.length >= 2) {
           const codeVal = rawParts[0].replace(/[^\d]/g, '');
           const priceVal = rawParts[1].replace(/[^\d.]/g, '');
           if (/^\d{5,15}$/.test(codeVal) && parseFloat(priceVal) > 0) {
-            parts = [codeVal, priceVal, rawParts[2] || ''];
+            parts = [codeVal, priceVal, rawParts[2] ? rawParts[2].replace(/[^\d.]/g, '') : ''];
+          }
+        } else {
+          // إذا لم تكن هناك فواصل، نبحث عن رقم عشري/صحيح في نهاية السطر ونعتبر ما قبله هو المعرّف/الاسم
+          const matchPriceEnd = cleaned.match(/(.*?)\s+(\d+(?:\.\d+)?)\s*$/);
+          if (matchPriceEnd) {
+            parts = [matchPriceEnd[1].trim(), matchPriceEnd[2], ''];
           }
         }
       }
@@ -1119,20 +1123,7 @@ const Products = () => {
             (p.barcode && String(p.barcode).trim() === codeToken)
           );
 
-          // في حالة عدم المطابقة بالكود، نبحث بالاسم الموحد لتفادي اختلافات الكتابة أو المسافات
-          if (matchedProds.length === 0) {
-            const normalize = (str) => String(str || '')
-              .replace(/[أإآا]/g, 'ا')
-              .replace(/ة/g, 'ه')
-              .replace(/ى/g, 'ي')
-              .replace(/\s+/g, '')
-              .toLowerCase();
-            const normalizedToken = normalize(codeToken);
-            const foundByName = products.find(p => p.name && normalize(p.name) === normalizedToken);
-            if (foundByName) {
-              matchedProds.push(foundByName);
-            }
-          }
+          // المطابقة الصارمة بالباركود وأكواد الموردين فقط
 
           if (matchedProds.length > 0) {
             matchedProds.forEach(found => {
@@ -1140,12 +1131,18 @@ const Products = () => {
               const catName = String(found.category || '').toLowerCase();
               const isBROrSmart = 
                 mainCatId.includes('br') || 
+                mainCatId.includes('بي ار') ||
+                mainCatId.includes('بولي') ||
+                mainCatId.includes('بلاكور') ||
                 mainCatId.includes('smart') || 
                 mainCatId.includes('سمارت') || 
                 mainCatId.includes('اسمارت') ||
                 mainCatId.includes('كيسيل') ||
                 mainCatId.includes('كيسل') ||
+                mainCatId.includes('متنوع') ||
                 catName.includes('br') || 
+                catName.includes('بي ار') ||
+                catName.includes('بولي') ||
                 catName.includes('smart') || 
                 catName.includes('سمارت') || 
                 catName.includes('اسمارت') ||
