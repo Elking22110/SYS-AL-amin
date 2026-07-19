@@ -742,18 +742,18 @@ const POSMain = () => {
         <style>
           @page {
             size: auto;
-            margin: 8mm;
+            margin: 4mm 6mm;
           }
           body {
             font-family: 'Almarai', Arial, "Segoe UI", Tahoma, sans-serif;
-            color: #1e293b;
+            color: #000000;
             background-color: #fff;
             margin: 0;
             padding: 0;
             direction: rtl;
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1.5;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.2;
           }
           .invoice-box {
             max-width: 100%;
@@ -763,7 +763,7 @@ const POSMain = () => {
           .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
           }
           .header-table td {
             vertical-align: middle;
@@ -771,18 +771,18 @@ const POSMain = () => {
             padding: 0;
           }
           .logo {
-            max-height: 40px;
+            max-height: 35px;
             width: auto;
-            margin-bottom: 6px;
-          }
-          .store-title {
-            font-size: 13px;
-            font-weight: 900;
-            color: #0f172a;
             margin-bottom: 4px;
           }
+          .store-title {
+            font-size: 12px;
+            font-weight: 900;
+            color: #000000;
+            margin-bottom: 2px;
+          }
           .store-subtitle {
-            font-size: 14px;
+            font-size: 9.5px;
             font-weight: 900;
             color: #000000;
           }
@@ -790,174 +790,200 @@ const POSMain = () => {
             text-align: left;
           }
           .invoice-title-text {
-            font-size: 15px;
+            font-size: 12px;
             font-weight: 900;
-            color: #0f172a;
-            margin-bottom: 6px;
+            color: #000000;
+            margin-bottom: 3px;
           }
           .info-badge {
             display: inline-block;
-            background-color: #f8fafc;
-            border: 1.5px solid #cbd5e1;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #1e293b;
+            background-color: #fff;
+            border: 1.5px solid #000000;
+            padding: 4px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 900;
+            color: #000000;
             text-align: right;
-            line-height: 1.6;
+            line-height: 1.3;
           }
           .divider {
-            border-top: 2px solid #cbd5e1;
-            margin: 15px 0;
+            border-top: 1.5px solid #000000;
+            margin: 8px 0;
           }
           .details-grid {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
           }
           .details-grid td {
             width: 50%;
             vertical-align: top;
-            padding: 0 0 0 10px;
+            padding: 0 0 0 5px;
             border: none;
           }
           .details-grid td:last-child {
-            padding: 0 10px 0 0;
+            padding: 0 5px 0 0;
           }
           .details-card {
-            background-color: #f8fafc;
-            border: 1.5px solid #cbd5e1;
-            border-radius: 10px;
-            padding: 6px;
+            background-color: #fff;
+            border: 1.5px solid #000000;
+            border-radius: 6px;
+            padding: 4px 6px;
             height: 100%;
             box-sizing: border-box;
           }
           .details-card h4 {
-            margin: 0 0 8px 0;
-            font-size: 13px;
+            margin: 0 0 4px 0;
+            font-size: 9.5px;
             font-weight: 900;
-            color: #0f172a;
-            border-bottom: 1.5px solid #cbd5e1;
-            padding-bottom: 6px;
+            color: #000000;
+            border-bottom: 1.5px solid #000000;
+            padding-bottom: 3px;
           }
           .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 6px;
-            font-size: 12px;
+            margin-bottom: 2px;
+            font-size: 9px;
           }
           .info-label {
-            color: #475569;
-            font-weight: 700;
+            color: #000000;
+            font-weight: 800;
           }
           .info-val {
-            color: #0f172a;
-            font-weight: 800;
+            color: #000000;
+            font-weight: 900;
           }
           .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
           }
           .products-table th {
-            background-color: #f1f5f9;
-            border: 1.5px solid #cbd5e1;
-            padding: 10px;
-            font-size: 12px;
+            background-color: #fff;
+            border: 1.5px solid #000000;
+            padding: 4px 6px;
+            font-size: 9px;
             font-weight: 900;
-            color: #0f172a;
+            color: #000000;
             text-align: right;
           }
           .products-table td {
-            border: 1.5px solid #e2e8f0;
-            padding: 8px 10px;
-            font-size: 13px;
-            font-weight: 700;
-            color: #1e293b;
+            border: 1.5px solid #000000;
+            padding: 4px 6px;
+            font-size: 9px;
+            font-weight: 900;
+            color: #000000;
           }
           .products-table tr:nth-child(even) td {
-            background-color: #f8fafc;
+            background-color: #fff;
           }
           .text-center { text-align: center !important; }
           .text-left { text-align: left !important; }
           .summary-table-container {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 8px;
           }
           .summary-table {
-            width: 340px;
+            width: 260px;
             margin-right: auto;
             border-collapse: collapse;
           }
           .summary-table td {
-            padding: 6px 10px;
-            font-size: 13px;
+            padding: 3px 6px;
+            font-size: 9px;
             border: none;
+            color: #000000;
+            font-weight: 900;
           }
           .summary-table .label {
-            color: #475569;
-            font-weight: 700;
+            color: #000000;
+            font-weight: 900;
             text-align: right;
           }
           .summary-table .value {
-            color: #0f172a;
-            font-weight: 800;
+            color: #000000;
+            font-weight: 900;
             text-align: left;
           }
           .summary-table .total-row td {
-            border-top: 2px solid #0f172a;
-            padding-top: 10px;
-            font-size: 15px;
+            border-top: 1.5px solid #000000;
+            padding-top: 6px;
+            font-size: 11px;
             font-weight: 900;
           }
           .summary-table .total-row .label {
-            color: #0f172a;
+            color: #000000;
           }
           .summary-table .total-row .value {
-            color: #059669;
-            font-size: 12px;
+            color: #000000;
+            font-size: 11px;
           }
           .footer-section {
-            margin-top: 15px;
-            border-top: 1.5px dashed #cbd5e1;
-            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 1.5px dashed #000000;
+            padding-top: 8px;
             text-align: center;
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 9px;
+            font-weight: 900;
             color: #000000;
           }
           .signatures {
-            margin-top: 20px;
+            margin-top: 15px;
             display: flex;
             justify-content: space-between;
-            padding: 0 30px;
+            padding: 0 15px;
           }
           .sig-box {
             text-align: center;
-            width: 160px;
+            width: 130px;
+            font-size: 8.5px;
+            color: #000000;
+            font-weight: 900;
           }
           .sig-line {
-            border-bottom: 1.5px solid #cbd5e1;
-            margin-bottom: 8px;
-            height: 30px;
+            border-bottom: 1.5px solid #000000;
+            margin-bottom: 4px;
+            height: 20px;
           }
           @media print {
             body {
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
+              color: #000000 !important;
+            }
+            * {
+              color: #000000 !important;
+              font-weight: 900 !important;
             }
             .details-card {
-              background-color: #f8fafc !important;
+              background-color: #fff !important;
+              border: 1.5px solid #000000 !important;
             }
             .products-table th {
-              background-color: #f1f5f9 !important;
+              background-color: #fff !important;
+              border: 1.5px solid #000000 !important;
+            }
+            .products-table td {
+              border: 1.5px solid #000000 !important;
+            }
+            .summary-table .total-row td {
+              border-top: 1.5px solid #000000 !important;
             }
           }
         </style>
       </head>
       <body>
         <div class="invoice-box">
+          <div style="text-align: center; font-size: 10px; font-weight: 900; margin-bottom: 8px; border-bottom: 1.5px solid #000000; padding-bottom: 4px;">
+            <strong style="font-size: 11px;">فاتورة بيع</strong>
+            <span style="margin: 0 10px;">|</span>
+            <span>رقم الفاتورة: #${invoiceId}</span>
+            <span style="margin: 0 10px;">|</span>
+            <span>التاريخ: ${currentDate}</span>
+          </div>
+
           <table class="header-table">
             <tr>
               <td>
@@ -967,58 +993,24 @@ const POSMain = () => {
                 <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
                 <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
               </td>
-              <td class="invoice-title-col">
-                <div class="invoice-title-text">فاتورة بيع</div>
-                <div class="info-badge">
-                  <strong>رقم الفاتورة:</strong> #${invoiceId}<br/>
-                  <strong>التاريخ:</strong> ${currentDate}
-                </div>
-              </td>
             </tr>
           </table>
 
-          <table class="details-grid">
-            <tr>
-              <td>
-                <div class="details-card">
-                  <h4>تفاصيل الفاتورة</h4>
-                  <div class="info-row">
-                    <span class="info-label">الكاشير:</span>
-                    <span class="info-val">${cashierName}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">طريقة الدفع:</span>
-                    <span class="info-val">${paymentMethodText}</span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="details-card">
-                  <h4>بيانات العميل</h4>
-                  <div class="info-row">
-                    <span class="info-label">اسم العميل:</span>
-                    <span class="info-val">${customerName}</span>
-                  </div>
-                  ${customerPhone && customerPhone !== 'غير محدد' ? `
-                    <div class="info-row">
-                      <span class="info-label">رقم الهاتف:</span>
-                      <span class="info-val direction-ltr">${customerPhone}</span>
-                    </div>
-                  ` : ''}
-                  ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
-                    <div class="info-row">
-                      <span class="info-label">الحساب السابق:</span>
-                      <span class="info-val">${previousDebt.toLocaleString('en-US')} ج.م</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">إجمالي الحساب:</span>
-                      <span class="info-val" style="color: #ef4444; font-weight: 900;">${newTotalDebt.toLocaleString('en-US')} ج.م</span>
-                    </div>
-                  ` : ''}
-                </div>
-              </td>
-            </tr>
-          </table>
+          <div class="details-card" style="margin-bottom: 8px; border: 1.5px solid #000000; border-radius: 4px; padding: 4px 6px;">
+            <table style="width: 100%; border-collapse: collapse; border: none; font-size: 9px; line-height: 1.3;">
+              <tr style="border: none;">
+                <td style="border: none; padding: 2px 0; width: 40%;"><strong>العميل:</strong> ${customerName}</td>
+                <td style="border: none; padding: 2px 0; width: 30%;">${customerPhone && customerPhone !== 'غير محدد' ? `<strong>الهاتف:</strong> <span class="direction-ltr">${customerPhone}</span>` : ''}</td>
+                <td style="border: none; padding: 2px 0; width: 30%; text-align: left;"><strong>طريقة الدفع:</strong> ${paymentMethodText}</td>
+              </tr>
+              ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
+              <tr style="border: none;">
+                <td style="border: none; padding: 2px 0; width: 40%;"><strong>الحساب السابق:</strong> ${previousDebt.toLocaleString('en-US')} ج.م</td>
+                <td style="border: none; padding: 2px 0; width: 60%; text-align: left;" colspan="2"><strong>إجمالي الحساب:</strong> <span style="font-weight: 900;">${newTotalDebt.toLocaleString('en-US')} ج.م</span></td>
+              </tr>
+              ` : ''}
+            </table>
+          </div>
 
           <table class="products-table">
             <thead>
