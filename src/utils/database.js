@@ -3,10 +3,22 @@ import { getCurrentDate } from './dateUtils.js';
 
 const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
 
+// الحصول على كود المشروع من البيئة لتفادي تداخل البيانات بين المشاريع على نفس الدومين
+const getProjectPrefix = () => {
+  try {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+    return match ? match[1] : 'default';
+  } catch (_) {
+    return 'default';
+  }
+};
+
 class DatabaseManager {
   constructor() {
     this.db = null;
-    this.dbName = 'POS_Database';
+    const prefix = getProjectPrefix();
+    this.dbName = `POS_Database_${prefix}`;
     this.version = 6; // رُفع من 5→6 لإصلاح unique constraint على barcode
   }
 

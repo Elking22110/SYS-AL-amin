@@ -28,12 +28,33 @@ const LOCAL_SYNC_STORES = [
     'productImages'
 ];
 
+// الحصول على كود المشروع من البيئة لتفادي تداخل البيانات بين المشاريع على نفس الدومين
+const getProjectPrefix = () => {
+    try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+        const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+        return match ? match[1] + '_' : 'default_';
+    } catch (_) {
+        return 'default_';
+    }
+};
+
+const prefix = getProjectPrefix();
+
 // كاش محلي لتجنب قراءة localStorage في كل مرة نحتاج فيها للمقارنة
 const localCache = new Map();
 
 // الاحتفاظ بالدالة الأصلية
+const originalGetItem = localStorage.getItem;
 const originalSetItem = localStorage.setItem;
 const originalRemoveItem = localStorage.removeItem;
+
+// اعتراض قراءة localStorage لإضافة البادئة تلقائياً
+localStorage.getItem = function(key) {
+    if (!key) return null;
+    const prefixedKey = key.startsWith(prefix) ? key : prefix + key;
+    return originalGetItem.call(this, prefixedKey);
+};
 
 /**
  * دالة تفريغ المتغيرات لتسريع المعالجة وحساب الفروقات
@@ -89,7 +110,7 @@ const initializeCache = () => {
             localCache.set(lsKey, {});
         }
     });
-    console.log('[SyncProxy] Interceptor cache initialized successfully.');
+    console.log('[SyncProxy] Interceptor cache initialized successfully with prefix: ' + prefix);
 };
 
 initializeCache();
@@ -98,8 +119,9 @@ initializeCache();
  * فلترة اعتراض حفظ localStorage وتوجيه التحديثات الحقيقية إلى IndexedDB أو المزامنة المباشرة
  */
 localStorage.setItem = function(key, value) {
+    const prefixedKey = key.startsWith(prefix) ? key : prefix + key;
     // 1. التنفيذ الفوري السريع للحفاظ على أداء واجهة المستخدم React
-    originalSetItem.apply(this, arguments);
+    originalSetItem.call(this, prefixedKey, value);
 
     // التحقق من تجاوز الوكيل للمزامنة لتجنب الحلقات اللانهائية عند التنزيل السحابي
     if (typeof window !== 'undefined' && window.__bypass_sync_proxy__) {
@@ -167,7 +189,7 @@ localStorage.setItem = function(key, value) {
                     
                     if (JSON.stringify(o1) !== JSON.stringify(o2)) {
                         newObj.updated_at = new Date().toISOString();
-                        originalSetItem.call(localStorage, key, JSON.stringify(newObj));
+                        originalSetItem.call(localStorage, prefix + key, JSON.stringify(newObj));
                         localCache.set(key, newObj);
                         changed = true;
                     }
@@ -190,7 +212,7 @@ localStorage.setItem = function(key, value) {
                                 }
                             });
                             
-                            originalSetItem.call(localStorage, key, JSON.stringify(newArray));
+                            originalSetItem.call(localStorage, prefix + key, JSON.stringify(newArray));
                             localCache.set(key, newArray);
                             changed = true;
                         }
@@ -209,10 +231,11 @@ localStorage.setItem = function(key, value) {
 };
 
 localStorage.removeItem = function(key) {
+    const prefixedKey = key.startsWith(prefix) ? key : prefix + key;
     const hadCachedValue = localCache.has(key);
     const oldValue = localCache.get(key);
 
-    originalRemoveItem.apply(this, arguments);
+    originalRemoveItem.call(this, prefixedKey);
 
     if (typeof window !== 'undefined' && window.__bypass_sync_proxy__) {
         localCache.delete(key);

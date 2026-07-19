@@ -13,6 +13,19 @@ const DataLoader = ({ children }) => {
         await databaseManager.init();
         await databaseManager.ensureStoresExist();
 
+        // ----------------------------------------------------
+        // تفريغ الكاش التلقائي عند تحديث وإعادة بناء المشروع (Build)
+        // ----------------------------------------------------
+        const currentBuildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev';
+        const lastBuildTime = localStorage.getItem('last_app_build_time');
+        if (currentBuildTime !== 'dev' && lastBuildTime && lastBuildTime !== currentBuildTime) {
+          console.log(`[DataLoader] App updated from build ${lastBuildTime} to ${currentBuildTime}. Resetting migration flags to force reload...`);
+          localStorage.removeItem('migration_sanitary_alamin_v20');
+          localStorage.removeItem('patch_company_codes_v40_all');
+          localStorage.removeItem('patch_company_codes_v41_all_v2');
+        }
+        localStorage.setItem('last_app_build_time', currentBuildTime);
+
         // تشغيل هجرة البيانات الصحية (seeding) إذا لم تكن قد جرت
         const migrationDone = localStorage.getItem('migration_sanitary_alamin_v20') === 'true';
         if (!migrationDone) {
