@@ -727,7 +727,7 @@ const Reports = () => {
               margin: 0;
               padding: 0;
               direction: rtl;
-              font-size: 13px;
+              font-size: 10px;
               font-weight: 700;
               line-height: 1.5;
             }
@@ -747,18 +747,18 @@ const Reports = () => {
               padding: 0;
             }
             .logo {
-              max-height: 60px;
+              max-height: 40px;
               width: auto;
               margin-bottom: 6px;
             }
             .store-title {
-              font-size: 18px;
+              font-size: 13px;
               font-weight: 900;
               color: #0f172a;
               margin-bottom: 4px;
             }
             .store-subtitle {
-              font-size: 12px;
+              font-size: 9.5px;
               font-weight: bold;
               color: #000000;
             }
@@ -766,7 +766,7 @@ const Reports = () => {
               text-align: left;
             }
             .invoice-title-text {
-              font-size: 22px;
+              font-size: 11px;
               font-weight: 900;
               color: #0f172a;
               margin-bottom: 6px;
@@ -777,7 +777,7 @@ const Reports = () => {
               border: 1.5px solid #cbd5e1;
               padding: 8px 12px;
               border-radius: 8px;
-              font-size: 12px;
+              font-size: 9.5px;
               font-weight: 700;
               color: #1e293b;
               text-align: right;
@@ -805,17 +805,17 @@ const Reports = () => {
               background-color: #f8fafc;
               border: 1.5px solid #cbd5e1;
               border-radius: 10px;
-              padding: 12px;
+              padding: 6px;
               height: 100%;
               box-sizing: border-box;
             }
             .details-card h4 {
               margin: 0 0 8px 0;
-              font-size: 13px;
+              font-size: 10px;
               font-weight: 900;
               color: #0f172a;
               border-bottom: 1.5px solid #cbd5e1;
-              padding-bottom: 6px;
+              padding-bottom: 4px;
             }
             .info-row {
               display: flex;
@@ -840,7 +840,7 @@ const Reports = () => {
               background-color: #f1f5f9;
               border: 1.5px solid #cbd5e1;
               padding: 10px;
-              font-size: 12px;
+              font-size: 9.5px;
               font-weight: 900;
               color: #0f172a;
               text-align: right;
@@ -848,7 +848,7 @@ const Reports = () => {
             .products-table td {
               border: 1.5px solid #e2e8f0;
               padding: 8px 10px;
-              font-size: 13px;
+              font-size: 10px;
               font-weight: 700;
               color: #1e293b;
             }
@@ -868,7 +868,7 @@ const Reports = () => {
             }
             .summary-table td {
               padding: 6px 10px;
-              font-size: 13px;
+              font-size: 10px;
               border: none;
             }
             .summary-table .label {
@@ -892,10 +892,10 @@ const Reports = () => {
             }
             .summary-table .total-row .value {
               color: #059669;
-              font-size: 17px;
+              font-size: 12px;
             }
             .footer-section {
-              margin-top: 40px;
+              margin-top: 15px;
               border-top: 1.5px dashed #cbd5e1;
               padding-top: 15px;
               text-align: center;
@@ -904,7 +904,7 @@ const Reports = () => {
               color: #000000;
             }
             .signatures {
-              margin-top: 35px;
+              margin-top: 20px;
               display: flex;
               justify-content: space-between;
               padding: 0 30px;
@@ -953,36 +953,7 @@ const Reports = () => {
               </tr>
             </table>
 
-            <table class="details-grid">
-              <tr>
-                <td>
-                  <div class="details-card">
-                    <h4>تفاصيل الفاتورة</h4>
-                    <div class="info-row">
-                      <span class="info-label">الكاشير:</span>
-                      <span class="info-val">${cashierName}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">طريقة الدفع:</span>
-                      <span class="info-val">${paymentMethodText}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="details-card">
-                    <h4>بيانات العميل</h4>
-                    <div class="info-row">
-                      <span class="info-label">اسم العميل:</span>
-                      <span class="info-val">${customerName}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">رقم الهاتف:</span>
-                      <span class="info-val direction-ltr">${customerPhone}</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </table>
+            
 
             <table class="products-table">
               <thead>
@@ -1038,11 +1009,38 @@ const Reports = () => {
               </table>
             </div>
 
-            ${(invoice.downPayment?.enabled && invoice.downPayment?.deliveryDate) ? `
-              <div style="margin-top: 20px; font-size: 12px; color: #334155; background-color: #f1f5f9; padding: 10px 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-                🗓️ <strong>تاريخ الاستلام المتوقع:</strong> ${formatDateToDDMMYYYY(invoice.downPayment.deliveryDate)}
-              </div>
-            ` : ''}
+            <table class="details-grid">
+              <tr>
+                <td>
+                  <div class="details-card">
+                    <h4>تفاصيل الفاتورة</h4>
+                    <div class="info-row">
+                      <span class="info-label">الكاشير:</span>
+                      <span class="info-val">${cashierName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">طريقة الدفع:</span>
+                      <span class="info-val">${paymentMethodText}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="details-card">
+                    <h4>بيانات العميل</h4>
+                    <div class="info-row">
+                      <span class="info-label">اسم العميل:</span>
+                      <span class="info-val">${customerName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">رقم الهاتف:</span>
+                      <span class="info-val direction-ltr">${customerPhone}</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            
 
             <div class="signatures">
               <div class="sig-box">

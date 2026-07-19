@@ -407,7 +407,7 @@ const POSMain = () => {
         downPayment: downPayment.enabled ? {
           enabled: true,
           amount: parseFloat(downPayment.amount),
-          deliveryDate: downPayment.deliveryDate,
+          deliveryDate: null,
           remaining: Math.max(0, safeMath.subtract(totalForSale, parseFloat(downPayment.amount) || 0))
         } : null,
         customer: finalCustomer || (customerInfo.name || customerInfo.phone ? customerInfo : null),
@@ -758,12 +758,12 @@ const POSMain = () => {
             padding: 0;
           }
           .logo {
-            max-height: 60px;
+            max-height: 40px;
             width: auto;
             margin-bottom: 6px;
           }
           .store-title {
-            font-size: 18px;
+            font-size: 13px;
             font-weight: 900;
             color: #0f172a;
             margin-bottom: 4px;
@@ -777,7 +777,7 @@ const POSMain = () => {
             text-align: left;
           }
           .invoice-title-text {
-            font-size: 22px;
+            font-size: 15px;
             font-weight: 900;
             color: #0f172a;
             margin-bottom: 6px;
@@ -816,7 +816,7 @@ const POSMain = () => {
             background-color: #f8fafc;
             border: 1.5px solid #cbd5e1;
             border-radius: 10px;
-            padding: 12px;
+            padding: 6px;
             height: 100%;
             box-sizing: border-box;
           }
@@ -903,10 +903,10 @@ const POSMain = () => {
           }
           .summary-table .total-row .value {
             color: #059669;
-            font-size: 17px;
+            font-size: 12px;
           }
           .footer-section {
-            margin-top: 40px;
+            margin-top: 15px;
             border-top: 1.5px dashed #cbd5e1;
             padding-top: 15px;
             text-align: center;
@@ -915,7 +915,7 @@ const POSMain = () => {
             color: #000000;
           }
           .signatures {
-            margin-top: 35px;
+            margin-top: 20px;
             display: flex;
             justify-content: space-between;
             padding: 0 30px;
@@ -964,36 +964,7 @@ const POSMain = () => {
             </tr>
           </table>
 
-          <table class="details-grid">
-            <tr>
-              <td>
-                <div class="details-card">
-                  <h4>تفاصيل الفاتورة</h4>
-                  <div class="info-row">
-                    <span class="info-label">الكاشير:</span>
-                    <span class="info-val">${invoiceData?.cashier || user?.username || 'غير محدد'}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">طريقة الدفع:</span>
-                    <span class="info-val">${(invoiceData?.paymentMethod || paymentMethod) === 'cash' ? '💵 نقدي' : (invoiceData?.paymentMethod || paymentMethod) === 'wallet' ? '📱 محفظة إلكترونية' : (invoiceData?.paymentMethod || paymentMethod) === 'instapay' ? '💳 انستا باي' : (invoiceData?.paymentMethod || paymentMethod) === 'deferred' ? '⏳ آجل' : '💵 نقدي'}</span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <div class="details-card">
-                  <h4>بيانات العميل</h4>
-                  <div class="info-row">
-                    <span class="info-label">اسم العميل:</span>
-                    <span class="info-val">${(invoiceData?.customer?.name) || customerInfo?.name || 'عميل نقدي'}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="info-label">رقم الهاتف:</span>
-                    <span class="info-val direction-ltr">${(invoiceData?.customer?.phone) || customerInfo?.phone || 'غير محدد'}</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </table>
+          
 
           <table class="products-table">
             <thead>
@@ -1049,11 +1020,7 @@ const POSMain = () => {
             </table>
           </div>
 
-          ${(invoiceData?.downPayment?.enabled && invoiceData?.downPayment?.deliveryDate) ? `
-            <div style="margin-top: 20px; font-size: 12px; color: #334155; background-color: #f1f5f9; padding: 10px 15px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-              🗓️ <strong>تاريخ الاستلام المتوقع:</strong> ${formatDateToDDMMYYYY(invoiceData.downPayment.deliveryDate)}
-            </div>
-          ` : ''}
+          
 
           <div class="signatures">
             <div class="sig-box">
