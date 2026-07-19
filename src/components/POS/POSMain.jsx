@@ -412,6 +412,8 @@ const POSMain = () => {
         } : null,
         customer: finalCustomer || (customerInfo.name || customerInfo.phone ? customerInfo : null),
         customerId: finalCustomer ? finalCustomer.id : null,
+        customerPreviousDebt: finalCustomer ? safeMath.subtract(parseFloat(finalCustomer.debt || 0), addedDebt) : 0,
+        customerNewTotalDebt: finalCustomer ? parseFloat(finalCustomer.debt || 0) : 0,
         paymentMethod: method,
         paymentStatus: initialPaymentStatus,
         cashier: user?.username || 'غير محدد',
@@ -435,7 +437,9 @@ const POSMain = () => {
         total: sale.total,
         downPayment: sale.downPayment,
         cashier: sale.cashier,
-        timestamp: sale.timestamp
+        timestamp: sale.timestamp,
+        customerPreviousDebt: sale.customerPreviousDebt,
+        customerNewTotalDebt: sale.customerNewTotalDebt
       });
 
       // حفظ المبيعة
@@ -719,7 +723,6 @@ const POSMain = () => {
     const customer = snapshot?.customer || customerInfo;
     const customerName = customer?.name || 'عميل نقدي';
     const customerPhone = customer?.phone || '';
-    const previousDebt = parseFloat(customer?.debt || 0);
 
     const activePaymentMethod = snapshot?.paymentMethod || paymentMethod;
     const paymentMethodText = activePaymentMethod === 'cash' ? '💵 نقدي' : activePaymentMethod === 'card' ? '💳 فيزا / بطاقة' : activePaymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : activePaymentMethod === 'instapay' ? '⚡ انستا باي' : activePaymentMethod === 'deferred' ? '⏳ آجل / مديونية' : '💵 نقدي';
@@ -733,7 +736,16 @@ const POSMain = () => {
     } else if (isDownPayment) {
       invoiceUnpaidAmount = remainingAmount;
     }
-    const newTotalDebt = safeMath.add(previousDebt, invoiceUnpaidAmount);
+
+    let previousDebt = 0;
+    let newTotalDebt = 0;
+    if (snapshot && snapshot.customerPreviousDebt !== undefined) {
+      previousDebt = parseFloat(snapshot.customerPreviousDebt || 0);
+      newTotalDebt = parseFloat(snapshot.customerNewTotalDebt || 0);
+    } else {
+      previousDebt = parseFloat(customer?.debt || 0);
+      newTotalDebt = safeMath.add(previousDebt, invoiceUnpaidAmount);
+    }
 
     const returnsList = (() => {
       try { return JSON.parse(localStorage.getItem('returns') || '[]'); } catch (_) { return []; }
