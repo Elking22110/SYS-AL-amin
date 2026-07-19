@@ -470,31 +470,13 @@ const POSMain = () => {
 
               suppliesUpdated = true;
 
-              // If the supply is fully consumed, mark for deletion
-              if (allSupplies[supplyIndex].remainingQuantity <= 0) {
-                // Find the product linked to this supply and mark its ID for removal
-                const productLinkedToSupply = products.find(p => p.supplyId === allSupplies[supplyIndex].id);
-                if (productLinkedToSupply) {
-                  productsToRemove.push(productLinkedToSupply.id);
-                }
-              }
+              // Keep the product in the catalog with 0 stock instead of deleting it
             }
           }
         });
 
         if (suppliesUpdated) {
           localStorage.setItem('supplier_supplies', JSON.stringify(allSupplies));
-        }
-
-        // Remove empty supply products from catalog
-        if (productsToRemove.length > 0) {
-          const currentProducts = JSON.parse(localStorage.getItem('products') || '[]');
-          const updatedCatalog = currentProducts.filter(p => !productsToRemove.includes(p.id)); // Filter by product ID
-          if (updatedCatalog.length !== currentProducts.length) {
-            localStorage.setItem('products', JSON.stringify(updatedCatalog));
-            setProducts(updatedCatalog);
-            publish(EVENTS.PRODUCTS_CHANGED, { type: 'delete' });
-          }
         }
 
       } catch (e) { console.error('Error updating supply remaining amounts', e); }

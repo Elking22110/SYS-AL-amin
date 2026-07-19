@@ -908,6 +908,51 @@ const DataLoader = ({ children }) => {
             console.error('[DataLoader] Patch v41 failed:', err);
           }
         }
+
+        // ----------------------------------------------------
+        // PATCH: Restore soft-deleted products from local IndexedDB
+        // ----------------------------------------------------
+        const restoreSoftDeletedDone = localStorage.getItem('patch_restore_deleted_products_v42') === 'true';
+        if (!restoreSoftDeletedDone) {
+          try {
+            console.log('[DataLoader] Patch v42: Restoring soft-deleted products in IndexedDB...');
+            setLoadingMessage('جاري استرجاع وصيانة المنتجات...');
+            
+            const tx = databaseManager.db.transaction(['products'], 'readwrite');
+            const store = tx.objectStore('products');
+            
+            const request = store.getAll();
+            await new Promise((resolve, reject) => {
+              request.onsuccess = async () => {
+                const allProds = request.result || [];
+                let restoredCount = 0;
+                
+                for (const p of allProds) {
+                  if (p && p.sync_status === 'deleted') {
+                    p.sync_status = 'synced';
+                    p.updated_at = new Date().toISOString();
+                    store.put(p);
+                    restoredCount++;
+                  }
+                }
+                
+                console.log(`[DataLoader] Patch v42: Restored ${restoredCount} products locally.`);
+                resolve();
+              };
+              request.onerror = () => reject(request.error);
+            });
+            
+            const allProducts = await databaseManager.getAll('products');
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('products', JSON.stringify(allProducts));
+            window.__bypass_sync_proxy__ = false;
+            
+            localStorage.setItem('patch_restore_deleted_products_v42', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v42 failed:', err);
+          }
+        }
         // ----------------------------------------------------
 
 

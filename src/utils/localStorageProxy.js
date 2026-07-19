@@ -157,10 +157,17 @@ localStorage.setItem = function(key, value) {
                         dbMutated = true;
                     }
 
-                    // تحديث المحذوفات (Soft Delete)
-                    for (const delItem of deleted) {
-                        await databaseManager.delete(idbStore, delItem.id);
-                        dbMutated = true;
+                    // تحديث المحذوفات (Soft Delete) - حماية ضد الحذف الجماعي الخاطئ
+                    if (deleted.length > 0) {
+                        const safetyThreshold = Math.max(50, Math.floor(oldArray.length * 0.15));
+                        if (deleted.length < safetyThreshold) {
+                            for (const delItem of deleted) {
+                                await databaseManager.delete(idbStore, delItem.id);
+                                dbMutated = true;
+                            }
+                        } else {
+                            console.warn(`[SyncProxy] Blocked mass deletion of ${deleted.length} items from ${idbStore} (Threshold: ${safetyThreshold}) to prevent database corruption.`);
+                        }
                     }
 
                     // إشعار مدير المزامنة السحابية (syncManager)
