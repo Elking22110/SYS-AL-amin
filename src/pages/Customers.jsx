@@ -239,19 +239,163 @@ const Customers = () => {
   };
 
   const handleDeleteCustomer = (id) => {
-    if (window.confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+    if (window.confirm('هل أنت متأكد من حذف هذا العميل؟ سيؤدي ذلك أيضاً إلى حذف جميع فواتيره ومرتجعاه المرتبطة به لمنع أي تداخل.')) {
+      const customerToDelete = customers.find(c => String(c.id) === String(id));
+      if (!customerToDelete) return;
+
+      const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
+      const customerPhoneClean = cleanPhone(customerToDelete.phone);
+      const currentCustId = customerToDelete.id;
+
+      // 1. حذف العميل نفسه
       const updatedCustomers = customers.filter(c => String(c.id) !== String(id));
       setCustomers(updatedCustomers);
-
-      // حفظ العملاء في localStorage
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-      // نشر حدث تغيير العملاء
+      // 2. تصفية وحذف فواتير العميل من المبيعات النشطة
+      try {
+        const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
+        const updatedSales = activeSales.filter(inv => {
+          if (!inv) return true;
+          const invCustId = inv.customer?.id || inv.customerId || inv.customer_id;
+          if (invCustId && currentCustId && invCustId.toString() === currentCustId.toString()) {
+            return false;
+          }
+          const invPhoneClean = cleanPhone(inv.customer?.phone);
+          if (invPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+            return false;
+          }
+          return true;
+        });
+        localStorage.setItem('sales', JSON.stringify(updatedSales));
+      } catch (e) {
+        console.error("Error deleting customer sales:", e);
+      }
+
+      // 3. تصفية وحذف فواتير العميل ومرتجعاه من الوردية النشطة
+      try {
+        const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+        if (activeShift) {
+          if (Array.isArray(activeShift.sales)) {
+            activeShift.sales = activeShift.sales.filter(inv => {
+              if (!inv) return true;
+              const invCustId = inv.customer?.id || inv.customerId || inv.customer_id;
+              if (invCustId && currentCustId && invCustId.toString() === currentCustId.toString()) {
+                return false;
+              }
+              const invPhoneClean = cleanPhone(inv.customer?.phone);
+              if (invPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+                return false;
+              }
+              return true;
+            });
+          }
+          if (Array.isArray(activeShift.returns)) {
+            activeShift.returns = activeShift.returns.filter(ret => {
+              if (!ret) return true;
+              const retCustId = ret.customer?.id || ret.customerId || ret.customer_id;
+              if (retCustId && currentCustId && retCustId.toString() === currentCustId.toString()) {
+                return false;
+              }
+              const retPhoneClean = cleanPhone(ret.customer?.phone);
+              if (retPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+                return false;
+              }
+              return true;
+            });
+          }
+          // تسويات الديون
+          if (Array.isArray(activeShift.customerSettlements)) {
+            activeShift.customerSettlements = activeShift.customerSettlements.filter(settle => {
+              const isMatch = (settle.customerId && currentCustId && settle.customerId.toString() === currentCustId.toString()) ||
+                              (cleanPhone(settle.customerPhone) === customerPhoneClean && customerPhoneClean !== '');
+              return !isMatch;
+            });
+          }
+          // إعادة احتساب إجمالي مبيعات الوردية
+          activeShift.totalSales = (activeShift.sales || []).reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+          activeShift.totalOrders = (activeShift.sales || []).length;
+          localStorage.setItem('activeShift', JSON.stringify(activeShift));
+        }
+      } catch (e) {
+        console.error("Error deleting customer from active shift:", e);
+      }
+
+      // 4. تصفية وحذف فواتير العميل ومرتجعاه من الشفتات السابقة
+      try {
+        const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+        const updatedShifts = shifts.map(shift => {
+          if (Array.isArray(shift.sales)) {
+            shift.sales = shift.sales.filter(inv => {
+              if (!inv) return true;
+              const invCustId = inv.customer?.id || inv.customerId || inv.customer_id;
+              if (invCustId && currentCustId && invCustId.toString() === currentCustId.toString()) {
+                return false;
+              }
+              const invPhoneClean = cleanPhone(inv.customer?.phone);
+              if (invPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+                return false;
+              }
+              return true;
+            });
+          }
+          if (Array.isArray(shift.returns)) {
+            shift.returns = shift.returns.filter(ret => {
+              if (!ret) return true;
+              const retCustId = ret.customer?.id || ret.customerId || ret.customer_id;
+              if (retCustId && currentCustId && retCustId.toString() === currentCustId.toString()) {
+                return false;
+              }
+              const retPhoneClean = cleanPhone(ret.customer?.phone);
+              if (retPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+                return false;
+              }
+              return true;
+            });
+          }
+          if (Array.isArray(shift.customerSettlements)) {
+            shift.customerSettlements = shift.customerSettlements.filter(settle => {
+              const isMatch = (settle.customerId && currentCustId && settle.customerId.toString() === currentCustId.toString()) ||
+                              (cleanPhone(settle.customerPhone) === customerPhoneClean && customerPhoneClean !== '');
+              return !isMatch;
+            });
+          }
+          shift.totalSales = (shift.sales || []).reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+          return shift;
+        });
+        localStorage.setItem('shifts', JSON.stringify(updatedShifts));
+      } catch (e) {
+        console.error("Error deleting customer from shifts:", e);
+      }
+
+      // 5. تصفية وحذف المرتجعات العامة
+      try {
+        const returns = JSON.parse(localStorage.getItem('returns') || '[]');
+        const updatedReturns = returns.filter(ret => {
+          if (!ret) return true;
+          const retCustId = ret.customer?.id || ret.customerId || ret.customer_id;
+          if (retCustId && currentCustId && retCustId.toString() === currentCustId.toString()) {
+            return false;
+          }
+          const retPhoneClean = cleanPhone(ret.customer?.phone);
+          if (retPhoneClean === customerPhoneClean && customerPhoneClean !== '') {
+            return false;
+          }
+          return true;
+        });
+        localStorage.setItem('returns', JSON.stringify(updatedReturns));
+      } catch (e) {
+        console.error("Error deleting customer returns:", e);
+      }
+
+      // نشر حدث تغيير العملاء والفواتير والورديات
       publish(EVENTS.CUSTOMERS_CHANGED, {
         type: 'delete',
         customerId: id,
         customers: updatedCustomers
       });
+      try { publish(EVENTS.INVOICES_CHANGED, { type: 'delete' }); } catch (_) {}
+      try { window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'shift' } })); } catch (_) {}
     }
   };
 
