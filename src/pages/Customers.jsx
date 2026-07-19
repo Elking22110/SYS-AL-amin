@@ -265,10 +265,6 @@ const Customers = () => {
     }
   };
 
-  const topCustomers = customers
-    .sort((a, b) => b.totalSpent - a.totalSpent)
-    .slice(0, 5);
-
   // الاشتراك في أحداث تغيير العملاء من صفحات أخرى
   useEffect(() => {
     const reloadCustomers = () => {
@@ -390,42 +386,6 @@ const Customers = () => {
                 <DollarSign className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 text-slate-800" />
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Top Customers */}
-        <div className="glass-card hover-lift animate-fadeInUp mb-4 md:mb-6" style={{ animationDelay: '0.5s' }}>
-          <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h3 className="text-lg font-bold text-slate-800">أفضل العملاء</h3>
-            <div className="p-2 bg-gradient-to-r from-purple-500 to-violet-500 rounded-lg">
-              <Star className="h-6 w-6 text-slate-800" />
-            </div>
-          </div>
-          <div className="space-y-3">
-            {topCustomers.map((customer, index) => (
-              <div key={customer.id} className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all duration-300">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mr-4 shadow-lg">
-                    <span className="text-slate-800 font-bold text-sm">{index + 1}</span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-slate-800 text-lg">{customer.name}</p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <Phone className="h-3 w-3 text-green-600" />
-                      <p className="text-sm text-green-800 font-semibold bg-green-500 bg-opacity-20 px-2.5 py-1 rounded-full">{customer.phone}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-emerald-800 bg-emerald-500 bg-opacity-20 px-3 py-1 rounded-full">
-                    {customer.totalSpent.toLocaleString('en-US')} ج.م
-                  </div>
-                  <div className="text-xs text-orange-800 font-semibold bg-orange-500 bg-opacity-20 px-2.5 py-1 rounded-full mt-1">
-                    {customer.orders} طلب
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
 
