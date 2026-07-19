@@ -14,6 +14,128 @@ const DataLoader = ({ children }) => {
         await databaseManager.ensureStoresExist();
 
         // ----------------------------------------------------
+        // WIPE OPERATION: One-time automated wipe to start fresh (excluding suppliers)
+        // ----------------------------------------------------
+        const didWipe = localStorage.getItem('did_one_time_clean_v2') === 'true';
+        if (!didWipe) {
+          console.log('[DataLoader] Performing one-time operational data wipe...');
+          
+          // 1. Wipe IndexedDB stores
+          const db = databaseManager.db;
+          const storesToClear = ['sales', 'customers', 'shifts', 'returns'];
+          try {
+            const transaction = db.transaction(storesToClear, 'readwrite');
+            storesToClear.forEach(storeName => {
+              try {
+                transaction.objectStore(storeName).clear();
+                console.log(`[DataLoader] Cleared IndexedDB store: ${storeName}`);
+              } catch (e) {
+                console.error(`[DataLoader] Failed to clear IndexedDB store: ${storeName}`, e);
+              }
+            });
+          } catch (e) {
+            console.error('[DataLoader] Failed to create IndexedDB write transaction', e);
+          }
+
+          // 2. Wipe LocalStorage keys (both prefixed and unprefixed)
+          const storesToClearLS = [
+            'sales', 'customers', 'shifts', 'returns', 'expenses', 'activeShift',
+            'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
+            'last_sync_expenses', 'last_sync_activeShift'
+          ];
+          
+          // 3. Reset sync time for suppliers so they get uploaded back to the cloud
+          const supplierSyncKeys = [
+            'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments'
+          ];
+          
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+          const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+          const prefix = match ? match[1] + '_' : 'default_';
+
+          storesToClearLS.forEach(key => {
+            try {
+              localStorage.removeItem(key);
+              localStorage.removeItem(prefix + key);
+              console.log(`[DataLoader] Removed localStorage key: ${key} and ${prefix + key}`);
+            } catch (e) {
+              console.error(`[DataLoader] Failed to remove localStorage key: ${key}`, e);
+            }
+          });
+
+          supplierSyncKeys.forEach(key => {
+            try {
+              localStorage.removeItem(key);
+              localStorage.removeItem(prefix + key);
+              console.log(`[DataLoader] Reset sync time for: ${key}`);
+            } catch (e) {
+              console.error(`[DataLoader] Failed to reset sync key: ${key}`, e);
+            }
+          });
+
+          // 4. Set the migration flag
+          localStorage.setItem('did_one_time_clean_v2', 'true');
+          
+          console.log('[DataLoader] One-time operational data wipe complete. Reloading page...');
+          window.location.reload();
+          return;
+        }
+        // ----------------------------------------------------
+        const shouldWipe = localStorage.getItem('__wipe_operational_data_alamin__') === 'true';
+        if (shouldWipe) {
+          console.log('[DataLoader] Performing operational data wipe...');
+          
+          // 1. Wipe IndexedDB stores
+          const db = databaseManager.db;
+          const storesToClear = ['sales', 'customers', 'shifts', 'returns'];
+          try {
+            const transaction = db.transaction(storesToClear, 'readwrite');
+            storesToClear.forEach(storeName => {
+              try {
+                transaction.objectStore(storeName).clear();
+                console.log(`[DataLoader] Cleared IndexedDB store: ${storeName}`);
+              } catch (e) {
+                console.error(`[DataLoader] Failed to clear IndexedDB store: ${storeName}`, e);
+              }
+            });
+          } catch (e) {
+            console.error('[DataLoader] Failed to create IndexedDB write transaction', e);
+          }
+
+          // 2. Wipe LocalStorage keys (both prefixed and unprefixed)
+          const storesToClearLS = [
+            'sales', 'customers', 'shifts', 'returns',
+            'suppliers', 'supplier_supplies', 'supplier_payments', 'expenses',
+            'activeShift',
+            'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
+            'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments', 'last_sync_expenses',
+            'last_sync_activeShift'
+          ];
+          
+          const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+          const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+          const prefix = match ? match[1] + '_' : 'default_';
+
+          storesToClearLS.forEach(key => {
+            try {
+              localStorage.removeItem(key);
+              localStorage.removeItem(prefix + key);
+              console.log(`[DataLoader] Removed localStorage key: ${key} and ${prefix + key}`);
+            } catch (e) {
+              console.error(`[DataLoader] Failed to remove localStorage key: ${key}`, e);
+            }
+          });
+
+          // 3. Remove the trigger flag
+          localStorage.removeItem('__wipe_operational_data_alamin__');
+          
+          console.log('[DataLoader] Operational data wipe complete. Reloading page...');
+          window.location.reload();
+          return;
+        }
+        // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // تفريغ الكاش التلقائي عند تحديث وإعادة بناء المشروع (Build)
         // ----------------------------------------------------
         const currentBuildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev';
