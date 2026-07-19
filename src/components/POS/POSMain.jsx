@@ -751,7 +751,7 @@ const POSMain = () => {
             margin: 0;
             padding: 0;
             direction: rtl;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             line-height: 1.2;
           }
@@ -763,7 +763,7 @@ const POSMain = () => {
           .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
           }
           .header-table td {
             vertical-align: middle;
@@ -776,7 +776,7 @@ const POSMain = () => {
             margin-bottom: 4px;
           }
           .store-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 900;
             color: #000000;
             margin-bottom: 2px;
@@ -786,91 +786,33 @@ const POSMain = () => {
             font-weight: 900;
             color: #000000;
           }
-          .invoice-title-col {
-            text-align: left;
-          }
-          .invoice-title-text {
-            font-size: 12px;
-            font-weight: 900;
-            color: #000000;
-            margin-bottom: 3px;
-          }
-          .info-badge {
-            display: inline-block;
-            background-color: #fff;
-            border: 1.5px solid #000000;
-            padding: 4px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 900;
-            color: #000000;
-            text-align: right;
-            line-height: 1.3;
-          }
           .divider {
             border-top: 1.5px solid #000000;
             margin: 8px 0;
           }
-          .details-grid {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 8px;
-          }
-          .details-grid td {
-            width: 50%;
-            vertical-align: top;
-            padding: 0 0 0 5px;
-            border: none;
-          }
-          .details-grid td:last-child {
-            padding: 0 5px 0 0;
-          }
           .details-card {
             background-color: #fff;
             border: 1.5px solid #000000;
-            border-radius: 6px;
-            padding: 4px 6px;
-            height: 100%;
+            border-radius: 4px;
+            padding: 5px 8px;
             box-sizing: border-box;
-          }
-          .details-card h4 {
-            margin: 0 0 4px 0;
-            font-size: 9.5px;
-            font-weight: 900;
-            color: #000000;
-            border-bottom: 1.5px solid #000000;
-            padding-bottom: 3px;
-          }
-          .info-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2px;
-            font-size: 9px;
-          }
-          .info-label {
-            color: #000000;
-            font-weight: 800;
-          }
-          .info-val {
-            color: #000000;
-            font-weight: 900;
           }
           .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
           }
           .products-table th {
-            background-color: #fff;
+            background-color: #000000 !important;
+            color: #ffffff !important;
             border: 1.5px solid #000000;
             padding: 4px 6px;
             font-size: 9px;
             font-weight: 900;
-            color: #000000;
             text-align: right;
           }
           .products-table td {
-            border: 1.5px solid #000000;
+            border: 1px solid #000000;
             padding: 4px 6px;
             font-size: 9px;
             font-weight: 900;
@@ -883,7 +825,7 @@ const POSMain = () => {
           .text-left { text-align: left !important; }
           .summary-table-container {
             width: 100%;
-            margin-top: 8px;
+            margin-top: 6px;
           }
           .summary-table {
             width: 260px;
@@ -909,8 +851,8 @@ const POSMain = () => {
           }
           .summary-table .total-row td {
             border-top: 1.5px solid #000000;
-            padding-top: 6px;
-            font-size: 11px;
+            padding-top: 4px;
+            font-size: 10.5px;
             font-weight: 900;
           }
           .summary-table .total-row .label {
@@ -918,14 +860,14 @@ const POSMain = () => {
           }
           .summary-table .total-row .value {
             color: #000000;
-            font-size: 11px;
+            font-size: 10.5px;
           }
           .footer-section {
             margin-top: 10px;
-            border-top: 1.5px dashed #000000;
-            padding-top: 8px;
+            border-top: 1px dotted #000000;
+            padding-top: 6px;
             text-align: center;
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 900;
             color: #000000;
           }
@@ -943,9 +885,9 @@ const POSMain = () => {
             font-weight: 900;
           }
           .sig-line {
-            border-bottom: 1.5px solid #000000;
+            border-bottom: 1px dotted #000000;
             margin-bottom: 4px;
-            height: 20px;
+            height: 15px;
           }
           @media print {
             body {
@@ -957,30 +899,20 @@ const POSMain = () => {
               color: #000000 !important;
               font-weight: 900 !important;
             }
-            .details-card {
-              background-color: #fff !important;
-              border: 1.5px solid #000000 !important;
-            }
             .products-table th {
-              background-color: #fff !important;
-              border: 1.5px solid #000000 !important;
-            }
-            .products-table td {
-              border: 1.5px solid #000000 !important;
-            }
-            .summary-table .total-row td {
-              border-top: 1.5px solid #000000 !important;
+              background-color: #000000 !important;
+              color: #ffffff !important;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
           }
         </style>
       </head>
       <body>
         <div class="invoice-box">
-          <div style="text-align: center; font-size: 10px; font-weight: 900; margin-bottom: 8px; border-bottom: 1.5px solid #000000; padding-bottom: 4px;">
-            <strong style="font-size: 11px;">فاتورة بيع</strong>
-            <span style="margin: 0 10px;">|</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #000000; padding-bottom: 4px; margin-bottom: 8px; font-size: 9.5px; font-weight: 900;">
+            <span style="background-color: #000000; color: #ffffff !important; padding: 2px 8px; border-radius: 3px; font-size: 10.5px; font-weight: 900;">فاتورة بيع</span>
             <span>رقم الفاتورة: #${invoiceId}</span>
-            <span style="margin: 0 10px;">|</span>
             <span>التاريخ: ${currentDate}</span>
           </div>
 
@@ -989,24 +921,24 @@ const POSMain = () => {
               <td>
                 ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
                 <div class="store-title">${storeInfo.companyName || 'الأمين للأدوات الصحية'}</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; margin-bottom: 2px; font-size: 14px;">إدارة محمد أمين</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 14px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; margin-bottom: 2px; font-size: 10.5px;">إدارة محمد أمين</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
               </td>
             </tr>
           </table>
 
-          <div class="details-card" style="margin-bottom: 8px; border: 1.5px solid #000000; border-radius: 4px; padding: 4px 6px;">
-            <table style="width: 100%; border-collapse: collapse; border: none; font-size: 9px; line-height: 1.3;">
+          <div class="details-card" style="margin-bottom: 8px; border: 1.5px solid #000000; border-radius: 4px; padding: 5px 8px; background-color: #fff;">
+            <table style="width: 100%; border-collapse: collapse; border: none; font-size: 9.5px; line-height: 1.4;">
               <tr style="border: none;">
-                <td style="border: none; padding: 2px 0; width: 40%;"><strong>العميل:</strong> ${customerName}</td>
-                <td style="border: none; padding: 2px 0; width: 30%;">${customerPhone && customerPhone !== 'غير محدد' ? `<strong>الهاتف:</strong> <span class="direction-ltr">${customerPhone}</span>` : ''}</td>
-                <td style="border: none; padding: 2px 0; width: 30%; text-align: left;"><strong>طريقة الدفع:</strong> ${paymentMethodText}</td>
+                <td style="border: none; padding: 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">العميل:</span> <strong style="font-size: 10px;">${customerName}</strong></td>
+                <td style="border: none; padding: 2px 0; width: 25%;">${customerPhone && customerPhone !== 'غير محدد' ? `<span style="color: #475569; font-weight: 800;">الهاتف:</span> <strong class="direction-ltr">${customerPhone}</strong>` : ''}</td>
+                <td style="border: none; padding: 2px 0; width: 30%; text-align: left;"><span style="color: #475569; font-weight: 800;">طريقة الدفع:</span> <strong>${paymentMethodText}</strong></td>
               </tr>
               ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
-              <tr style="border: none;">
-                <td style="border: none; padding: 2px 0; width: 40%;"><strong>الحساب السابق:</strong> ${previousDebt.toLocaleString('en-US')} ج.م</td>
-                <td style="border: none; padding: 2px 0; width: 60%; text-align: left;" colspan="2"><strong>إجمالي الحساب:</strong> <span style="font-weight: 900;">${newTotalDebt.toLocaleString('en-US')} ج.م</span></td>
+              <tr style="border-top: 1px dotted #000000; margin-top: 2px;">
+                <td style="border: none; padding: 4px 0 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">الحساب السابق:</span> <strong>${previousDebt.toLocaleString('en-US')} ج.م</strong></td>
+                <td style="border: none; padding: 4px 0 2px 0; width: 55%; text-align: left;" colspan="2"><span style="color: #475569; font-weight: 800;">إجمالي الحساب:</span> <strong style="font-size: 10.5px; border-bottom: 1.5px double #000000;">${newTotalDebt.toLocaleString('en-US')} ج.م</strong></td>
               </tr>
               ` : ''}
             </table>

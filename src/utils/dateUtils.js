@@ -35,29 +35,19 @@ const translateToArabic = (text) => {
 
 export const formatDate = (dateString) => {
   if (!dateString) return '';
-
   try {
     const date = new Date(dateString);
-
-    // التحقق من صحة التاريخ
-    if (isNaN(date.getTime())) {
-      return dateString; // إرجاع النص الأصلي إذا كان التاريخ غير صحيح
-    }
-
-    // تنسيق التاريخ الميلادي
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true // استخدام نظام 12 ساعة
-    };
-
-    const formatted = date.toLocaleDateString('en-US', options);
-    return formatted;
+    if (isNaN(date.getTime())) return dateString;
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'م' : 'ص';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${yyyy}/${mm}/${dd} - ${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
   } catch (error) {
-    console.warn('خطأ في تنسيق التاريخ:', error);
     return dateString;
   }
 };
@@ -65,24 +55,14 @@ export const formatDate = (dateString) => {
 // تنسيق التاريخ فقط (بدون وقت)
 export const formatDateOnly = (dateString) => {
   if (!dateString) return '';
-
   try {
     const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return dateString;
-    }
-
-    const options = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    };
-
-    const formatted = date.toLocaleDateString('en-US', options);
-    return formatted;
+    if (isNaN(date.getTime())) return dateString;
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}/${mm}/${dd}`;
   } catch (error) {
-    console.warn('خطأ في تنسيق التاريخ:', error);
     return dateString;
   }
 };
@@ -90,54 +70,23 @@ export const formatDateOnly = (dateString) => {
 // تنسيق الوقت فقط (12 ساعة)
 export const formatTimeOnly = (dateString) => {
   if (!dateString) return '';
-
   try {
     const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return dateString;
-    }
-
-    const options = {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    };
-
-    const formatted = date.toLocaleTimeString('en-US', options);
-    return formatted;
+    if (isNaN(date.getTime())) return dateString;
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'م' : 'ص';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    return `${String(hours).padStart(2, '0')}:${minutes} ${ampm}`;
   } catch (error) {
-    console.warn('خطأ في تنسيق الوقت:', error);
     return dateString;
   }
 };
 
 // تنسيق التاريخ والوقت معاً
 export const formatDateTime = (dateString) => {
-  if (!dateString) return '';
-
-  try {
-    const date = new Date(dateString);
-
-    if (isNaN(date.getTime())) {
-      return dateString;
-    }
-
-    const options = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    };
-
-    const formatted = date.toLocaleDateString('en-US', options);
-    return formatted;
-  } catch (error) {
-    console.warn('خطأ في تنسيق التاريخ والوقت:', error);
-    return dateString;
-  }
+  return formatDate(dateString);
 };
 
 // تنسيق التاريخ القصير (يوم/شهر/سنة)
