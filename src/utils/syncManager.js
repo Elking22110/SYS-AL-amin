@@ -1134,16 +1134,19 @@ class SyncManager {
             const cloudKeys = Object.keys(cloudItem).filter(k => k !== 'id' && k !== 'updated_at' && k !== 'originalShiftId' && k !== 'originalImagesId');
             const localKeys = Object.keys(localItem).filter(k => k !== 'id' && k !== 'updated_at' && k !== 'originalShiftId' && k !== 'originalImagesId');
             
-            if (cloudKeys.length === 0 && localKeys.length > 0) {
-              // السحاب فارغ والمحلي يحتوي بيانات -> غلّب المحلي ليرفعه
-              useLocal = true;
-            } else if (localKeys.length === 0 && cloudKeys.length > 0) {
-              // المحلي فارغ والسحاب يحتوي بيانات -> غلّب السحاب لتنزيله
-              useLocal = false;
-            } else {
-              const localTime = new Date(localItem.updated_at || 0).getTime();
-              const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+            const localTime = new Date(localItem.updated_at || 0).getTime();
+            const cloudTime = new Date(cloudItem.updated_at || 0).getTime();
+            
+            if (localTime !== cloudTime) {
               useLocal = localTime > cloudTime;
+            } else {
+              if (cloudKeys.length === 0 && localKeys.length > 0) {
+                useLocal = true;
+              } else if (localKeys.length === 0 && cloudKeys.length > 0) {
+                useLocal = false;
+              } else {
+                useLocal = false;
+              }
             }
           } else {
             const localTime = new Date(localItem.updated_at || 0).getTime();
