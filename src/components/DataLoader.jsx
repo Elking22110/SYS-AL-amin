@@ -14,11 +14,11 @@ const DataLoader = ({ children }) => {
         await databaseManager.ensureStoresExist();
 
         // ----------------------------------------------------
-        // WIPE OPERATION: One-time automated wipe to start fresh (excluding suppliers)
+        // WIPE OPERATION: One-time automated wipe to start fresh (INCLUDING suppliers)
         // ----------------------------------------------------
-        const didWipe = localStorage.getItem('did_one_time_clean_v2') === 'true';
-        if (!didWipe) {
-          console.log('[DataLoader] Performing one-time operational data wipe...');
+        const didWipeV3 = localStorage.getItem('did_one_time_clean_v3') === 'true';
+        if (!didWipeV3) {
+          console.log('[DataLoader] Performing one-time operational data wipe (Including Suppliers)...');
           
           // 1. Wipe IndexedDB stores
           const db = databaseManager.db;
@@ -37,15 +37,12 @@ const DataLoader = ({ children }) => {
             console.error('[DataLoader] Failed to create IndexedDB write transaction', e);
           }
 
-          // 2. Wipe LocalStorage keys (both prefixed and unprefixed)
+          // 2. Wipe LocalStorage keys (both prefixed and unprefixed) including suppliers
           const storesToClearLS = [
             'sales', 'customers', 'shifts', 'returns', 'expenses', 'activeShift',
+            'suppliers', 'supplier_supplies', 'supplier_payments',
             'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
-            'last_sync_expenses', 'last_sync_activeShift'
-          ];
-          
-          // 3. Reset sync time for suppliers so they get uploaded back to the cloud
-          const supplierSyncKeys = [
+            'last_sync_expenses', 'last_sync_activeShift',
             'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments'
           ];
           
@@ -63,18 +60,8 @@ const DataLoader = ({ children }) => {
             }
           });
 
-          supplierSyncKeys.forEach(key => {
-            try {
-              localStorage.removeItem(key);
-              localStorage.removeItem(prefix + key);
-              console.log(`[DataLoader] Reset sync time for: ${key}`);
-            } catch (e) {
-              console.error(`[DataLoader] Failed to reset sync key: ${key}`, e);
-            }
-          });
-
-          // 4. Set the migration flag
-          localStorage.setItem('did_one_time_clean_v2', 'true');
+          // 3. Set the migration flag v3
+          localStorage.setItem('did_one_time_clean_v3', 'true');
           
           console.log('[DataLoader] One-time operational data wipe complete. Reloading page...');
           window.location.reload();
