@@ -1,0 +1,22 @@
+7: 
+8: // دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
+9: const renderProductTitleAndSize = (name) => {
+10: if (!name) return null;
+11: 
+12: // 1. تصحيح الكسور العكسية في الأنظمة القديمة
+13: let cleanName = name;
+14: cleanName = cleanName.replace(/\b2\/1\b/g, '1/2');
+15: cleanName = cleanName.replace(/\b4\/3\b/g, '3/4');
+16: cleanName = cleanName.replace(/\b8\/1\b/g, '1/8');
+17: cleanName = cleanName.replace(/\b8\/3\b/g, '3/8');
+18: cleanName = cleanName.replace(/\b8\/5\b/g, '5/8');
+19: cleanName = cleanName.replace(/\b4\/1\b/g, '1/4');
+20: 
+21: // 2. استخراج الأرقام والكسور التي تمثل المقاسات
+22: const regex = /([0-9\/\.\-*+xX×"”']+)/g;
+23: const matches = cleanName.match(regex) || [];
+24: const sizes = matches.filter(m => /[0-9]/.test(m));
+25: 
+26: // 3. حذف المقاسات من العنوان الأساسي ليبقى اسم القطعة نظيفاً ومنسقاً
+27: let title = cleanName;
+28: sizes.forEach(size => {

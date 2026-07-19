@@ -448,7 +448,7 @@ const Suppliers = () => {
         </div>
 
         {/* Suppliers Table */}
-        <div className="glass-card hover-lift animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
+        <div className="glass-card animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gradient-to-r from-gray-800 to-gray-900">

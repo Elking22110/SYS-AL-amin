@@ -705,6 +705,21 @@ const Reports = () => {
       const customerPhone = invoice.customer?.phone || 'غير محدد';
       const itemsArr = invoice.items || [];
 
+      const previousDebt = parseFloat(invoice.customer?.debt || 0);
+      let invoiceUnpaidAmount = 0;
+      if (invoice.paymentMethod === 'deferred') {
+        invoiceUnpaidAmount = total;
+      } else if (invoice.downPayment?.enabled) {
+        invoiceUnpaidAmount = parseFloat(invoice.downPayment.remaining) || 0;
+      }
+      const newTotalDebt = safeMath.add(previousDebt, invoiceUnpaidAmount);
+
+      const returnsList = (() => {
+        try { return JSON.parse(localStorage.getItem('returns') || '[]'); } catch (_) { return []; }
+      })();
+      const invoiceReturns = returnsList.filter(ret => ret.refInvoiceId === invoiceId);
+      const totalReturnedAmount = invoiceReturns.reduce((sum, ret) => sum + (ret.amount || 0), 0);
+
       const printContent = `
         <!DOCTYPE html>
         <html dir="rtl" lang="ar">
@@ -953,7 +968,48 @@ const Reports = () => {
               </tr>
             </table>
 
-            
+            <table class="details-grid">
+              <tr>
+                <td>
+                  <div class="details-card">
+                    <h4>تفاصيل الفاتورة</h4>
+                    <div class="info-row">
+                      <span class="info-label">الكاشير:</span>
+                      <span class="info-val">${cashierName}</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">طريقة الدفع:</span>
+                      <span class="info-val">${paymentMethodText}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="details-card">
+                    <h4>بيانات العميل</h4>
+                    <div class="info-row">
+                      <span class="info-label">اسم العميل:</span>
+                      <span class="info-val">${customerName}</span>
+                    </div>
+                    ${customerPhone && customerPhone !== 'غير محدد' ? `
+                      <div class="info-row">
+                        <span class="info-label">رقم الهاتف:</span>
+                        <span class="info-val direction-ltr">${customerPhone}</span>
+                      </div>
+                    ` : ''}
+                    ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
+                      <div class="info-row">
+                        <span class="info-label">الحساب السابق:</span>
+                        <span class="info-val">${previousDebt.toLocaleString('en-US')} ج.م</span>
+                      </div>
+                      <div class="info-row">
+                        <span class="info-label">إجمالي الحساب:</span>
+                        <span class="info-val" style="color: #ef4444; font-weight: 900;">${newTotalDebt.toLocaleString('en-US')} ج.م</span>
+                      </div>
+                    ` : ''}
+                  </div>
+                </td>
+              </tr>
+            </table>
 
             <table class="products-table">
               <thead>
@@ -1002,43 +1058,18 @@ const Reports = () => {
                     <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')} ج.م</td>
                   </tr>
                 ` : ''}
+                ${totalReturnedAmount > 0 ? `
+                  <tr style="color: #ea580c; font-weight: 800;">
+                    <td class="label" style="color: #ea580c;">قيمة المرتجعات:</td>
+                    <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')} ج.م</td>
+                  </tr>
+                ` : ''}
                 <tr class="total-row">
                   <td class="label">${(invoice.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
                   <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')} ج.م</td>
                 </tr>
               </table>
             </div>
-
-            <table class="details-grid">
-              <tr>
-                <td>
-                  <div class="details-card">
-                    <h4>تفاصيل الفاتورة</h4>
-                    <div class="info-row">
-                      <span class="info-label">الكاشير:</span>
-                      <span class="info-val">${cashierName}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">طريقة الدفع:</span>
-                      <span class="info-val">${paymentMethodText}</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div class="details-card">
-                    <h4>بيانات العميل</h4>
-                    <div class="info-row">
-                      <span class="info-label">اسم العميل:</span>
-                      <span class="info-val">${customerName}</span>
-                    </div>
-                    <div class="info-row">
-                      <span class="info-label">رقم الهاتف:</span>
-                      <span class="info-val direction-ltr">${customerPhone}</span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </table>
 
             
 
@@ -1443,7 +1474,7 @@ const Reports = () => {
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] backdrop-blur-sm p-4 overflow-y-auto"
         >
-          <div className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 transition-all duration-300 ${showPOSGrid ? 'max-w-7xl h-[92vh]' : 'max-w-4xl max-h-[90vh]'}`}>
+          <div className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 transition-all duration-300 ${showPOSGrid ? 'max-w-[98vw] h-[96vh]' : 'max-w-4xl max-h-[90vh]'}`}>
             {/* رأس المودال */}
             <div className="p-4 md:p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
               <div className="text-right">
@@ -1466,7 +1497,7 @@ const Reports = () => {
               <div className={showPOSGrid ? "grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-full" : "space-y-6"}>
                 
                 {/* العمود الأيمن: بيانات الفاتورة والأصناف */}
-                <div className={showPOSGrid ? "lg:col-span-5 space-y-6 overflow-y-auto max-h-[75vh] pr-2 text-right custom-scrollbar" : "space-y-6 text-right"}>
+                <div className={showPOSGrid ? "lg:col-span-4 space-y-4 overflow-y-auto max-h-[80vh] pr-2 text-right custom-scrollbar" : "space-y-6 text-right"}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* بيانات العميل */}
                     <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 text-right space-y-2">
@@ -1730,7 +1761,7 @@ const Reports = () => {
 
                 {/* العمود الأيسر: شبكة منتجات نقطة البيع */}
                 {showPOSGrid && (
-                  <div className="lg:col-span-7 bg-slate-50 rounded-2xl border border-slate-200 p-4 h-[75vh] overflow-y-auto flex flex-col custom-scrollbar text-right">
+                  <div className="lg:col-span-8 bg-slate-50 rounded-2xl border border-slate-200 p-3 h-[80vh] overflow-y-auto flex flex-col custom-scrollbar text-right">
                     <div className="flex justify-between items-center border-b border-slate-200 pb-3 mb-4 shrink-0">
                       <span className="text-sm font-bold text-slate-800">🏪 تصفح واختيار منتجات نقطة البيع</span>
                       <button 

@@ -108,6 +108,17 @@ const CartManager = ({
     }
   }, [cart.length, setCart, notifySuccess]);
 
+  // التمرير التلقائي لأسفل السلة عند إضافة منتج جديد
+  React.useEffect(() => {
+    const container = document.getElementById('cart-items-container');
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [cart.length]);
+
   // إزالة الخصم الكلي
   const removeDiscount = useCallback(() => {
     setDiscounts({ type: 'percentage', percentage: '', fixed: '' });
@@ -183,7 +194,10 @@ const CartManager = ({
       </div>
 
       {/* ── Items List ── */}
-      <div className="px-4 py-3 space-y-3">
+      <div 
+        id="cart-items-container" 
+        className="px-3 py-2 space-y-2 overflow-y-auto max-h-[38vh] xl:max-h-[46vh] custom-scrollbar text-right"
+      >
         {cart.length === 0 ? (
           <div className="text-center py-12">
             <ShoppingCart className="h-14 w-14 text-slate-200 mx-auto mb-3" />
@@ -203,38 +217,40 @@ const CartManager = ({
             return (
               <div
                 key={item.id}
-                className={`rounded-xl border p-3.5 transition-all duration-200 ${
+                className={`rounded-xl border p-2 transition-all duration-200 ${
                   activeDisc > 0
                     ? 'border-orange-200 bg-orange-50/60 shadow-sm'
                     : 'border-slate-200 bg-slate-50 hover:bg-blue-50/30'
                 }`}
               >
                 {/* Row 1: Name + Remove */}
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <h4 className="font-bold text-slate-800 text-sm leading-snug">
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <h4 className="font-bold text-slate-800 text-xs leading-snug line-clamp-2">
                     {item.name}
                   </h4>
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1 rounded-lg transition-all flex-shrink-0"
+                    className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-0.5 rounded-lg transition-all flex-shrink-0"
                     title="حذف المنتج"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
 
                 {/* Three Fields Grid (Price, Discount %, Quantity) */}
-                <div className="grid grid-cols-3 gap-2.5 items-end">
+                <div className="grid grid-cols-[2.2fr_1.3fr_1.7fr] gap-1.5 items-end">
                   
                   {/* Price Input (السعر) */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-500 text-right pr-1">السعر (ج.م)</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] font-black text-slate-500 text-right pr-1">السعر (ج.م)</span>
                     <input
                       type="number"
                       value={priceValue}
                       data-field-type="price"
                       data-item-index={index}
                       onKeyDown={(e) => handleKeyDown(e, 'price', index)}
+                      onFocus={(e) => e.target.select()}
+                      onClick={(e) => e.target.select()}
                       onChange={(e) => {
                         const val = e.target.value;
                         setEditingPrice(prev => ({ ...prev, [item.id]: val }));
@@ -254,13 +270,13 @@ const CartManager = ({
                           return copy;
                         });
                       }}
-                      className="w-full text-center bg-white border border-slate-300 text-slate-800 font-bold py-1.5 px-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full text-center bg-white border border-slate-300 text-slate-800 font-bold py-1 px-1 rounded-md text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                   </div>
 
                   {/* Discount Input (الخصم %) */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-500 text-right pr-1">الخصم %</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] font-black text-slate-500 text-right pr-1">الخصم %</span>
                     <div className="relative flex items-center">
                       <input
                         type="number"
@@ -271,6 +287,8 @@ const CartManager = ({
                         data-field-type="discount"
                         data-item-index={index}
                         onKeyDown={(e) => handleKeyDown(e, 'discount', index)}
+                        onFocus={(e) => e.target.select()}
+                        onClick={(e) => e.target.select()}
                         onChange={(e) => {
                           const val = e.target.value;
                           setEditingDiscount(prev => ({ ...prev, [item.id]: val }));
@@ -296,25 +314,25 @@ const CartManager = ({
                           });
                         }}
                         placeholder="0"
-                        className={`w-full text-center font-bold py-1.5 px-2 rounded-lg text-xs border focus:outline-none focus:ring-2 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                        className={`w-full text-center font-bold py-1 px-1 rounded-md text-xs border focus:outline-none focus:ring-2 transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                           activeDisc > 0
                             ? 'bg-orange-50 border-orange-300 text-orange-700 focus:ring-orange-300'
                             : 'bg-white border-slate-300 text-slate-700 focus:ring-blue-500'
                         }`}
                       />
-                      <Percent className={`absolute left-1.5 h-3 w-3 pointer-events-none ${activeDisc > 0 ? 'text-orange-400' : 'text-slate-300'}`} />
+                      <Percent className={`absolute left-1 h-2.5 w-2.5 pointer-events-none ${activeDisc > 0 ? 'text-orange-400' : 'text-slate-300'}`} />
                     </div>
                   </div>
 
                   {/* Quantity Input (العدد) */}
-                  <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-500 text-center">العدد</span>
-                    <div className="flex items-center gap-1 bg-white border border-slate-300 rounded-lg p-0.5">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[9px] font-black text-slate-500 text-center">العدد</span>
+                    <div className="flex items-center gap-0.5 bg-white border border-slate-300 rounded-md p-0.5">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-500 w-5 h-5 rounded-md flex items-center justify-center transition-colors flex-shrink-0"
+                        className="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-500 w-4 h-4 rounded flex items-center justify-center transition-colors flex-shrink-0"
                       >
-                        <Minus className="h-2.5 w-2.5" />
+                        <Minus className="h-2 w-2" />
                       </button>
                       <input
                         type="number"
@@ -322,6 +340,8 @@ const CartManager = ({
                         data-field-type="qty"
                         data-item-index={index}
                         onKeyDown={(e) => handleKeyDown(e, 'qty', index)}
+                        onFocus={(e) => e.target.select()}
+                        onClick={(e) => e.target.select()}
                         onChange={(e) => {
                           const val = e.target.value;
                           setEditingQty(prev => ({ ...prev, [item.id]: val }));
@@ -345,9 +365,9 @@ const CartManager = ({
                       />
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="bg-slate-100 hover:bg-green-50 text-slate-600 hover:text-green-500 w-5 h-5 rounded-md flex items-center justify-center transition-colors flex-shrink-0"
+                        className="bg-slate-100 hover:bg-green-50 text-slate-600 hover:text-green-500 w-4 h-4 rounded flex items-center justify-center transition-colors flex-shrink-0"
                       >
-                        <Plus className="h-2.5 w-2.5" />
+                        <Plus className="h-2 w-2" />
                       </button>
                     </div>
                   </div>
@@ -355,21 +375,20 @@ const CartManager = ({
                 </div>
 
                 {/* Calculation Summary Footer */}
-                <div className="flex justify-between items-center mt-3 pt-2.5 border-t border-slate-200/60 text-xs">
-                  <div className="text-slate-400">
-                    {activeDisc > 0 ? (
-                      <span className="text-orange-500 font-bold bg-orange-100 px-1.5 py-0.5 rounded">
-                        خصم: -{discAmt.toLocaleString()} ج
-                      </span>
-                    ) : (
-                      <span className="text-slate-400">سعر الصنف: {item.price.toLocaleString()} ج</span>
-                    )}
+                {(activeDisc > 0 || item.quantity > 1) && (
+                  <div className="flex justify-between items-center mt-1.5 pt-1 border-t border-slate-200/60 text-[11px]">
+                    <div className="text-slate-400">
+                      {activeDisc > 0 && (
+                        <span className="text-orange-600 font-bold bg-orange-100/80 px-1.5 py-0.5 rounded text-[10px]">
+                          خصم: -{discAmt.toLocaleString()} ج
+                        </span>
+                      )}
+                    </div>
+                    <div className="font-extrabold text-slate-900 text-xs">
+                      {lineNet.toLocaleString()} ج.م
+                    </div>
                   </div>
-                  <div className="font-extrabold text-slate-900 text-sm">
-                    {lineNet.toLocaleString()} ج.م
-                  </div>
-                </div>
-
+                )}
               </div>
             );
           })

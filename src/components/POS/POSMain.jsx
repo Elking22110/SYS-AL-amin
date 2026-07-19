@@ -716,6 +716,31 @@ const POSMain = () => {
       ? Math.max(0, safeMath.subtract(total, parseFloat(snapshot.downPayment.amount) || 0))
       : total;
 
+    const customer = snapshot?.customer || customerInfo;
+    const customerName = customer?.name || 'عميل نقدي';
+    const customerPhone = customer?.phone || '';
+    const previousDebt = parseFloat(customer?.debt || 0);
+
+    const activePaymentMethod = snapshot?.paymentMethod || paymentMethod;
+    const paymentMethodText = activePaymentMethod === 'cash' ? '💵 نقدي' : activePaymentMethod === 'card' ? '💳 فيزا / بطاقة' : activePaymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : activePaymentMethod === 'instapay' ? '⚡ انستا باي' : activePaymentMethod === 'deferred' ? '⏳ آجل / مديونية' : '💵 نقدي';
+    const cashierName = snapshot?.cashier?.username || user?.username || 'المسؤول';
+
+    let invoiceUnpaidAmount = 0;
+    const isDeferred = snapshot ? (snapshot.paymentMethod === 'deferred') : (paymentMethod === 'deferred');
+    const isDownPayment = snapshot ? (snapshot.downPayment?.enabled) : (downPayment.enabled);
+    if (isDeferred) {
+      invoiceUnpaidAmount = total;
+    } else if (isDownPayment) {
+      invoiceUnpaidAmount = remainingAmount;
+    }
+    const newTotalDebt = safeMath.add(previousDebt, invoiceUnpaidAmount);
+
+    const returnsList = (() => {
+      try { return JSON.parse(localStorage.getItem('returns') || '[]'); } catch (_) { return []; }
+    })();
+    const invoiceReturns = returnsList.filter(ret => ret.refInvoiceId === invoiceId);
+    const totalReturnedAmount = invoiceReturns.reduce((sum, ret) => sum + (ret.amount || 0), 0);
+
     return `
       <!DOCTYPE html>
       <html dir="rtl" lang="ar">
@@ -964,7 +989,48 @@ const POSMain = () => {
             </tr>
           </table>
 
-          
+          <table class="details-grid">
+            <tr>
+              <td>
+                <div class="details-card">
+                  <h4>تفاصيل الفاتورة</h4>
+                  <div class="info-row">
+                    <span class="info-label">الكاشير:</span>
+                    <span class="info-val">${cashierName}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">طريقة الدفع:</span>
+                    <span class="info-val">${paymentMethodText}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="details-card">
+                  <h4>بيانات العميل</h4>
+                  <div class="info-row">
+                    <span class="info-label">اسم العميل:</span>
+                    <span class="info-val">${customerName}</span>
+                  </div>
+                  ${customerPhone && customerPhone !== 'غير محدد' ? `
+                    <div class="info-row">
+                      <span class="info-label">رقم الهاتف:</span>
+                      <span class="info-val direction-ltr">${customerPhone}</span>
+                    </div>
+                  ` : ''}
+                  ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
+                    <div class="info-row">
+                      <span class="info-label">الحساب السابق:</span>
+                      <span class="info-val">${previousDebt.toLocaleString('en-US')} ج.م</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="info-label">إجمالي الحساب:</span>
+                      <span class="info-val" style="color: #ef4444; font-weight: 900;">${newTotalDebt.toLocaleString('en-US')} ج.م</span>
+                    </div>
+                  ` : ''}
+                </div>
+              </td>
+            </tr>
+          </table>
 
           <table class="products-table">
             <thead>
@@ -1013,14 +1079,18 @@ const POSMain = () => {
                   <td class="value">${((snapshot.downPayment.amount || 0)).toLocaleString('en-US')} ج.م</td>
                 </tr>
               ` : ''}
+              ${totalReturnedAmount > 0 ? `
+                <tr style="color: #ea580c; font-weight: 800;">
+                  <td class="label" style="color: #ea580c;">قيمة المرتجعات:</td>
+                  <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')} ج.م</td>
+                </tr>
+              ` : ''}
               <tr class="total-row">
                 <td class="label">${(snapshot?.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
                 <td class="value">${((snapshot?.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')} ج.م</td>
               </tr>
             </table>
           </div>
-
-          
 
           <div class="signatures">
             <div class="sig-box">

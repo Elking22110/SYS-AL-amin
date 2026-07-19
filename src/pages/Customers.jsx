@@ -442,7 +442,7 @@ const Customers = () => {
         </div>
 
         {/* Customers Table */}
-        <div className="glass-card hover-lift animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
+        <div className="glass-card animate-fadeInUp overflow-hidden table-enhanced" style={{ animationDelay: '0.7s' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-100 border-b border-slate-200">

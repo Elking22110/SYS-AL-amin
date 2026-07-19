@@ -33,7 +33,7 @@ const renderProductTitleAndSize = (name) => {
 
   return (
     <div className="text-right" style={{ direction: 'rtl' }}>
-      <span className="font-bold text-slate-800 text-sm md:text-base leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
+      <span className="font-bold text-slate-800 text-sm md:text-base leading-snug group-hover:text-blue-600 transition-colors">
         {cleanName}
       </span>
     </div>
