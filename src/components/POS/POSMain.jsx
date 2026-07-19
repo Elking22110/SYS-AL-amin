@@ -250,10 +250,7 @@ const POSMain = () => {
 
       // التحقق من المخزون فقط إذا كان مفعلاً من الإعدادات
       try {
-        const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-        const settings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
-        const rawFlag = (storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : settings.inventoryEnabled);
-        const inventoryEnabled = !(rawFlag === false || rawFlag === 'false' || rawFlag === 0 || rawFlag === '0'); // افتراضياً مفعّل إلا لو صرّح بالتعطيل
+        const inventoryEnabled = false; // Disabled completely as requested by the user
         if (inventoryEnabled) {
           const productsMap = new Map(products.map(p => [p.id, p]));
           const outOfStock = cart.find(it => {
@@ -484,10 +481,7 @@ const POSMain = () => {
       // تحديث المخزون فقط إذا كان مفعلاً
       let updatedProducts = products;
       try {
-        const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-        const settings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
-        const rawFlag = (storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : settings.inventoryEnabled);
-        const inventoryEnabled = !(rawFlag === false || rawFlag === 'false' || rawFlag === 0 || rawFlag === '0');
+        const inventoryEnabled = false; // Disabled completely as requested by the user
         if (inventoryEnabled) {
           updatedProducts = products.map(product => {
             const cartItem = cart.find(item => item.id === product.id);

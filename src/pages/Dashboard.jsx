@@ -43,8 +43,8 @@ const Dashboard = () => {
       const products = storageOptimizer.get('products', []) || [];
       const totalProducts = products.length;
 
-      // المنتجات منخفضة المخزون
-      const lowStock = products.filter(p => p.stock <= (p.minStock || 5));
+      // المنتجات منخفضة المخزون - معطل بطلب من المستخدم
+      const lowStock = [];
 
       if (!currentShift || currentShift.status !== 'active') {
         setStats({ totalSales: 0, totalOrders: 0, totalCustomers: 0, totalProducts });

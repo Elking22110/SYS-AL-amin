@@ -446,19 +446,11 @@ const Products = () => {
     );
   }
   const [products, setProducts] = useState([]);
-  const [inventoryEnabled, setInventoryEnabled] = useState(true);
+  const [inventoryEnabled, setInventoryEnabled] = useState(false);
 
   useEffect(() => {
     const checkInventorySetting = () => {
-      try {
-        const storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-        const settings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
-        const rawFlag = (storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : settings.inventoryEnabled);
-        const enabled = !(rawFlag === false || rawFlag === 'false' || rawFlag === 0 || rawFlag === '0');
-        setInventoryEnabled(enabled);
-      } catch (_) {
-        setInventoryEnabled(true);
-      }
+      setInventoryEnabled(false); // Disabled completely as requested by the user
     };
     checkInventorySetting();
     window.addEventListener('storage', checkInventorySetting);

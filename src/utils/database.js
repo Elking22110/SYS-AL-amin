@@ -234,6 +234,10 @@ class DatabaseManager {
       await this.init();
     }
 
+    if (id !== undefined && id !== null) {
+      id = String(id);
+    }
+
     if (SYNCABLE_STORES.includes(storeName)) {
       try {
         const record = await this.get(storeName, id);
@@ -314,6 +318,10 @@ class DatabaseManager {
     // التأكد من تهيئة قاعدة البيانات
     if (!this.db) {
       await this.init();
+    }
+
+    if (id !== undefined && id !== null) {
+      id = String(id);
     }
 
     return new Promise((resolve, reject) => {

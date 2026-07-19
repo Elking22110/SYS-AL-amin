@@ -263,17 +263,8 @@ const Reports = () => {
 
   // تعديل المخزون
   const adjustProductStock = (productId, diff) => {
-    try {
-      const products = JSON.parse(localStorage.getItem('products') || '[]');
-      const target = products.find(p => p.id === productId);
-      if (target) {
-        target.stock = Number(target.stock || 0) - Number(diff);
-        localStorage.setItem('products', JSON.stringify(products));
-        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: 'products' } }));
-      }
-    } catch (error) {
-      console.error('Error adjusting stock:', error);
-    }
+    // Disabled completely as requested by the user
+    return;
   };
 
   // تحديث الفاتورة بالكامل (المخازن، المبيعات، الشفتات)
@@ -558,6 +549,44 @@ const Reports = () => {
           activeShift.totalSales = activeShift.sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
           activeShift.totalOrders = activeShift.sales.length;
           localStorage.setItem('activeShift', JSON.stringify(activeShift));
+        }
+
+        // تحديث مديونية ومشتريات العميل بعد حذف الفاتورة
+        if (invoice.customer?.phone || invoice.customer?.id || invoice.customerId) {
+          try {
+            const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+            const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
+            const invoicePhoneClean = cleanPhone(invoice.customer?.phone);
+            const invCustId = invoice.customer?.id || invoice.customerId || invoice.customer_id;
+
+            const cIndex = customers.findIndex(c => {
+              if (invCustId && c.id && invCustId.toString() === c.id.toString()) {
+                return true;
+              }
+              return cleanPhone(c.phone) === invoicePhoneClean && invoicePhoneClean !== '';
+            });
+
+            if (cIndex !== -1) {
+              const isDeferred = invoice.paymentMethod === 'deferred';
+              const isDownPayment = invoice.downPayment?.enabled;
+              let invoiceUnpaidAmount = 0;
+              if (isDeferred) {
+                invoiceUnpaidAmount = Number(invoice.total || 0);
+              } else if (isDownPayment) {
+                invoiceUnpaidAmount = Number(invoice.downPayment.remaining !== undefined ? invoice.downPayment.remaining : (Number(invoice.total || 0) - Number(invoice.downPayment.amount || 0)));
+              }
+
+              // خصم المديونية، إجمالي المشتريات، وعدد الطلبات
+              customers[cIndex].debt = Math.max(0, safeMath.subtract(customers[cIndex].debt || 0, invoiceUnpaidAmount));
+              customers[cIndex].totalSpent = Math.max(0, safeMath.subtract(customers[cIndex].totalSpent || 0, Number(invoice.total || 0)));
+              customers[cIndex].orders = Math.max(0, (customers[cIndex].orders || 1) - 1);
+
+              localStorage.setItem('customers', JSON.stringify(customers));
+              try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update' }); } catch (_) {}
+            }
+          } catch (e) {
+            console.error("Error updating customer stats on delete invoice:", e);
+          }
         }
 
         setAllSales(updatedSales);
