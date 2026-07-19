@@ -311,13 +311,13 @@ const POSMain = () => {
 
       // تحديث مديونية وبيانات العميل أولاً للحصول على معرف العميل الفريد
       let finalCustomer = null;
+      let addedDebt = 0;
       try {
         if (customerInfo.phone && customerInfo.phone.trim() !== '') {
           const savedCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
           const phoneTrimmed = customerInfo.phone.trim();
           const existingCustIndex = savedCustomers.findIndex(c => c.phone.trim() === phoneTrimmed);
           
-          let addedDebt = 0;
           if (method === 'deferred' || downPayment.enabled) {
             const paidNow = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : 0;
             addedDebt = Math.max(0, safeMath.subtract(totalForSale, paidNow));

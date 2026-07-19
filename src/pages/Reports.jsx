@@ -6,7 +6,7 @@ import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
 import emojiManager from '../utils/emojiManager.js';
 import storageOptimizer from '../utils/storageOptimizer.js';
-import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate, formatDateToDDMMYYYY } from '../utils/dateUtils.js';
+import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate, formatDateToDDMMYYYY, safeParseDate } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
 import { useAuth } from '../components/AuthProvider';
 import databaseManager from '../utils/database';
@@ -196,8 +196,8 @@ const Reports = () => {
       });
 
       const salesList = Array.from(salesMap.values()).sort((a, b) => {
-        const ta = new Date(a.timestamp || a.date || 0).getTime();
-        const tb = new Date(b.timestamp || b.date || 0).getTime();
+        const ta = safeParseDate(a.date || a.timestamp).getTime();
+        const tb = safeParseDate(b.date || b.timestamp).getTime();
         if (tb !== ta) return tb - ta;
         return (Number(b.id) || 0) - (Number(a.id) || 0);
       });
@@ -620,18 +620,22 @@ const Reports = () => {
     });
   };
 
+  const getInvoiceRemaining = (invoice) => {
+    if (!invoice) return 0;
+    if (invoice.downPayment && invoice.downPayment.remaining !== undefined) {
+      return Number(invoice.downPayment.remaining) || 0;
+    }
+    const settlementsSum = (invoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + 
+                           (invoice.settlement ? Number(invoice.settlement.amount) || 0 : 0);
+    return Math.max(0, safeMath.subtract(invoice.total || 0, settlementsSum));
+  };
+
   // سداد المبلغ المتبقي (عربون)
   const handlePayRemaining = (invoiceId) => {
     const invoice = allSales.find(sale => sale.id === invoiceId);
     if (!invoice || (!invoice.downPayment?.enabled && invoice.paymentMethod !== 'deferred')) return;
 
-    let calcRemaining = 0;
-    if (invoice.downPayment?.enabled) {
-      calcRemaining = invoice.downPayment.remaining || (safeMath.subtract(invoice.total, invoice.downPayment.amount));
-    } else if (invoice.paymentMethod === 'deferred') {
-      const settledAmount = (invoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (invoice.settlement ? Number(invoice.settlement.amount) || 0 : 0);
-      calcRemaining = safeMath.subtract(invoice.total, settledAmount);
-    }
+    const calcRemaining = getInvoiceRemaining(invoice);
 
     if (calcRemaining <= 0) {
       notifyError('لا يوجد مبلغ متبقي لهذه الفاتورة');
@@ -654,6 +658,7 @@ const Reports = () => {
       }
       
       const invoiceId = settlementInvoiceId;
+      const customerInvoice = allSales.find(s => s.id === invoiceId);
       const method = settlementMethod;
       const newRemaining = Math.max(0, settlementRemaining - amountPaid);
       const isComplete = newRemaining <= 0;
@@ -719,6 +724,31 @@ const Reports = () => {
         localStorage.setItem('shifts', JSON.stringify(updatedShifts));
       } catch (err) {}
 
+      // تحديث مديونية العميل في سجل العملاء
+      if (customerInvoice && (customerInvoice.customer?.phone || customerInvoice.customer?.id || customerInvoice.customerId)) {
+        try {
+          const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+          const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
+          const invoicePhoneClean = cleanPhone(customerInvoice.customer?.phone);
+          const invCustId = customerInvoice.customer?.id || customerInvoice.customerId || customerInvoice.customer_id;
+
+          const cIndex = customers.findIndex(c => {
+            if (invCustId && c.id && invCustId.toString() === c.id.toString()) {
+              return true;
+            }
+            return cleanPhone(c.phone) === invoicePhoneClean && invoicePhoneClean !== '';
+          });
+
+          if (cIndex !== -1) {
+            customers[cIndex].debt = Math.max(0, safeMath.subtract(customers[cIndex].debt || 0, amountPaid));
+            localStorage.setItem('customers', JSON.stringify(customers));
+            try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update', customer: customers[cIndex] }); } catch (_) {}
+          }
+        } catch (e) {
+          console.error("Error updating customer debt in settlement:", e);
+        }
+      }
+
       setAllSales(updatedSales);
       setShowSettlementModal(false);
       setShowInvoiceModal(false);
@@ -747,7 +777,7 @@ const Reports = () => {
       const invoiceId = invoice.id;
       
       const logoSrc = storeInfo.logo || '';
-      const currentDate = formatDate(invoice.timestamp || invoice.date || new Date());
+      const currentDate = formatDate(invoice.date || invoice.timestamp || new Date());
       const cashierName = invoice.cashier || user?.username || 'غير محدد';
       const paymentMethodText = invoice.paymentMethod === 'cash' ? '💵 نقدي' : invoice.paymentMethod === 'wallet' ? '📱 محفظة إلكترونية' : invoice.paymentMethod === 'instapay' ? '💳 انستا باي' : invoice.paymentMethod === 'deferred' ? '⏳ آجل' : '💵 نقدي';
       const customerName = invoice.customer?.name || 'عميل نقدي';
@@ -1121,8 +1151,8 @@ const Reports = () => {
         });
 
         const returns = Array.from(returnsMap.values()).sort((a, b) => {
-          const ta = new Date(a.timestamp || a.date || 0).getTime();
-          const tb = new Date(b.timestamp || b.date || 0).getTime();
+          const ta = safeParseDate(a.date || a.timestamp).getTime();
+          const tb = safeParseDate(b.date || b.timestamp).getTime();
           return tb - ta;
         });
 
@@ -1130,7 +1160,7 @@ const Reports = () => {
           if (!searchTerm.trim()) return true;
           const query = searchTerm.toLowerCase();
           
-          const dateObj = new Date(ret.timestamp || ret.date);
+          const dateObj = safeParseDate(ret.date || ret.timestamp);
           let dateMatches = false;
           let isTodayInvoice = false;
           
@@ -1157,7 +1187,7 @@ const Reports = () => {
             dateMatches ||
             (isTodayQuery && isTodayInvoice)
           );
-        }).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        }).sort((a, b) => safeParseDate(b.date || b.timestamp).getTime() - safeParseDate(a.date || a.timestamp).getTime());
       } catch (_) {
         return [];
       }
@@ -1173,7 +1203,7 @@ const Reports = () => {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       result = result.filter(inv => {
-        const d = new Date(inv.timestamp || inv.date || 0);
+        const d = safeParseDate(inv.date || inv.timestamp);
         switch (periodFilter) {
           case 'day':
             return d >= today;
@@ -1191,7 +1221,7 @@ const Reports = () => {
     if (searchTerm.trim() && activeTab !== 'returns') {
       const query = searchTerm.toLowerCase();
       result = result.filter(inv => {
-        const dateObj = new Date(inv.timestamp || inv.date);
+        const dateObj = safeParseDate(inv.date || inv.timestamp);
         let dateMatches = false;
         let isTodayInvoice = false;
         
@@ -1527,7 +1557,7 @@ const Reports = () => {
                           <div className="flex justify-between text-sm text-red-600">
                             <span>المبلغ المتبقي المستحق:</span>
                             <span className="font-bold">
-                              {Math.max(0, safeMath.subtract(selectedInvoice.total, (selectedInvoice.settlements || []).reduce((sum, s) => sum + (Number(s.amount) || 0), 0) + (selectedInvoice.settlement ? Number(selectedInvoice.settlement.amount) || 0 : 0))).toFixed(2)} ج.م
+                              {getInvoiceRemaining(selectedInvoice).toFixed(2)} ج.م
                             </span>
                           </div>
                         </div>

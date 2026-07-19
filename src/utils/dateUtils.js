@@ -33,10 +33,33 @@ const translateToArabic = (text) => {
   return translated;
 };
 
+export const safeParseDate = (dateVal) => {
+  if (!dateVal) return new Date();
+  if (typeof dateVal === 'string' && (dateVal.includes('م') || dateVal.includes('ص') || dateVal.includes('ص') || dateVal.includes('م'))) {
+    const parts = dateVal.match(/\d+/g);
+    if (parts && parts.length >= 5) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      let hour = parseInt(parts[3], 10);
+      const minute = parseInt(parts[4], 10);
+      
+      const isPM = dateVal.includes('م');
+      if (isPM && hour < 12) hour += 12;
+      if (!isPM && hour === 12) hour = 0;
+      
+      const parsedDate = new Date(year, month, day, hour, minute);
+      if (!isNaN(parsedDate.getTime())) return parsedDate;
+    }
+  }
+  const parsed = new Date(dateVal);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
 export const formatDate = (dateString) => {
   if (!dateString) return '';
   try {
-    const date = new Date(dateString);
+    const date = safeParseDate(dateString);
     if (isNaN(date.getTime())) return dateString;
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -56,7 +79,7 @@ export const formatDate = (dateString) => {
 export const formatDateOnly = (dateString) => {
   if (!dateString) return '';
   try {
-    const date = new Date(dateString);
+    const date = safeParseDate(dateString);
     if (isNaN(date.getTime())) return dateString;
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -71,7 +94,7 @@ export const formatDateOnly = (dateString) => {
 export const formatTimeOnly = (dateString) => {
   if (!dateString) return '';
   try {
-    const date = new Date(dateString);
+    const date = safeParseDate(dateString);
     if (isNaN(date.getTime())) return dateString;
     let hours = date.getHours();
     const minutes = String(date.getMinutes()).padStart(2, '0');
@@ -266,6 +289,7 @@ export const cleanExistingData = () => {
 };
 
 export default {
+  safeParseDate,
   formatDate,
   formatDateOnly,
   formatTimeOnly,

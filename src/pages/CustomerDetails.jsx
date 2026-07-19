@@ -16,7 +16,7 @@ import {
     Banknote
 } from 'lucide-react';
 import soundManager from '../utils/soundManager.js';
-import { formatDate, getCurrentDate } from '../utils/dateUtils.js';
+import { formatDate, getCurrentDate, safeParseDate } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import thermalPrinter from '../utils/thermalPrinter.js';
@@ -62,8 +62,6 @@ const CustomerDetails = () => {
             const currentCustomer = customersData.find(c => (c.id || c.phone).toString() === id);
             
             if (currentCustomer) {
-                setCustomer(currentCustomer);
-
                 // Load Invoices matching this customer
                 const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
                 const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
@@ -71,22 +69,87 @@ const CustomerDetails = () => {
 
                 const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
                 const customerPhoneClean = cleanPhone(currentCustomer.phone);
+                const currentCustId = currentCustomer.id;
                 
                 const allInvoices = [...historicalSales, ...activeSales].filter(inv => {
                     if (!inv) return false;
                     const invCustId = inv.customer?.id || inv.customerId || inv.customer_id;
-                    const currentCustId = currentCustomer.id;
                     if (invCustId && currentCustId && invCustId.toString() === currentCustId.toString()) {
                         return true;
                     }
                     const invPhoneClean = cleanPhone(inv.customer?.phone);
                     return invPhoneClean === customerPhoneClean && customerPhoneClean !== '';
                 });
+
+                // --- 📊 إعادة احتساب وتصحيح مديونية ومشتريات العميل فوراً لتجنب أي عدم تطابق (Self-Healing Stats) ---
+                const calculatedOrders = allInvoices.length;
+                const calculatedTotalSpent = allInvoices.reduce((sum, inv) => sum + (Number(inv.total) || 0), 0);
+
+                // حساب المديونية المتبقية من الفواتير الآجلة وعربونات الدفع
+                const invoicesRemainingDebt = allInvoices.reduce((sum, inv) => {
+                    if (inv.paymentMethod === 'deferred' || inv.downPayment?.enabled) {
+                        const dpRemaining = inv.downPayment && inv.downPayment.remaining !== undefined
+                            ? Number(inv.downPayment.remaining)
+                            : (inv.paymentMethod === 'deferred' ? Number(inv.total || 0) : 0);
+                        return sum + dpRemaining;
+                    }
+                    return sum;
+                }, 0);
+
+                // حساب إجمالي السدادات العامة المدفوعة خارج الفواتير
+                let generalSettlementsSum = 0;
+                const recalcShifts = [...shifts];
+                const recalcActiveShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
+                if (recalcActiveShift) recalcShifts.push(recalcActiveShift);
+
+                recalcShifts.forEach(shift => {
+                    if (Array.isArray(shift.customerSettlements)) {
+                        shift.customerSettlements.forEach(settle => {
+                            const isMatch = (settle.customerId && currentCustId && settle.customerId.toString() === currentCustId.toString()) ||
+                                            (cleanPhone(settle.customerPhone) === customerPhoneClean && customerPhoneClean !== '');
+                            if (isMatch) {
+                                generalSettlementsSum += (parseFloat(settle.amount) || 0);
+                            }
+                        });
+                    }
+                    if (Array.isArray(shift.sales)) {
+                        shift.sales.forEach(sale => {
+                            if (sale.isDebtPayment) {
+                                const isMatch = (sale.customer?.id && currentCustId && sale.customer.id.toString() === currentCustId.toString()) ||
+                                                (cleanPhone(sale.customer?.phone) === customerPhoneClean && customerPhoneClean !== '');
+                                if (isMatch) {
+                                    generalSettlementsSum += (parseFloat(sale.total) || 0);
+                                }
+                            }
+                        });
+                    }
+                });
+
+                const calculatedDebt = Math.max(0, safeMath.subtract(invoicesRemainingDebt, generalSettlementsSum));
+
+                // إذا كانت قيم العميل في قاعدة البيانات تختلف عن الحساب الفعلي، نقوم بتحديثها فوراً
+                if (
+                    Math.abs(Number(currentCustomer.debt || 0) - calculatedDebt) > 0.01 ||
+                    Math.abs(Number(currentCustomer.totalSpent || 0) - calculatedTotalSpent) > 0.01 ||
+                    Number(currentCustomer.orders || 0) !== calculatedOrders
+                ) {
+                    currentCustomer.debt = calculatedDebt;
+                    currentCustomer.totalSpent = calculatedTotalSpent;
+                    currentCustomer.orders = calculatedOrders;
+
+                    const updatedCustomers = customersData.map(c => 
+                        (c.id || c.phone).toString() === id ? currentCustomer : c
+                    );
+                    localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+                    try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update', customer: currentCustomer }); } catch (_) {}
+                }
+
+                setCustomer({ ...currentCustomer });
                 
                 // Sort by date descending (الأحدث أولاً)
                 allInvoices.sort((a, b) => {
-                    const tb = new Date(b.timestamp || b.date).getTime();
-                    const ta = new Date(a.timestamp || a.date).getTime();
+                    const tb = safeParseDate(b.date || b.timestamp).getTime();
+                    const ta = safeParseDate(a.date || a.timestamp).getTime();
                     if (tb !== ta && !isNaN(tb) && !isNaN(ta)) return tb - ta;
                     return (Number(b.id) || 0) - (Number(a.id) || 0);
                 });
@@ -118,7 +181,7 @@ const CustomerDetails = () => {
                         if (dpAmount > 0) {
                             pmtList.push({
                                 id: `DP-${inv.id}`,
-                                date: inv.timestamp || inv.date,
+                                date: inv.date || inv.timestamp,
                                 amount: dpAmount,
                                 method: inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'wallet' ? 'محفظة إلكترونية' : inv.paymentMethod === 'instapay' ? 'انستا باي' : inv.paymentMethod === 'deferred' ? 'آجل' : 'نقدي',
                                 description: `عربون للفاتورة #${inv.id}`,
@@ -440,7 +503,7 @@ const CustomerDetails = () => {
                                             return (
                                                 <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
                                                     <td className="px-6 py-4 font-mono font-bold text-slate-800 text-sm">#{inv.id}</td>
-                                                    <td className="px-6 py-4 text-slate-500 text-xs font-medium">{new Date(inv.timestamp || inv.date).toLocaleString('ar-EG')}</td>
+                                                    <td className="px-6 py-4 text-slate-500 text-xs font-medium">{formatDate(inv.date || inv.timestamp)}</td>
                                                     <td className="px-6 py-4 text-slate-700 text-sm font-semibold">
                                                         {inv.paymentMethod === 'cash' ? 'نقدي' : inv.paymentMethod === 'deferred' ? 'آجل' : inv.paymentMethod === 'wallet' ? 'محفظة' : 'انستا باي'}
                                                         {inv.downPayment?.enabled && remaining > 0 && (
@@ -550,7 +613,7 @@ const CustomerDetails = () => {
                                         payments.map((pmt, idx) => (
                                             <tr key={idx} className="hover:bg-blue-50/30 transition-colors">
                                                 <td className="px-6 py-4 text-slate-500 text-xs font-medium">
-                                                    {new Date(pmt.date).toLocaleString('ar-EG')}
+                                                    {formatDate(pmt.date)}
                                                 </td>
                                                 <td className="px-6 py-4 text-slate-800 text-sm font-semibold">
                                                     {pmt.description}
