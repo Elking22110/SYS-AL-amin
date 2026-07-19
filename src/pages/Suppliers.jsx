@@ -44,7 +44,8 @@ const Suppliers = () => {
     const loadSuppliers = () => {
       try {
         const savedSuppliers = JSON.parse(localStorage.getItem('suppliers') || '[]');
-        if (Array.isArray(savedSuppliers) && savedSuppliers.length > 0) {
+        const isSeeded = localStorage.getItem('suppliers_seeded') === 'true';
+        if (savedSuppliers.length > 0 || isSeeded) {
           setSuppliers(savedSuppliers);
         } else {
           // بيانات أولية لموردي متجر الأمين - مستخرجة من قاعدة AlmodeerBNK
@@ -107,6 +108,7 @@ const Suppliers = () => {
           ];
           setSuppliers(defaultSuppliers);
           localStorage.setItem('suppliers', JSON.stringify(defaultSuppliers));
+          localStorage.setItem('suppliers_seeded', 'true');
         }
       } catch (error) {
         console.error('خطأ في تحميل الموردين:', error);

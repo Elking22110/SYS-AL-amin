@@ -16,8 +16,8 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         // WIPE OPERATION: One-time automated wipe to start fresh (INCLUDING suppliers)
         // ----------------------------------------------------
-        const didWipeV3 = localStorage.getItem('did_one_time_clean_v3') === 'true';
-        if (!didWipeV3) {
+        const didWipeV4 = localStorage.getItem('did_one_time_clean_v4') === 'true';
+        if (!didWipeV4) {
           console.log('[DataLoader] Performing one-time operational data wipe (Including Suppliers)...');
           
           // 1. Wipe IndexedDB stores
@@ -40,7 +40,7 @@ const DataLoader = ({ children }) => {
           // 2. Wipe LocalStorage keys (both prefixed and unprefixed) including suppliers
           const storesToClearLS = [
             'sales', 'customers', 'shifts', 'returns', 'expenses', 'activeShift',
-            'suppliers', 'supplier_supplies', 'supplier_payments',
+            'suppliers', 'supplier_supplies', 'supplier_payments', 'suppliers_seeded',
             'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
             'last_sync_expenses', 'last_sync_activeShift',
             'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments'
@@ -60,8 +60,8 @@ const DataLoader = ({ children }) => {
             }
           });
 
-          // 3. Set the migration flag v3
-          localStorage.setItem('did_one_time_clean_v3', 'true');
+          // 3. Set the migration flag v4
+          localStorage.setItem('did_one_time_clean_v4', 'true');
           
           console.log('[DataLoader] One-time operational data wipe complete. Reloading page...');
           window.location.reload();
@@ -92,7 +92,7 @@ const DataLoader = ({ children }) => {
           // 2. Wipe LocalStorage keys (both prefixed and unprefixed)
           const storesToClearLS = [
             'sales', 'customers', 'shifts', 'returns',
-            'suppliers', 'supplier_supplies', 'supplier_payments', 'expenses',
+            'suppliers', 'supplier_supplies', 'supplier_payments', 'suppliers_seeded', 'expenses',
             'activeShift',
             'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
             'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments', 'last_sync_expenses',
