@@ -1443,7 +1443,7 @@ const Reports = () => {
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] backdrop-blur-sm p-4 overflow-y-auto"
         >
-          <div className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 animate-fadeInUp transition-all duration-300 ${showPOSGrid ? 'max-w-7xl h-[92vh]' : 'max-w-4xl max-h-[90vh]'}`}>
+          <div className={`bg-white rounded-2xl w-full flex flex-col overflow-hidden shadow-2xl border border-slate-200 transition-all duration-300 ${showPOSGrid ? 'max-w-7xl h-[92vh]' : 'max-w-4xl max-h-[90vh]'}`}>
             {/* رأس المودال */}
             <div className="p-4 md:p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50 shrink-0">
               <div className="text-right">
@@ -1850,7 +1850,7 @@ const Reports = () => {
       {/* نافذة تأكيد الحذف */}
       {confirmModal.isOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4" style={{ zIndex: 100000 }}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center border border-slate-200 shadow-2xl animate-fadeInUp">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md text-center border border-slate-200 shadow-2xl">
             <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
               <Trash2 className="h-8 w-8 text-red-600" />
             </div>

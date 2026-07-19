@@ -314,7 +314,7 @@ const CustomerDetails = () => {
                 </div>
 
                 {/* Customer Info Hero Details */}
-                <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 animate-fadeInUp">
+                <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                     <div className="flex items-center">
                         <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center ml-4 shadow-lg border-4 border-white">
                             <User className="h-8 w-8 text-white" />
@@ -359,7 +359,7 @@ const CustomerDetails = () => {
                 </div>
 
                 {/* Stat Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
                     <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-xl flex flex-col items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300"></div>
                         <ShoppingCart className="h-10 w-10 text-blue-500 mb-2 filter drop-shadow-sm" />
@@ -383,7 +383,7 @@ const CustomerDetails = () => {
                 </div>
 
                 {/* Tabs Selector */}
-                <div className="flex border-b border-slate-200 bg-white bg-opacity-70 p-2 rounded-2xl backdrop-blur-md shadow-md gap-2 animate-fadeInUp" style={{ animationDelay: '0.15s' }}>
+                <div className="flex border-b border-slate-200 bg-white bg-opacity-70 p-2 rounded-2xl backdrop-blur-md shadow-md gap-2">
                     <button
                         onClick={() => setActiveTab('invoices')}
                         className={`flex-1 py-3 px-6 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer ${
@@ -410,7 +410,7 @@ const CustomerDetails = () => {
 
                 {/* Content Area */}
                 {activeTab === 'invoices' ? (
-                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden">
                         <div className="p-5 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex justify-between items-center">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center">
                                 <FileText className="h-5 w-5 ml-2 text-blue-500" />
@@ -523,7 +523,7 @@ const CustomerDetails = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                    <div className="bg-white bg-opacity-90 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl overflow-hidden">
                         <div className="p-5 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex justify-between items-center">
                             <h2 className="text-lg font-bold text-slate-800 flex items-center">
                                 <Banknote className="h-5 w-5 ml-2 text-blue-500" />
@@ -578,7 +578,7 @@ const CustomerDetails = () => {
             {/* General Settle Debt Modal */}
             {showSettlementModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[9999]">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl animate-scaleIn">
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-slate-800">تسوية مديونية العميل</h3>
                         </div>

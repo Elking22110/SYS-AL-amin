@@ -290,7 +290,7 @@ const SupplierDetails = () => {
                 </div>
 
                 {/* Supplier Info Hero Details */}
-                <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 animate-fadeInUp">
+                <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                     <div className="flex items-center">
                         <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center ml-4 shadow-lg">
                             <User className="h-8 w-8 text-slate-800" />
@@ -321,7 +321,7 @@ const SupplierDetails = () => {
                 </div>
 
                 {/* Stat Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
                     <div className="glass-card p-6 flex flex-col items-center justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
                         <DollarSign className="h-10 w-10 text-blue-400 mb-2" />
@@ -343,7 +343,7 @@ const SupplierDetails = () => {
                 </div>
 
                 {/* Action Buttons & Tabs Header */}
-                <div className="flex flex-col md:flex-row justify-between items-center glass-card p-4 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+                <div className="flex flex-col md:flex-row justify-between items-center glass-card p-4">
                     <div className="flex space-x-2 rtl:space-x-reverse mb-4 md:mb-0">
                         <button
                             onClick={() => setActiveTab('supplies')}
@@ -384,7 +384,7 @@ const SupplierDetails = () => {
                 </div>
 
                 {/* Content area based on active tab */}
-                <div className="animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
+                <div>
                     {activeTab === 'supplies' && (
                         <div className="glass-card overflow-hidden table-enhanced">
                             <div className="overflow-x-auto">
@@ -491,7 +491,7 @@ const SupplierDetails = () => {
             {/* Add Supply Modal */}
             {showSupplyModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
-                    <div className="glass-card p-6 w-full max-w-lg mx-4 animate-fadeInUp">
+                    <div className="glass-card p-6 w-full max-w-lg mx-4">
                         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
                             <Package className="h-6 w-6 ml-2 text-blue-400" />
                             إضافة توريدة جديدة
@@ -578,7 +578,7 @@ const SupplierDetails = () => {
             {/* Record Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] backdrop-blur-sm">
-                    <div className="glass-card p-6 w-full max-w-md mx-4 animate-fadeInUp">
+                    <div className="glass-card p-6 w-full max-w-md mx-4">
                         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
                             <CreditCard className="h-6 w-6 ml-2 text-green-400" />
                             سداد دفعة مالية
