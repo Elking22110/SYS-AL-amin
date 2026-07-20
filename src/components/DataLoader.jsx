@@ -526,12 +526,36 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
 
         // ----------------------------------------------------
-        // SELF-HEALING: Verify and auto-import any missing products from the seed file
+        // MIGRATION v3: Fix orphan subCategoryId references in products
+        // Supabase was updated with correct subcategory IDs for 556 products.
+        // Force a fresh pull from Supabase by clearing last_sync_products timestamp.
+        // ----------------------------------------------------
+        const subCatMigrationDone = localStorage.getItem('sub_cat_fix_migration_v1') === 'true';
+        if (!subCatMigrationDone) {
+          console.log('[DataLoader] Running sub-category fix migration: clearing product sync timestamps to force re-pull from Supabase...');
+          try {
+            // Clear last sync timestamps for products and categories so syncManager pulls fresh data
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+            const match = supabaseUrl.match(/https:\/\/([a-z0-9]+)\.supabase\.(co|net)/i);
+            const prefix = match ? match[1] + '_' : 'default_';
+            localStorage.removeItem('last_sync_products');
+            localStorage.removeItem(prefix + 'last_sync_products');
+            localStorage.removeItem('last_sync_categories');
+            localStorage.removeItem(prefix + 'last_sync_categories');
+            localStorage.setItem('sub_cat_fix_migration_v1', 'true');
+            console.log('[DataLoader] Sub-category migration flags set. Products will be re-synced from Supabase on next sync cycle.');
+          } catch (err) {
+            console.error('[DataLoader] Sub-category fix migration failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
+        // ----------------------------------------------------
         // ----------------------------------------------------
         try {
           const currentProducts = await databaseManager.getAll('products');
-          if (currentProducts.length < 2296) {
-            console.log(`[DataLoader] Missing products detected (${currentProducts.length} < 2296). Auto-importing gaps...`);
+          if (currentProducts.length < 2746) {
+            console.log(`[DataLoader] Missing products detected (${currentProducts.length} < 2746). Auto-importing gaps...`);
             setLoadingMessage('جاري استيراد المنتجات المفقودة...');
             const response = await fetch('/products_seed.json');
             if (response.ok) {

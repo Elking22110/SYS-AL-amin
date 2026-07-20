@@ -5,12 +5,19 @@ import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
 import soundManager from '../../utils/soundManager.js';
 
-// دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
+// دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
   if (!name) return null;
 
-  // 1. تصحيح الكسور العكسية في الأنظمة القديمة
   let cleanName = name;
+
+  // 1. إزالة الأصفار والرموز المعلقة في نهاية الاسم مثل ' 0 00', ' 0 0', ' 00 00'
+  cleanName = cleanName.replace(/\s+0+(?:\s+0+)*\s*$/g, '');
+
+  // 2. إزالة الشرطات الزائدة في بداية الاسم
+  cleanName = cleanName.replace(/^[-\s]+/, '');
+
+  // 3. تصحيح الكسور العكسية
   cleanName = cleanName.replace(/\b2\/1\b/g, '1/2');
   cleanName = cleanName.replace(/\b4\/3\b/g, '3/4');
   cleanName = cleanName.replace(/\b8\/1\b/g, '1/8');
@@ -18,18 +25,12 @@ const renderProductTitleAndSize = (name) => {
   cleanName = cleanName.replace(/\b8\/5\b/g, '5/8');
   cleanName = cleanName.replace(/\b4\/1\b/g, '1/4');
 
-  // 2. استخراج الأرقام والكسور التي تمثل المقاسات
-  const regex = /([0-9\/\.\-*+xX×"”']+)/g;
-  const matches = cleanName.match(regex) || [];
-  const sizes = matches.filter(m => /[0-9]/.test(m));
+  // 4. فك التصاق "مم" أو "سم" بالأرقام مثل "مم60جلبة" -> "60 مم جلبة"
+  cleanName = cleanName.replace(/مم(\d+)/g, '$1 مم ');
+  cleanName = cleanName.replace(/سم(\d+)/g, '$1 سم ');
 
-  // 3. حذف المقاسات من العنوان الأساسي ليبقى اسم القطعة نظيفاً ومنسقاً
-  let title = cleanName;
-  sizes.forEach(size => {
-    title = title.replace(size, '');
-  });
-  // تنظيف أي مسافات زائدة أو شرطات معلقة في النهاية
-  title = title.replace(/\s+/g, ' ').replace(/-\s*$/, '').trim();
+  // 5. تنظيف المسافات الزائدة
+  cleanName = cleanName.replace(/\s+/g, ' ').trim();
 
   return (
     <div className="text-right" style={{ direction: 'rtl' }}>

@@ -65,7 +65,6 @@
 }
 
 .hover-scale:hover {
-  transform: translateY(-4px) scale(1.015) !important;
   box-shadow: 0 20px 25px -5px rgba(31, 38, 135, 0.06), 0 10px 10px -5px rgba(31, 38, 135, 0.03) !important;
 }
 
@@ -184,7 +183,6 @@ body::before {
 
 .pos-product-card:hover {
   border-color: rgba(59, 130, 246, 0.6);
-  transform: translateY(-3px);
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.12),
     0 0 0 1px rgba(59, 130, 246, 0.15);
@@ -563,7 +561,6 @@ body::before {
 }
 
 .hover-lift:hover {
-  transform: translateY(-5px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
@@ -581,16 +578,8 @@ body::before {
   transition: transform 0.3s ease;
 }
 
-.scale-on-hover:hover {
-  transform: scale(1.05);
-}
-
 .rotate-on-hover {
   transition: transform 0.3s ease;
-}
-
-.rotate-on-hover:hover {
-  transform: rotate(5deg);
 }
 
 /* تأثيرات الزجاج الفاتح */
@@ -601,12 +590,6 @@ body::before {
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
-}
-
-.glass-card:hover {
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 20px rgba(139, 92, 246, 0.1);
 }
 
 .glass-card-dark {
@@ -615,12 +598,6 @@ body::before {
   border: 1px solid rgba(226, 232, 240, 0.8);
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
-}
-
-.glass-card-dark:hover {
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 0 20px rgba(59, 130, 246, 0.1);
 }
 
 /* أزرار محسنة */
@@ -636,7 +613,6 @@ body::before {
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(124, 58, 237, 0.4);
 }
 
@@ -652,7 +628,6 @@ body::before {
 }
 
 .btn-secondary:hover {
-  transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
 }
 

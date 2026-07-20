@@ -29,11 +29,19 @@ import {
   Search
 } from 'lucide-react';
 
-// دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً
+// دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
   if (!name) return null;
 
   let cleanName = name;
+
+  // 1. إزالة الأصفار والرموز المعلقة في نهاية الاسم مثل ' 0 00', ' 0 0', ' 00 00'
+  cleanName = cleanName.replace(/\s+0+(?:\s+0+)*\s*$/g, '');
+
+  // 2. إزالة الشرطات الزائدة في بداية الاسم
+  cleanName = cleanName.replace(/^[-\s]+/, '');
+
+  // 3. تصحيح الكسور العكسية
   cleanName = cleanName.replace(/\b2\/1\b/g, '1/2');
   cleanName = cleanName.replace(/\b4\/3\b/g, '3/4');
   cleanName = cleanName.replace(/\b8\/1\b/g, '1/8');
@@ -41,34 +49,18 @@ const renderProductTitleAndSize = (name) => {
   cleanName = cleanName.replace(/\b8\/5\b/g, '5/8');
   cleanName = cleanName.replace(/\b4\/1\b/g, '1/4');
 
-  const regex = /([0-9\/\.\-*+xX×"”']+)/g;
-  const matches = cleanName.match(regex) || [];
-  const sizes = matches.filter(m => /[0-9]/.test(m));
+  // 4. فك التصاق "مم" أو "سم" بالأرقام مثل "مم60جلبة" -> "60 مم جلبة"
+  cleanName = cleanName.replace(/مم(\d+)/g, '$1 مم ');
+  cleanName = cleanName.replace(/سم(\d+)/g, '$1 سم ');
 
-  let title = cleanName;
-  sizes.forEach(size => {
-    title = title.replace(size, '');
-  });
-  title = title.replace(/\s+/g, ' ').replace(/-\s*$/, '').trim();
+  // 5. تنظيف المسافات الزائدة
+  cleanName = cleanName.replace(/\s+/g, ' ').trim();
 
   return (
     <div className="flex flex-col text-right" style={{ direction: 'rtl' }}>
       <span className="font-bold text-slate-800 text-sm leading-snug">
-        {title}
+        {cleanName}
       </span>
-      {sizes.length > 0 && (
-        <div className="mt-1 flex flex-wrap gap-1 justify-start shrink-0">
-          {sizes.map((size, idx) => (
-            <span
-              key={idx}
-              className="inline-block font-mono font-black text-[10px] text-blue-700 bg-blue-50/80 px-1.5 py-0.5 rounded border border-blue-300 shadow-xs"
-              style={{ direction: 'ltr', unicodeBidi: 'embed' }}
-            >
-              {size}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

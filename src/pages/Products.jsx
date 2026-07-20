@@ -30,12 +30,19 @@ import databaseManager from '../utils/database';
 import storageOptimizer from '../utils/storageOptimizer.js';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
-// دالة لتصحيح الكسور العكسية وفصل المقاسات لعرضها في الأسفل تماماً لمنع تشوه التفاف النصوص
+// دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
   if (!name) return null;
 
-  // 1. تصحيح الكسور العكسية في الأنظمة القديمة
   let cleanName = name;
+
+  // 1. إزالة الأصفار والرموز المعلقة في نهاية الاسم مثل ' 0 00', ' 0 0', ' 00 00'
+  cleanName = cleanName.replace(/\s+0+(?:\s+0+)*\s*$/g, '');
+
+  // 2. إزالة الشرطات الزائدة في بداية الاسم
+  cleanName = cleanName.replace(/^[-\s]+/, '');
+
+  // 3. تصحيح الكسور العكسية
   cleanName = cleanName.replace(/\b2\/1\b/g, '1/2');
   cleanName = cleanName.replace(/\b4\/3\b/g, '3/4');
   cleanName = cleanName.replace(/\b8\/1\b/g, '1/8');
@@ -43,39 +50,18 @@ const renderProductTitleAndSize = (name) => {
   cleanName = cleanName.replace(/\b8\/5\b/g, '5/8');
   cleanName = cleanName.replace(/\b4\/1\b/g, '1/4');
 
-  // 2. استخراج الأرقام والكسور التي تمثل المقاسات
-  const regex = /([0-9\/\.\-*+xX×"”']+)/g;
-  const matches = cleanName.match(regex) || [];
-  const sizes = matches.filter(m => /[0-9]/.test(m));
+  // 4. فك التصاق "مم" أو "سم" بالأرقام مثل "مم60جلبة" -> "60 مم جلبة"
+  cleanName = cleanName.replace(/مم(\d+)/g, '$1 مم ');
+  cleanName = cleanName.replace(/سم(\d+)/g, '$1 سم ');
 
-  // 3. حذف المقاسات من العنوان الأساسي ليبقى اسم القطعة نظيفاً ومنسقاً
-  let title = cleanName;
-  sizes.forEach(size => {
-    title = title.replace(size, '');
-  });
-  // تنظيف أي مسافات زائدة أو شرطات معلقة في النهاية
-  title = title.replace(/\s+/g, ' ').replace(/-\s*$/, '').trim();
+  // 5. تنظيف المسافات الزائدة
+  cleanName = cleanName.replace(/\s+/g, ' ').trim();
 
   return (
     <div className="flex flex-col text-right" style={{ direction: 'rtl' }}>
-      {/* اسم القطعة بالكامل */}
       <span className="font-bold text-slate-800 text-sm md:text-base leading-snug">
-        {title}
+        {cleanName}
       </span>
-      {/* المقاسات في الأسفل على سطر منفصل تماماً */}
-      {sizes.length > 0 && (
-        <div className="mt-1 flex flex-wrap gap-1 justify-start shrink-0">
-          {sizes.map((size, idx) => (
-            <span
-              key={idx}
-              className="inline-block font-mono font-black text-[11px] md:text-[13px] text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded border border-blue-300 shadow-xs"
-              style={{ direction: 'ltr', unicodeBidi: 'embed' }}
-            >
-              {size}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
@@ -914,10 +900,10 @@ const Products = () => {
     }
   }, []);
 
-  const [visibleCount, setVisibleCount] = useState(30);
+  const [visibleCount, setVisibleCount] = useState(100);
 
   useEffect(() => {
-    setVisibleCount(30);
+    setVisibleCount(100);
   }, [searchTerm, selectedMainCategory, selectedSubCategory]);
 
   const filteredProducts = products.filter(product => {
@@ -1834,8 +1820,8 @@ const Products = () => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 ipad-grid ipad-pro-grid gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-          <div className="glass-card hover-lift group cursor-pointer p-4 md:p-6 lg:p-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 ipad-grid ipad-pro-grid gap-3 md:gap-4 lg:gap-6 xl:gap-8 mb-6">
+          <div className="glass-card group p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
                 <p className="text-xs font-medium text-slate-600 mb-1 uppercase tracking-wide">إجمالي المنتجات</p>
@@ -1844,13 +1830,13 @@ const Products = () => {
                   <span className="text-blue-300 font-medium">منتجات متاحة</span>
                 </div>
               </div>
-              <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl md:rounded-2xl shadow-lg">
                 <Package className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-slate-800" />
               </div>
             </div>
           </div>
 
-          <div className="glass-card hover-lift group cursor-pointer p-4 md:p-6 lg:p-8">
+          <div className="glass-card group p-4 md:p-6 lg:p-8">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <div className="flex-1">
                 <p className="text-xs font-medium text-slate-600 mb-1 uppercase tracking-wide">قيمة المخزون</p>
@@ -1861,13 +1847,13 @@ const Products = () => {
                   <span className="text-green-300 font-medium">قيمة المخزون</span>
                 </div>
               </div>
-              <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="p-2 md:p-3 lg:p-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl md:rounded-2xl shadow-lg">
                 <Tag className="h-4 w-4 md:h-5 md:w-5 lg:h-6 lg:w-6 text-slate-800" />
               </div>
             </div>
           </div>
 
-          <div className="glass-card hover-lift group cursor-pointer p-6 md:p-8 lg:p-10 xl:p-12 col-span-2">
+          <div className="glass-card group p-6 md:p-8 lg:p-10 xl:p-12 col-span-2">
             <div className="flex items-center justify-between mb-6 md:mb-8">
               <div className="flex-1">
                 <p className="text-sm md:text-base font-medium text-slate-600 mb-2 uppercase tracking-wide">منخفضة المخزون</p>
@@ -1886,7 +1872,7 @@ const Products = () => {
                   </div>
                 )}
               </div>
-              <div className="p-4 md:p-5 lg:p-6 xl:p-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl md:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+              <div className="p-4 md:p-5 lg:p-6 xl:p-8 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl md:rounded-2xl shadow-lg">
                 <AlertTriangle className="h-6 w-6 md:h-8 md:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12 text-slate-800" />
               </div>
             </div>
@@ -1895,7 +1881,7 @@ const Products = () => {
         </div>
 
         {/* Filters */}
-        <div className="glass-card p-4 md:p-6">
+        <div className="glass-card p-4 md:p-6 mb-6 relative z-10">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 md:right-4 top-1/2 transform -translate-y-1/2 text-blue-300 h-5 w-5 md:h-6 md:w-6" />
@@ -2031,7 +2017,7 @@ const Products = () => {
         </div>
 
         {/* Products Table */}
-        <div className="glass-card overflow-hidden">
+        <div className="glass-card overflow-hidden relative z-0 mt-6" style={{ transform: 'none', transition: 'none' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white bg-opacity-10">
@@ -2052,7 +2038,7 @@ const Products = () => {
                   </tr>
                 )}
                 {displayedProducts.map((product, index) => (
-                  <tr key={product.id} className="hover:bg-white hover:bg-opacity-5 transition-all duration-300">
+                  <tr key={product.id} className="hover:bg-white hover:bg-opacity-5">
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                           <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
                             <div className="flex items-center">
@@ -2082,7 +2068,7 @@ const Products = () => {
                             soundManager.play('update');
                             handleEditProduct(product);
                           }}
-                          className="p-3 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-blue-300 hover:text-blue-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
+                          className="p-3 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-blue-300 hover:text-blue-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
                           style={{
                             pointerEvents: 'auto',
                             zIndex: 10,
@@ -2098,7 +2084,7 @@ const Products = () => {
                             soundManager.play('delete');
                             handleDeleteProduct(product.id);
                           }}
-                          className="p-3 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 transition-all duration-300 text-red-300 hover:text-red-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
+                          className="p-3 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-red-300 hover:text-red-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
                           style={{
                             pointerEvents: 'auto',
                             zIndex: 10,
@@ -2120,11 +2106,22 @@ const Products = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setVisibleCount(prev => prev + 50);
+                  // حفظ موضع الـ scroll الحالي قبل إضافة المنتجات الجديدة
+                  const scrollY = window.scrollY;
+                  const scrollContainer = e.currentTarget.closest('[data-scroll-container]') ||
+                    document.querySelector('.overflow-y-auto') ||
+                    document.querySelector('[style*="overflow"]');
+                  const containerScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
+                  setVisibleCount(prev => prev + 100);
+                  // إعادة موضع الـ scroll بعد إعادة الرسم مباشرةً
+                  requestAnimationFrame(() => {
+                    window.scrollTo({ top: scrollY, behavior: 'instant' });
+                    if (scrollContainer) scrollContainer.scrollTop = containerScrollTop;
+                  });
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold transition-all duration-200 cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-bold cursor-pointer"
               >
-                عرض المزيد (+50 منتج) — المعروض حالياً {visibleCount} من أصل {filteredProducts.length}
+                عرض المزيد (+100 منتج) — المعروض حالياً {visibleCount} من أصل {filteredProducts.length}
               </button>
             </div>
           )}
