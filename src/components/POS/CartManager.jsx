@@ -10,6 +10,7 @@ const CartManager = ({
   setCart,
   onUpdateQuantity,
   onRemoveFromCart,
+  lastAddedTrigger,
   getTotal,
   getDiscountAmount,
   getTaxAmount,
@@ -31,6 +32,22 @@ const CartManager = ({
   const [editingDiscount, setEditingDiscount] = useState({});
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // التركيز التلقائي وتحديد النص لحقل العدد للصنف المضاف حديثاً
+  React.useEffect(() => {
+    if (lastAddedTrigger && lastAddedTrigger.id) {
+      const targetIndex = cart.findIndex(item => String(item.id) === lastAddedTrigger.id);
+      if (targetIndex !== -1) {
+        setTimeout(() => {
+          const qtyInput = document.querySelector(`[data-field-type="qty"][data-item-index="${targetIndex}"]`);
+          if (qtyInput) {
+            qtyInput.focus();
+            qtyInput.select();
+          }
+        }, 50);
+      }
+    }
+  }, [lastAddedTrigger]);
 
   // حساب الإجمالي الفرعي مع خصومات الأصناف
   const getSubtotal = useMemo(() => {

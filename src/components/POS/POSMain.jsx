@@ -46,6 +46,7 @@ const POSMain = () => {
   const [showInvoiceSummary, setShowInvoiceSummary] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [lastAddedTrigger, setLastAddedTrigger] = useState(null);
   // نوافذ الخصم والضريبة - على مستوى POSMain لتجنب تقييد overflow
   const [showDiscountModal, setShowDiscountModal] = useState(false);
   const [showTaxModal, setShowTaxModal] = useState(false);
@@ -207,6 +208,7 @@ const POSMain = () => {
         }
       ]);
     }
+    setLastAddedTrigger({ id: String(product.id), time: Date.now() });
   }, [cart]);
 
   // دوال إدارة السلة محسنة
@@ -1053,6 +1055,7 @@ const POSMain = () => {
               setCart={setCart}
               onUpdateQuantity={updateQuantity}
               onRemoveFromCart={removeFromCart}
+              lastAddedTrigger={lastAddedTrigger}
               getTotal={getTotal}
               getDiscountAmount={getDiscountAmount}
               getTaxAmount={getTaxAmount}
