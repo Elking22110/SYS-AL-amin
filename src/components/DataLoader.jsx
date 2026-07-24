@@ -128,10 +128,10 @@ const DataLoader = ({ children }) => {
         const currentBuildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev';
         const lastBuildTime = localStorage.getItem('last_app_build_time');
         if (currentBuildTime !== 'dev' && lastBuildTime && lastBuildTime !== currentBuildTime) {
-          console.log(`[DataLoader] App updated from build ${lastBuildTime} to ${currentBuildTime}. Resetting migration flags to force reload...`);
-          localStorage.removeItem('migration_sanitary_alamin_v20');
+          console.log(`[DataLoader] App updated from build ${lastBuildTime} to ${currentBuildTime}. Resetting patch flags (protecting database)...`);
           localStorage.removeItem('patch_company_codes_v40_all');
           localStorage.removeItem('patch_company_codes_v41_all_v2');
+          localStorage.removeItem('patch_sync_seed_v43');
         }
         localStorage.setItem('last_app_build_time', currentBuildTime);
 
@@ -176,8 +176,10 @@ const DataLoader = ({ children }) => {
           });
           console.log('تم استيراد البيانات إلى IndexedDB بنجاح');
 
+          window.__bypass_sync_proxy__ = true;
           localStorage.setItem('productCategories', JSON.stringify(categories));
           localStorage.setItem('products', JSON.stringify(products));
+          window.__bypass_sync_proxy__ = false;
           localStorage.setItem('migration_sanitary_alamin_v20', 'true');
         }
 
