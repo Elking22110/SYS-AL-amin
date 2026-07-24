@@ -1065,6 +1065,43 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // PATCH v46: Fix Ahram 1-inch poly products subcategory
+        // Move 17 products from 'قطع ١بوصه الاهرام ابيض' to 'قطع ١بوصه بولى الاهرام'
+        // ----------------------------------------------------
+        const patchV46Done = localStorage.getItem('patch_ahram_1inch_poly_v46') === 'true';
+        if (!patchV46Done) {
+          try {
+            console.log('[DataLoader] Patch v46: Fixing Ahram 1-inch poly subcategories...');
+            setLoadingMessage('جاري إصلاح تصنيفات الاهرام بولي...');
+            const POLY_IDS = new Set(['80159','80160','80161','80162','80163','80164','80165',
+              '80166','80167','80168','80169','80170','80171','80172','80173','80179','80180']);
+            const NEW_SUBCAT = 'قطع ١بوصه بولى الاهرام';
+            const nowStr = new Date().toISOString();
+            let fixedCount = 0;
+            for (const pid of POLY_IDS) {
+              const p = await databaseManager.get('products', pid);
+              if (p && p.subCategoryId !== NEW_SUBCAT) {
+                p.subCategoryId = NEW_SUBCAT;
+                p.sync_status = 'pending';
+                p.updated_at = nowStr;
+                await databaseManager.update('products', p);
+                fixedCount++;
+              }
+            }
+            const freshProds = await databaseManager.getAll('products');
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('products', JSON.stringify(freshProds));
+            window.__bypass_sync_proxy__ = false;
+            console.log(`[DataLoader] Patch v46: Fixed ${fixedCount} products.`);
+            localStorage.setItem('patch_ahram_1inch_poly_v46', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v46 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
         

@@ -12613,141 +12613,156 @@
       "name": "تى مسلوب ١*١/٢ بولى اهرام",
       "price": 29,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80160,
       "name": "م ١ بوصه بولى الاهرام",
       "price": 72,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80161,
       "name": "مسلوب ٣/٤ لحام بولى ١ الاهرام",
       "price": 13.5,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80162,
       "name": "كوع ١ بوصه بولى الاهرام",
       "price": 20,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80163,
       "name": "كوع ١ مفتوح بولى الاهرام",
       "price": 20,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80164,
       "name": "تى ١ بوصه بولى الاهرام",
       "price": 25,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80165,
       "name": "مسلوب ١/٢ لحام بولى ١ الاهرام",
       "price": 13.5,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80166,
       "name": "جلبة لحام ١ بوصه الاهرام",
       "price": 13.5,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
       "minStock": 5,
       "barcode": "AL0104003",
-      "sku": "0104003"
+      "sku": "0104003",
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80167,
       "name": "طبة ١ بوصه بولى الاهرام",
       "price": 13.5,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80168,
       "name": "كوع ١ بوصه بسن بولى الاهرام",
       "price": 178,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80169,
       "name": "تى مسلوب بولى ١ * ٣/٤ اهرام",
       "price": 30.5,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80170,
       "name": "تى بسن ١ بوصه الاهرام",
       "price": 227,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
       "minStock": 5,
       "barcode": "AL0104008",
-      "sku": "0104008"
+      "sku": "0104008",
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80171,
       "name": "جلبة ١ بوصه سن خارجى الاهرام",
       "price": 202,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80172,
       "name": "جلبة ١*٣/٤ سن خارجى الاهرام",
       "price": 130,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
       "minStock": 5,
       "barcode": "AL5313012",
-      "sku": "5313012"
+      "sku": "5313012",
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80173,
       "name": "جلبة ١ بوصه سن داخلى الاهرام",
       "price": 164,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
-      "minStock": 5
+      "minStock": 5,
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80174,
@@ -12805,22 +12820,24 @@
       "name": "متر بولى ١ معزول الاهرام",
       "price": 113,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
       "minStock": 5,
       "barcode": "AL5313015",
-      "sku": "5313015"
+      "sku": "5313015",
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80180,
       "name": "محبس ١ بوصه بلاكور الاهرام",
       "price": 594,
       "mainCategoryId": "الاهرام بولي+صرف",
-      "subCategoryId": "قطع ١بوصه الاهرام ابيض",
+      "subCategoryId": "قطع ١بوصه بولى الاهرام",
       "stock": 100,
       "minStock": 5,
       "barcode": "AL5313016",
-      "sku": "5313016"
+      "sku": "5313016",
+      "updated_at": "2026-07-24T18:22:59.582Z"
     },
     {
       "id": 80181,
