@@ -979,6 +979,80 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // PATCH v43: Force sync all products from products_seed.json to ensure 2746 items exist
+        // and names are updated with brand suffixes (BR, Kessel, Smart).
+        // ----------------------------------------------------
+        const patchV43Done = localStorage.getItem('patch_sync_seed_v43') === 'true';
+        if (!patchV43Done) {
+          try {
+            console.log('[DataLoader] Patch v43: Syncing all products from products_seed.json...');
+            setLoadingMessage('جاري تحديث ومزامنة المنتجات الجديدة...');
+            const seedResp = await fetch('/products_seed.json?t=' + Date.now());
+            if (seedResp.ok) {
+              const seedData = await seedResp.json();
+              const seedProducts = seedData.products || [];
+              
+              const currentProds = await databaseManager.getAll('products');
+              const currentProdsMap = new Map(currentProds.map(p => [String(p.id), p]));
+              
+              const nowStr = new Date().toISOString();
+              let updatedCount = 0;
+              let addedCount = 0;
+
+              for (const sp of seedProducts) {
+                const spIdStr = String(sp.id);
+                const existing = currentProdsMap.get(spIdStr);
+                
+                if (existing) {
+                  const needsUpdate = 
+                    existing.name !== sp.name ||
+                    existing.price !== sp.price ||
+                    existing.barcode !== sp.barcode ||
+                    existing.mainCategoryId !== sp.mainCategoryId ||
+                    existing.subCategoryId !== sp.subCategoryId;
+                    
+                  if (needsUpdate) {
+                    const updated = {
+                      ...existing,
+                      name: sp.name,
+                      price: sp.price,
+                      barcode: sp.barcode || null,
+                      mainCategoryId: sp.mainCategoryId,
+                      subCategoryId: sp.subCategoryId,
+                      sync_status: 'pending',
+                      updated_at: nowStr
+                    };
+                    await databaseManager.update('products', updated);
+                    updatedCount++;
+                  }
+                } else {
+                  const newProduct = {
+                    ...sp,
+                    sync_status: 'pending',
+                    created_at: nowStr,
+                    updated_at: nowStr
+                  };
+                  await databaseManager.update('products', newProduct);
+                  addedCount++;
+                }
+              }
+              
+              const freshProds = await databaseManager.getAll('products');
+              window.__bypass_sync_proxy__ = true;
+              localStorage.setItem('products', JSON.stringify(freshProds));
+              window.__bypass_sync_proxy__ = false;
+              
+              console.log(`[DataLoader] Patch v43: Successfully synced seed products. Added: ${addedCount}, Updated: ${updatedCount}`);
+            }
+            localStorage.setItem('patch_sync_seed_v43', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v43 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
         
