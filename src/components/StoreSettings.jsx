@@ -373,6 +373,7 @@ const StoreSettings = () => {
           <div className="text-center text-xs text-gray-600">
             <p>شكراً لزيارتكم</p>
             <p>Elking - Elking POS System</p>
+            <p>هاتف: 01553448631</p>
             <p>جميع الحقوق محفوظة {new Date().getFullYear()} ©</p>
           </div>
         </div>

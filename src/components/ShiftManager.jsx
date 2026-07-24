@@ -1152,7 +1152,7 @@ const ShiftManager = () => {
           
           <div class="footer">
             <p><strong>📅 تم إنشاء التقرير في:</strong> ${formatDateTime(getCurrentDate())}</p>
-            <p><strong>🏪 Elking</strong> - Elking POS System</p>
+            <p><strong>🏪 Elking</strong> - Elking POS System - 📞 01553448631</p>
             <p style="margin-top: 10px; font-size: 12px; opacity: 0.7;">جميع المبالغ بالجنيه المصري (EGP)</p>
           </div>
         </div>

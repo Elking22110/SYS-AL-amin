@@ -119,6 +119,7 @@ const Sidebar = () => {
             <div>
               <h1 className="text-sm font-bold text-slate-900">Elking</h1>
               <p className="text-xs text-slate-600 font-medium">Elking POS System</p>
+              <p className="text-[11px] text-slate-500 font-semibold dir-ltr mt-0.5">📞 01553448631</p>
             </div>
           </div>
         </div>
