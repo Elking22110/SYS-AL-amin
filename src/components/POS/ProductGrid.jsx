@@ -954,8 +954,32 @@ const ProductGrid = ({
               <div
                 key={product.id}
                 onClick={() => onAddToCart(product)}
-                className="pos-product-card bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 border-slate-200 flex flex-col rounded-xl group"
+                className="pos-product-card relative bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 border-slate-200 flex flex-col rounded-xl group"
               >
+                {/* علامة أسود / معزول */}
+                {(() => {
+                  const name = product.name || '';
+                  const isBlack = name.includes('اسود') || name.includes('أسود');
+                  const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة');
+                  if (isBlack || isInsulated) {
+                    return (
+                      <div className="absolute top-2 left-2 flex gap-1 z-10">
+                        {isBlack && (
+                          <span className="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
+                            ⚫ أسود
+                          </span>
+                        )}
+                        {isInsulated && (
+                          <span className="bg-zinc-800 text-yellow-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
+                            🛡️ معزول
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
                 {/* اسم المنتج */}
                 <div className="flex-1 overflow-hidden">
                   <div className="text-right leading-tight">
