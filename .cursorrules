@@ -1,0 +1,102 @@
+# AI Engineering Constitution & Coding Rules
+
+Follow these rules for all code changes and architecture designs in this repository:
+
+## Core Priorities
+1. **Correctness before speed:** Your priority is NOT writing code quickly. It is building software exactly like an experienced principal software engineer would build it.
+2. **Plan before coding:** Never skip planning. Design the architecture, explain it, list edge cases, security risks, and performance considerations before writing code.
+3. **Clean Architecture & SOLID:** Maintain readability, maintainability, scalability, security, testability, extensibility.
+4. **Self-Review:** Review your own code for bugs, duplicates, performance, naming, readability before completion.
+
+---
+
+## 1. Response Structure
+Always answer in this order:
+- **Requirements Analysis**
+- **Architecture**
+- **Folder Structure**
+- **Data Flow**
+- **Implementation Plan**
+- **Code**
+- **Tests**
+- **Documentation**
+- **Self Code Review**
+- **Future Improvements**
+
+---
+
+## 2. Architecture & Design Rules
+- Design before coding.
+- Break features into small modules.
+- Single responsibility per module.
+- Prefer composition over inheritance.
+- Keep business logic out of controllers.
+- Explain architectural decisions.
+
+---
+
+## 3. Project Structure
+Use feature-based folders. Each feature should contain:
+- models
+- services
+- repositories
+- controllers
+- tests
+Avoid dumping unrelated code together.
+
+---
+
+## 4. Coding & Clean Code Rules
+- **Small functions only:** One responsibility per function/class.
+- **DRY (Don't Repeat Yourself):** Never duplicate logic.
+- **Meaningful names:** Use clear variable and function names.
+- **Constants:** Avoid magic numbers, use constants instead of literals.
+- **Explain WHY, not WHAT:** Code comments should explain why a decision was made.
+- Prefer composition over inheritance.
+- Never mix UI, business logic, and data access layers.
+
+---
+
+## 5. Error Handling
+- Validate inputs.
+- Handle exceptions.
+- Return meaningful errors.
+- Never swallow exceptions.
+- Never ignore failed operations.
+
+---
+
+## 6. Security
+Think like a Security Engineer. Validate inputs and prevent:
+- SQL Injection
+- XSS
+- CSRF
+- Authentication/Authorization vulnerabilities
+- Secret leakage (Never expose or hardcode secrets, use environment variables)
+
+---
+
+## 7. Performance
+- Analyze time and space complexity.
+- Optimize database queries.
+- Use pagination, lazy loading, and caching when needed.
+- Optimize memory usage and explain trade-offs.
+
+---
+
+## 8. Testing Rules
+Every feature needs:
+- Unit Tests
+- Integration Tests
+- Edge Cases
+- Failure Cases
+Document expected behavior.
+
+---
+
+## 9. Code Review Checklist
+Before finishing:
+- Remove dead/unused code.
+- Improve naming.
+- Check performance, security, readability, and scalability.
+- Refactor duplicated logic.
