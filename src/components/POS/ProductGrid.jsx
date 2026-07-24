@@ -950,35 +950,46 @@ const ProductGrid = ({
         {/* شبكة المنتجات على اليسار */}
         <div className="flex-1 w-full">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3">
-            {displayedProducts.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => onAddToCart(product)}
-                className="pos-product-card relative bg-white cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 border-slate-200 flex flex-col rounded-xl group"
-              >
-                {/* علامة أسود / معزول */}
-                {(() => {
-                  const name = product.name || '';
-                  const isBlack = name.includes('اسود') || name.includes('أسود');
-                  const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة');
-                  if (isBlack || isInsulated) {
-                    return (
-                      <div className="absolute top-2 left-2 flex gap-1 z-10">
-                        {isBlack && (
-                          <span className="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
-                            ⚫ أسود
-                          </span>
-                        )}
-                        {isInsulated && (
-                          <span className="bg-zinc-800 text-yellow-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
-                            🛡️ معزول
-                          </span>
-                        )}
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
+            {displayedProducts.map((product) => {
+              const name = product.name || '';
+              const isBlack = name.includes('اسود') || name.includes('أسود');
+              const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة');
+              
+              let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group ";
+              if (isBlack) {
+                cardClass += "bg-zinc-100 border-zinc-300 border-r-4 border-r-black";
+              } else if (isInsulated) {
+                cardClass += "bg-amber-50/60 border-amber-200 border-r-4 border-r-amber-500";
+              } else {
+                cardClass += "bg-white border-slate-200";
+              }
+
+              return (
+                <div
+                  key={product.id}
+                  onClick={() => onAddToCart(product)}
+                  className={cardClass}
+                >
+                  {/* علامة أسود / معزول */}
+                  {(() => {
+                    if (isBlack || isInsulated) {
+                      return (
+                        <div className="absolute top-2 left-2 flex gap-1 z-10">
+                          {isBlack && (
+                            <span className="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
+                              ⚫ أسود
+                            </span>
+                          )}
+                          {isInsulated && (
+                            <span className="bg-zinc-800 text-yellow-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
+                              🛡️ معزول
+                            </span>
+                          )}
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
 
                 {/* اسم المنتج */}
                 <div className="flex-1 overflow-hidden">
@@ -1012,8 +1023,9 @@ const ProductGrid = ({
                   </span>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
+        </div>
 
           {/* زر تحميل المزيد */}
           {filteredProducts.length > visibleCount && (
