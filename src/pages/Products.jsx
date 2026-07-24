@@ -487,7 +487,8 @@ const Products = () => {
     stock: '',
     minStock: '',
     barcode: '',
-    supplierCode: ''
+    supplierCode: '',
+    customColor: ''
   });
   const [productImages, setProductImages] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
@@ -2433,6 +2434,61 @@ const Products = () => {
                   </div>
                 </div>
               )}
+
+              {/* لون مخصص للكارت في نقطة البيع */}
+              <div>
+                <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">
+                  لون مخصص للكارت في نقطة البيع
+                  <span className="text-slate-400 font-normal text-xs mr-2">— اختياري</span>
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {[
+                    { color: '', label: 'بدون', bg: 'bg-slate-600 border-slate-500' },
+                    { color: '#111827', label: 'أسود', bg: 'bg-black border-slate-600' },
+                    { color: '#78350f', label: 'بني', bg: 'bg-amber-900 border-amber-700' },
+                    { color: '#1e3a5f', label: 'كحلي', bg: 'bg-blue-950 border-blue-800' },
+                    { color: '#14532d', label: 'أخضر', bg: 'bg-green-900 border-green-700' },
+                    { color: '#7f1d1d', label: 'أحمر', bg: 'bg-red-900 border-red-700' },
+                    { color: '#4a1d96', label: 'بنفسجي', bg: 'bg-violet-900 border-violet-700' },
+                    { color: '#713f12', label: 'برتقالي', bg: 'bg-orange-900 border-orange-700' },
+                  ].map(({ color, label, bg }) => (
+                    <button
+                      key={color || 'none'}
+                      type="button"
+                      onClick={() => setNewProduct({ ...newProduct, customColor: color })}
+                      className={`flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border-2 transition-all cursor-pointer ${
+                        newProduct.customColor === color
+                          ? 'border-blue-400 ring-2 ring-blue-400 scale-105'
+                          : 'border-transparent hover:border-slate-500'
+                      }`}
+                      title={label}
+                    >
+                      <span className={`w-7 h-7 rounded-md ${bg} border block`} style={color ? { backgroundColor: color } : {}} />
+                      <span className="text-[9px] text-slate-400 font-medium">{label}</span>
+                    </button>
+                  ))}
+                  {/* اختيار لون مخصص */}
+                  <label className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border-2 border-transparent hover:border-slate-500 cursor-pointer transition-all">
+                    <input
+                      type="color"
+                      value={newProduct.customColor || '#111827'}
+                      onChange={(e) => setNewProduct({ ...newProduct, customColor: e.target.value })}
+                      className="w-7 h-7 rounded-md cursor-pointer border-0 bg-transparent p-0"
+                      title="لون مخصص"
+                    />
+                    <span className="text-[9px] text-slate-400 font-medium">مخصص</span>
+                  </label>
+                </div>
+                {newProduct.customColor && (
+                  <div
+                    className="flex items-center justify-between p-2 rounded-lg text-white text-xs font-bold"
+                    style={{ backgroundColor: newProduct.customColor }}
+                  >
+                    <span>معاينة الكارت</span>
+                    <span className="font-black text-sm">{Number(newProduct.price || 0).toLocaleString('ar-EG')} ج.م</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3 md:space-x-4 mt-6 md:mt-8">
