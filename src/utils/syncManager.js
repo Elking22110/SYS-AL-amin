@@ -395,6 +395,7 @@ class SyncManager {
       if (record.main_category_id !== undefined) { mapped.mainCategoryId = record.main_category_id; delete mapped.main_category_id; }
       if (record.sub_category_id !== undefined) { mapped.subCategoryId = record.sub_category_id; delete mapped.sub_category_id; }
       if (record.image_path !== undefined) { mapped.imagePath = record.image_path; delete mapped.image_path; }
+      if (record.custom_color !== undefined) { mapped.customColor = record.custom_color ?? ''; delete mapped.custom_color; }
     } else if (table === 'users') {
       if (record.created_at !== undefined) { mapped.createdAt = record.created_at; delete mapped.created_at; }
       if (record.last_login !== undefined) { mapped.lastLogin = record.last_login; delete mapped.last_login; }
@@ -578,6 +579,7 @@ class SyncManager {
               main_category_id: uploadData.main_category_id ?? null,
               sub_category_id: uploadData.sub_category_id ?? null,
               image_path: uploadData.image_path ?? null,
+              custom_color: record.customColor ?? null,
               updated_at: uploadData.updated_at || new Date().toISOString()
             };
             Object.keys(uploadData).forEach(k => delete uploadData[k]);
@@ -893,12 +895,14 @@ class SyncManager {
             localItem.mainCategoryId = cloudItem.main_category_id;
             localItem.subCategoryId = cloudItem.sub_category_id;
             localItem.imagePath = cloudItem.image_path;
+            localItem.customColor = cloudItem.custom_color ?? '';
             if (localItem.minStock === undefined) {
               localItem.minStock = 5; // الحد الأدنى الافتراضي للمخزون محلياً
             }
             delete localItem.main_category_id;
             delete localItem.sub_category_id;
             delete localItem.image_path;
+            delete localItem.custom_color;
           } else if (storeName === 'customers') {
             if (cloudItem.total_spent !== undefined) localItem.totalSpent = cloudItem.total_spent;
             if (cloudItem.last_visit !== undefined) localItem.lastVisit = cloudItem.last_visit;

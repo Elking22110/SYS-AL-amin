@@ -1566,7 +1566,10 @@ const Products = () => {
         mainCategoryId: '',
         subCategoryId: '',
         stock: '',
-        minStock: ''
+        minStock: '',
+        barcode: '',
+        supplierCode: '',
+        customColor: ''
       });
       setShowAddModal(false);
 
@@ -2504,7 +2507,10 @@ const Products = () => {
                     price: '',
                     category: categories.length > 0 ? categories[0].name : 'نايلون بيور',
                     stock: '',
-                    minStock: ''
+                    minStock: '',
+                    barcode: '',
+                    supplierCode: '',
+                    customColor: ''
                   });
                 }}
                 className="px-4 md:px-6 py-2 md:py-3 text-blue-300 hover:text-blue-200 font-semibold transition-colors duration-300 min-h-[40px] cursor-pointer"
