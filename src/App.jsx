@@ -292,7 +292,7 @@ function App() {
         <AuthProvider>
           <div className="flex h-screen overflow-hidden">
             <Sidebar />
-            <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ipad-main-content ipad-pro-main-content">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ipad-main-content ipad-pro-main-content pt-14 md:pt-0 pb-16 md:pb-0">
               <Routes>
                 <Route path="/" element={
                   <ProtectedRoute>

@@ -945,6 +945,7 @@ const Reports = () => {
               margin-top: 15px;
               display: flex;
               justify-content: space-between;
+              align-items: flex-end;
               padding: 0 15px;
             }
             .sig-box {
@@ -990,10 +991,9 @@ const Reports = () => {
               <tr>
                 <td>
                   ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
-                  <div class="store-title">${storeInfo.companyName || 'الأمين للأدوات الصحية'}</div>
-                  <div class="store-subtitle" style="font-weight: 900; color: #000000; margin-bottom: 2px; font-size: 10.5px;">إدارة محمد أمين</div>
-                  <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
-                  <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
+                  <div class="store-title">${storeInfo.companyName || storeInfo.storeName || 'Elking'}</div>
+                  <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || storeInfo.storePhone || ''}</div>
+                  <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || storeInfo.storeAddress || ''}</div>
                 </td>
               </tr>
             </table>
@@ -1081,15 +1081,13 @@ const Reports = () => {
                 <div class="sig-line"></div>
                 <span>توقيع العميل / المستلم</span>
               </div>
+              <div style="text-align: center; font-size: 7.5px; font-weight: 800; color: #000000; padding: 0 6px; align-self: flex-end; margin-bottom: 2px;">
+                برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631
+              </div>
               <div class="sig-box">
                 <div class="sig-line"></div>
                 <span>توقيع الكاشير / المسؤول</span>
               </div>
-            </div>
-
-            <div class="footer-section">
-              <div style="font-weight: 800; margin-bottom: 4px; color: #000000;">شكراً لتعاملكم معنا</div>
-              <div style="font-size: 11px; color: #000000; font-weight: bold;">برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631</div>
             </div>
           </div>
 

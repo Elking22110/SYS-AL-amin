@@ -79,7 +79,7 @@ const Settings = () => {
         setSettings(prev => ({
           ...prev,
           ...savedSettings,
-          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'متجر الأمين',
+          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'Elking',
           companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
           companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
           companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
@@ -154,7 +154,7 @@ const Settings = () => {
 
     return {
       // إعدادات عامة
-      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'متجر الأمين',
+      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'Elking',
       companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
       companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
       companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
@@ -655,7 +655,7 @@ const Settings = () => {
   const resetSettings = () => {
     if (window.confirm('هل أنت متأكد من إعادة تعيين جميع الإعدادات؟')) {
       const defaultSettings = {
-        companyName: 'متجر الأمين',
+        companyName: 'Elking',
         companyAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
         companyPhone: '01029022006',
         companyEmail: 'info@msgroupplast.com',
@@ -1460,7 +1460,7 @@ const Settings = () => {
             <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-[var(--text-primary)] mb-2 md:mb-3">
               الإعدادات
             </h1>
-            <p className="text-[var(--text-secondary)] text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة إعدادات متجر الأمين للأدوات الصحية</p>
+            <p className="text-[var(--text-secondary)] text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة إعدادات Elking للأدوات الصحية</p>
           </div>
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <button

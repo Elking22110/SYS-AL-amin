@@ -48,7 +48,7 @@ const Suppliers = () => {
         if (savedSuppliers.length > 0 || isSeeded) {
           setSuppliers(savedSuppliers);
         } else {
-          // بيانات أولية لموردي متجر الأمين - مستخرجة من قاعدة AlmodeerBNK
+          // بيانات أولية لموردي Elking - مستخرجة من قاعدة AlmodeerBNK
           const today = new Date().toISOString().split('T')[0];
           const defaultSuppliers = [
             {
@@ -292,7 +292,7 @@ const Suppliers = () => {
             <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-slate-900 mb-2 md:mb-3">
               إدارة الموردين
             </h1>
-            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة موردي متجر الأمين للأدوات الصحية</p>
+            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة موردي Elking للأدوات الصحية</p>
           </div>
           <button
             onClick={() => { soundManager.play('openWindow'); setShowAddModal(true); }}

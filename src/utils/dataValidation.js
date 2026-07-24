@@ -99,7 +99,7 @@ export class DataValidator {
       let storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
       if (typeof storeInfo !== 'object' || !storeInfo.storeName) {
         storeInfo = {
-          storeName: 'متجر الأمين',
+          storeName: 'Elking',
           storePhone: '01029022006',
           storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
           storeEmail: 'info@msgroupplast.com',
@@ -119,7 +119,7 @@ export class DataValidator {
       let posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
       if (typeof posSettings !== 'object' || !posSettings.companyName) {
         posSettings = {
-          companyName: storeInfo.storeName || 'متجر الأمين',
+          companyName: storeInfo.storeName || 'Elking',
           companyAddress: storeInfo.storeAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
           companyPhone: storeInfo.storePhone || '01029022006',
           companyEmail: storeInfo.storeEmail || 'info@msgroupplast.com',

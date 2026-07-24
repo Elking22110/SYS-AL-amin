@@ -139,7 +139,7 @@ const DataLoader = ({ children }) => {
         const migrationDone = localStorage.getItem('migration_sanitary_alamin_v20') === 'true';
         if (!migrationDone) {
           setLoadingMessage('جاري استيراد قاعدة البيانات لأول مرة (قد يستغرق ذلك ثوانٍ)...');
-          console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لمتجر الأمين من DataLoader...');
+          console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لElking من DataLoader...');
           const response = await fetch('/products_seed.json');
           if (!response.ok) {
             throw new Error('فشل تحميل ملف البيانات الأولية للمنتجات');

@@ -3,7 +3,7 @@ import { Store, Save, RefreshCw, Building, Phone, Mail, MapPin } from 'lucide-re
 
 const StoreSettings = () => {
   const [storeInfo, setStoreInfo] = useState({
-    storeName: 'متجر الأمين',
+    storeName: 'Elking',
     storePhone: '01029022006',
     storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
     storeEmail: 'info@msgroupplast.com',
@@ -92,7 +92,7 @@ const StoreSettings = () => {
   // إعادة تعيين البيانات
   const handleReset = () => {
     const defaults = {
-      storeName: 'متجر الأمين',
+      storeName: 'Elking',
       storePhone: '01029022006',
       storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
       storeEmail: 'info@msgroupplast.com',
@@ -372,7 +372,7 @@ const StoreSettings = () => {
           <hr className="my-2" />
           <div className="text-center text-xs text-gray-600">
             <p>شكراً لزيارتكم</p>
-            <p>متجر الأمين - أدوات صحية وسباكة</p>
+            <p>Elking - Elking POS System</p>
             <p>جميع الحقوق محفوظة {new Date().getFullYear()} ©</p>
           </div>
         </div>

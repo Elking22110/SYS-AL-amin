@@ -453,7 +453,7 @@ const Customers = () => {
             <h1 className="text-sm md:text-base lg:text-lg xl:text-xl font-bold text-slate-900 mb-2 md:mb-3">
               إدارة العملاء
             </h1>
-            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة بيانات عملاء متجر الأمين للأدوات الصحية</p>
+            <p className="text-slate-600 text-xs md:text-xs lg:text-sm xl:text-sm font-medium">إدارة بيانات عملاء Elking للأدوات الصحية</p>
           </div>
           <button
             onClick={() => { soundManager.play('openWindow'); setShowAddModal(true); }}

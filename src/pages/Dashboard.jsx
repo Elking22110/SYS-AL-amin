@@ -139,7 +139,7 @@ const Dashboard = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-200 pb-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">متجر الأمين للأدوات الصحية</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Elking للأدوات الصحية</h1>
             <p className="text-slate-500 text-sm mt-1">نظام إدارة المبيعات والمخزون اليومي السهل والمبسط</p>
           </div>
           <div className="flex items-center gap-3 mt-4 md:mt-0 text-right">

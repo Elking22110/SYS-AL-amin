@@ -56,6 +56,8 @@ const POSMain = () => {
   const [selectedColorCount, setSelectedColorCount] = useState(1);
   const [needsCutting, setNeedsCutting] = useState(false);
   const [eklashy, setEklashy] = useState({ enabled: false, length: '', width: '', count: '' });
+  // Mobile POS tab: 'products' | 'cart'
+  const [mobileTab, setMobileTab] = useState('products');
 
   // Stage 4 states
   const [availableSupplies, setAvailableSupplies] = useState([]);
@@ -613,15 +615,16 @@ const POSMain = () => {
   const handlePrintInvoice = useCallback(() => {
     try {
       // إن وُجد Web Serial API، حاول الطباعة الحرارية مع قطع الورق
+      const storeInfo = (() => { try { return JSON.parse(localStorage.getItem('storeInfo') || '{}'); } catch (_) { return {}; } })();
       const tryThermal = async () => {
         try {
           if (navigator.serial && invoiceData) {
             const receiptData = {
               printerSettings: printer.getPrinterSettings(),
               storeInfo: {
-                storeName: 'MS GROUP',
-                storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
-                storePhone: '01029022006'
+                storeName: storeInfo.companyName || storeInfo.storeName || 'Elking',
+                storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || '',
+                storePhone: storeInfo.companyPhone || storeInfo.storePhone || ''
               },
               invoiceId: invoiceData.invoiceId,
               items: invoiceData.items || [],
@@ -877,6 +880,7 @@ const POSMain = () => {
             margin-top: 15px;
             display: flex;
             justify-content: space-between;
+            align-items: flex-end;
             padding: 0 15px;
           }
           .sig-box {
@@ -922,10 +926,9 @@ const POSMain = () => {
             <tr>
               <td>
                 ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
-                <div class="store-title">${storeInfo.companyName || 'الأمين للأدوات الصحية'}</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; margin-bottom: 2px; font-size: 10.5px;">إدارة محمد أمين</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || '01017856684 - 01200054511 - 01125291815'}</div>
-                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>
+                <div class="store-title">${storeInfo.companyName || storeInfo.storeName || 'Elking'}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || storeInfo.storePhone || ''}</div>
+                <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || storeInfo.storeAddress || ''}</div>
               </td>
             </tr>
           </table>
@@ -1011,15 +1014,13 @@ const POSMain = () => {
               <div class="sig-line"></div>
               <span>توقيع العميل / المستلم</span>
             </div>
+            <div style="text-align: center; font-size: 7.5px; font-weight: 800; color: #000000; padding: 0 6px; align-self: flex-end; margin-bottom: 2px;">
+              برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631
+            </div>
             <div class="sig-box">
               <div class="sig-line"></div>
               <span>توقيع الكاشير / المسؤول</span>
             </div>
-          </div>
-
-          <div class="footer-section">
-            <div style="font-weight: 800; margin-bottom: 4px; color: #000000;">شكراً لتعاملكم معنا</div>
-            <div style="font-size: 14px; color: #000000; font-weight: 900;">برمجة وتطوير Elking للبرمجيات - هاتف: 01553448631</div>
           </div>
         </div>
 
@@ -1047,9 +1048,41 @@ const POSMain = () => {
     <div className="min-h-screen bg-slate-50" dir="rtl">
       <div className="container mx-auto px-4 py-4">
         {/* المحتوى الرئيسي */}
+      {/* Mobile Tab Switcher */}
+        <div className="md:hidden flex items-center bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm" dir="rtl">
+          <button
+            onClick={() => setMobileTab('products')}
+            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+              mobileTab === 'products'
+                ? 'text-violet-700 border-b-2 border-violet-600 bg-violet-50'
+                : 'text-slate-500'
+            }`}
+          >
+            <span>🛍️</span> المنتجات
+          </button>
+          <button
+            onClick={() => setMobileTab('cart')}
+            className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-2 transition-all relative ${
+              mobileTab === 'cart'
+                ? 'text-violet-700 border-b-2 border-violet-600 bg-violet-50'
+                : 'text-slate-500'
+            }`}
+          >
+            <span>🧾</span> الكارت
+            {cart.length > 0 && (
+              <span className="absolute top-2 right-6 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center">
+                {cart.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* DESKTOP: side-by-side | MOBILE: tab panels */}
         <div className="flex flex-row gap-4 lg:gap-6 items-start w-full" dir="rtl">
-          {/* إدارة السلة والدفع - تظهر على اليمين في RTL لأنها الأولى في JSX */}
-          <div className="flex flex-col gap-4 lg:gap-6 w-[24rem] xl:w-[28rem] sticky top-4 h-[calc(100vh-32px)] overflow-y-auto pr-2 custom-scrollbar shrink-0">
+          {/* السلة والدفع - desktop: sticky column | mobile: hidden when products tab active */}
+          <div className={`flex flex-col gap-4 lg:gap-6 w-full md:w-[24rem] xl:w-[28rem] md:sticky md:top-4 md:h-[calc(100vh-32px)] overflow-y-auto md:pr-2 custom-scrollbar md:shrink-0 ${
+            mobileTab === 'cart' ? 'block' : 'hidden md:flex'
+          }`}>
             <CartManager
               cart={cart}
               setCart={setCart}
@@ -1083,15 +1116,17 @@ const POSMain = () => {
             />
           </div>
 
-          {/* شبكة المنتجات - تظهر على اليسار في RTL لأنها الثانية في JSX */}
-          <div className="flex-1 min-w-0">
+          {/* شبكة المنتجات - desktop: flex-1 | mobile: hidden when cart tab active */}
+          <div className={`flex-1 min-w-0 ${
+            mobileTab === 'products' ? 'block' : 'hidden md:block'
+          }`}>
             <ProductGrid
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
-              onAddToCart={handleProductSelect}
+              onAddToCart={(product) => { handleProductSelect(product); setMobileTab('cart'); }}
               categories={categories}
               setCategories={setCategories}
-              products={filteredProducts} // Pass filtered products
+              products={filteredProducts}
               setProducts={setProducts}
               productImages={productImages}
               setProductImages={setProductImages}
