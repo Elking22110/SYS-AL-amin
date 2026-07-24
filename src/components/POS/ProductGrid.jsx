@@ -998,8 +998,7 @@ const ProductGrid = ({
                 {(() => {
                   if (isBlack) {
                     return (
-                      <div className="bg-black text-white p-2 rounded-lg mt-2 flex justify-between items-center shadow-inner">
-                        <span className="text-zinc-400 text-[10px] font-bold">السعر</span>
+                      <div className="bg-black text-white p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner">
                         <span className="text-white font-black text-lg leading-none">
                           {Number(product.price || 0).toLocaleString('ar-EG')}
                           <span className="text-xs font-bold text-zinc-300 mr-1">ج.م</span>
@@ -1008,8 +1007,7 @@ const ProductGrid = ({
                     );
                   } else if (isInsulated) {
                     return (
-                      <div className="bg-zinc-900 text-yellow-400 p-2 rounded-lg mt-2 flex justify-between items-center shadow-inner">
-                        <span className="text-zinc-400 text-[10px] font-bold">السعر</span>
+                      <div className="bg-zinc-900 text-yellow-400 p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner">
                         <span className="text-yellow-400 font-black text-lg leading-none">
                           {Number(product.price || 0).toLocaleString('ar-EG')}
                           <span className="text-xs font-bold text-yellow-500 mr-1">ج.م</span>
@@ -1018,8 +1016,7 @@ const ProductGrid = ({
                     );
                   } else {
                     return (
-                      <div className="pt-1 mt-2 border-t border-emerald-100 flex justify-between items-center">
-                        <span className="text-slate-400 text-xs font-semibold">السعر</span>
+                      <div className="pt-1 mt-2 border-t border-emerald-100 flex justify-end items-center">
                         <span className="text-emerald-700 font-black text-xl leading-none">
                           {Number(product.price || 0).toLocaleString('ar-EG')}
                           <span className="text-sm font-bold text-emerald-600 mr-1">ج.م</span>
