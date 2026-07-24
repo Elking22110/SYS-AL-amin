@@ -1101,6 +1101,56 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // ----------------------------------------------------
+        // PATCH v45: Force rename PPR-DR... prefix products to PN... based on updated seed
+        // ----------------------------------------------------
+        const patchV45Done = localStorage.getItem('patch_ppr_rename_v45') === 'true';
+        if (!patchV45Done) {
+          try {
+            console.log('[DataLoader] Patch v45: Renaming PPR products based on updated seed...');
+            setLoadingMessage('جاري تحديث أسماء المنتجات...');
+            const seedResp = await fetch('/products_seed.json?t=' + Date.now());
+            if (seedResp.ok) {
+              const seedData = await seedResp.json();
+              const seedProducts = seedData.products || [];
+              
+              const currentProds = await databaseManager.getAll('products');
+              const currentProdsMap = new Map(currentProds.map(p => [String(p.id), p]));
+              
+              const nowStr = new Date().toISOString();
+              let updatedCount = 0;
+
+              for (const sp of seedProducts) {
+                const spIdStr = String(sp.id);
+                const existing = currentProdsMap.get(spIdStr);
+                
+                if (existing && existing.name !== sp.name) {
+                  const updated = {
+                    ...existing,
+                    name: sp.name,
+                    sync_status: 'pending',
+                    updated_at: nowStr
+                  };
+                  await databaseManager.update('products', updated);
+                  updatedCount++;
+                }
+              }
+              
+              const freshProds = await databaseManager.getAll('products');
+              window.__bypass_sync_proxy__ = true;
+              localStorage.setItem('products', JSON.stringify(freshProds));
+              window.__bypass_sync_proxy__ = false;
+              
+              console.log(`[DataLoader] Patch v45: Successfully updated ${updatedCount} product names.`);
+            }
+            localStorage.setItem('patch_ppr_rename_v45', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v45 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
         
