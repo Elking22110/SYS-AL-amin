@@ -952,7 +952,7 @@ const ProductGrid = ({
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3">
             {displayedProducts.map((product) => {
               const name = product.name || '';
-              const isBlack = name.includes('اسود') || name.includes('أسود');
+              const isBlack = name.includes('اسود') || name.includes('أسود') || name.includes('إسود');
               const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة');
               
               let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group ";
@@ -970,26 +970,6 @@ const ProductGrid = ({
                   onClick={() => onAddToCart(product)}
                   className={cardClass}
                 >
-                  {/* علامة أسود / معزول */}
-                  {(() => {
-                    if (isBlack || isInsulated) {
-                      return (
-                        <div className="absolute top-2 left-2 flex gap-1 z-10">
-                          {isBlack && (
-                            <span className="bg-black text-white text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
-                              ⚫ أسود
-                            </span>
-                          )}
-                          {isInsulated && (
-                            <span className="bg-zinc-800 text-yellow-400 text-[9px] px-1.5 py-0.5 rounded-md font-bold shadow-sm flex items-center gap-0.5 border border-slate-700">
-                              🛡️ معزول
-                            </span>
-                          )}
-                        </div>
-                      );
-                    }
-                    return null;
-                  })()}
 
                 {/* اسم المنتج */}
                 <div className="flex-1 overflow-hidden">
@@ -1015,13 +995,39 @@ const ProductGrid = ({
                 )}
 
                 {/* السعر */}
-                <div className="pt-1 mt-1 border-t border-emerald-100 flex justify-between items-center">
-                  <span className="text-slate-400 text-xs font-semibold">السعر</span>
-                  <span className="text-emerald-700 font-black text-xl leading-none">
-                    {Number(product.price || 0).toLocaleString('ar-EG')}
-                    <span className="text-sm font-bold text-emerald-600 mr-1">ج.م</span>
-                  </span>
-                </div>
+                {(() => {
+                  if (isBlack) {
+                    return (
+                      <div className="bg-black text-white p-2 rounded-lg mt-2 flex justify-between items-center shadow-inner">
+                        <span className="text-zinc-400 text-[10px] font-bold">السعر</span>
+                        <span className="text-white font-black text-lg leading-none">
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-xs font-bold text-zinc-300 mr-1">ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  } else if (isInsulated) {
+                    return (
+                      <div className="bg-zinc-900 text-yellow-400 p-2 rounded-lg mt-2 flex justify-between items-center shadow-inner">
+                        <span className="text-zinc-400 text-[10px] font-bold">السعر</span>
+                        <span className="text-yellow-400 font-black text-lg leading-none">
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-xs font-bold text-yellow-500 mr-1">ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div className="pt-1 mt-2 border-t border-emerald-100 flex justify-between items-center">
+                        <span className="text-slate-400 text-xs font-semibold">السعر</span>
+                        <span className="text-emerald-700 font-black text-xl leading-none">
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-sm font-bold text-emerald-600 mr-1">ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             );
           })}
