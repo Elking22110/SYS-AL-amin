@@ -13,6 +13,7 @@ const PaymentManager = ({
 }) => {
   const { notifyError } = useNotifications();
   const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [cashReceived, setCashReceived] = useState('');
 
   // التحقق من صحة العربون
   const isDownPaymentValid = useMemo(() => {
@@ -71,6 +72,59 @@ const PaymentManager = ({
           ))}
         </div>
       </div>
+
+      {/* حساب الباقي للدفع النقدي */}
+      {paymentMethod === 'cash' && (
+        <div className="mb-4 bg-blue-50/50 border border-blue-200 rounded-xl p-3 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <label className="text-slate-700 text-xs font-bold shrink-0">المبلغ المستلم:</label>
+            <div className="flex items-center gap-1.5 w-full justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  const amountToPay = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : (getTotal || 0);
+                  setCashReceived(amountToPay.toString());
+                }}
+                className="bg-white hover:bg-slate-100 text-blue-600 text-[10px] py-1 px-1.5 rounded border border-blue-200 font-bold cursor-pointer shrink-0"
+              >
+                المبلغ بالضبط
+              </button>
+              <input
+                type="number"
+                value={cashReceived}
+                onChange={(e) => setCashReceived(e.target.value)}
+                placeholder="0.00"
+                className="w-28 text-center bg-white border border-slate-300 text-slate-800 font-bold py-1 px-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                min="0"
+                step="any"
+              />
+            </div>
+          </div>
+          {cashReceived !== '' && (
+            <div className="flex justify-between items-center text-xs font-bold pt-2 border-t border-blue-200/50">
+              {(() => {
+                const amountToPay = downPayment.enabled ? (parseFloat(downPayment.amount) || 0) : (getTotal || 0);
+                const change = safeMath.subtract(parseFloat(cashReceived) || 0, amountToPay);
+                if (change >= 0) {
+                  return (
+                    <>
+                      <span className="text-green-600">💸 الباقي للعميل:</span>
+                      <span className="text-green-600 text-sm font-extrabold">{change.toLocaleString('en-US')} ج.م</span>
+                    </>
+                  );
+                } else {
+                  return (
+                    <>
+                      <span className="text-red-500">⚠️ المتبقي على العميل:</span>
+                      <span className="text-red-500 text-sm font-extrabold">{Math.abs(change).toLocaleString('en-US')} ج.م</span>
+                    </>
+                  );
+                }
+              })()}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* العربون */}
       <div className="mb-4">
