@@ -935,51 +935,8 @@ const DataLoader = ({ children }) => {
           }
         }
 
-        // ----------------------------------------------------
-        // PATCH: Restore soft-deleted products from local IndexedDB
-        // ----------------------------------------------------
-        const restoreSoftDeletedDone = localStorage.getItem('patch_restore_deleted_products_v42') === 'true';
-        if (!restoreSoftDeletedDone) {
-          try {
-            console.log('[DataLoader] Patch v42: Restoring soft-deleted products in IndexedDB...');
-            setLoadingMessage('جاري استرجاع وصيانة المنتجات...');
-            
-            const tx = databaseManager.db.transaction(['products'], 'readwrite');
-            const store = tx.objectStore('products');
-            
-            const request = store.getAll();
-            await new Promise((resolve, reject) => {
-              request.onsuccess = async () => {
-                const allProds = request.result || [];
-                let restoredCount = 0;
-                
-                for (const p of allProds) {
-                  if (p && p.sync_status === 'deleted') {
-                    p.sync_status = 'synced';
-                    p.updated_at = new Date().toISOString();
-                    store.put(p);
-                    restoredCount++;
-                  }
-                }
-                
-                console.log(`[DataLoader] Patch v42: Restored ${restoredCount} products locally.`);
-                resolve();
-              };
-              request.onerror = () => reject(request.error);
-            });
-            
-            const allProducts = await databaseManager.getAll('products');
-            window.__bypass_sync_proxy__ = true;
-            localStorage.setItem('products', JSON.stringify(allProducts));
-            window.__bypass_sync_proxy__ = false;
-            
-            localStorage.setItem('patch_restore_deleted_products_v42', 'true');
-          } catch (err) {
-            window.__bypass_sync_proxy__ = false;
-            console.error('[DataLoader] Patch v42 failed:', err);
-          }
-        }
-        // ----------------------------------------------------
+        // PATCH v42: removed - was incorrectly restoring all user-deleted products
+        localStorage.setItem('patch_restore_deleted_products_v42', 'true');
 
         // ----------------------------------------------------
         // PATCH v43: Force sync all products from products_seed.json to ensure 2746 items exist
@@ -1055,51 +1012,8 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
-        // ----------------------------------------------------
-        // PATCH v44: Restore soft-deleted products and mark them as 'pending' to re-sync them
-        // ----------------------------------------------------
-        const patchV44Done = localStorage.getItem('patch_restore_deleted_v44') === 'true';
-        if (!patchV44Done) {
-          try {
-            console.log('[DataLoader] Patch v44: Restoring soft-deleted products to pending...');
-            setLoadingMessage('جاري استرجاع وصيانة المنتجات المفقودة...');
-            
-            const tx = databaseManager.db.transaction(['products'], 'readwrite');
-            const store = tx.objectStore('products');
-            
-            const request = store.getAll();
-            await new Promise((resolve, reject) => {
-              request.onsuccess = async () => {
-                const allProds = request.result || [];
-                let restoredCount = 0;
-                
-                for (const p of allProds) {
-                  if (p && p.sync_status === 'deleted') {
-                    p.sync_status = 'pending';
-                    p.updated_at = new Date().toISOString();
-                    store.put(p);
-                    restoredCount++;
-                  }
-                }
-                
-                console.log(`[DataLoader] Patch v44: Restored ${restoredCount} products to pending status.`);
-                resolve();
-              };
-              request.onerror = () => reject(request.error);
-            });
-            
-            const allProducts = await databaseManager.getAll('products');
-            window.__bypass_sync_proxy__ = true;
-            localStorage.setItem('products', JSON.stringify(allProducts));
-            window.__bypass_sync_proxy__ = false;
-            
-            localStorage.setItem('patch_restore_deleted_v44', 'true');
-          } catch (err) {
-            window.__bypass_sync_proxy__ = false;
-            console.error('[DataLoader] Patch v44 failed:', err);
-          }
-        }
-        // ----------------------------------------------------
+        // PATCH v44: removed - was incorrectly restoring all user-deleted products as 'pending'
+        localStorage.setItem('patch_restore_deleted_v44', 'true');
 
         // ----------------------------------------------------
         // PATCH v45: Force rename PPR-DR... prefix products to PN... based on updated seed
