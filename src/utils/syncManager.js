@@ -567,8 +567,20 @@ class SyncManager {
             delete uploadData.mainCategoryId;
             delete uploadData.subCategoryId;
             delete uploadData.imagePath;
-            delete uploadData.minStock; // حقل محلي فقط، لا يوجد في Supabase
-            delete uploadData.category; // حقل محلي فقط، لا يوجد في Supabase
+            delete uploadData.minStock;
+            delete uploadData.category;
+            delete uploadData.customColor;
+            delete uploadData.supplierCode;
+
+            let imageVal = record.imagePath || record.image_path || null;
+            if (record.customColor || record.supplierCode) {
+              imageVal = JSON.stringify({
+                color: record.customColor || '',
+                code: record.supplierCode || '',
+                img: (typeof imageVal === 'string' && imageVal.startsWith('{')) ? (JSON.parse(imageVal).img || '') : (imageVal || '')
+              });
+            }
+
             const prod = {
               id: String(record.id),
               name: uploadData.name,
@@ -576,10 +588,9 @@ class SyncManager {
               cost: uploadData.cost ?? 0,
               stock: uploadData.stock ?? 0,
               barcode: uploadData.barcode ?? null,
-              main_category_id: uploadData.main_category_id ?? null,
-              sub_category_id: uploadData.sub_category_id ?? null,
-              image_path: uploadData.image_path ?? null,
-              custom_color: record.customColor ?? null,
+              main_category_id: record.mainCategoryId || uploadData.main_category_id || null,
+              sub_category_id: record.subCategoryId || uploadData.sub_category_id || null,
+              image_path: imageVal,
               updated_at: uploadData.updated_at || new Date().toISOString()
             };
             Object.keys(uploadData).forEach(k => delete uploadData[k]);
@@ -894,10 +905,26 @@ class SyncManager {
           } else if (storeName === 'products') {
             localItem.mainCategoryId = cloudItem.main_category_id;
             localItem.subCategoryId = cloudItem.sub_category_id;
-            localItem.imagePath = cloudItem.image_path;
-            localItem.customColor = cloudItem.custom_color ?? '';
+            
+            if (cloudItem.image_path) {
+              if (typeof cloudItem.image_path === 'string' && cloudItem.image_path.startsWith('{')) {
+                try {
+                  const meta = JSON.parse(cloudItem.image_path);
+                  localItem.customColor = meta.color || '';
+                  if (meta.code) localItem.supplierCode = meta.code;
+                  localItem.imagePath = meta.img || '';
+                } catch (_) {
+                  localItem.imagePath = cloudItem.image_path;
+                }
+              } else {
+                localItem.imagePath = cloudItem.image_path;
+              }
+            } else if (!localItem.customColor) {
+              localItem.customColor = '';
+            }
+
             if (localItem.minStock === undefined) {
-              localItem.minStock = 5; // الحد الأدنى الافتراضي للمخزون محلياً
+              localItem.minStock = 5;
             }
             delete localItem.main_category_id;
             delete localItem.sub_category_id;
