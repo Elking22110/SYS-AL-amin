@@ -41,6 +41,17 @@ const renderProductTitleAndSize = (name) => {
   );
 };
 
+const getContrastTextColor = (hexColor) => {
+  if (!hexColor) return '#ffffff';
+  const hex = hexColor.replace('#', '');
+  if (hex.length !== 6) return '#ffffff';
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? '#000000' : '#ffffff';
+};
+
 const ProductGrid = ({
   selectedCategory,
   onCategoryChange,
@@ -952,12 +963,23 @@ const ProductGrid = ({
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3">
             {displayedProducts.map((product) => {
               const name = product.name || '';
-              const isBlack = name.includes('اسود') || name.includes('أسود') || name.includes('إسود');
-              const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة');
+              const subName = String(product.subCategoryId || product.subCategory || '');
+              const hasCustomColor = Boolean(product.customColor && product.customColor.trim() !== '');
+
+              const isBlack = name.includes('اسود') || name.includes('أسود') || name.includes('إسود') || subName.includes('اسود') || subName.includes('أسود') || subName.includes('إسود');
+              const isOrangeOrBuried = name.includes('مدفون') || name.includes('برتقالي') || name.includes('برتقالى') || subName.includes('مدفون') || subName.includes('برتقالي') || subName.includes('برتقالى');
+              const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة') || subName.includes('معزول') || subName.includes('معزوله') || subName.includes('معزولة');
               
               let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group ";
-              if (isBlack) {
+              let inlineStyle = {};
+
+              if (hasCustomColor) {
+                cardClass += "bg-white border-r-4";
+                inlineStyle = { borderColor: product.customColor, borderRightColor: product.customColor };
+              } else if (isBlack) {
                 cardClass += "bg-zinc-100 border-zinc-300 border-r-4 border-r-black";
+              } else if (isOrangeOrBuried) {
+                cardClass += "bg-orange-50/70 border-orange-300 border-r-4 border-r-orange-600";
               } else if (isInsulated) {
                 cardClass += "bg-amber-50/60 border-amber-200 border-r-4 border-r-amber-500";
               } else {
@@ -969,6 +991,7 @@ const ProductGrid = ({
                   key={product.id}
                   onClick={() => onAddToCart(product)}
                   className={cardClass}
+                  style={inlineStyle}
                 >
 
                 {/* اسم المنتج */}
@@ -996,12 +1019,31 @@ const ProductGrid = ({
 
                 {/* السعر */}
                 {(() => {
-                  if (isBlack) {
+                  if (hasCustomColor) {
+                    const textColor = getContrastTextColor(product.customColor);
+                    return (
+                      <div className="p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner" style={{ backgroundColor: product.customColor }}>
+                        <span className="font-black text-lg leading-none" style={{ color: textColor }}>
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-xs font-bold opacity-80 mr-1" style={{ color: textColor }}>ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  } else if (isBlack) {
                     return (
                       <div className="bg-black text-white p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner">
                         <span className="text-white font-black text-lg leading-none">
                           {Number(product.price || 0).toLocaleString('ar-EG')}
                           <span className="text-xs font-bold text-zinc-300 mr-1">ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  } else if (isOrangeOrBuried) {
+                    return (
+                      <div className="bg-orange-600 text-white p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner">
+                        <span className="text-white font-black text-lg leading-none">
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-xs font-bold text-orange-200 mr-1">ج.م</span>
                         </span>
                       </div>
                     );
