@@ -964,7 +964,21 @@ const ProductGrid = ({
             {displayedProducts.map((product) => {
               const name = product.name || '';
               const subName = String(product.subCategoryId || product.subCategory || '');
+              const mainCatName = String(product.mainCategoryId || product.category || '');
               const hasCustomColor = Boolean(product.customColor && product.customColor.trim() !== '');
+
+              const isSmart = mainCatName.includes('اسمارت') || name.includes('اسمارت') || subName.includes('اسمارت') || name.includes('سمارت') || subName.includes('سمارت');
+              
+              let isSmartBrownSize = false;
+              if (isSmart) {
+                const is2Or3InchSub = subName === 'بوصه 3' || subName === 'بوصه 2' || subName === 'بوصة 3' || subName === 'بوصة 2' || subName === '3 بوصة' || subName === '2 بوصة' || subName.includes('بوصه 3') || subName.includes('بوصه 2');
+                if (is2Or3InchSub) {
+                  isSmartBrownSize = true;
+                } else {
+                  const nameWithoutAngle = name.replace(/90\s*درجة|٩٠\s*درجة|90درجة|٩٠درجة/g, '');
+                  isSmartBrownSize = nameWithoutAngle.includes('90') || nameWithoutAngle.includes('63') || nameWithoutAngle.includes('٩٠') || nameWithoutAngle.includes('٦٣') || nameWithoutAngle.includes('3 بوصه') || nameWithoutAngle.includes('2 بوصه') || nameWithoutAngle.includes('3 بوصة') || nameWithoutAngle.includes('2 بوصة');
+                }
+              }
 
               const isBlack = name.includes('اسود') || name.includes('أسود') || name.includes('إسود') || subName.includes('اسود') || subName.includes('أسود') || subName.includes('إسود');
               const isOrangeOrBuried = name.includes('مدفون') || name.includes('برتقالي') || name.includes('برتقالى') || subName.includes('مدفون') || subName.includes('برتقالي') || subName.includes('برتقالى');
@@ -980,6 +994,8 @@ const ProductGrid = ({
                 cardClass += "bg-zinc-100 border-zinc-300 border-r-4 border-r-black";
               } else if (isOrangeOrBuried) {
                 cardClass += "bg-orange-50/70 border-orange-300 border-r-4 border-r-orange-600";
+              } else if (isSmartBrownSize) {
+                cardClass += "bg-amber-950/10 border-amber-800 border-r-4 border-r-amber-900";
               } else if (isInsulated) {
                 cardClass += "bg-amber-50/60 border-amber-200 border-r-4 border-r-amber-500";
               } else {
@@ -1044,6 +1060,15 @@ const ProductGrid = ({
                         <span className="text-white font-black text-lg leading-none">
                           {Number(product.price || 0).toLocaleString('ar-EG')}
                           <span className="text-xs font-bold text-orange-200 mr-1">ج.م</span>
+                        </span>
+                      </div>
+                    );
+                  } else if (isSmartBrownSize) {
+                    return (
+                      <div className="bg-amber-900 text-amber-100 p-2 rounded-lg mt-2 flex justify-end items-center shadow-inner">
+                        <span className="text-amber-100 font-black text-lg leading-none">
+                          {Number(product.price || 0).toLocaleString('ar-EG')}
+                          <span className="text-xs font-bold text-amber-300 mr-1">ج.م</span>
                         </span>
                       </div>
                     );
