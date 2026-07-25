@@ -129,8 +129,22 @@ const ShiftManager = () => {
 
   // بدء وردية جديدة
   const startShift = async () => {
+    const existingActive = localStorage.getItem('activeShift');
+    if (existingActive) {
+      try {
+        const parsed = JSON.parse(existingActive);
+        if (parsed && parsed.id && parsed.status === 'active') {
+          setCurrentShift(parsed);
+          setMessage('⚠️ الوردية نشطة بالفعل وقيد التشغيل');
+          setTimeout(() => setMessage(''), 3000);
+          return;
+        }
+      } catch (_) {}
+    }
+
     const now = new Date();
     const shiftId = getNextShiftId();
+    const nowIso = now.toISOString();
 
     const newShift = {
       id: shiftId,
@@ -147,11 +161,13 @@ const ShiftManager = () => {
         closingAmount: 0,
         expectedAmount: 0
       },
-      notes: ''
+      notes: '',
+      updated_at: nowIso
     };
 
     setCurrentShift(newShift);
     localStorage.setItem('activeShift', JSON.stringify(newShift));
+    try { syncManager.triggerSync(); } catch (_) {}
     try { publish(EVENTS.SHIFTS_CHANGED, { type: 'start', shift: newShift }); } catch (_) { }
     try { window.dispatchEvent(new CustomEvent('shiftStarted', { detail: { shiftId: newShift.id } })); } catch (_) { }
 
@@ -201,11 +217,10 @@ const ShiftManager = () => {
       returns: currentShiftReturns,
       cashDrawer: {
         ...currentShift.cashDrawer,
-        // المبلغ المتوقع = المبلغ الافتتاحي + المبلغ المستلم - المرتجعات
         expectedAmount: safeMath.subtract(safeMath.add(currentShift.cashDrawer.openingAmount, salesDetails.totalReceived), salesDetails.totalRefunds),
-        // المبلغ الفعلي في الصندوق (سيتم إدخاله يدوياً)
         closingAmount: safeMath.subtract(safeMath.add(currentShift.cashDrawer.openingAmount, salesDetails.totalReceived), salesDetails.totalRefunds)
-      }
+      },
+      updated_at: now.toISOString()
     };
 
     // التحقق من عدم وجود وردية بنفس المعرف
@@ -213,12 +228,10 @@ const ShiftManager = () => {
     let updatedShifts;
 
     if (existingShiftIndex !== -1) {
-      // إذا كانت الوردية موجودة، استبدلها
       updatedShifts = [...shifts];
       updatedShifts[existingShiftIndex] = updatedShift;
       console.log('🔄 تم تحديث وردية موجودة:', updatedShift.id);
     } else {
-      // إذا لم تكن موجودة، أضفها
       updatedShifts = [...shifts, updatedShift];
       console.log('➕ تم إضافة وردية جديدة:', updatedShift.id);
     }
@@ -227,29 +240,19 @@ const ShiftManager = () => {
     setCurrentShift(null);
 
     localStorage.setItem('shifts', JSON.stringify(updatedShifts));
-    // إزالة فواتير الوردية النشطة من قائمة المبيعات العامة (الاحتفاظ بغير المكتمل فقط)
-    // بدون soft-delete للسحابة — الفواتير تبقى في السحابة وداخل shift.sales للتقارير على كل الأجهزة
     try {
       const allSales = JSON.parse(localStorage.getItem('sales') || '[]');
-      // بعد إنهاء الوردية: نُبقي فقط الفواتير غير المكتملة
       const partialOnly = (allSales || []).filter(inv => {
         if (!inv) return false;
-        
-        // 1. إذا كانت حالة الدفع معينة وصريحة كـ مكتملة، فلا داعي للاحتفاظ بها في قائمة المبيعات النشطة
         if (inv.paymentStatus === 'complete') return false;
         if (inv.paymentStatus === 'partial') return true;
-
-        // 2. فحص الفواتير الآجلة
         if (inv.paymentMethod === 'deferred' || inv.paymentMethod === 'آجل') return true;
-
-        // 3. فحص العربون
         if (inv.downPayment && inv.downPayment.enabled) {
           const remaining = (inv.downPayment.remaining != null)
             ? Number(inv.downPayment.remaining) || 0
             : (Number(inv.total) || 0) - (Number(inv.downPayment.amount) || 0);
           return remaining > 0;
         }
-
         return false;
       });
       window.__bypass_sync_proxy__ = true;
@@ -261,10 +264,23 @@ const ShiftManager = () => {
       try { window.__bypass_sync_proxy__ = false; } catch (__) {}
     }
 
+    // إرسال حالة الإغلاق للسحاب لتبليغ الأجهزة الأخرى وتحديد حالة الوردية كمكتملة
+    localStorage.setItem('activeShift', JSON.stringify({ ...updatedShift, status: 'completed' }));
+    try { syncManager.triggerSync(); } catch (_) {}
 
-    localStorage.removeItem('activeShift');
     try { publish(EVENTS.SHIFTS_CHANGED, { type: 'end', shift: updatedShift }); } catch (_) { }
     try { publish(EVENTS.INVOICES_CHANGED, { type: 'cleanup_after_shift_end' }); } catch (_) { }
+
+    window.dispatchEvent(new CustomEvent('shiftEnded', {
+      detail: {
+        message: 'تم إنهاء الوردية - سيتم إعادة تعيين البيانات',
+        shiftId: updatedShift.id
+      }
+    }));
+
+    setTimeout(() => {
+      localStorage.removeItem('activeShift');
+    }, 1500);
 
     // إرسال إشارة لإعادة تعيين بيانات نقطة البيع
     window.dispatchEvent(new CustomEvent('shiftEnded', {

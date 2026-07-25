@@ -541,7 +541,8 @@ const POSMain = () => {
           totalSales: (activeShift.totalSales || 0) + getTotal,
           totalOrders: (activeShift.totalOrders || 0) + 1,
           userName: user?.username || activeShift.userName,
-          lastActivity: getCurrentDate()
+          lastActivity: getCurrentDate(),
+          updated_at: new Date().toISOString()
         };
         setActiveShift(updatedShift);
         storageOptimizer.set('activeShift', updatedShift);

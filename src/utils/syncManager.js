@@ -1068,8 +1068,14 @@ class SyncManager {
         configItem.id = 'config';
         
         if (!configItem.updated_at) {
-          configItem.updated_at = new Date().toISOString();
-          mutated = true;
+          if (tableName === 'activeShift') {
+            const hasActiveLocal = Boolean(localObj && localObj.id && localObj.status === 'active');
+            configItem.updated_at = hasActiveLocal ? new Date().toISOString() : new Date(0).toISOString();
+            if (hasActiveLocal) mutated = true;
+          } else {
+            configItem.updated_at = new Date().toISOString();
+            mutated = true;
+          }
         }
         localData = [configItem];
         if (mutated) {
@@ -1123,7 +1129,11 @@ class SyncManager {
 
         if (!localItem) {
           // السجل موجود في السحاب وغير موجود محلياً
-          if (new Date(cloudItem.updated_at).getTime() > new Date(lastSyncTime).getTime()) {
+          if (tableName === 'activeShift') {
+            if (cloudItem && cloudItem.status === 'active') {
+              updatedLocalData.push(cloudItem);
+            }
+          } else if (new Date(cloudItem.updated_at).getTime() > new Date(lastSyncTime).getTime()) {
             // تم إضافته حديثاً على جهاز آخر -> تحميل محلي
             updatedLocalData.push(cloudItem);
           } else {
