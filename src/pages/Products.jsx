@@ -1430,12 +1430,15 @@ const Products = () => {
       }
     }
 
+    const nowIso = new Date().toISOString();
     const product = {
       id: Date.now(),
       ...newProduct,
       price: parseFloat(newProduct.price),
       stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
-      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0
+      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
+      updated_at: nowIso,
+      sync_status: 'pending'
     };
     const updatedProducts = [...products, product];
     setProducts(updatedProducts);
@@ -1528,12 +1531,15 @@ const Products = () => {
         }
       }
 
+      const nowIso = new Date().toISOString();
       const updatedProduct = {
         ...editingProduct,
         ...newProduct,
         price: parseFloat(newProduct.price),
         stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
-        minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0
+        minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
+        updated_at: nowIso,
+        sync_status: 'pending'
       };
       const updatedProducts = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
       setProducts(updatedProducts);
