@@ -980,7 +980,14 @@ const ProductGrid = ({
                 }
               }
 
-              const isBlack = name.includes('اسود') || name.includes('أسود') || name.includes('إسود') || subName.includes('اسود') || subName.includes('أسود') || subName.includes('إسود');
+              const isBlack = (
+                name.includes('اسود') || name.includes('أسود') || name.includes('إسود') ||
+                subName.includes('اسود') || subName.includes('أسود') || subName.includes('إسود') ||
+                name.includes('جاليتراب') || name.includes('جالينراب') || name.includes('جالي تراب') || name.includes('جالين تراب') || subName.includes('جاليتراب') ||
+                name.includes('تفتيش') || subName.includes('تفتيش') ||
+                name.includes('مجرى') || name.includes('مجري') || subName.includes('مجرى') || subName.includes('مجري') ||
+                name.includes('غرفة رفع') || name.includes('غرفه رفع') || subName.includes('غرفة رفع')
+              );
               const isOrangeOrBuried = name.includes('مدفون') || name.includes('برتقالي') || name.includes('برتقالى') || subName.includes('مدفون') || subName.includes('برتقالي') || subName.includes('برتقالى');
               const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة') || subName.includes('معزول') || subName.includes('معزوله') || subName.includes('معزولة');
               
