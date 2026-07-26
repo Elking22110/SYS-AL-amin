@@ -367,7 +367,26 @@ const ProductGrid = ({
       const isAhramAbiad = fullName.includes('ابيض') || fullName.includes('أبيض') || fullName.includes('ابيض');
       const isAhramBoly = fullName.includes('بولي') || fullName.includes('بولى') || (!isAhramSarf && !isAhramAbiad);
 
-      if (isAhramSarf) {
+      if (isAhramBoly) {
+        // --- قطع بولي الاهرام مصنفة بالمقاس ---
+        if (fullName.includes('٤/٣') || fullName.includes('4/3') || fullName.includes('3/4')) {
+          subCategory = 'قطع ٤/٣ بولى الاهرام';
+        } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('1½')) {
+          subCategory = 'قطع ١,٥ بولى الاهرام';
+        } else if (fullName.includes('٢/١') || fullName.includes('2/1') || fullName.includes('1/2') || fullName.includes('نص')) {
+          subCategory = 'قطع ٢/١ بولى الاهرام';
+        } else if (fullName.includes('1 1/4') || fullName.includes('١ ١/٤') || fullName.includes('1.25') || fullName.includes('١.٢٥')) {
+          subCategory = 'قطع ١,٢٥ بولى الاهرام';
+        } else if (fullName.includes('75') || fullName.includes('٧٥')) {
+          subCategory = 'بولى ٢ و ٣ بوصه الاهرام';
+        } else if (fullName.includes('2') || fullName.includes('٢')) {
+          subCategory = 'قطع ٢ بوصه بولى الاهرام';
+        } else if (fullName.includes('1') || fullName.includes('١')) {
+          subCategory = 'قطع ١ بوصه بولى الاهرام';
+        } else {
+          subCategory = 'قطع ٢/١ بولى الاهرام';
+        }
+      } else if (isAhramSarf) {
         // --- قطع صرف الاهرام مصنفة بالمقاس ---
         if (fullName.includes('١٦٠') || fullName.includes('160')) {
           subCategory = 'قطع ١٦٠ ملى صرف الاهرام';
@@ -404,23 +423,6 @@ const ProductGrid = ({
           subCategory = 'قطع ١بوصه الاهرام ابيض';
         } else {
           subCategory = 'قطع ١بوصه الاهرام ابيض';
-        }
-      } else {
-        // --- قطع بولي الاهرام مصنفة بالمقاس ---
-        if (fullName.includes('٤/٣') || fullName.includes('4/3') || fullName.includes('3/4')) {
-          subCategory = 'قطع ٤/٣ بولى الاهرام';
-        } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('1½')) {
-          subCategory = 'قطع ١,٥ بولى الاهرام';
-        } else if (fullName.includes('٢/١') || fullName.includes('2/1') || fullName.includes('1/2') || fullName.includes('نص')) {
-          subCategory = 'قطع ٢/١ بولى الاهرام';
-        } else if (fullName.includes('1 1/4') || fullName.includes('١ ١/٤') || fullName.includes('1.25') || fullName.includes('١.٢٥')) {
-          subCategory = 'قطع ١,٢٥ بولى الاهرام';
-        } else if (fullName.includes('2') || fullName.includes('٢')) {
-          subCategory = 'قطع ٢ بوصه بولى الاهرام';
-        } else if (fullName.includes('1') || fullName.includes('١')) {
-          subCategory = 'قطع ١ بوصه بولى الاهرام';
-        } else {
-          subCategory = 'قطع ٢/١ بولى الاهرام';
         }
       }
     } else if (mainGroup === 'سانبيور+dierovit+ideal+lesico' || mainGroup === 'سانبيور+ديروفيت+ايديال+ليسكو') {

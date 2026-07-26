@@ -78,6 +78,19 @@ export function parseInchSize(name) {
 export function getBrandRank(subName, mainCategoryName = '') {
   const subLower = (subName || '').toLowerCase();
   const mainLower = (mainCategoryName || '').toLowerCase();
+  const isAhramGroup = mainLower.includes('الاهرام') || mainLower.includes('الأهرام') || subLower.includes('الاهرام') || subLower.includes('الأهرام');
+
+  if (isAhramGroup) {
+    if (subLower.includes('بولي') || subLower.includes('بولى') || subLower.includes('poly')) {
+      return 1;
+    }
+    if (subLower.includes('ابيض') || subLower.includes('أبيض')) {
+      return 2;
+    }
+    if (subLower.includes('صرف') || subLower.includes('كيسل') || subLower.includes('كيسيل')) {
+      return 3;
+    }
+  }
 
   // Explicit Subcategory Brand match takes priority
   if ((subLower.includes('بولي') || subLower.includes('بولى') || subLower.includes('poly') || subLower.includes('صدف')) && !subLower.includes('اسمارت') && !subLower.includes('سمارت') && !subLower.includes('smart')) {

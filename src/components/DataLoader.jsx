@@ -1068,6 +1068,45 @@ const DataLoader = ({ children }) => {
         localStorage.setItem('patch_fix_zero_prices_v47', 'true');
         // ----------------------------------------------------
 
+        // PATCH v48: Fix Ahram 1.5-inch poly products subcategory
+        const patchV48Done = localStorage.getItem('patch_ahram_1_5_poly_v48') === 'true';
+        if (!patchV48Done) {
+          try {
+            console.log('[DataLoader] Patch v48: Fixing Ahram 1.5-inch poly subcategories...');
+            setLoadingMessage('جاري إصلاح تصنيفات قطع ١,٥ بولي الأهرام...');
+            const POLY_1_5_IDS = new Set([
+              '80183', '80184', '80185', '80186', '80187', '80188', '80189', '80190',
+              '80191', '80192', '80193', '80194', '80195', '80196', '80197', '80198',
+              '171070'
+            ]);
+            const NEW_SUBCAT = 'قطع ١,٥ بولى الاهرام';
+            const nowStr = new Date().toISOString();
+            let fixedCount = 0;
+            for (const pid of POLY_1_5_IDS) {
+              const p = await databaseManager.get('products', pid);
+              if (p && p.subCategoryId !== NEW_SUBCAT) {
+                p.mainCategoryId = 'الاهرام بولي+صرف';
+                p.subCategoryId = NEW_SUBCAT;
+                p.category = NEW_SUBCAT;
+                p.sync_status = 'pending';
+                p.updated_at = nowStr;
+                await databaseManager.update('products', p);
+                fixedCount++;
+              }
+            }
+            const freshProds = await databaseManager.getAll('products');
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('products', JSON.stringify(freshProds));
+            window.__bypass_sync_proxy__ = false;
+            console.log(`[DataLoader] Patch v48: Fixed ${fixedCount} products.`);
+            localStorage.setItem('patch_ahram_1_5_poly_v48', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v48 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
 
@@ -1116,7 +1155,5 @@ const DataLoader = ({ children }) => {
 };
 
 export default DataLoader;
-
-
 
 

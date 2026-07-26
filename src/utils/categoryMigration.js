@@ -1116,22 +1116,31 @@ export function runCategoryMigration() {
           else targetSub = 'صرف احواض + قاعدة';
         } else if (fullName.includes('الاهرام') || fullName.includes('الأهرام')) {
           targetMain = 'الاهرام بولي+صرف';
-          if (fullName.includes('كيسل') || fullName.includes('٥٠ ملى')) targetSub = 'قطع ٥٠ ملى كيسل الاهرام';
-          else if (fullName.includes('٧٥ ملى')) targetSub = 'قطع ٧٥ ملى كيسل الاهرام';
-          else if (fullName.includes('١١٠ ملى')) targetSub = 'قطع ١١٠ ملى كيسل الاهرام';
-          else if (fullName.includes('١٦٠ ملى')) targetSub = 'قطع ١٦٠ ملى كيسل الاهرام';
-          else if (fullName.includes('بولي') || fullName.includes('٢/١')) targetSub = 'قطع ٢/١ بولى الاهرام';
-          else if (fullName.includes('٤/٣')) targetSub = 'قطع ٤/٣ بولى الاهرام';
-          else if (fullName.includes('ابيض') || fullName.includes('أبيض')) {
+          const isAhramWhite = fullName.includes('ابيض') || fullName.includes('أبيض');
+          const isAhramDrain = fullName.includes('صرف') || fullName.includes('كيسل');
+          const isAhramPoly = fullName.includes('بولي') || fullName.includes('بولى') || (!isAhramWhite && !isAhramDrain);
+          if (isAhramPoly) {
+            if (fullName.includes('٤/٣')) targetSub = 'قطع ٤/٣ بولى الاهرام';
+            else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5')) targetSub = 'قطع ١,٥ بولى الاهرام';
+            else if (fullName.includes('٢/١') || fullName.includes('1/2') || fullName.includes('نص')) targetSub = 'قطع ٢/١ بولى الاهرام';
+            else if (fullName.includes('٧٥') || fullName.includes('75') || fullName.includes('3')) targetSub = 'بولى ٢ و ٣ بوصه الاهرام';
+            else if (fullName.includes('2') || fullName.includes('٢')) targetSub = 'قطع ٢ بوصه بولى الاهرام';
+            else if (fullName.includes('1') || fullName.includes('١')) targetSub = 'قطع ١بوصه بولى الاهرام';
+            else targetSub = 'قطع ٢/١ بولى الاهرام';
+          }
+          else if (isAhramWhite) {
             if (fullName.includes('1.5') || fullName.includes('١.٥')) targetSub = 'قطع ١,٥ ابيض الاهرام';
             else if (fullName.includes('2') || fullName.includes('٢')) targetSub = 'قطع ٢بوصه الاهرام ابيض';
             else if (fullName.includes('3') || fullName.includes('٣')) targetSub = 'قطع ٣بوصه الاهرام ابيض';
             else if (fullName.includes('4') || fullName.includes('٤')) targetSub = 'قطع ٤بوصه الاهرام ابيض';
             else if (fullName.includes('6') || fullName.includes('٦')) targetSub = 'قطع ٦بوصه الاهرام ابيض';
             else targetSub = 'قطع ١بوصه الاهرام ابيض';
-          } else {
-            targetSub = 'قطع ٢/١ بولى الاهرام';
           }
+          else if (fullName.includes('١٦٠ ملى') || fullName.includes('160')) targetSub = 'قطع ١٦٠ ملى كيسل الاهرام';
+          else if (fullName.includes('١١٠ ملى') || fullName.includes('110')) targetSub = 'قطع ١١٠ ملى كيسل الاهرام';
+          else if (fullName.includes('٧٥ ملى') || fullName.includes('75')) targetSub = 'قطع ٧٥ ملى كيسل الاهرام';
+          else if (fullName.includes('٥٠ ملى') || fullName.includes('50')) targetSub = 'قطع ٥٠ ملى كيسل الاهرام';
+          else targetSub = 'قطع صرف الاهرام';
         } else if (fullName.includes('سانبيور') || fullName.includes('سان بيور') || fullName.includes('ليسيكو') || fullName.includes('ليسكو')) {
           targetMain = 'سانبيور+ديروفيت+ايديال+ليسكو';
           if (fullName.includes('وحده') || fullName.includes('وحدة')) targetSub = 'احوض وحده سانبيور';
