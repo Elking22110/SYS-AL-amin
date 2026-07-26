@@ -4,6 +4,7 @@ import storageOptimizer from '../../utils/storageOptimizer.js';
 import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
 import soundManager from '../../utils/soundManager.js';
+import { sortSubcategories } from '../../utils/subcategorySorter.js';
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
@@ -632,146 +633,7 @@ const ProductGrid = ({
         .filter(c => String(c.parentId) === String(selectedGroup.id) || String(c.parentId) === String(selectedGroup.name))
         .map(c => ({ id: c.id, name: c.name }));
 
-      // ترتيب مخصص لمجموعات BR بناءً على صورة العميل
-      if (selectedGroup.name === 'Br' || selectedGroup.name === 'BR') {
-        const BR_SUBCATEGORIES_ORDER = [
-          'قطع مشكله BR اسمارت و',
-          'قطع ٢/١',
-          'قطع ٤/٣ بوصة',
-          'قطع ١ بوصة',
-          'قطع ١,٢٥ بوصة',
-          'قطع ١,٥ بوصة',
-          'قطع ٢ بوصة',
-          'قطع اسواد ٣/٤',
-          'قطع ١ بوصه اسود',
-          'قطع ١,٥ اسود',
-          'افيز اسمارت'
-        ];
-        const orderMap = {};
-        BR_SUBCATEGORIES_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-
-      // ترتيب مخصص لمجموعات اسمارت ابيض
-      if (selectedGroup.name === 'اسمارت ابيض' || selectedGroup.name === 'سمارت ابيض') {
-        const SMART_WHITE_SUBCATEGORIES_ORDER = [
-          'بوصه 6',
-          'بوصه 4',
-          'بوصه 3',
-          'بوصه 2',
-          'بوصه ١,٥',
-          '١بوصه'
-        ];
-        const orderMap = {};
-        SMART_WHITE_SUBCATEGORIES_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-
-      // ترتيب مخصص لمجموعات لوازم حديد انفيت
-      if (selectedGroup.name === 'لوازم حديد انفيت') {
-        const IRON_INFIT_ORDER = [
-          'إسود',
-          'أبيض',
-          'مقاسات حديد',
-          'كولية ظهر'
-        ];
-        const orderMap = {};
-        IRON_INFIT_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-
-      // ترتيب مخصص لمجموعات كيسيل
-      if (selectedGroup.name === 'كيسيل' || selectedGroup.name === 'كيسل') {
-        const KESSEL_ORDER = [
-          'مواسير كيسل',
-          'نظام كيسيل المدفون ١١٠',
-          'نظام كيسيل المدفون ١٦٠',
-          'نظام كيسل المدفون ٢٠٠',
-          'قطع ٦٣ كيسل',
-          'قطع ٤٠ كيسل',
-          'قطع ٥٠',
-          'قطع ٧٥',
-          'قطع ١١٠',
-          'قطع ١٦٠',
-          'بلاعات كيسل',
-          'قطع ١بوصه كيسل'
-        ];
-        const orderMap = {};
-        KESSEL_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-
-      // ترتيب مخصص لمجموعات قطع اكوا استار
-      if (selectedGroup.name === 'قطع اكوا استار') {
-        const AQUA_STAR_ORDER = [
-          'قطع ١/٢ بوصة اكوا استار',
-          'قطع ٣/٤ بوصة اكوا استار',
-          'قطع ١ بوصة اكوا استار',
-          'قطع ١,٥ بوصة اكوا استار',
-          'قطع ٢ بوصة اكوا استار'
-        ];
-        const orderMap = {};
-        AQUA_STAR_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-
-      // ترتيب مخصص لمجموعات حنفيات ونواكل
-      if (selectedGroup.name === 'مجموعه حنفيات+نواكل' || selectedGroup.id === 'مجموعه حنفيات+نواكل') {
-        const FAUCETS_NICKELS_ORDER = [
-          'محبس زاوية',
-          'حنفيات',
-          'قلب+اوكرة+قنطرة',
-          'نبل + مساليب نيكل',
-          'حنفيات غساله',
-          'مجموعه نواكل متعدده'
-        ];
-        const orderMap = {};
-        FAUCETS_NICKELS_ORDER.forEach((name, idx) => {
-          orderMap[name] = idx;
-        });
-
-        filtered.sort((a, b) => {
-          const orderA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
-          const orderB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
-          return orderA - orderB;
-        });
-      }
-      return filtered;
+      return sortSubcategories(filtered, selectedGroup.name);
     }
 
     // Fallback في حال كانت المجموعة الرئيسية مجموعة الكلمات المفتاحية القديمة (مثل "أخرى")
