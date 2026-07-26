@@ -191,9 +191,15 @@ class SyncManager {
         // تحديث IndexedDB مباشرة
         if (eventType === 'INSERT' || eventType === 'UPDATE') {
           if (newRecord && newRecord.id) {
-            // تحويل snake_case للـ camelCase للجداول التي تحتاجه
-            // تحويل ID لنص لمنع التكرار في IndexedDB
             newRecord.id = String(newRecord.id);
+
+            // فحص إذا كان هناك تعديل محلي معلق لم يُرفع بعد — حماية التعديل المحلي
+            const existingLocal = await databaseManager.get(table, newRecord.id);
+            if (existingLocal && existingLocal.sync_status === 'pending') {
+              console.log(`🛡️ [SyncManager] حماية التعديل المحلي المعلق من الاستبدال بـ Realtime: ${table}/${newRecord.id}`);
+              return;
+            }
+
             const localRecord = this.mapCloudToLocal(table, newRecord);
             localRecord.sync_status = 'synced';
             await databaseManager.update(table, localRecord);
@@ -536,17 +542,8 @@ class SyncManager {
         const originalRecordsMap = new Map();
 
         for (const record of pendingRecords) {
-          // التحقق من التعارض
-          const cloudUpdatedAt = cloudMap.get(String(record.id));
-          if (cloudUpdatedAt && new Date(cloudUpdatedAt).getTime() > new Date(record.updated_at || 0).getTime()) {
-            // السحابة أحدث → لا نرفع. نُعلِّم السجل المحلي كـ synced لمنع تكرار التحذير في كل دورة
-            try {
-              const resolvedRecord = { ...record, sync_status: 'synced' };
-              const tx = databaseManager.db.transaction([storeName], 'readwrite');
-              tx.objectStore(storeName).put(resolvedRecord);
-            } catch (_) {}
-            continue;
-          }
+          // تعديل المستخدم الصريح يُرفع دائماً للسحابة مع تحديث التوقيت لضمان التغليب
+          record.updated_at = new Date().toISOString();
 
           const { sync_status, ...uploadData } = record;
           uploadData.id = String(record.id);
@@ -954,8 +951,13 @@ class SyncManager {
             continue;
           }
 
-          // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية فقط (مثل minStock)
+          // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية وتجنب دهس تعديلات المستخدم المعلقة
           const existingLocal = await databaseManager.get(storeName, cloudItem.id);
+          
+          if (existingLocal && existingLocal.sync_status === 'pending') {
+            console.log(`🛡️ [SyncManager] حفظ التعديل المحلي المعلق للمستخدم من الدهس بالسحاب: ${storeName}/${cloudItem.id}`);
+            continue;
+          }
           
           // تطبيع أسماء الأعمدة لتطابق واجهة React (تحويل من SnakeCase إلى CamelCase)
           const localItem = {
