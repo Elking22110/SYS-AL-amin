@@ -376,6 +376,7 @@ export const EVENTS = {
   SETTINGS_CHANGED: 'settings:changed',
   POS_CART_CHANGED: 'pos:cart:changed',
   INVOICES_CHANGED: 'invoices:changed',
+  RETURNS_CHANGED: 'returns:changed',
   USERS_CHANGED: 'users:changed',
   DATA_IMPORTED: 'data:imported',
   DATA_BACKED_UP: 'data:backed_up'

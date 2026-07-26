@@ -1,6 +1,7 @@
 import { supabase, isKeysConfigured, supabaseUrl } from './supabaseClient.js';
 import databaseManager from './database.js';
 import { publish, EVENTS } from './observerManager.js';
+import storageOptimizer from './storageOptimizer.js';
 
 class SyncManager {
   constructor() {
@@ -415,6 +416,38 @@ class SyncManager {
     ]).finally(() => clearTimeout(timer));
   }
 
+  // تحويل أي صيغة تاريخ (نصية عربية، ISO، كائن Date) إلى نص ISO 8601 صالح لـ PostgreSQL
+  // الحل الجذري لمشكلة HTTP 400: الحقول من نوع TIMESTAMP WITH TIME ZONE ترفض النصوص العربية
+  toISOTimestamp(value) {
+    if (!value) return null;
+    if (value instanceof Date) {
+      return isNaN(value.getTime()) ? null : value.toISOString();
+    }
+    if (typeof value === 'string') {
+      // إذا كانت بالفعل بصيغة ISO صالحة نعيدها مباشرة
+      const direct = new Date(value);
+      if (!isNaN(direct.getTime())) return direct.toISOString();
+      // تحليل النص العربي مثل: "2026/07/26 - 07:57 م"
+      const arabicMatch = value.match(/(\d{4})[/\-](\d{1,2})[/\-](\d{1,2}).*?(\d{1,2}):(\d{2})\s*([صم])?/);
+      if (arabicMatch) {
+        const [, year, month, day, rawHour, minute, ampm] = arabicMatch;
+        let hour = parseInt(rawHour, 10);
+        if (ampm === 'م' && hour < 12) hour += 12;
+        if (ampm === 'ص' && hour === 12) hour = 0;
+        const dt = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hour, parseInt(minute));
+        return isNaN(dt.getTime()) ? null : dt.toISOString();
+      }
+      // تحليل التاريخ فقط مثل: "2026-07-26" أو "2026/07/26"
+      const dateOnly = value.match(/^(\d{4})[/\-](\d{1,2})[/\-](\d{1,2})$/);
+      if (dateOnly) {
+        const [, year, month, day] = dateOnly;
+        const dt = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        return isNaN(dt.getTime()) ? null : dt.toISOString();
+      }
+    }
+    return null;
+  }
+
   // مشغل المزامنة الآمن
   async triggerSync() {
     if (this.syncInProgress) {
@@ -617,7 +650,7 @@ class SyncManager {
               status: uploadData.status ?? 'نشط',
               debt: uploadData.debt ?? 0,
               total_spent: uploadData.total_spent ?? 0,
-              last_visit: uploadData.last_visit ?? null,
+              last_visit: this.toISOTimestamp(uploadData.last_visit),
               join_date: uploadData.join_date ?? null,
               updated_at: uploadData.updated_at || new Date().toISOString()
             };
@@ -644,7 +677,7 @@ class SyncManager {
             const sale = {
               id: String(record.id),
               date: record.date ?? null,
-              timestamp: record.timestamp ?? null,
+              timestamp: this.toISOTimestamp(record.timestamp ?? record.date),
               shift_id: uploadData.shift_id ?? null,
               customer_id: uploadData.customer_id ?? null,
               items: record.items ?? [],
@@ -686,7 +719,7 @@ class SyncManager {
             const ret = {
               id: String(record.id),
               date: record.date ?? null,
-              timestamp: record.timestamp ?? null,
+              timestamp: this.toISOTimestamp(record.timestamp ?? record.date),
               ref_invoice_id: record.refInvoiceId ?? null,
               shift_id: record.shiftId ?? null,
               customer: record.customer ?? {},
@@ -767,8 +800,6 @@ class SyncManager {
                 } else if (storeName === 'users') {
                   if (singleUploadData.username) safeData.username = singleUploadData.username;
                   if (singleUploadData.email) safeData.email = singleUploadData.email;
-                  if (singleUploadData.role) safeData.role = singleUploadData.role;
-                  if (singleUploadData.password) safeData.password = singleUploadData.password;
                 } else {
                   Object.assign(safeData, singleUploadData);
                 }
@@ -829,45 +860,72 @@ class SyncManager {
         console.log(`🔍 [SyncManager] جدول: ${storeName} | السجلات المحلية: ${localRecords.length} | المتزامنة: ${syncedRecords.length} | آخر تزامن: ${lastLocalUpdate}`);
       }
 
+      // جداول صغيرة: نسحب الكل لأن التصفية بالوقت تُخفي السجلات السحابية الأقدم (split-brain).
+      // مثال: جهاز لديه عميل updated_at=24-07 لن يرى عميل سحابي updated_at=19-07 أبداً!
+      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users']);
+      const useFullPull = FULL_PULL_TABLES.has(storeName);
+
       let cloudUpdates = [];
       let hasMore = true;
-      
-      // إضافة 1 مللي ثانية لتجنب مشاكل دقة الميكروثانية (Microsecond Precision) في PostgreSQL
-      // حيث يدعم المتصفح الملي ثانية فقط بينما تدعم السحابة الميكروثانية مما يسبب تحميل نفس السجلات مجدداً
-      let lastFetchedTime = lastLocalUpdate;
-      if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
-        try {
-          const ms = new Date(lastLocalUpdate).getTime();
-          if (!isNaN(ms)) {
-            lastFetchedTime = new Date(ms + 1).toISOString();
-          }
-        } catch (_) {}
-      }
 
-      const pageSize = 1000;
-
-      while (hasMore) {
-        const { data, error: fetchError } = await supabase
-          .from(storeName)
-          .select('*')
-          .gt('updated_at', lastFetchedTime)
-          .order('updated_at', { ascending: true })
-          .limit(pageSize);
-
-        if (fetchError) {
-          throw fetchError;
-        }
-
-        if (data && data.length > 0) {
-          cloudUpdates = [...cloudUpdates, ...data];
-          if (data.length < pageSize) {
-            hasMore = false;
+      if (useFullPull) {
+        // سحب كامل للجداول الصغيرة: جلب جميع السجلات ومقارنتها بالمحلي
+        const localIdMap = new Map(localRecords.map(r => [String(r.id), r]));
+        let fullPullOffset = 0;
+        const fullPullPageSize = 1000;
+        while (hasMore) {
+          const { data, error: fetchError } = await supabase
+            .from(storeName)
+            .select('*')
+            .order('updated_at', { ascending: true })
+            .range(fullPullOffset, fullPullOffset + fullPullPageSize - 1);
+          if (fetchError) throw fetchError;
+          if (data && data.length > 0) {
+            for (const cloudItem of data) {
+              const cId = String(cloudItem.id ?? '');
+              const local = localIdMap.get(cId);
+              const cloudTs = new Date(cloudItem.updated_at || 0).getTime();
+              const localTs = local ? new Date(local.updated_at || 0).getTime() : 0;
+              const localIsPending = local && local.sync_status === 'pending';
+              // أضف السجل السحابي إذا: غير موجود محلياً، أو محلي synced وسحابي أحدث
+              if (!local || (!localIsPending && cloudTs > localTs)) {
+                cloudUpdates.push(cloudItem);
+              }
+            }
+            fullPullOffset += data.length;
+            hasMore = data.length === fullPullPageSize;
           } else {
-            // تحديث التوقيت ليكون توقيت آخر عنصر تم جلبه للانتقال للصفحة التالية
-            lastFetchedTime = data[data.length - 1].updated_at;
+            hasMore = false;
           }
-        } else {
-          hasMore = false;
+        }
+      } else {
+        // سحب تدريجي للجداول الكبيرة (منتجات، فئات): فقط السجلات الأحدث
+        let lastFetchedTime = lastLocalUpdate;
+        if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
+          try {
+            const ms = new Date(lastLocalUpdate).getTime();
+            if (!isNaN(ms)) lastFetchedTime = new Date(ms + 1).toISOString();
+          } catch (_) {}
+        }
+        const pageSize = 1000;
+        while (hasMore) {
+          const { data, error: fetchError } = await supabase
+            .from(storeName)
+            .select('*')
+            .gt('updated_at', lastFetchedTime)
+            .order('updated_at', { ascending: true })
+            .limit(pageSize);
+          if (fetchError) throw fetchError;
+          if (data && data.length > 0) {
+            cloudUpdates = [...cloudUpdates, ...data];
+            if (data.length < pageSize) {
+              hasMore = false;
+            } else {
+              lastFetchedTime = data[data.length - 1].updated_at;
+            }
+          } else {
+            hasMore = false;
+          }
         }
       }
 

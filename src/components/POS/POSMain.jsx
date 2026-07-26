@@ -414,7 +414,7 @@ const POSMain = () => {
       const sale = {
         id: invoiceId,
         date: getCurrentDate(),
-        timestamp: formatDateTime(getCurrentDate()),
+        timestamp: getCurrentDate(),
         items: cart.map(item => ({
           id: item.id,
           name: item.name,

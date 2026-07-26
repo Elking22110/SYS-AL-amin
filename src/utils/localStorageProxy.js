@@ -1,4 +1,5 @@
 import databaseManager from './database.js';
+import storageOptimizer from './storageOptimizer.js';
 
 // خريطة تحويل مفاتيح localStorage إلى جداول IndexedDB
 const LS_TO_IDB_MAP = {
