@@ -68,15 +68,15 @@ const CartManager = ({
     ));
   }, [setCart]);
 
-  // تحديث خصم الصنف المفرد (%)
+  // تحديث خصم / زيادة الصنف المفرد (%)
   const updateItemDiscount = useCallback((id, rawVal) => {
     const val = parseFloat(rawVal);
-    if (isNaN(val) || val < 0) {
+    if (isNaN(val) || val < -100) {
       setCart(prev => prev.map(item => item.id === id ? { ...item, itemDiscount: 0 } : item));
       return;
     }
     if (val > 100) {
-      notifyError('خصم خاطئ', 'نسبة الخصم لا يمكن أن تتجاوز 100%');
+      notifyError('خصم خاطئ', 'نسبة الخصم / الزيادة يجب أن تكون بين -100% و 100%');
       setCart(prev => prev.map(item => item.id === id ? { ...item, itemDiscount: 100 } : item));
       return;
     }
@@ -299,7 +299,7 @@ const CartManager = ({
                     <div className="relative flex items-center">
                       <input
                         type="number"
-                        min="0"
+                        min="-100"
                         max="100"
                         step="0.5"
                         value={discValue}
@@ -315,7 +315,9 @@ const CartManager = ({
                           if (!isNaN(n)) {
                             if (n > 100) {
                               notifyError('خصم خاطئ', 'الحد الأقصى للخصم 100%');
-                            } else if (n >= 0) {
+                            } else if (n < -100) {
+                              notifyError('زيادة خاطئة', 'الحد الأقصى للزيادة 100%');
+                            } else {
                               updateItemDiscount(item.id, n);
                             }
                           } else if (val === '' || val === '0') {
@@ -324,7 +326,7 @@ const CartManager = ({
                         }}
                         onBlur={() => {
                           const n = parseFloat(discValue);
-                          if (isNaN(n) || n < 0) updateItemDiscount(item.id, 0);
+                          if (isNaN(n) || n < -100) updateItemDiscount(item.id, 0);
                           else if (n > 100) updateItemDiscount(item.id, 100);
                           setEditingDiscount(prev => {
                             const copy = { ...prev };

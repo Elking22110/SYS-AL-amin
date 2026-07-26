@@ -52,6 +52,7 @@ async function runInvoiceEngineTests() {
 
   // 3. Negative Discount / Markup Test (-25% markup)
   console.log("\n--- 3. Negative Discount / Markup Tests ---");
+  // 3a. Invoice-level markup
   const totalsMarkup = invoiceEngine.calculateInvoiceTotals({
     items: [{ price: 500, quantity: 2 }],
     discount: { type: 'percentage', percentage: -25 },
@@ -61,7 +62,23 @@ async function runInvoiceEngineTests() {
   console.assert(totalsMarkup.discountAmount === -250, `Discount amount failed: ${totalsMarkup.discountAmount}`);
   console.assert(totalsMarkup.taxAmount === 175, `Tax 14% on 1250 failed: ${totalsMarkup.taxAmount}`);
   console.assert(totalsMarkup.total === 1425, `Markup total failed: ${totalsMarkup.total}`);
-  console.log("✓ Markup calculations (-25% on 1000 + 14% tax = 1425) passed.");
+  console.log("✓ Invoice-level markup (-25% on 1000 + 14% tax = 1425) passed.");
+
+  // 3b. Line-item markup (Price: 1000, Qty: 2, itemDiscount: -25%)
+  const lineItemMarkupTotal = invoiceEngine.calculateLineTotal(1000, 2, -25);
+  console.assert(lineItemMarkupTotal === 2500, `Line item markup total failed: expected 2500, got ${lineItemMarkupTotal}`);
+  const adjustedUnitPrice = lineItemMarkupTotal / 2;
+  console.assert(adjustedUnitPrice === 1250, `Adjusted unit price failed: expected 1250, got ${adjustedUnitPrice}`);
+
+  const lineItemMarkupTotals = invoiceEngine.calculateInvoiceTotals({
+    items: [{ price: 1000, quantity: 2, itemDiscount: -25 }],
+    discount: { type: 'fixed', fixed: 0 },
+    tax: { enabled: true, vat: 14 }
+  });
+  console.assert(lineItemMarkupTotals.subtotal === 2500, `Subtotal with line markup failed: expected 2500, got ${lineItemMarkupTotals.subtotal}`);
+  console.assert(lineItemMarkupTotals.taxAmount === 350, `Tax 14% on 2500 failed: expected 350, got ${lineItemMarkupTotals.taxAmount}`);
+  console.assert(lineItemMarkupTotals.total === 2850, `Total with line markup failed: expected 2850, got ${lineItemMarkupTotals.total}`);
+  console.log("✓ Line-item markup (Price=1000, Qty=2, ItemDiscount=-25% -> Adjusted Unit Price=1250, Line Total=2500, Total=2850) passed.");
 
   // 4. Validation Unit Tests
   console.log("\n--- 4. Validation Unit Tests ---");
