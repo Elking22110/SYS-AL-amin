@@ -50,38 +50,28 @@ class SyncManager {
       if (!projectId) return;
       
       const savedProjectId = localStorage.getItem('current_supabase_project_id');
+      
+      // إذا كانت هذه المرة الأولى، نحفظ المعرف وسنعمل بشكل طبيعي دون تزوير تواريخ التعديل
+      if (!savedProjectId) {
+        localStorage.setItem('current_supabase_project_id', projectId);
+        console.log(`ℹ️ [SyncManager] تهيئة معرف مشروع Supabase لأول مرة: "${projectId}"`);
+        return;
+      }
+
       if (savedProjectId !== projectId) {
-        console.log(`🔄 [SyncManager] تم اكتشاف تغيير في مشروع Supabase من "${savedProjectId}" إلى "${projectId}". تهيئة المزامنة الكاملة...`);
+        console.log(`🔄 [SyncManager] تم اكتشاف تغيير في مشروع Supabase من "${savedProjectId}" إلى "${projectId}". مسح مؤشرات التزامن لإعادة السحب الآمن...`);
         
-        // 1. مسح جميع مؤشرات آخر تزامن من localStorage
+        // 1. مسح جميع مؤشرات آخر تزامن من localStorage فقط لإجبار إعادة السحب من السحاب دون تزوير البيانات
         const keys = Object.keys(localStorage);
         keys.forEach(key => {
-          if (key.startsWith('last_sync_') || key.startsWith('last_sync_')) {
+          if (key.includes('last_sync_')) {
             localStorage.removeItem(key);
           }
         });
-        
-        // 2. تحديث جميع العناصر المحلية في IndexedDB لتكون pending لتُرفع للمشروع الجديد
-        const stores = ['categories', 'products', 'customers', 'shifts', 'sales', 'returns', 'users'];
-        for (const storeName of stores) {
-          try {
-            const records = await databaseManager.getAll(storeName);
-            if (records && records.length > 0) {
-              console.log(`🔄 [SyncManager] تجهيز ${records.length} سجل في ${storeName} للرفع إلى المشروع الجديد...`);
-              for (const record of records) {
-                record.sync_status = 'pending';
-                record.updated_at = new Date().toISOString();
-                await databaseManager.update(storeName, record);
-              }
-            }
-          } catch (err) {
-            console.error(`خطأ في تحديث جدول ${storeName} للمشروع الجديد:`, err);
-          }
-        }
-        
-        // 3. حفظ معرف المشروع الجديد
+
+        // 2. حفظ معرف المشروع الجديد بدون تعديل تواريخ التعديل (updated_at) أو فرض حالة pending على البيانات المتزامنة
         localStorage.setItem('current_supabase_project_id', projectId);
-        console.log(`✅ [SyncManager] اكتملت تهيئة الانتقال للمشروع الجديد.`);
+        console.log(`✅ [SyncManager] اكتملت تهيئة الانتقال للمشروع الجديد بطلب سحب جديد نقي.`);
       }
     } catch (err) {
       console.error('❌ [SyncManager] خطأ أثناء التحقق من تغيير المشروع:', err);
@@ -557,37 +547,216 @@ class SyncManager {
     await databaseManager.delete(storeName, String(itemId));
   }
 
-  // مزامنة جدول فردي
+  /**
+   * دالة دقيقة للمقارنة بين سجل السحاب والسجل المحلي
+   * القاعدة الصارمة: مقارنة رقم الإصدار version أولاً، وفي حال التساوي أو عدم وجوده يتم المقارنة بتاريخ التعديل updated_at
+   */
+  isCloudNewerThanLocal(cloudRecord, localRecord) {
+    if (!localRecord) return true;
+
+    // 1. مقارنة رقم الإصدار (version) عند وجوده
+    const cloudVer = typeof cloudRecord.version === 'number' ? cloudRecord.version : parseInt(cloudRecord.version || 0, 10);
+    const localVer = typeof localRecord.version === 'number' ? localRecord.version : parseInt(localRecord.version || 0, 10);
+
+    if (!isNaN(cloudVer) && !isNaN(localVer) && cloudVer > 0 && localVer > 0) {
+      if (cloudVer !== localVer) {
+        return cloudVer > localVer;
+      }
+    }
+
+    // 2. التراجع للتاريخ updated_at عند التساوي أو غياب الإصدار
+    const cloudTime = new Date(cloudRecord.updated_at || 0).getTime();
+    const localTime = new Date(localRecord.updated_at || 0).getTime();
+
+    const validCloudTime = isNaN(cloudTime) ? 0 : cloudTime;
+    const validLocalTime = isNaN(localTime) ? 0 : localTime;
+
+    return validCloudTime >= validLocalTime;
+  }
+
+  // مزامنة جدول فردي (Download-First مع Tombstones ومقارنة Version أولاً)
   async syncStore(storeName) {
     const traceId = getTracedProductId();
     if (storeName === 'products' && traceId) {
-      trace('syncManager', 'syncStore() START', null, null, { productId: traceId, file: 'syncManager.js', fn: 'syncStore' });
+      trace('syncManager', 'syncStore() START (Download-First)', null, null, { productId: traceId, file: 'syncManager.js', fn: 'syncStore' });
     }
+
     try {
-      // 1. معالجة وتصدير البيانات المعدلة محلياً (Pending & Deleted) إلى السحاب
-      const localRecords = await databaseManager.getAllForSync(storeName);
-      
+      // ----------------------------------------------------
+      // 1. استيراد وتحديث البيانات المعدلة في السحاب أولاً (Download-First)
+      // ----------------------------------------------------
+      let localRecords = await databaseManager.getAllForSync(storeName);
+      let localIdMap = new Map(localRecords.map(r => [String(r.id), r]));
+      let deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
+
+      const syncedRecords = localRecords.filter(r => r && r.sync_status === 'synced');
+      let lastLocalUpdate = new Date(0).toISOString();
+      if (syncedRecords.length > 0) {
+        const times = syncedRecords.map(r => {
+          const t = new Date(r.updated_at || 0).getTime();
+          return isNaN(t) ? 0 : t;
+        });
+        lastLocalUpdate = new Date(Math.max(...times)).toISOString();
+      }
+
+      // الجداول الصغيرة والجداول المفاهيمية: نسحب الكل لمنع split-brain
+      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories']);
+      const useFullPull = FULL_PULL_TABLES.has(storeName);
+
+      let cloudUpdates = [];
+      let hasMore = true;
+
+      if (useFullPull) {
+        let fullPullOffset = 0;
+        const fullPullPageSize = 1000;
+        while (hasMore) {
+          const { data, error: fetchError } = await supabase
+            .from(storeName)
+            .select('*')
+            .order('updated_at', { ascending: true })
+            .range(fullPullOffset, fullPullOffset + fullPullPageSize - 1);
+
+          if (fetchError) throw fetchError;
+          if (data && data.length > 0) {
+            for (const cloudItem of data) {
+              const cId = String(cloudItem.id ?? '');
+              if (deletedIdsSet.has(cId)) continue; // تخطي المحذوفات بشواهد محلية
+
+              const local = localIdMap.get(cId);
+              if (!local || this.isCloudNewerThanLocal(cloudItem, local)) {
+                cloudUpdates.push(cloudItem);
+              }
+            }
+            fullPullOffset += data.length;
+            hasMore = data.length === fullPullPageSize;
+          } else {
+            hasMore = false;
+          }
+        }
+      } else {
+        // سحب تدريجي للجداول الكبيرة (مثل المنتجات): نعتمد هامش أمان زماني ولا نعتمد على lastLocalUpdate فقط
+        let lastFetchedTime = lastLocalUpdate;
+        if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
+          try {
+            const ms = new Date(lastLocalUpdate).getTime();
+            if (!isNaN(ms)) lastFetchedTime = new Date(Math.max(0, ms - 60000)).toISOString(); // 1 minute overlap safety margin
+          } catch (_) {}
+        }
+        const pageSize = 1000;
+        while (hasMore) {
+          const { data, error: fetchError } = await supabase
+            .from(storeName)
+            .select('*')
+            .gt('updated_at', lastFetchedTime)
+            .order('updated_at', { ascending: true })
+            .limit(pageSize);
+
+          if (fetchError) throw fetchError;
+          if (data && data.length > 0) {
+            for (const cloudItem of data) {
+              const cId = String(cloudItem.id ?? '');
+              if (deletedIdsSet.has(cId)) continue;
+
+              const local = localIdMap.get(cId);
+              if (!local || this.isCloudNewerThanLocal(cloudItem, local)) {
+                cloudUpdates.push(cloudItem);
+              }
+            }
+            if (data.length < pageSize) {
+              hasMore = false;
+            } else {
+              lastFetchedTime = data[data.length - 1].updated_at;
+            }
+          } else {
+            hasMore = false;
+          }
+        }
+      }
+
+      // حفظ السجلات السحابية الأحدث في IndexedDB
+      if (cloudUpdates.length > 0) {
+        console.log(`📥 [SyncManager] تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
+        
+        for (const cloudItem of cloudUpdates) {
+          if (cloudItem.id !== undefined && cloudItem.id !== null) {
+            cloudItem.id = String(cloudItem.id);
+          }
+
+          if (deletedIdsSet.has(cloudItem.id)) continue;
+
+          const existingLocal = await databaseManager.get(storeName, cloudItem.id);
+          
+          // حماية التعديل المحلي المعلق للمستخدم فقط إذا كان إصداره/تاريخه المحلي أحدث من السحاب
+          if (existingLocal && existingLocal.sync_status === 'pending' && !this.isCloudNewerThanLocal(cloudItem, existingLocal)) {
+            console.log(`🛡️ [SyncManager] حفظ التعديل المحلي المعلق الأكثر حداثة لـ ${storeName}/${cloudItem.id}`);
+            continue;
+          }
+          
+          const localItem = this.mapCloudToLocal(storeName, cloudItem);
+          localItem.sync_status = 'synced';
+          await databaseManager.update(storeName, localItem);
+        }
+
+        // تحديث LocalStorage من IndexedDB للحفاظ على تزامن واجهة المستخدم
+        try {
+          const allItems = await databaseManager.getAll(storeName);
+          const keyMap = {
+            'categories': 'productCategories',
+            'products': 'products',
+            'customers': 'customers',
+            'sales': 'sales',
+            'shifts': 'shifts',
+            'returns': 'returns',
+            'users': 'users'
+          };
+          const localStorageKey = keyMap[storeName];
+          if (localStorageKey) {
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem(localStorageKey, JSON.stringify(allItems || []));
+            window.__bypass_sync_proxy__ = false;
+            
+            const eventMap = {
+              'categories': EVENTS.CATEGORIES_CHANGED,
+              'products': EVENTS.PRODUCTS_CHANGED,
+              'customers': EVENTS.CUSTOMERS_CHANGED,
+              'sales': EVENTS.INVOICES_CHANGED,
+              'shifts': EVENTS.SHIFTS_CHANGED,
+              'returns': EVENTS.RETURNS_CHANGED,
+              'users': EVENTS.USERS_CHANGED
+            };
+            const eventName = eventMap[storeName];
+            if (eventName) {
+              publish(eventName, { type: 'import', storeName });
+            }
+          }
+        } catch (err) {
+          console.error(`[SyncManager] Failed to update localStorage for ${storeName}:`, err);
+        }
+
+        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: storeName } }));
+      }
+
+      // ----------------------------------------------------
+      // 2. تصوير البيانات المعلقة وشواهد الحذف محلياً ورفعها إلى السحاب (Upload-Second)
+      // ----------------------------------------------------
+      localRecords = await databaseManager.getAllForSync(storeName);
       const pendingRecords = localRecords.filter(r => r && r.sync_status === 'pending');
       const deletedRecords = localRecords.filter(r => r && r.sync_status === 'deleted');
 
-      // رفع الإضافات والتعديلات على شكل دفعات (Batches) لزيادة السرعة والترشيد
+      // رفع الإضافات والتعديلات على شكل دفعات (Batches)
       if (pendingRecords.length > 0) {
         const batchData = [];
         const originalRecordsMap = new Map();
 
         for (const record of pendingRecords) {
-          // الحفاظ على توقيت التعديل الأصلي الموثوق للمستخدم لمنع استبدال تواريخ التعديلات بالوقت الحالي عند الرفع
           record.updated_at = record.updated_at || new Date().toISOString();
-
           const { sync_status, ...uploadData } = record;
           uploadData.id = String(record.id);
           
-          // استبدال أسماء الأعمدة لتطابق PostgreSQL CamelCase/SnakeCase
           if (storeName === 'categories') {
             uploadData.parent_id = record.parentId;
             delete uploadData.parentId;
-            delete uploadData.description; // حقل محلي فقط، لا يوجد في Supabase
-            // أعمدة السكيما فقط — منع PGRST204 ومسار الرفع الفردي البطيء
+            delete uploadData.description;
             const cat = {
               id: String(record.id),
               name: uploadData.name,
@@ -629,6 +798,7 @@ class SyncManager {
               image_path: imageVal,
               updated_at: uploadData.updated_at || new Date().toISOString()
             };
+            if (record.version !== undefined) prod.version = record.version;
             Object.keys(uploadData).forEach(k => delete uploadData[k]);
             Object.assign(uploadData, prod);
           } else if (storeName === 'customers') {
@@ -638,11 +808,6 @@ class SyncManager {
             delete uploadData.totalSpent;
             delete uploadData.lastVisit;
             delete uploadData.joinDate;
-            // الأعمدة المضافة في السكيما الجديدة - نتأكد من إرسالها بشكل صحيح
-            if (uploadData.address === undefined) delete uploadData.address;
-            if (uploadData.type === undefined) delete uploadData.type;
-            if (uploadData.status === undefined) delete uploadData.status;
-            if (uploadData.debt === undefined) delete uploadData.debt;
 
             const cust = {
               id: String(record.id),
@@ -669,10 +834,7 @@ class SyncManager {
             uploadData.tax_amount = record.taxAmount;
             uploadData.payment_method = record.paymentMethod;
             uploadData.payment_status = record.paymentStatus;
-            // دمج التسويات داخل down_payment لأن السكيما لا تحتوي عمود settlements
-            const downPayment = record.downPayment && typeof record.downPayment === 'object'
-              ? { ...record.downPayment }
-              : {};
+            const downPayment = record.downPayment && typeof record.downPayment === 'object' ? { ...record.downPayment } : {};
             if (record.settlements) downPayment._settlements = record.settlements;
             if (record.settlement) downPayment._settlement = record.settlement;
             uploadData.down_payment = downPayment;
@@ -695,10 +857,7 @@ class SyncManager {
             Object.keys(uploadData).forEach(k => delete uploadData[k]);
             Object.assign(uploadData, sale);
           } else if (storeName === 'shifts') {
-            // تضمين فواتير الوردية داخل sales_details JSONB حتى تتزامن التقارير عبر الأجهزة
-            const details = (record.salesDetails && typeof record.salesDetails === 'object')
-              ? { ...record.salesDetails }
-              : {};
+            const details = (record.salesDetails && typeof record.salesDetails === 'object') ? { ...record.salesDetails } : {};
             if (Array.isArray(record.sales) && record.sales.length > 0) {
               details._invoices = record.sales;
             }
@@ -737,7 +896,6 @@ class SyncManager {
             delete uploadData.phone;
             const effUser = uploadData.username || uploadData.name || String(record.id);
             if (!effUser || !uploadData.password) {
-              // مستخدم نظام (مثل admin) بدون كلمة مرور - نعلّمه كـ synced محلياً لمنع تكرار المحاولة في كل دورة
               try {
                 const sysUser = { ...record, sync_status: 'synced' };
                 const tx = databaseManager.db.transaction(['users'], 'readwrite');
@@ -752,7 +910,6 @@ class SyncManager {
           originalRecordsMap.set(String(record.id), record);
         }
 
-        // تقسيم البيانات إلى دفعات (مثلاً كل دفعة 200 سجل) لتجنب تجاوز قيود حجم الطلب
         const batchSize = 200;
         for (let i = 0; i < batchData.length; i += batchSize) {
           const chunk = batchData.slice(i, i + batchSize);
@@ -768,13 +925,10 @@ class SyncManager {
             error = { message: String(timeoutErr.message || timeoutErr), code: 'TIMEOUT' };
           }
           
-          // في حال فشل الدفعة بسبب عمود مفقود (PGRST204) أو غيره، نقوم بالرفع الفردي التراجعي كاحتياط
           if (error) {
             console.warn(`⚠️ [SyncManager] فشل رفع دفعة لـ ${storeName}، الانتقال للرفع الفردي التراجعي...`, error);
-            // عند الـ timeout نتخطى الرفع الفردي لـ 200 سجل حتى لا نعلق دقائق
-            if (error.code === 'TIMEOUT') {
-              continue;
-            }
+            if (error.code === 'TIMEOUT') continue;
+
             for (const uploadItemData of chunk) {
               let singleUploadData = { ...uploadItemData };
               let { error: singleError } = await supabase.from(storeName).upsert(singleUploadData);
@@ -788,17 +942,6 @@ class SyncManager {
                   if (singleUploadData.total_spent !== undefined) safeData.total_spent = singleUploadData.total_spent;
                   if (singleUploadData.last_visit) safeData.last_visit = singleUploadData.last_visit;
                   if (singleUploadData.join_date) safeData.join_date = singleUploadData.join_date;
-                  
-                  const extendedFields = ['address', 'type', 'status', 'debt'];
-                  for (const field of extendedFields) {
-                    if (singleUploadData[field] !== undefined) {
-                      const testData = { ...safeData, [field]: singleUploadData[field] };
-                      const { error: testErr } = await supabase.from(storeName).upsert(testData);
-                      if (!testErr) {
-                        safeData[field] = singleUploadData[field];
-                      }
-                    }
-                  }
                 } else if (storeName === 'users') {
                   if (singleUploadData.username) safeData.username = singleUploadData.username;
                   if (singleUploadData.email) safeData.email = singleUploadData.email;
@@ -812,28 +955,19 @@ class SyncManager {
               if (!singleError) {
                 const record = originalRecordsMap.get(String(singleUploadData.id));
                 if (record) {
-                  if (storeName === 'products' && traceId && String(record.id) === traceId) {
-                    traceProductObject('syncManager', 'syncStore() upload OK → synced', record, { ...record, sync_status: 'synced' }, { file: 'syncManager.js', fn: 'syncStore', phase: 'upload' });
-                  }
                   record.sync_status = 'synced';
                   const transaction = databaseManager.db.transaction([storeName], 'readwrite');
                   const store = transaction.objectStore(storeName);
                   store.put(record);
                 }
-              } else {
-                console.error(`❌ خطأ في رفع الصنف ${singleUploadData.id} في جدول ${storeName}:`, singleError);
               }
             }
           } else {
-            // نجاح الدفعة بأكملها -> تحديث الحالة محلياً لـ synced دفعة واحدة
             const transaction = databaseManager.db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
             for (const uploadItem of chunk) {
               const record = originalRecordsMap.get(String(uploadItem.id));
               if (record) {
-                if (storeName === 'products' && traceId && String(record.id) === traceId) {
-                  traceProductObject('syncManager', 'syncStore() batch upload OK → synced', record, { ...record, sync_status: 'synced' }, { file: 'syncManager.js', fn: 'syncStore', phase: 'upload-batch' });
-                }
                 record.sync_status = 'synced';
                 store.put(record);
               }
@@ -843,7 +977,7 @@ class SyncManager {
         }
       }
 
-      // معالجة المرتجعات والمحذوفات في السحاب
+      // 3. رفع معالجة شواهد الحذف (Deleted Tombstones) إلى السحاب ومسح الشاهد فيزياءً عند النجاح
       for (const record of deletedRecords) {
         if (storeName === 'customers') {
           try {
@@ -851,340 +985,19 @@ class SyncManager {
             await supabase.from('returns').update({ customer_id: null }).eq('customer_id', record.id);
           } catch (_) {}
         }
+        
+        console.log(`🗑️ [SyncManager] إرسال طلب حذف شاهد (Tombstone) لسحابة ${storeName}/${record.id}`);
         const { error } = await supabase.from(storeName).delete().eq('id', record.id);
         if (!error || error.code === 'PGRST116' || error.code === '23503') {
           await databaseManager.deletePhysical(storeName, record.id);
+          console.log(`✅ [SyncManager] تم تأكيد الحذف ومسح الشاهد فيزياءً لـ ${storeName}/${record.id}`);
         } else {
-          console.error(`خطأ في حذف الصنف ${record.id} من سحابة ${storeName}:`, error);
+          console.error(`❌ خطأ في حذف الصنف ${record.id} من سحابة ${storeName}:`, error);
         }
-      }
-
-      // 2. استيراد وتحديث البيانات المعدلة في السحاب للأسفل (Download) - معالجة الصفحات لدعم أي عدد من السجلات
-      const syncedRecords = localRecords.filter(r => r && r.sync_status === 'synced');
-      let lastLocalUpdate = new Date(0).toISOString();
-      if (syncedRecords.length > 0) {
-        const times = syncedRecords.map(r => {
-          const t = new Date(r.updated_at || 0).getTime();
-          return isNaN(t) ? 0 : t;
-        });
-        lastLocalUpdate = new Date(Math.max(...times)).toISOString();
-      }
-      
-      if (syncedRecords.length < localRecords.length || lastLocalUpdate === new Date(0).toISOString()) {
-        console.log(`🔍 [SyncManager] جدول: ${storeName} | السجلات المحلية: ${localRecords.length} | المتزامنة: ${syncedRecords.length} | آخر تزامن: ${lastLocalUpdate}`);
-      }
-
-      // جداول صغيرة: نسحب الكل لأن التصفية بالوقت تُخفي السجلات السحابية الأقدم (split-brain).
-      // مثال: جهاز لديه عميل updated_at=24-07 لن يرى عميل سحابي updated_at=19-07 أبداً!
-      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users']);
-      const useFullPull = FULL_PULL_TABLES.has(storeName);
-
-      let cloudUpdates = [];
-      let hasMore = true;
-
-      // بناء مجموعة IDs المحذوفة محلياً لمنع استعادتها أثناء التحميل السحابي
-      const deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
-
-      if (useFullPull) {
-        // سحب كامل للجداول الصغيرة: جلب جميع السجلات ومقارنتها بالمحلي
-        const localIdMap = new Map(localRecords.map(r => [String(r.id), r]));
-        const cloudIdSet = new Set();
-        let fullPullOffset = 0;
-        const fullPullPageSize = 1000;
-        while (hasMore) {
-          const { data, error: fetchError } = await supabase
-            .from(storeName)
-            .select('*')
-            .order('updated_at', { ascending: true })
-            .range(fullPullOffset, fullPullOffset + fullPullPageSize - 1);
-          if (fetchError) throw fetchError;
-          if (data && data.length > 0) {
-            for (const cloudItem of data) {
-              const cId = String(cloudItem.id ?? '');
-              cloudIdSet.add(cId);
-
-              // تخطي السجلات المحذوفة محلياً تماماً وعدم إعادة استعادتها أبداً
-              if (deletedIdsSet.has(cId)) {
-                continue;
-              }
-
-              const local = localIdMap.get(cId);
-              const cloudTs = new Date(cloudItem.updated_at || 0).getTime();
-              const localTs = local ? new Date(local.updated_at || 0).getTime() : 0;
-              const localIsPending = local && local.sync_status === 'pending';
-              const localIsDeleted = local && local.sync_status === 'deleted';
-
-              if (!localIsDeleted) {
-                if (!local || (!localIsPending && cloudTs > localTs)) {
-                  cloudUpdates.push(cloudItem);
-                }
-              }
-            }
-            fullPullOffset += data.length;
-            hasMore = data.length === fullPullPageSize;
-          } else {
-            hasMore = false;
-          }
-        }
-
-        // اكتشاف السجلات المحلية النشطة غير الموجودة بالسحاب وإعدادها للرفع (مزامنة ثنائية الاتجاه)
-        for (const localRecord of localRecords) {
-          const lId = String(localRecord.id ?? '');
-          if (localRecord.sync_status !== 'deleted' && !cloudIdSet.has(lId)) {
-            if (localRecord.sync_status !== 'pending') {
-              console.log(`📤 [SyncManager] رفع سجل محلي مفقود بالسحاب لـ ${storeName}/${lId}`);
-              localRecord.sync_status = 'pending';
-              try {
-                const tx = databaseManager.db.transaction([storeName], 'readwrite');
-                tx.objectStore(storeName).put(localRecord);
-              } catch (_) {}
-              if (!pendingRecords.some(p => String(p.id) === lId)) {
-                pendingRecords.push(localRecord);
-              }
-            }
-          }
-        }
-      } else {
-        // سحب تدريجي للجداول الكبيرة (منتجات، فئات): فقط السجلات الأحدث
-        if (storeName === 'products' && traceId) {
-          trace('syncManager', 'syncStore() incremental download', null, { lastLocalUpdate }, { productId: traceId, useFullPull: false, file: 'syncManager.js' });
-        }
-        let lastFetchedTime = lastLocalUpdate;
-        if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
-          try {
-            const ms = new Date(lastLocalUpdate).getTime();
-            if (!isNaN(ms)) lastFetchedTime = new Date(ms + 1).toISOString();
-          } catch (_) {}
-        }
-        const pageSize = 1000;
-        while (hasMore) {
-          const { data, error: fetchError } = await supabase
-            .from(storeName)
-            .select('*')
-            .gt('updated_at', lastFetchedTime)
-            .order('updated_at', { ascending: true })
-            .limit(pageSize);
-          if (fetchError) throw fetchError;
-          if (data && data.length > 0) {
-            cloudUpdates = [...cloudUpdates, ...data];
-            if (data.length < pageSize) {
-              hasMore = false;
-            } else {
-              lastFetchedTime = data[data.length - 1].updated_at;
-            }
-          } else {
-            hasMore = false;
-          }
-        }
-      }
-
-
-      if (cloudUpdates.length > 0) {
-        console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
-        
-        for (const cloudItem of cloudUpdates) {
-          // تحويل ID من رقم إلى نص لمنع التكرار في IndexedDB (أصل مشكلة التضاعف)
-          if (cloudItem.id !== undefined && cloudItem.id !== null) {
-            cloudItem.id = String(cloudItem.id);
-          }
-
-          // تخطي السجلات المحذوفة محلياً — لا نُعيدها من السحاب أبداً
-          if (deletedIdsSet.has(cloudItem.id)) {
-            console.log(`🚫 [SyncManager] تخطي استعادة سجل محذوف محلياً: ${storeName}/${cloudItem.id}`);
-            continue;
-          }
-
-          // جلب السجل المحلي الموجود للحفاظ على الحقول المحلية وتجنب دهس تعديلات المستخدم المعلقة
-          const existingLocal = await databaseManager.get(storeName, cloudItem.id);
-          
-          if (existingLocal && existingLocal.sync_status === 'pending') {
-            console.log(`🛡️ [SyncManager] حفظ التعديل المحلي المعلق للمستخدم من الدهس بالسحاب: ${storeName}/${cloudItem.id}`);
-            if (storeName === 'products') {
-              traceProductObject('syncManager', 'syncStore() download SKIPPED pending', existingLocal, cloudItem, { file: 'syncManager.js', fn: 'syncStore', phase: 'download' });
-            }
-            continue;
-          }
-          
-          if (storeName === 'products' && traceId && String(cloudItem.id) === traceId) {
-            traceSupabaseResponse('syncManager.syncStore()', cloudItem.id, cloudItem, { phase: 'download', useFullPull });
-            traceProductObject('syncManager', 'syncStore() download OVERWRITE IndexedDB', existingLocal, cloudItem, { file: 'syncManager.js', fn: 'syncStore', phase: 'download', useFullPull });
-          }
-          
-          // تطبيع أسماء الأعمدة لتطابق واجهة React (تحويل من SnakeCase إلى CamelCase)
-          const localItem = {
-            ...(existingLocal || {}),
-            ...cloudItem,
-            id: cloudItem.id, // ضمان أن الـ id نصي دائماً
-            sync_status: 'synced'
-          };
-          
-          if (storeName === 'categories') {
-            localItem.parentId = cloudItem.parent_id;
-            delete localItem.parent_id;
-          } else if (storeName === 'products') {
-            localItem.mainCategoryId = cloudItem.main_category_id;
-            localItem.subCategoryId = cloudItem.sub_category_id;
-
-            // استعادة اسم الفئة النصية (category) من قائمة الفئات لعدم ضياع التبويب
-            try {
-              const catList = JSON.parse(localStorage.getItem('productCategories') || '[]');
-              const mainCat = catList.find(c => String(c.id) === String(cloudItem.main_category_id) || c.name === cloudItem.main_category_id);
-              const subCat = cloudItem.sub_category_id ? catList.find(c => String(c.id) === String(cloudItem.sub_category_id) || c.name === cloudItem.sub_category_id) : null;
-              if (subCat && subCat.name) {
-                localItem.category = subCat.name;
-              } else if (mainCat && mainCat.name) {
-                localItem.category = mainCat.name;
-              }
-            } catch (_) {}
-            
-            if (cloudItem.image_path) {
-              if (typeof cloudItem.image_path === 'string' && cloudItem.image_path.startsWith('{')) {
-                try {
-                  const meta = JSON.parse(cloudItem.image_path);
-                  localItem.customColor = meta.color || '';
-                  if (meta.code) localItem.supplierCode = meta.code;
-                  localItem.imagePath = meta.img || '';
-                } catch (_) {
-                  localItem.imagePath = cloudItem.image_path;
-                }
-              } else {
-                localItem.imagePath = cloudItem.image_path;
-              }
-            } else if (!localItem.customColor) {
-              localItem.customColor = '';
-            }
-
-            if (localItem.minStock === undefined) {
-              localItem.minStock = 5;
-            }
-            delete localItem.main_category_id;
-            delete localItem.sub_category_id;
-            delete localItem.image_path;
-            delete localItem.custom_color;
-          } else if (storeName === 'customers') {
-            if (cloudItem.total_spent !== undefined) localItem.totalSpent = cloudItem.total_spent;
-            if (cloudItem.last_visit !== undefined) localItem.lastVisit = cloudItem.last_visit;
-            if (cloudItem.join_date !== undefined) localItem.joinDate = cloudItem.join_date;
-            delete localItem.total_spent;
-            delete localItem.last_visit;
-            delete localItem.join_date;
-          } else if (storeName === 'sales') {
-            localItem.shiftId = cloudItem.shift_id;
-            localItem.customerId = cloudItem.customer_id;
-            localItem.discountAmount = cloudItem.discount_amount;
-            localItem.taxAmount = cloudItem.tax_amount;
-            localItem.paymentMethod = cloudItem.payment_method;
-            localItem.paymentStatus = cloudItem.payment_status;
-            if (cloudItem.down_payment && typeof cloudItem.down_payment === 'object') {
-              const dp = { ...cloudItem.down_payment };
-              if (dp._settlements) { localItem.settlements = dp._settlements; delete dp._settlements; }
-              if (dp._settlement) { localItem.settlement = dp._settlement; delete dp._settlement; }
-              localItem.downPayment = dp;
-            } else {
-              localItem.downPayment = cloudItem.down_payment;
-            }
-            delete localItem.shift_id;
-            delete localItem.customer_id;
-            delete localItem.discount_amount;
-            delete localItem.tax_amount;
-            delete localItem.payment_method;
-            delete localItem.payment_status;
-            delete localItem.down_payment;
-          } else if (storeName === 'shifts') {
-            localItem.startTime = cloudItem.start_time;
-            localItem.endTime = cloudItem.end_time;
-            localItem.cashDrawer = {
-              openingAmount: Number(cloudItem.opening_amount) || 0,
-              expectedAmount: Number(cloudItem.expected_amount) || 0,
-              closingAmount: Number(cloudItem.closing_amount) || 0
-            };
-            localItem.cashier = { username: cloudItem.cashier_username };
-            if (cloudItem.sales_details && typeof cloudItem.sales_details === 'object') {
-              const details = { ...cloudItem.sales_details };
-              if (Array.isArray(details._invoices)) {
-                localItem.sales = details._invoices;
-                delete details._invoices;
-              }
-              localItem.salesDetails = details;
-            } else {
-              localItem.salesDetails = cloudItem.sales_details;
-            }
-            localItem.returns = cloudItem.returns_data;
-            delete localItem.start_time;
-            delete localItem.end_time;
-            delete localItem.opening_amount;
-            delete localItem.expected_amount;
-            delete localItem.closing_amount;
-            delete localItem.cashier_username;
-            delete localItem.sales_details;
-            delete localItem.returns_data;
-          } else if (storeName === 'returns') {
-            localItem.refInvoiceId = cloudItem.ref_invoice_id;
-            localItem.shiftId = cloudItem.shift_id;
-            delete localItem.ref_invoice_id;
-            delete localItem.shift_id;
-          } else if (storeName === 'users') {
-            if (cloudItem.created_at !== undefined) { localItem.createdAt = cloudItem.created_at; delete localItem.created_at; }
-            if (cloudItem.last_login !== undefined) { localItem.lastLogin = cloudItem.last_login; delete localItem.last_login; }
-          }
-
-          // حفظ محلياً في IndexedDB دون إطلاق حدث تزامن لمنع الدوران اللانهائي
-          const transaction = databaseManager.db.transaction([storeName], 'readwrite');
-          const store = transaction.objectStore(storeName);
-          store.put(localItem);
-        }
-
-        // تحديث LocalStorage من IndexedDB للحفاظ على تزامن واجهة المستخدم اللحظي
-        try {
-          const allItems = await databaseManager.getAll(storeName);
-          const keyMap = {
-            'categories': 'productCategories',
-            'products': 'products',
-            'customers': 'customers',
-            'sales': 'sales',
-            'shifts': 'shifts',
-            'returns': 'returns',
-            'users': 'users'
-          };
-          const localStorageKey = keyMap[storeName];
-          if (localStorageKey) {
-            // دمج العناصر في IndexedDB مع العناصر الحالية في localStorage
-            // لمنع فقدان العناصر الجديدة التي لم تُحفظ في IndexedDB بعد (بسبب تأخر الـ proxy)
-            // اعتماد العناصر النشطة من IndexedDB مباشرة بدون إعادة الدمج لمنع استعادة العناصر المحذوفة
-            const mergedItems = allItems;
-            if (storeName === 'products' && traceId) {
-              let oldLs = [];
-              try { oldLs = JSON.parse(localStorage.getItem('products') || '[]'); } catch (_) {}
-              traceProductsArray('syncManager', 'syncStore() localStorage.setItem after download', oldLs, mergedItems, { file: 'syncManager.js', fn: 'syncStore', phase: 'post-download-ls' });
-            }
-            window.__bypass_sync_proxy__ = true;
-            localStorage.setItem(localStorageKey, JSON.stringify(mergedItems));
-            window.__bypass_sync_proxy__ = false;
-            
-            const eventMap = {
-              'categories': EVENTS.CATEGORIES_CHANGED,
-              'products': EVENTS.PRODUCTS_CHANGED,
-              'customers': EVENTS.CUSTOMERS_CHANGED,
-              'sales': EVENTS.INVOICES_CHANGED,
-              'shifts': EVENTS.SHIFTS_CHANGED,
-              'returns': EVENTS.RETURNS_CHANGED,
-              'users': EVENTS.USERS_CHANGED
-            };
-            const eventName = eventMap[storeName];
-            if (eventName) {
-              publish(eventName, { type: 'import', storeName });
-            }
-          }
-        } catch (err) {
-          console.error(`[SyncManager] Failed to update localStorage for ${storeName}:`, err);
-        }
-
-        // إطلاق حدث للتطبيق العام لتحديث واجهاته بالبيانات الجديدة المستوردة
-        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: storeName } }));
       }
 
     } catch (e) {
-      console.error(`خطأ في مزامنة جدول ${storeName}:`, e);
+      console.error(`❌ خطأ في مزامنة جدول ${storeName}:`, e);
       throw e;
     }
   }

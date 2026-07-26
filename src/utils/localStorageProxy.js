@@ -167,7 +167,16 @@ localStorage.setItem = function(key, value) {
                         }
                     }
 
-                    // المحذوفات تتم الآن صراحة عبر databaseManager.delete() لمنع تدمير البيانات عند تصفية المصفوفات في الواجهة
+                    // تفعيل شواهد الحذف (Tombstones) لجميع العناصر المحذوفة من localStorage لضمان مزامنة الحذف مع السحاب
+                    if (deleted.length > 0) {
+                        for (const item of deleted) {
+                            if (item && item.id) {
+                                console.log(`🗑️ [SyncProxy] إنشاء شاهد حذف (Tombstone) لـ ${idbStore}/${item.id}`);
+                                await databaseManager.delete(idbStore, item.id);
+                                dbMutated = true;
+                            }
+                        }
+                    }
 
                     // إشعار مدير المزامنة السحابية (syncManager)
                     if (dbMutated) {

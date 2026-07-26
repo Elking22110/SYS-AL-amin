@@ -797,7 +797,12 @@ const Products = () => {
     }
 
     if (window.confirm(`هل أنت متأكد من حذف فئة "${categoryName}"؟`)) {
-      const updatedCategories = categories.filter(cat => cat.name !== categoryName);
+      const targetCat = categories.find(cat => cat.name === categoryName || String(cat.id) === String(categoryName));
+      if (targetCat && targetCat.id) {
+        databaseManager.delete('categories', String(targetCat.id)).catch(err => console.error('Error creating category deletion tombstone:', err));
+      }
+
+      const updatedCategories = categories.filter(cat => cat.name !== categoryName && String(cat.id) !== String(categoryName));
       setCategories(updatedCategories);
 
       // حفظ الفئات في localStorage
