@@ -2016,26 +2016,25 @@ const Products = () => {
                   id: catIdStr,
                   name: newName,
                   parent_id: catToEdit ? catToEdit.parent_id : null,
-                  updated_at: new Date().toISOString(),
-                  sync_status: 'pending'
+                  updated_at: new Date().toISOString()
                 };
 
                 const updatedCategories = categories.map(c => (c.name === selectedCategory || String(c.id) === catIdStr) ? updatedCategoryObj : c);
                 setCategories(updatedCategories);
                 
-                // 1. تحديث صريح للفئة في IndexedDB
-                await databaseManager.update('categories', updatedCategoryObj);
+                // 1. تحديث صريح للفئة في IndexedDB عبر syncManager
+                await syncManager.markPending('categories', updatedCategoryObj);
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
 
-                // 2. تحديث المنتجات التابعة
-                const updatedProductsLocal = products.map(p => {
+                // 2. تحديث المنتجات التابعة عبر syncManager
+                const updatedProductsLocal = await Promise.all(products.map(async p => {
                   if (p.category === selectedCategory || String(p.subCategoryId) === catIdStr || String(p.mainCategoryId) === catIdStr) {
-                    const up = { ...p, category: newName, updated_at: new Date().toISOString(), sync_status: 'pending' };
-                    databaseManager.update('products', up).catch(err => console.error('خطأ تحديث منتج تكتيكي:', err));
+                    const up = { ...p, category: newName, updated_at: new Date().toISOString() };
+                    await syncManager.markPending('products', up).catch(err => console.error('خطأ تحديث منتج تكتيكي:', err));
                     return up;
                   }
                   return p;
-                });
+                }));
                 setProducts(updatedProductsLocal);
                 localStorage.setItem('products', JSON.stringify(updatedProductsLocal));
                 storageOptimizer.clearCache();

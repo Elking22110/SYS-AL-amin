@@ -151,7 +151,7 @@ const Suppliers = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const handleAddSupplier = () => {
+  const handleAddSupplier = async () => {
     if (newSupplier.name && newSupplier.phone) {
       const supplier = {
         id: String(Date.now()),
@@ -161,18 +161,17 @@ const Suppliers = () => {
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
         status: 'جديد',
-        updated_at: new Date().toISOString(),
-        sync_status: 'pending'
+        updated_at: new Date().toISOString()
       };
       const updatedSuppliers = [...suppliers, supplier];
       setSuppliers(updatedSuppliers);
 
-      // 1. التحديث الصريح لـ IndexedDB
-      databaseManager.update('suppliers', supplier).catch(err => console.error('خطأ تحديث المورد في IDB:', err));
+      // 1. التحديث الصريح لـ IndexedDB عبر syncManager
+      await syncManager.markPending('suppliers', supplier).catch(err => console.error('خطأ تحديث المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // 2. المزامنة الفورية للسحابة
-      syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة المورد خلفياً:', err));
+      await syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة المورد خلفياً:', err));
 
       // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
@@ -202,24 +201,23 @@ const Suppliers = () => {
     setShowAddModal(true);
   };
 
-  const handleUpdateSupplier = () => {
+  const handleUpdateSupplier = async () => {
     if (editingSupplier && newSupplier.name && newSupplier.phone) {
       const updatedSupplier = {
         ...editingSupplier,
         ...newSupplier,
         id: String(editingSupplier.id),
-        updated_at: new Date().toISOString(),
-        sync_status: 'pending'
+        updated_at: new Date().toISOString()
       };
       const updatedSuppliers = suppliers.map(c => String(c.id) === String(editingSupplier.id) ? updatedSupplier : c);
       setSuppliers(updatedSuppliers);
 
-      // 1. التحديث الصريح لـ IndexedDB
-      databaseManager.update('suppliers', updatedSupplier).catch(err => console.error('خطأ تعديل المورد في IDB:', err));
+      // 1. التحديث الصريح لـ IndexedDB عبر syncManager
+      await syncManager.markPending('suppliers', updatedSupplier).catch(err => console.error('خطأ تعديل المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // 2. المزامنة الفورية للسحابة
-      syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة تعديل المورد خلفياً:', err));
+      await syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة تعديل المورد خلفياً:', err));
 
       // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {

@@ -113,7 +113,7 @@ const Customers = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleAddCustomer = () => {
+  const handleAddCustomer = async () => {
     if (newCustomer.name && newCustomer.phone) {
       const customer = {
         id: String(Date.now()),
@@ -123,18 +123,17 @@ const Customers = () => {
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
         status: 'جديد',
-        updated_at: new Date().toISOString(),
-        sync_status: 'pending'
+        updated_at: new Date().toISOString()
       };
       const updatedCustomers = [...customers, customer];
       setCustomers(updatedCustomers);
 
-      // 1. التحديث الصريح لـ IndexedDB
-      databaseManager.update('customers', customer).catch(err => console.error('خطأ إدراج عميل في IDB:', err));
+      // 1. التحديث الصريح لـ IndexedDB من خلال syncManager
+      await syncManager.markPending('customers', customer).catch(err => console.error('خطأ إدراج عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
       // 2. المزامنة الفورية للسحابة
-      syncManager.syncStore('customers').catch(err => console.warn('مزامنة إضافة عميل خلفياً:', err));
+      await syncManager.syncStore('customers').catch(err => console.warn('مزامنة إضافة عميل خلفياً:', err));
 
       // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {
@@ -168,24 +167,23 @@ const Customers = () => {
     setShowAddModal(true);
   };
 
-  const handleUpdateCustomer = () => {
+  const handleUpdateCustomer = async () => {
     if (editingCustomer && newCustomer.name && newCustomer.phone) {
       const updatedCustomer = {
         ...editingCustomer,
         ...newCustomer,
         id: String(editingCustomer.id),
-        updated_at: new Date().toISOString(),
-        sync_status: 'pending'
+        updated_at: new Date().toISOString()
       };
       const updatedCustomers = customers.map(c => String(c.id) === String(editingCustomer.id) ? updatedCustomer : c);
       setCustomers(updatedCustomers);
 
-      // 1. التحديث الصريح لـ IndexedDB
-      databaseManager.update('customers', updatedCustomer).catch(err => console.error('خطأ تعديل عميل في IDB:', err));
+      // 1. التحديث الصريح لـ IndexedDB من خلال syncManager
+      await syncManager.markPending('customers', updatedCustomer).catch(err => console.error('خطأ تعديل عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
       // 2. المزامنة الفورية للسحابة
-      syncManager.syncStore('customers').catch(err => console.warn('مزامنة تعديل عميل خلفياً:', err));
+      await syncManager.syncStore('customers').catch(err => console.warn('مزامنة تعديل عميل خلفياً:', err));
 
       // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {

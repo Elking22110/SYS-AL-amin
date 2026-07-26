@@ -82,7 +82,7 @@ const Expenses = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         soundManager.play('click');
 
@@ -116,12 +116,12 @@ const Expenses = () => {
             notifySuccess('نجاح', 'تم تسجيل المصروف بنجاح');
         }
 
-        // 1. التحديث الصريح لـ IndexedDB
-        databaseManager.update('expenses', newExpense).catch(err => console.error('خطأ تسجيل المصروف في IDB:', err));
+        // 1. التحديث الصريح لـ IndexedDB عبر syncManager
+        await syncManager.markPending('expenses', newExpense).catch(err => console.error('خطأ تسجيل المصروف في IDB:', err));
         saveExpenses(updatedExpenses);
 
         // 2. المزامنة الفورية للسحابة
-        syncManager.syncStore('expenses').catch(err => console.warn('مزامنة المصروف خلفياً:', err));
+        await syncManager.syncStore('expenses').catch(err => console.warn('مزامنة المصروف خلفياً:', err));
 
         closeModal();
     };

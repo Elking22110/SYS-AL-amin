@@ -170,7 +170,6 @@ class DatabaseManager {
     }
 
     if (SYNCABLE_STORES.includes(storeName)) {
-      data.sync_status = data.sync_status || 'pending';
       data.updated_at = data.updated_at || new Date().toISOString();
     }
 
@@ -210,7 +209,6 @@ class DatabaseManager {
     }
 
     if (SYNCABLE_STORES.includes(storeName)) {
-      data.sync_status = data.sync_status || 'synced';
       data.updated_at = data.updated_at || new Date().toISOString();
     }
 

@@ -570,7 +570,7 @@ const DataLoader = ({ children }) => {
                   if (cleanP.hasOwnProperty('category')) {
                     delete cleanP.category;
                   }
-                  cleanP.sync_status = 'pending';
+                  cleanP.sync_status = 'synced';
                   cleanP.updated_at = new Date().toISOString();
                   await databaseManager.update('products', cleanP);
                 }
@@ -786,7 +786,7 @@ const DataLoader = ({ children }) => {
                     barcode: codes.barcode,
                     sku:     codes.sku,
                     supplierCode: codes.supplierCode,
-                    sync_status: 'pending', // إطلاق مزامنة سحابية
+                    sync_status: 'synced', // إطلاق مزامنة سحابية
                     updated_at: nowStr      // تحديث وقت التعديل
                   };
                   await databaseManager.update('products', updated);
@@ -798,7 +798,7 @@ const DataLoader = ({ children }) => {
                       barcode: null,
                       sku: null,
                       supplierCode: null,
-                      sync_status: 'pending',
+                      sync_status: 'synced',
                       updated_at: nowStr
                     };
                     await databaseManager.update('products', updated);
@@ -835,7 +835,7 @@ const DataLoader = ({ children }) => {
                       barcode: codes.barcode, 
                       sku: codes.sku,
                       supplierCode: codes.supplierCode,
-                      sync_status: 'pending',
+                      sync_status: 'synced',
                       updated_at: nowStr
                     };
                   } else {
@@ -845,7 +845,7 @@ const DataLoader = ({ children }) => {
                         barcode: null,
                         sku: null,
                         supplierCode: null,
-                        sync_status: 'pending',
+                        sync_status: 'synced',
                         updated_at: nowStr
                       };
                     }

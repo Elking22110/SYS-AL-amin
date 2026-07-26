@@ -103,10 +103,7 @@ const DataManager = () => {
         const all = await databaseManager.getAllForSync(store);
         for (const record of all) {
           if (record && record.sync_status !== 'pending' && record.sync_status !== 'deleted') {
-            record.sync_status = 'pending';
-            record.updated_at = record.updated_at || new Date().toISOString();
-            const tx = databaseManager.db.transaction([store], 'readwrite');
-            tx.objectStore(store).put(record);
+            await syncManager.markPending(store, record);
             totalMarked++;
           }
         }
