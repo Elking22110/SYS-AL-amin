@@ -23,7 +23,7 @@ class SyncManager {
       
       // الاستماع لتعديلات قاعدة البيانات المحلية
       window.addEventListener('databaseSyncTrigger', (e) => {
-        console.log(`🔄 تعديل محلي في الجدول ${e.detail?.storeName}، بدء مزامنة خلفية...`);
+        if (window.__isCloudSyncing) return;
         this.triggerSync();
       });
 
@@ -215,9 +215,9 @@ class SyncManager {
         const eventMap = { categories: EVENTS.CATEGORIES_CHANGED, products: EVENTS.PRODUCTS_CHANGED, customers: EVENTS.CUSTOMERS_CHANGED, sales: EVENTS.INVOICES_CHANGED, shifts: EVENTS.SHIFTS_CHANGED, returns: EVENTS.RETURNS_CHANGED, users: EVENTS.USERS_CHANGED };
         if (lsKey) {
           const allItems = await databaseManager.getAll(table);
-          window.__bypass_sync_proxy__ = true;
+          window.__isCloudSyncing = true;
           localStorage.setItem(lsKey, JSON.stringify(allItems || []));
-          window.__bypass_sync_proxy__ = false;
+          window.__isCloudSyncing = false;
         }
 
           // إشعار واجهة المستخدم بالحدث المناسب
@@ -971,6 +971,18 @@ class SyncManager {
           } else if (storeName === 'products') {
             localItem.mainCategoryId = cloudItem.main_category_id;
             localItem.subCategoryId = cloudItem.sub_category_id;
+
+            // استعادة اسم الفئة النصية (category) من قائمة الفئات لعدم ضياع التبويب
+            try {
+              const catList = JSON.parse(localStorage.getItem('productCategories') || '[]');
+              const mainCat = catList.find(c => String(c.id) === String(cloudItem.main_category_id) || c.name === cloudItem.main_category_id);
+              const subCat = cloudItem.sub_category_id ? catList.find(c => String(c.id) === String(cloudItem.sub_category_id) || c.name === cloudItem.sub_category_id) : null;
+              if (subCat && subCat.name) {
+                localItem.category = subCat.name;
+              } else if (mainCat && mainCat.name) {
+                localItem.category = mainCat.name;
+              }
+            } catch (_) {}
             
             if (cloudItem.image_path) {
               if (typeof cloudItem.image_path === 'string' && cloudItem.image_path.startsWith('{')) {

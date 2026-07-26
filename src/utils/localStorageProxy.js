@@ -227,7 +227,7 @@ localStorage.setItem = function(key, value) {
                     }
                 }
 
-                if (changed) {
+                if (changed && !window.__isCloudSyncing) {
                     storageOptimizer.clearCache(key);
                     console.log(`[SyncProxy] LocalStorage store ${key} mutated. Triggering background cloud sync...`);
                     window.dispatchEvent(new CustomEvent('databaseSyncTrigger', { detail: { storeName: key } }));

@@ -1684,61 +1684,32 @@ const Products = () => {
   };
 
   const lowStockProducts = inventoryEnabled ? products.filter(p => p.stock <= p.minStock) : [];
-  console.log('=== حساب المنتجات منخفضة المخزون ===');
-  console.log('المنتجات:', products.length);
-  console.log('المنتجات منخفضة المخزون:', lowStockProducts.length);
-  console.log('تفاصيل المنتجات منخفضة المخزون:', lowStockProducts.map(p => `${p.name}: ${p.stock}/${p.minStock}`));
-  console.log('جميع المنتجات:', products.map(p => `${p.name}: ${p.stock}/${p.minStock}`));
-  console.log('=== نهاية الحساب ===');
-
-  // فحص المخزون المنخفض (بدون إشعارات)
-  useEffect(() => {
-    console.log('useEffect triggered - products:', products.length, 'lowStock:', lowStockProducts.length);
-    if (products.length > 0 && lowStockProducts.length > 0) {
-      console.log('منتجات منخفضة المخزون:', lowStockProducts.length);
-      // تم إلغاء الإشعارات - فقط تتبع في console
-      lowStockProducts.forEach(product => {
-        console.log('منتج منخفض المخزون:', product.name, 'المخزون:', product.stock, 'الحد الأدنى:', product.minStock);
-      });
-    } else {
-      console.log('لا توجد منتجات منخفضة المخزون أو المنتجات غير محملة');
-    }
-  }, [products, lowStockProducts]);
 
   // الاشتراك في أحداث تغيير المنتجات من صفحات أخرى
   useEffect(() => {
     const reloadProducts = () => {
       const savedProducts = JSON.parse(localStorage.getItem('products') || '[]');
       setProducts(savedProducts);
-      console.log('🔄 تم إعادة تحميل المنتجات:', savedProducts.length);
     };
 
     const reloadCategories = () => {
       const savedCategories = JSON.parse(localStorage.getItem('productCategories') || '[]');
       setCategories(savedCategories);
-      console.log('🔄 تم إعادة تحميل الفئات:', savedCategories.length);
     };
 
-    // الاشتراك في أحداث تغيير المنتجات — تحديث فوري للصفحة بدون انتظار
-    const unsubscribe = subscribe(EVENTS.PRODUCTS_CHANGED, (payload) => {
-      console.log('📨 استقبال حدث تغيير المنتجات (تحديث فوري):', payload);
+    const unsubscribe = subscribe(EVENTS.PRODUCTS_CHANGED, () => {
       reloadProducts();
     });
 
-    // الاشتراك في أحداث تغيير الفئات — تحديث فوري للصفحة بدون انتظار
-    const unsubscribeCategories = subscribe(EVENTS.CATEGORIES_CHANGED, (payload) => {
-      console.log('📨 استقبال حدث تغيير الفئات (تحديث فوري):', payload);
+    const unsubscribeCategories = subscribe(EVENTS.CATEGORIES_CHANGED, () => {
       reloadCategories();
     });
 
-    // الاشتراك في أحداث استيراد البيانات
     const unsubscribeImport = subscribe(EVENTS.DATA_IMPORTED, (payload) => {
       if (payload.includes?.('products')) {
-        console.log('📨 استقبال حدث استيراد المنتجات');
         reloadProducts();
       }
       if (payload.includes?.('categories')) {
-        console.log('📨 استقبال حدث استيراد الفئات');
         reloadCategories();
       }
     });
@@ -1754,7 +1725,7 @@ const Products = () => {
   useEffect(() => {
     const handleReload = (e) => {
       const target = e?.detail?.table || e?.detail?.type || e?.key;
-      if (!target || target === 'products' || target === 'categories' || target === 'productCategories' || String(target).startsWith('__evt__:')) {
+      if (target === 'products' || target === 'categories' || target === 'productCategories') {
         forceReloadProductsAndCategories();
       }
     };
@@ -1762,25 +1733,13 @@ const Products = () => {
     window.addEventListener('storage', handleReload);
     window.addEventListener('realtimeDataUpdate', handleReload);
     window.addEventListener('dataUpdated', handleReload);
-    window.addEventListener('databaseSyncTrigger', handleReload);
 
     return () => {
       window.removeEventListener('storage', handleReload);
       window.removeEventListener('realtimeDataUpdate', handleReload);
       window.removeEventListener('dataUpdated', handleReload);
-      window.removeEventListener('databaseSyncTrigger', handleReload);
     };
   }, [forceReloadProductsAndCategories]);
-
-  // useEffect منفصل لتحديث المنتجات منخفضة المخزون
-  useEffect(() => {
-    console.log('=== useEffect منفصل للمنتجات منخفضة المخزون ===');
-    console.log('المنتجات في useEffect:', products.length);
-    const calculatedLowStock = inventoryEnabled ? products.filter(p => p.stock <= p.minStock) : [];
-    console.log('المنتجات منخفضة المخزون المحسوبة:', calculatedLowStock.length);
-    console.log('تفاصيل المنتجات منخفضة المخزون المحسوبة:', calculatedLowStock.map(p => `${p.name}: ${p.stock}/${p.minStock}`));
-    console.log('=== نهاية useEffect منفصل ===');
-  }, [products]);
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -1946,7 +1905,6 @@ const Products = () => {
               <div className="flex-1">
                 <p className="text-sm md:text-base font-medium text-slate-600 mb-2 uppercase tracking-wide">منخفضة المخزون</p>
                 <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-800 mb-4">{lowStockProducts.length}</p>
-                {console.log('لوحة التحكم - عدد المنتجات منخفضة المخزون:', lowStockProducts.length)}
                 <div className="flex items-center text-sm md:text-base">
                   <span className="text-orange-300 font-medium">تحتاج إعادة تموين</span>
                 </div>
