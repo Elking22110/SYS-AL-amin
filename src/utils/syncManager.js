@@ -223,21 +223,30 @@ class SyncManager {
         const lsKey = keyMap[table];
         if (lsKey) storageOptimizer.clearCache(lsKey);
 
-        window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType, record: newRecord || oldRecord } }));
-        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table, eventType } }));
         const eventMap = { categories: EVENTS.CATEGORIES_CHANGED, products: EVENTS.PRODUCTS_CHANGED, customers: EVENTS.CUSTOMERS_CHANGED, sales: EVENTS.INVOICES_CHANGED, shifts: EVENTS.SHIFTS_CHANGED, returns: EVENTS.RETURNS_CHANGED, users: EVENTS.USERS_CHANGED };
+        
         if (lsKey) {
-          const allItems = await databaseManager.getAll(table);
-          window.__isCloudSyncing = true;
-          localStorage.setItem(lsKey, JSON.stringify(allItems || []));
-          window.__isCloudSyncing = false;
-        }
-
-          // إشعار واجهة المستخدم بالحدث المناسب
-          const eventName = eventMap[table];
-          if (eventName) {
-            try { publish(eventName, { type: eventType.toLowerCase(), table }); } catch (_) {}
+          if (!this._realtimeDebounceTimers) this._realtimeDebounceTimers = {};
+          if (this._realtimeDebounceTimers[table]) {
+            clearTimeout(this._realtimeDebounceTimers[table]);
           }
+          this._realtimeDebounceTimers[table] = setTimeout(async () => {
+            try {
+              const allItems = await databaseManager.getAll(table);
+              window.__isCloudSyncing = true;
+              localStorage.setItem(lsKey, JSON.stringify(allItems || []));
+              window.__isCloudSyncing = false;
+
+              window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType, record: newRecord || oldRecord } }));
+              window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table, eventType } }));
+
+              const eventName = eventMap[table];
+              if (eventName) {
+                try { publish(eventName, { type: eventType.toLowerCase(), table }); } catch (_) {}
+              }
+            } catch (_) {}
+          }, 150);
+        }
 
       } else if (LOCALSTORAGE_TABLES.includes(table)) {
         // تحديث localStorage مباشرة

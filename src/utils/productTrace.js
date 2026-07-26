@@ -94,19 +94,6 @@ export function trace(source, action, oldVal, newVal, meta = {}) {
     oldPrice != null && newPrice != null && oldPrice !== newPrice ? 'color:#e11d48;font-weight:bold' : 'color:#6366f1',
     entry
   );
-
-  fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': SESSION },
-    body: JSON.stringify({
-      sessionId: SESSION,
-      runId: 'product-trace',
-      location: `${source}:${action}`,
-      message: `${source} ${action}`,
-      data: entry,
-      timestamp: entry.ts
-    })
-  }).catch(() => {});
 }
 
 export function traceProductObject(source, action, oldProduct, newProduct, meta = {}) {
