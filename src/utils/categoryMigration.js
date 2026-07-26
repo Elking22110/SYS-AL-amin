@@ -937,33 +937,22 @@ const ALL_CATEGORIES = [
   }
 ];
 
-// دالة تُشغَّل في كل بدء تشغيل لضمان إن الفئات المعتمدة موجودة دون حذف فئات المستخدم المضافة
+// دالة تُشغَّل لتهيئة الفئات في التثبيت الجديد فقط (Insert Only for Fresh Install)
+// لا تعيد حقن أي فئات محذوفة أو معدلة من قبل المستخدم إطلاقاً
 function enforceOnlyApprovedCategories() {
   try {
-    const saved = JSON.parse(localStorage.getItem('productCategories') || '[]');
-    if (!Array.isArray(saved)) {
+    const savedStr = localStorage.getItem('productCategories');
+    const saved = savedStr ? JSON.parse(savedStr) : null;
+    
+    // إذا كانت الفئات فارغة تماماً (التثبيت الأول فقط)، قم بتحميل الفئات الافتراضية
+    if (!saved || !Array.isArray(saved) || saved.length === 0) {
       localStorage.setItem('productCategories', JSON.stringify(ALL_CATEGORIES));
+      console.log(`[CategoryMigration] Fresh install detected: seeded ${ALL_CATEGORIES.length} initial categories.`);
       return;
     }
 
-    // إزالة المكرر: إبقاء نسخة واحدة فريدة لكل معرف فئة (id)
-    const seenIds = new Set();
-    const uniqueSaved = saved.filter(c => {
-      if (!c || !c.id) return false;
-      if (seenIds.has(c.id)) return false;
-      seenIds.add(c.id);
-      return true;
-    });
-
-    // إضافة الفئات المعتمدة المفقودة
-    const existingIds = new Set(uniqueSaved.map(c => c.id));
-    const missing = ALL_CATEGORIES.filter(c => !existingIds.has(c.id));
-    
-    if (missing.length > 0 || uniqueSaved.length !== saved.length) {
-      const final = [...uniqueSaved, ...missing];
-      localStorage.setItem('productCategories', JSON.stringify(final));
-      console.log(`enforceOnlyApprovedCategories: added ${missing.length} missing, total: ${final.length}`);
-    }
+    // إذا كانت هناك فئات موجودة بالفعل، لا نلمسها ولا نعيد حقن الفئات المحذوفة إطلاقاً
+    // (قاعدة المعمارية: Seed/Migration لا يلمس بيانات المستخدم الموجودة ولا يعيد إضافة ما حذفه المستخدم)
   } catch (_) {}
 }
 
