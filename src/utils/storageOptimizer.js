@@ -1,4 +1,6 @@
 // محسن التخزين - إدارة ذكية للذاكرة المخبئية وتفادي البيانات القديمة
+import { trace, traceProductsArray, getTracedProductId } from './productTrace.js';
+
 class StorageOptimizer {
   constructor() {
     this.cache = new Map();
@@ -32,6 +34,10 @@ class StorageOptimizer {
 
   // كتابة مسبقة مع تفريغ فوري للـ Cache لضمان التزامن
   set(key, value, debounceMs = 50) {
+    if (key === 'products' && getTracedProductId()) {
+      const oldVal = this.cache.get(key) ?? this.get(key, []);
+      traceProductsArray('storageOptimizer', 'set() cache+debounced LS', oldVal, value, { file: 'storageOptimizer.js', debounceMs });
+    }
     this.cache.set(key, value);
     
     if (this.debounceTimers.has(key)) {
@@ -52,6 +58,10 @@ class StorageOptimizer {
 
   // كتابة فورية مع تفريغ فوري لضمان المزامنة اللحظية
   setImmediate(key, value) {
+    if (key === 'products' && getTracedProductId()) {
+      const oldVal = this.cache.get(key) ?? this.get(key, []);
+      traceProductsArray('storageOptimizer', 'setImmediate()', oldVal, value, { file: 'storageOptimizer.js' });
+    }
     this.cache.set(key, value);
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -76,6 +86,9 @@ class StorageOptimizer {
 
   // مسح الـ cache لعنصر محدد أو لكافة العناصر
   clearCache(key = null) {
+    if ((key === 'products' || key === null) && getTracedProductId()) {
+      trace('storageOptimizer', 'clearCache()', null, { key }, { file: 'storageOptimizer.js', productId: getTracedProductId() });
+    }
     if (key && typeof key === 'string') {
       this.cache.delete(key);
       // مسح الأسماء المترادفة (مثلاً products <-> items)

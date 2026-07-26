@@ -1,5 +1,6 @@
 import databaseManager from './database.js';
 import storageOptimizer from './storageOptimizer.js';
+import { traceProductsArray, getTracedProductId } from './productTrace.js';
 
 // خريطة تحويل مفاتيح localStorage إلى جداول IndexedDB
 const LS_TO_IDB_MAP = {
@@ -123,6 +124,14 @@ localStorage.setItem = function(key, value) {
     const prefixedKey = key.startsWith(prefix) ? key : prefix + key;
     // 1. التنفيذ الفوري السريع للحفاظ على أداء واجهة المستخدم React
     originalSetItem.call(this, prefixedKey, value);
+
+    if (key === 'products' && getTracedProductId()) {
+        try {
+            const oldArray = localCache.get(key) || [];
+            const newArray = JSON.parse(value);
+            traceProductsArray('localStorageProxy', 'localStorage.setItem(products)', oldArray, newArray, { file: 'localStorageProxy.js', bypass: !!window.__bypass_sync_proxy__ });
+        } catch (_) {}
+    }
 
     // التحقق من تجاوز الوكيل للمزامنة لتجنب الحلقات اللانهائية عند التنزيل السحابي
     if (typeof window !== 'undefined' && window.__bypass_sync_proxy__) {

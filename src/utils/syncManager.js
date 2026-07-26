@@ -2,6 +2,7 @@ import { supabase, isKeysConfigured, supabaseUrl } from './supabaseClient.js';
 import databaseManager from './database.js';
 import { publish, EVENTS } from './observerManager.js';
 import storageOptimizer from './storageOptimizer.js';
+import { trace, traceProductObject, traceProductsArray, traceSupabaseResponse, getTracedProductId } from './productTrace.js';
 
 class SyncManager {
   constructor() {
@@ -197,11 +198,17 @@ class SyncManager {
             const existingLocal = await databaseManager.get(table, newRecord.id);
             if (existingLocal && existingLocal.sync_status === 'pending') {
               console.log(`🛡️ [SyncManager] حماية التعديل المحلي المعلق من الاستبدال بـ Realtime: ${table}/${newRecord.id}`);
+              if (table === 'products') {
+                traceProductObject('syncManager', 'handleRealtimeChange() SKIPPED pending', existingLocal, newRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
+              }
               return;
             }
 
             const localRecord = this.mapCloudToLocal(table, newRecord);
             localRecord.sync_status = 'synced';
+            if (table === 'products') {
+              traceProductObject('syncManager', 'handleRealtimeChange() OVERWRITE', existingLocal, localRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
+            }
             await databaseManager.update(table, localRecord);
           }
         } else if (eventType === 'DELETE') {
@@ -512,6 +519,10 @@ class SyncManager {
 
   // مزامنة جدول فردي
   async syncStore(storeName) {
+    const traceId = getTracedProductId();
+    if (storeName === 'products' && traceId) {
+      trace('syncManager', 'syncStore() START', null, null, { productId: traceId, file: 'syncManager.js', fn: 'syncStore' });
+    }
     try {
       // 1. معالجة وتصدير البيانات المعدلة محلياً (Pending & Deleted) إلى السحاب
       const localRecords = await databaseManager.getAllForSync(storeName);
@@ -761,6 +772,9 @@ class SyncManager {
               if (!singleError) {
                 const record = originalRecordsMap.get(String(singleUploadData.id));
                 if (record) {
+                  if (storeName === 'products' && traceId && String(record.id) === traceId) {
+                    traceProductObject('syncManager', 'syncStore() upload OK → synced', record, { ...record, sync_status: 'synced' }, { file: 'syncManager.js', fn: 'syncStore', phase: 'upload' });
+                  }
                   record.sync_status = 'synced';
                   const transaction = databaseManager.db.transaction([storeName], 'readwrite');
                   const store = transaction.objectStore(storeName);
@@ -777,6 +791,9 @@ class SyncManager {
             for (const uploadItem of chunk) {
               const record = originalRecordsMap.get(String(uploadItem.id));
               if (record) {
+                if (storeName === 'products' && traceId && String(record.id) === traceId) {
+                  traceProductObject('syncManager', 'syncStore() batch upload OK → synced', record, { ...record, sync_status: 'synced' }, { file: 'syncManager.js', fn: 'syncStore', phase: 'upload-batch' });
+                }
                 record.sync_status = 'synced';
                 store.put(record);
               }
@@ -889,6 +906,9 @@ class SyncManager {
         }
       } else {
         // سحب تدريجي للجداول الكبيرة (منتجات، فئات): فقط السجلات الأحدث
+        if (storeName === 'products' && traceId) {
+          trace('syncManager', 'syncStore() incremental download', null, { lastLocalUpdate }, { productId: traceId, useFullPull: false, file: 'syncManager.js' });
+        }
         let lastFetchedTime = lastLocalUpdate;
         if (lastLocalUpdate && lastLocalUpdate !== new Date(0).toISOString()) {
           try {
@@ -939,7 +959,15 @@ class SyncManager {
           
           if (existingLocal && existingLocal.sync_status === 'pending') {
             console.log(`🛡️ [SyncManager] حفظ التعديل المحلي المعلق للمستخدم من الدهس بالسحاب: ${storeName}/${cloudItem.id}`);
+            if (storeName === 'products') {
+              traceProductObject('syncManager', 'syncStore() download SKIPPED pending', existingLocal, cloudItem, { file: 'syncManager.js', fn: 'syncStore', phase: 'download' });
+            }
             continue;
+          }
+          
+          if (storeName === 'products' && traceId && String(cloudItem.id) === traceId) {
+            traceSupabaseResponse('syncManager.syncStore()', cloudItem.id, cloudItem, { phase: 'download', useFullPull });
+            traceProductObject('syncManager', 'syncStore() download OVERWRITE IndexedDB', existingLocal, cloudItem, { file: 'syncManager.js', fn: 'syncStore', phase: 'download', useFullPull });
           }
           
           // تطبيع أسماء الأعمدة لتطابق واجهة React (تحويل من SnakeCase إلى CamelCase)
@@ -1084,6 +1112,11 @@ class SyncManager {
             // لمنع فقدان العناصر الجديدة التي لم تُحفظ في IndexedDB بعد (بسبب تأخر الـ proxy)
             // اعتماد العناصر النشطة من IndexedDB مباشرة بدون إعادة الدمج لمنع استعادة العناصر المحذوفة
             const mergedItems = allItems;
+            if (storeName === 'products' && traceId) {
+              let oldLs = [];
+              try { oldLs = JSON.parse(localStorage.getItem('products') || '[]'); } catch (_) {}
+              traceProductsArray('syncManager', 'syncStore() localStorage.setItem after download', oldLs, mergedItems, { file: 'syncManager.js', fn: 'syncStore', phase: 'post-download-ls' });
+            }
             window.__bypass_sync_proxy__ = true;
             localStorage.setItem(localStorageKey, JSON.stringify(mergedItems));
             window.__bypass_sync_proxy__ = false;

@@ -1,5 +1,6 @@
 // نظام قاعدة البيانات المحلية باستخدام IndexedDB
 import { getCurrentDate } from './dateUtils.js';
+import { traceProductObject, getTracedProductId } from './productTrace.js';
 
 const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
 
@@ -202,11 +203,21 @@ class DatabaseManager {
       data.id = String(data.id);
     }
 
+    let oldRecord = null;
+    const traceId = getTracedProductId();
+    if (storeName === 'products' && traceId && data?.id === traceId) {
+      try { oldRecord = await this.get(storeName, data.id); } catch (_) {}
+    }
+
     if (SYNCABLE_STORES.includes(storeName)) {
       if (data.sync_status !== 'synced') {
         data.sync_status = 'pending';
       }
       data.updated_at = new Date().toISOString();
+    }
+
+    if (storeName === 'products' && traceId && data?.id === traceId) {
+      traceProductObject('databaseManager', 'update()', oldRecord, data, { file: 'database.js', fn: 'update' });
     }
 
     return new Promise((resolve, reject) => {
@@ -336,6 +347,10 @@ class DatabaseManager {
 
       request.onsuccess = () => {
         const result = request.result;
+        const traceId = getTracedProductId();
+        if (storeName === 'products' && traceId && String(id) === traceId && result) {
+          traceProductObject('databaseManager', 'get()', null, result, { file: 'database.js', fn: 'get', readOnly: true });
+        }
         if (result) {
           if (result.sync_status === 'deleted') {
             resolve(null);
