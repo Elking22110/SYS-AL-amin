@@ -1,6 +1,8 @@
 // نظام الطابعة الحرارية المحسن
 import { formatDateTime, getCurrentDate } from './dateUtils.js';
 import safeMath from './safeMath.js';
+import { invoiceEngine } from './invoice/index.js';
+import { formatMoney, formatQuantity, formatPercentage } from './formatters.js';
 
 class ThermalPrinterManager {
   constructor() {
@@ -287,7 +289,7 @@ class ThermalPrinterManager {
         const price = item.price;
         const total = safeMath.multiply(price, quantity);
 
-        const line = `  ${name.padEnd(24, ' ')} ${quantity.toString().padStart(3, ' ')} × ${price.toFixed(2).padStart(8, ' ')} = ${total.toFixed(2).padStart(10, ' ')} جنيه`;
+        const line = `  ${name.padEnd(24, ' ')} ${quantity.toString().padStart(3, ' ')} × ${price.toFixed(2).padStart(8, ' ')} = ${total.toFixed(2).padStart(10, ' ')}`;
         await this.sendCommand(line + '\n');
       }
 
@@ -297,16 +299,16 @@ class ThermalPrinterManager {
 
       // ملخص الفاتورة
       await this.sendCommand('ملخص الفاتورة:\n');
-      await this.sendCommand(`  المجموع الفرعي: ${receiptData.subtotal.toFixed(2)} جنيه\n`);
+      await this.sendCommand(`  المجموع الفرعي: ${receiptData.subtotal.toFixed(2)}\n`);
 
       // الخصم
       if (receiptData.discount > 0) {
-        await this.sendCommand(`  الخصم: -${receiptData.discount.toFixed(2)} جنيه\n`);
+        await this.sendCommand(`  الخصم: -${receiptData.discount.toFixed(2)}\n`);
       }
 
       // الضريبة
       if (receiptData.tax > 0) {
-        await this.sendCommand(`  الضريبة: ${receiptData.tax.toFixed(2)} جنيه\n`);
+        await this.sendCommand(`  الضريبة: ${receiptData.tax.toFixed(2)}\n`);
       }
 
       await this.sendCommand('\n'); // سطر فارغ
@@ -314,12 +316,12 @@ class ThermalPrinterManager {
       await this.sendCommand('\n'); // سطر فارغ
 
       // الإجمالي
-      await this.sendCommand(`  الإجمالي: ${receiptData.total.toFixed(2)} جنيه\n`);
+      await this.sendCommand(`  الإجمالي: ${receiptData.total.toFixed(2)}\n`);
 
       // العربون
       if (receiptData.downPayment > 0) {
-        await this.sendCommand(`  العربون: ${receiptData.downPayment.toFixed(2)} جنيه\n`);
-        await this.sendCommand(`  المبلغ المتبقي: ${receiptData.remaining.toFixed(2)} جنيه\n`);
+        await this.sendCommand(`  العربون: ${receiptData.downPayment.toFixed(2)}\n`);
+        await this.sendCommand(`  المبلغ المتبقي: ${receiptData.remaining.toFixed(2)}\n`);
       }
 
       await this.sendCommand('\n'); // سطر فارغ

@@ -12,6 +12,8 @@ import { getLocalDateString, formatDateTime, getCurrentDate, formatDateToDDMMYYY
 import safeMath from '../../utils/safeMath';
 import { getNextInvoiceId } from '../../utils/sequence';
 import thermalPrinterManager from '../../utils/thermalPrinter.js';
+import { invoiceEngine } from '../../utils/invoice/index.js';
+import { formatMoney, formatQuantity, formatPercentage, getLocalizedErrorMessage } from '../../utils/formatters.js';
 
 const POSMain = () => {
   const { user, logActivity } = useAuth();
@@ -975,8 +977,8 @@ const POSMain = () => {
               </tr>
               ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
               <tr style="border-top: 1px dotted #000000; margin-top: 2px;">
-                <td style="border: none; padding: 4px 0 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">الحساب السابق:</span> <strong>${previousDebt.toLocaleString('en-US')} ج.م</strong></td>
-                <td style="border: none; padding: 4px 0 2px 0; width: 55%; text-align: left;" colspan="2"><span style="color: #475569; font-weight: 800;">إجمالي الحساب:</span> <strong style="font-size: 10.5px; border-bottom: 1.5px double #000000;">${newTotalDebt.toLocaleString('en-US')} ج.م</strong></td>
+                <td style="border: none; padding: 4px 0 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">الحساب السابق:</span> <strong>${previousDebt.toLocaleString('en-US')}</strong></td>
+                <td style="border: none; padding: 4px 0 2px 0; width: 55%; text-align: left;" colspan="2"><span style="color: #475569; font-weight: 800;">إجمالي الحساب:</span> <strong style="font-size: 10.5px; border-bottom: 1.5px double #000000;">${newTotalDebt.toLocaleString('en-US')}</strong></td>
               </tr>
               ` : ''}
             </table>
@@ -998,8 +1000,8 @@ const POSMain = () => {
                   <td class="text-center">${idx + 1}</td>
                   <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
                   <td class="text-center">${Number(item.quantity || 0)}</td>
-                  <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')} ج.م</td>
-                  <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')} ج.م</strong></td>
+                  <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')}</td>
+                  <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')}</strong></td>
                 </tr>
               `).join('')}
             </tbody>
@@ -1009,35 +1011,35 @@ const POSMain = () => {
             <table class="summary-table">
               <tr>
                 <td class="label">إجمالي القيمة:</td>
-                <td class="value">${(subtotal || 0).toLocaleString('en-US')} ج.م</td>
+                <td class="value">${(subtotal || 0).toLocaleString('en-US')}</td>
               </tr>
-              ${discountAmount > 0 ? `
+              ${discountAmount !== 0 ? `
                 <tr>
-                  <td class="label">الخصم الممنوح:</td>
-                  <td class="value text-red-600">-${discountAmount.toLocaleString('en-US')} ج.م</td>
+                  <td class="label">${discountAmount > 0 ? 'الخصم الممنوح:' : 'إضافة (زيادة السعر):'}</td>
+                  <td class="value ${discountAmount > 0 ? 'text-red-600' : 'text-green-600'}">${discountAmount > 0 ? '-' : '+'}${Math.abs(discountAmount).toLocaleString('en-US')}</td>
                 </tr>
               ` : ''}
               ${taxAmount > 0 ? `
                 <tr>
                   <td class="label">الضريبة المضافة:</td>
-                  <td class="value">+${taxAmount.toLocaleString('en-US')} ج.م</td>
+                  <td class="value">+${taxAmount.toLocaleString('en-US')}</td>
                 </tr>
               ` : ''}
               ${(snapshot?.downPayment?.enabled) ? `
                 <tr>
                   <td class="label">العربون المدفوع:</td>
-                  <td class="value">${((snapshot.downPayment.amount || 0)).toLocaleString('en-US')} ج.م</td>
+                  <td class="value">${((snapshot.downPayment.amount || 0)).toLocaleString('en-US')}</td>
                 </tr>
               ` : ''}
               ${totalReturnedAmount > 0 ? `
                 <tr style="color: #ea580c; font-weight: 800;">
                   <td class="label" style="color: #ea580c;">قيمة المرتجعات:</td>
-                  <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')} ج.م</td>
+                  <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
                 </tr>
               ` : ''}
               <tr class="total-row">
                 <td class="label">${(snapshot?.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
-                <td class="value">${((snapshot?.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')} ج.م</td>
+                <td class="value">${((snapshot?.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')}</td>
               </tr>
             </table>
           </div>
@@ -1196,8 +1198,8 @@ const POSMain = () => {
                   value={discounts.type === 'percentage' ? discounts.percentage : discounts.fixed}
                   onChange={(e) => setDiscounts({ ...discounts, [discounts.type === 'percentage' ? 'percentage' : 'fixed']: e.target.value })}
                   className="w-full bg-slate-100 border border-slate-300 rounded-lg px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder={discounts.type === 'percentage' ? '0 - 100' : '0'}
-                  min="0"
+                  placeholder={discounts.type === 'percentage' ? '-100 - 100 (سالب للزيادة)' : '0'}
+                  min={discounts.type === 'percentage' ? '-100' : undefined}
                   max={discounts.type === 'percentage' ? '100' : undefined}
                   step={discounts.type === 'percentage' ? '1' : '0.01'}
                 />
@@ -1214,13 +1216,13 @@ const POSMain = () => {
                 onClick={() => {
                   const val = discounts.type === 'percentage' ? discounts.percentage : discounts.fixed;
                   const num = parseFloat(val);
-                  if (discounts.type === 'percentage' && (num < 0 || num > 100)) {
-                    alert('نسبة الخصم يجب أن تكون بين 0 و 100');
+                  if (discounts.type === 'percentage' && (num < -100 || num > 100)) {
+                    alert('نسبة الخصم / الزيادة يجب أن تكون بين -100% و 100%');
                     return;
                   }
                   
-                  // توزيع نسبة الخصم تلقائياً على الأصناف بالسلة
-                  if (discounts.type === 'percentage' && !isNaN(num) && num >= 0) {
+                  // توزيع نسبة الخصم/الزيادة تلقائياً على الأصناف بالسلة
+                  if (discounts.type === 'percentage' && !isNaN(num) && num >= -100 && num <= 100) {
                     setCart(prevCart => prevCart.map(item => ({
                       ...item,
                       itemDiscount: num

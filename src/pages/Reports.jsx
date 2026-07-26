@@ -6,8 +6,9 @@ import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
 import emojiManager from '../utils/emojiManager.js';
 import storageOptimizer from '../utils/storageOptimizer.js';
-import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate, formatDateToDDMMYYYY, safeParseDate } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
+import invoiceEngine from '../utils/invoice/index.js';
+import { formatMoney, formatQuantity, formatPercentage, getLocalizedErrorMessage } from '../utils/formatters.js';
 import { useAuth } from '../components/AuthProvider';
 import databaseManager from '../utils/database';
 import {
@@ -263,78 +264,43 @@ const Reports = () => {
     return;
   };
 
-  // تحديث الفاتورة بالكامل (المخازن، المبيعات، الشفتات)
-  const updateInvoiceItems = (invoiceId, newItems) => {
+  // تحديث الفاتورة بالكامل (المخازن، المبيعات، الشفتات) عبر المحرك المركزي للفواتير
+  const updateInvoiceItems = async (invoiceId, newItems) => {
     try {
       const invoice = allSales.find(sale => sale.id === invoiceId);
       if (!invoice) return;
 
-      // 1. تعديل المخازن
-      const oldItemsMap = new Map((invoice.items || []).map(item => [item.id, item.quantity]));
-      const allIds = new Set([
-        ...(invoice.items || []).map(i => i.id),
-        ...newItems.map(i => i.id)
-      ]);
-
-      const returnsList = JSON.parse(localStorage.getItem('returns') || '[]');
       const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
       const shiftId = (activeShift && activeShift.status === 'active') ? activeShift.id : null;
 
-      allIds.forEach(id => {
-        const oldQty = oldItemsMap.get(id) || 0;
-        const itemObj = (invoice.items || []).find(i => i.id === id) || newItems.find(i => i.id === id);
-        const newQty = newItems.find(i => i.id === id)?.quantity || 0;
-        const diff = newQty - oldQty;
-        
-        if (diff !== 0) {
-          adjustProductStock(id, diff);
-        }
-
-        // إذا قلت الكمية، يعتبر مرتجعاً ويسجل في كشف المرتجعات للوردية
-        if (diff < 0) {
-          const returnedQty = Math.abs(diff);
-          const refundAmount = returnedQty * (itemObj?.price || 0);
-
-          const returnEntry = {
-            id: `${Date.now()}_${id}_${Math.random().toString(36).substr(2, 9)}`,
-            timestamp: new Date().toISOString(),
-            refInvoiceId: invoiceId,
-            customer: invoice.customer || { name: 'غير محدد', phone: '' },
-            item: {
-              id: id,
-              name: itemObj?.name || 'منتج غير معروف',
-              quantity: returnedQty
-            },
-            amount: refundAmount,
-            shiftId: shiftId
-          };
-
-          returnsList.push(returnEntry);
-        }
+      // 1. معالجة تعديلات الكميات والمخازن والمرتجعات عبر المحرك المركزي
+      const editRes = invoiceEngine.processInvoiceEdit(invoice, newItems, {
+        currentShiftId: shiftId,
+        expectedVersion: invoice.version,
+        user: user?.username || 'المسؤول'
       });
 
-      localStorage.setItem('returns', JSON.stringify(returnsList));
-
-      // 2. إعادة حساب الحسابات للفاتورة
-      const updatedInvoice = { ...invoice };
-      updatedInvoice.items = newItems;
-      updatedInvoice.subtotal = newItems.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0);
-      
-      const discountAmount = updatedInvoice.discountAmount || 0;
-      const taxAmount = updatedInvoice.taxAmount || 0;
-      updatedInvoice.total = Math.max(0, updatedInvoice.subtotal - discountAmount + taxAmount);
-
-      // تحديث العربون والمتبقي
-      if (updatedInvoice.downPayment && updatedInvoice.downPayment.enabled) {
-        const paidAmount = updatedInvoice.downPayment.amount || 0;
-        updatedInvoice.downPayment.remaining = Math.max(0, updatedInvoice.total - paidAmount);
-        if (updatedInvoice.downPayment.remaining <= 0) {
-          updatedInvoice.downPayment.enabled = false;
-          updatedInvoice.paymentStatus = 'complete';
-        }
+      if (!editRes.success) {
+        notifyError('تعذر تعديل الفاتورة', getLocalizedErrorMessage(editRes.errorCode));
+        return;
       }
 
-      // تحديث لقطة حسابات المديونية للفاتورة المعدلة
+      const { updatedInvoice, stockChanges, returnEntries, auditLog } = editRes;
+
+      // تطبيق التغييرات على سجلات المرتجعات والمخزون وسجل التدقيق (Audit Log)
+      if (returnEntries && returnEntries.length > 0) {
+        const returnsList = JSON.parse(localStorage.getItem('returns') || '[]');
+        returnsList.push(...returnEntries);
+        localStorage.setItem('returns', JSON.stringify(returnsList));
+      }
+
+      if (auditLog) {
+        const auditLogs = JSON.parse(localStorage.getItem('invoice_audit_logs') || '[]');
+        auditLogs.push(auditLog);
+        localStorage.setItem('invoice_audit_logs', JSON.stringify(auditLogs));
+      }
+
+      // 2. تحديث لقطة حسابات المديونية للفاتورة المعدلة
       const oldRemaining = invoice.downPayment?.remaining != null
         ? Number(invoice.downPayment.remaining)
         : (invoice.paymentMethod === 'deferred' ? Number(invoice.total || 0) : 0);
@@ -354,14 +320,14 @@ const Reports = () => {
       updatedInvoice.customerPreviousDebt = finalPrevDebt;
       updatedInvoice.customerNewTotalDebt = safeMath.add(finalPrevDebt, newRemainingDebt);
 
-      // 3. التخزين في localStorage
+      // 3. التخزين في localStorage و IndexedDB
       const sales = JSON.parse(localStorage.getItem('sales') || '[]');
       const updatedSales = sales.map(sale => sale.id === invoiceId ? updatedInvoice : sale);
       localStorage.setItem('sales', JSON.stringify(updatedSales));
+      await databaseManager.update('sales', updatedInvoice).catch(() => {});
 
       // 4. تحديث الوردية النشطة
       try {
-        const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
         if (activeShift && activeShift.status === 'active') {
           const shiftSaleIdx = (activeShift.sales || []).findIndex(s => s.id === invoiceId);
           if (shiftSaleIdx !== -1) {
@@ -386,8 +352,7 @@ const Reports = () => {
         localStorage.setItem('shifts', JSON.stringify(updatedShifts));
       } catch (err) {}
 
-      // 6. تحديث الحالة المحلية
-      // تحديث مديونية العميل في سجل العملاء
+      // 6. تحديث مديونية العميل في سجل العملاء
       const customerInvoice = allSales.find(s => s.id === invoiceId);
       if (customerInvoice && (customerInvoice.customer?.phone || customerInvoice.customer?.id || customerInvoice.customerId)) {
         try {
@@ -404,17 +369,11 @@ const Reports = () => {
           });
 
           if (cIndex !== -1) {
-            // حساب فرق المديونية بناءً على تعديل الفاتورة
-            const oldRemaining = invoice.downPayment?.remaining != null
-              ? Number(invoice.downPayment.remaining)
-              : (invoice.paymentMethod === 'deferred' ? Number(invoice.total || 0) : 0);
-            
             const newRemaining = updatedInvoice.downPayment?.remaining != null
               ? Number(updatedInvoice.downPayment.remaining)
               : (updatedInvoice.paymentMethod === 'deferred' ? Number(updatedInvoice.total || 0) : 0);
 
-            const diffRemaining = newRemaining - oldRemaining;
-
+            const diffRemaining = safeMath.subtract(newRemaining, oldRemaining);
             customers[cIndex].debt = Math.max(0, safeMath.add(customers[cIndex].debt || 0, diffRemaining));
             localStorage.setItem('customers', JSON.stringify(customers));
             try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update' }); } catch (_) {}
@@ -1011,8 +970,8 @@ const Reports = () => {
                 </tr>
                 ${previousDebt > 0 || invoiceUnpaidAmount > 0 ? `
                 <tr style="border-top: 1px dotted #000000; margin-top: 2px;">
-                  <td style="border: none; padding: 4px 0 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">الحساب السابق:</span> <strong>${previousDebt.toLocaleString('en-US')} ج.م</strong></td>
-                  <td style="border: none; padding: 4px 0 2px 0; width: 55%; text-align: left;" colspan="2"><span style="color: #475569; font-weight: 800;">إجمالي الحساب:</span> <strong style="font-size: 10.5px; border-bottom: 1.5px double #000000;">${newTotalDebt.toLocaleString('en-US')} ج.م</strong></td>
+                  <td style="border: none; padding: 4px 0 2px 0; width: 45%;"><span style="color: #475569; font-weight: 800;">الحساب السابق:</span> <strong>${previousDebt.toLocaleString('en-US')}</strong></td>
+                  <td style="border: none; padding: 4px 0 2px 0; width: 55%; text-align: left;" colspan="2"><span style="color: #475569; font-weight: 800;">إجمالي الحساب:</span> <strong style="font-size: 10.5px; border-bottom: 1.5px double #000000;">${newTotalDebt.toLocaleString('en-US')}</strong></td>
                 </tr>
                 ` : ''}
               </table>
@@ -1034,8 +993,8 @@ const Reports = () => {
                     <td class="text-center">${idx + 1}</td>
                     <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
                     <td class="text-center">${Number(item.quantity || 0)}</td>
-                    <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')} ج.م</td>
-                    <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')} ج.م</strong></td>
+                    <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')}</td>
+                    <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')}</strong></td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -1045,35 +1004,35 @@ const Reports = () => {
               <table class="summary-table">
                 <tr>
                   <td class="label">إجمالي القيمة:</td>
-                  <td class="value">${(subtotal || 0).toLocaleString('en-US')} ج.م</td>
+                  <td class="value">${(subtotal || 0).toLocaleString('en-US')}</td>
                 </tr>
-                ${discountAmount > 0 ? `
+                ${discountAmount !== 0 ? `
                   <tr>
-                    <td class="label">الخصم الممنوح:</td>
-                    <td class="value text-red-600">-${discountAmount.toLocaleString('en-US')} ج.م</td>
+                    <td class="label">${discountAmount > 0 ? 'الخصم الممنوح:' : 'إضافة (زيادة السعر):'}</td>
+                    <td class="value ${discountAmount > 0 ? 'text-red-600' : 'text-green-600'}">${discountAmount > 0 ? '-' : '+'}${Math.abs(discountAmount).toLocaleString('en-US')}</td>
                   </tr>
                 ` : ''}
                 ${taxAmount > 0 ? `
                   <tr>
                     <td class="label">الضريبة المضافة:</td>
-                    <td class="value">+${taxAmount.toLocaleString('en-US')} ج.م</td>
+                    <td class="value">+${taxAmount.toLocaleString('en-US')}</td>
                   </tr>
                 ` : ''}
                 ${invoice.downPayment?.enabled ? `
                   <tr>
                     <td class="label">العربون المدفوع:</td>
-                    <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')} ج.م</td>
+                    <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')}</td>
                   </tr>
                 ` : ''}
                 ${totalReturnedAmount > 0 ? `
                   <tr style="color: #ea580c; font-weight: 800;">
                     <td class="label" style="color: #ea580c;">قيمة المرتجعات:</td>
-                    <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')} ج.م</td>
+                    <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
                   </tr>
                 ` : ''}
                 <tr class="total-row">
                   <td class="label">${(invoice.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
-                  <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')} ج.م</td>
+                  <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')}</td>
                 </tr>
               </table>
             </div>
@@ -1665,13 +1624,13 @@ const Reports = () => {
                                       onChange={(e) => {
                                         const val = e.target.value;
                                         setEditingQty(prev => ({ ...prev, [item.id]: val }));
-                                        const parsed = parseInt(val);
+                                        const parsed = parseFloat(val);
                                         if (!isNaN(parsed) && parsed > 0) {
                                           updateItemQtyDirectly(selectedInvoice.id, idx, parsed);
                                         }
                                       }}
                                       onBlur={() => {
-                                        const parsed = parseInt(qtyValue);
+                                        const parsed = parseFloat(qtyValue);
                                         if (isNaN(parsed) || parsed <= 0) {
                                           updateItemQtyDirectly(selectedInvoice.id, idx, 1);
                                         }

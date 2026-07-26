@@ -4,6 +4,8 @@ import { useNotifications } from '../NotificationSystem';
 import soundManager from '../../utils/soundManager.js';
 import errorHandler from '../../utils/errorHandler.js';
 import safeMath from '../../utils/safeMath.js';
+import { invoiceEngine } from '../../utils/invoice/index.js';
+import { formatMoney, formatQuantity, formatPercentage } from '../../utils/formatters.js';
 
 const CartManager = ({
   cart,
@@ -362,13 +364,13 @@ const CartManager = ({
                         onChange={(e) => {
                           const val = e.target.value;
                           setEditingQty(prev => ({ ...prev, [item.id]: val }));
-                          const parsed = parseInt(val);
+                          const parsed = parseFloat(val);
                           if (!isNaN(parsed) && parsed > 0) {
                             updateQuantity(item.id, parsed);
                           }
                         }}
                         onBlur={() => {
-                          const parsed = parseInt(qtyValue);
+                          const parsed = parseFloat(qtyValue);
                           if (isNaN(parsed) || parsed <= 0) {
                             updateQuantity(item.id, 1);
                           }

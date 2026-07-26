@@ -4,8 +4,9 @@ import { createClient } from '@supabase/supabase-js';
 const FALLBACK_URL = 'https://akkjkjbnhafmolpvoiln.supabase.co';
 const FALLBACK_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFra2pramJuaGFmbW9scHZvaWxuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxNDAxMjcsImV4cCI6MjA5OTcxNjEyN30.ZM8XrstSbziMpgVUozw2mNo05u_9vVtbuOz8wtbJa2w';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
+const env = (typeof import.meta !== 'undefined' && import.meta.env) ? import.meta.env : {};
+const supabaseUrl = env.VITE_SUPABASE_URL || FALLBACK_URL;
+const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY || FALLBACK_KEY;
 
 // التحقق من صحة وجود المفاتيح
 const isKeysConfigured = 
@@ -22,7 +23,7 @@ let supabase = null;
 if (isKeysConfigured) {
   try {
     // استخدام instance موجود إذا كان هناك واحد (تجنب Multiple GoTrueClient)
-    if (window[GLOBAL_KEY]) {
+    if (typeof window !== 'undefined' && window[GLOBAL_KEY]) {
       supabase = window[GLOBAL_KEY];
     } else {
       supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -32,7 +33,7 @@ if (isKeysConfigured) {
           detectSessionInUrl: false
         }
       });
-      window[GLOBAL_KEY] = supabase;
+      if (typeof window !== 'undefined') window[GLOBAL_KEY] = supabase;
       console.log('✅ تم تهيئة اتصال Supabase بنجاح - المزامنة السحابية نشطة');
     }
   } catch (err) {
