@@ -358,27 +358,70 @@ const ProductGrid = ({
         subCategory = 'صرف احواض + قاعدة';
       }
     } else if (mainGroup === 'الاهرام بولي+صرف') {
-      if (fullName.includes('كيسل') || fullName.includes('٥٠ ملى')) {
-        subCategory = 'قطع ٥٠ ملى كيسل الاهرام';
-      } else if (fullName.includes('٧٥ ملى')) {
-        subCategory = 'قطع ٧٥ ملى كيسل الاهرام';
-      } else if (fullName.includes('١١٠ ملى')) {
-        subCategory = 'قطع ١١٠ ملى كيسل الاهرام';
-      } else if (fullName.includes('١٦٠ ملى')) {
-        subCategory = 'قطع ١٦٠ ملى كيسل الاهرام';
-      } else if (fullName.includes('بولي') || fullName.includes('٢/١')) {
-        subCategory = 'قطع ٢/١ بولى الاهرام';
-      } else if (fullName.includes('٤/٣')) {
-        subCategory = 'قطع ٤/٣ بولى الاهرام';
-      } else if (fullName.includes('ابيض') || fullName.includes('أبيض')) {
-        if (fullName.includes('1.5') || fullName.includes('١.٥')) subCategory = 'قطع ١,٥ ابيض الاهرام';
-        else if (fullName.includes('2') || fullName.includes('٢')) subCategory = 'قطع ٢بوصه الاهرام ابيض';
-        else if (fullName.includes('3') || fullName.includes('٣')) subCategory = 'قطع ٣بوصه الاهرام ابيض';
-        else if (fullName.includes('4') || fullName.includes('٤')) subCategory = 'قطع ٤بوصه الاهرام ابيض';
-        else if (fullName.includes('6') || fullName.includes('٦')) subCategory = 'قطع ٦بوصه الاهرام ابيض';
-        else subCategory = 'قطع ١بوصه الاهرام ابيض';
+      const isAhramSarf = fullName.includes('صرف') || fullName.includes('كيسل') ||
+        fullName.includes('٥٠ ملى') || fullName.includes('٧٥ ملى') ||
+        fullName.includes('١١٠ ملى') || fullName.includes('١٦٠ ملى') ||
+        fullName.includes('50مل') || fullName.includes('75مل') ||
+        fullName.includes('110مل') || fullName.includes('160مل');
+
+      const isAhramAbiad = fullName.includes('ابيض') || fullName.includes('أبيض') || fullName.includes('ابيض');
+      const isAhramBoly = fullName.includes('بولي') || fullName.includes('بولى') || (!isAhramSarf && !isAhramAbiad);
+
+      if (isAhramSarf) {
+        // --- قطع صرف الاهرام مصنفة بالمقاس ---
+        if (fullName.includes('١٦٠') || fullName.includes('160')) {
+          subCategory = 'قطع ١٦٠ ملى صرف الاهرام';
+        } else if (fullName.includes('١١٠') || fullName.includes('110')) {
+          subCategory = 'قطع ١١٠ ملى صرف الاهرام';
+        } else if (fullName.includes('٧٥') || fullName.includes('75')) {
+          subCategory = 'قطع ٧٥ ملى صرف الاهرام';
+        } else if (fullName.includes('٥٠') || fullName.includes('50')) {
+          subCategory = 'قطع ٥٠ ملى صرف الاهرام';
+        } else if (fullName.includes('٦') || fullName.includes('6')) {
+          subCategory = 'قطع ١٦٠ ملى صرف الاهرام';
+        } else if (fullName.includes('٤') || fullName.includes('4')) {
+          subCategory = 'قطع ١١٠ ملى صرف الاهرام';
+        } else if (fullName.includes('٣') || fullName.includes('3')) {
+          subCategory = 'قطع ٧٥ ملى صرف الاهرام';
+        } else if (fullName.includes('٢') || fullName.includes('2')) {
+          subCategory = 'قطع ٥٠ ملى صرف الاهرام';
+        } else {
+          subCategory = 'قطع صرف الاهرام';
+        }
+      } else if (isAhramAbiad) {
+        // --- قطع أبيض الاهرام مصنفة بالمقاس ---
+        if (fullName.includes('6') || fullName.includes('٦')) {
+          subCategory = 'قطع ٦بوصه الاهرام ابيض';
+        } else if (fullName.includes('4') || fullName.includes('٤')) {
+          subCategory = 'قطع ٤بوصه الاهرام ابيض';
+        } else if (fullName.includes('3') || fullName.includes('٣')) {
+          subCategory = 'قطع ٣بوصه الاهرام ابيض';
+        } else if (fullName.includes('2') || fullName.includes('٢')) {
+          subCategory = 'قطع ٢بوصه الاهرام ابيض';
+        } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('نص')) {
+          subCategory = 'قطع ١,٥ ابيض الاهرام';
+        } else if (fullName.includes('1') || fullName.includes('١')) {
+          subCategory = 'قطع ١بوصه الاهرام ابيض';
+        } else {
+          subCategory = 'قطع ١بوصه الاهرام ابيض';
+        }
       } else {
-        subCategory = 'قطع ٢/١ بولى الاهرام';
+        // --- قطع بولي الاهرام مصنفة بالمقاس ---
+        if (fullName.includes('٤/٣') || fullName.includes('4/3') || fullName.includes('3/4')) {
+          subCategory = 'قطع ٤/٣ بولى الاهرام';
+        } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('1½')) {
+          subCategory = 'قطع ١,٥ بولى الاهرام';
+        } else if (fullName.includes('٢/١') || fullName.includes('2/1') || fullName.includes('1/2') || fullName.includes('نص')) {
+          subCategory = 'قطع ٢/١ بولى الاهرام';
+        } else if (fullName.includes('1 1/4') || fullName.includes('١ ١/٤') || fullName.includes('1.25') || fullName.includes('١.٢٥')) {
+          subCategory = 'قطع ١,٢٥ بولى الاهرام';
+        } else if (fullName.includes('2') || fullName.includes('٢')) {
+          subCategory = 'قطع ٢ بوصه بولى الاهرام';
+        } else if (fullName.includes('1') || fullName.includes('١')) {
+          subCategory = 'قطع ١ بوصه بولى الاهرام';
+        } else {
+          subCategory = 'قطع ٢/١ بولى الاهرام';
+        }
       }
     } else if (mainGroup === 'سانبيور+dierovit+ideal+lesico' || mainGroup === 'سانبيور+ديروفيت+ايديال+ليسكو') {
       if (fullName.includes('وحده') || fullName.includes('وحدة')) {
@@ -805,13 +848,13 @@ const ProductGrid = ({
       {/* التخطيط ثنائي العمود: المجموعات الفرعية على اليمين وشبكة المنتجات على اليسار */}
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* المجموعات الفرعية على اليمين */}
-        <div className="w-full lg:w-56 shrink-0 flex flex-col gap-1.5 bg-slate-100 p-3 rounded-xl border border-slate-300 max-h-[600px] overflow-y-auto no-scrollbar">
+        <div className="w-full lg:w-56 lg:min-w-[14rem] lg:max-w-[14rem] flex-none flex flex-col gap-1.5 bg-slate-100 p-3 rounded-xl border border-slate-300 max-h-[600px] overflow-y-auto no-scrollbar">
           <span className="block text-center text-xs font-black text-slate-600 border-b border-slate-300 pb-2 mb-2">
             مجموعات فرعية
           </span>
           <button
             onClick={() => onCategoryChange('الكل')}
-            className={`w-full py-3 px-3 rounded-lg text-right font-extrabold transition-all text-xs border ${
+            className={`w-full py-3 px-3 rounded-lg text-right font-extrabold transition-colors text-xs border ${
               selectedCategory === 'الكل'
                 ? 'bg-blue-600 text-white border-blue-600 shadow-md font-black'
                 : 'bg-white text-slate-800 hover:bg-slate-50 border-slate-200'
@@ -823,7 +866,7 @@ const ProductGrid = ({
             <button
               key={category.id || category.name || index}
               onClick={() => onCategoryChange(category.name)}
-              className={`w-full py-3 px-3 rounded-lg text-right font-extrabold transition-all text-xs border ${
+              className={`w-full py-3 px-3 rounded-lg text-right font-extrabold transition-colors text-xs border truncate ${
                 selectedCategory === category.name
                   ? 'bg-blue-600 text-white border-blue-600 shadow-md font-black'
                   : 'bg-white text-slate-800 hover:bg-slate-50 border-slate-200'
