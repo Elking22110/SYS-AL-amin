@@ -887,43 +887,21 @@ const DataLoader = ({ children }) => {
                 const spIdStr = String(sp.id);
                 const existing = currentProdsMap.get(spIdStr);
                 
+                // INSERT-ONLY RULE: إذا السجل موجود لا تلمسه أبداً بغض النظر عن أي قيمة
                 if (existing) {
-                  // حماية الأسعار التي حددها المستخدم: لا نكتب فوق سعر موجود (> 0) بسعر افتراضي من الملف
-                  const targetPrice = (existing.price !== undefined && existing.price !== null && Number(existing.price) > 0)
-                    ? existing.price
-                    : sp.price;
-                  const needsUpdate = 
-                    existing.name !== sp.name ||
-                    existing.price !== targetPrice ||
-                    existing.barcode !== sp.barcode ||
-                    existing.mainCategoryId !== sp.mainCategoryId ||
-                    existing.subCategoryId !== sp.subCategoryId;
-                    
-                  if (needsUpdate) {
-                    const updated = {
-                      ...existing,
-                      name: sp.name,
-                      price: targetPrice,
-                      barcode: sp.barcode || null,
-                      mainCategoryId: sp.mainCategoryId,
-                      subCategoryId: sp.subCategoryId,
-                      // لا نضع pending إذا الأسعار لم تتغير فعلاً
-                      sync_status: existing.sync_status === 'pending' ? 'pending' : 'synced',
-                      updated_at: nowStr
-                    };
-                    await databaseManager.update('products', updated);
-                    updatedCount++;
-                  }
-                } else {
-                  const newProduct = {
-                    ...sp,
-                    sync_status: 'pending',
-                    created_at: nowStr,
-                    updated_at: nowStr
-                  };
-                  await databaseManager.update('products', newProduct);
-                  addedCount++;
+                  // skip — user data is sacred
+                  continue;
                 }
+
+                // سجل جديد غير موجود → أدرجه فقط بحالة synced (مش pending)
+                const newProduct = {
+                  ...sp,
+                  sync_status: 'synced',
+                  created_at: nowStr,
+                  updated_at: nowStr
+                };
+                await databaseManager.update('products', newProduct);
+                addedCount++;
               }
               
               const freshProds = await databaseManager.getAll('products');
@@ -965,39 +943,19 @@ const DataLoader = ({ children }) => {
                 const spIdStr = String(sp.id);
                 const existing = currentProdsMap.get(spIdStr);
                 
+                // INSERT-ONLY RULE: إذا السجل موجود لا تلمسه أبداً
                 if (existing) {
-                  const targetPrice = (existing.price !== undefined && existing.price !== null && Number(existing.price) > 0) ? existing.price : sp.price;
-                  const needsUpdate = 
-                    existing.name !== sp.name ||
-                    existing.price !== targetPrice ||
-                    existing.barcode !== sp.barcode ||
-                    existing.mainCategoryId !== sp.mainCategoryId ||
-                    existing.subCategoryId !== sp.subCategoryId;
-                    
-                  if (needsUpdate) {
-                    const updated = {
-                      ...existing,
-                      name: sp.name,
-                      price: targetPrice,
-                      barcode: sp.barcode || null,
-                      mainCategoryId: sp.mainCategoryId,
-                      subCategoryId: sp.subCategoryId,
-                      sync_status: 'synced',
-                      updated_at: nowStr
-                    };
-                    await databaseManager.update('products', updated);
-                    updatedCount++;
-                  }
-                } else {
-                  const newProduct = {
-                    ...sp,
-                    sync_status: 'synced',
-                    created_at: nowStr,
-                    updated_at: nowStr
-                  };
-                  await databaseManager.update('products', newProduct);
-                  addedCount++;
+                  continue;
                 }
+
+                const newProduct = {
+                  ...sp,
+                  sync_status: 'synced',
+                  created_at: nowStr,
+                  updated_at: nowStr
+                };
+                await databaseManager.update('products', newProduct);
+                addedCount++;
               }
               
               const freshProds = await databaseManager.getAll('products');
@@ -1105,55 +1063,9 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
-        // ----------------------------------------------------
-        // PATCH v47: Fix any products whose price is still 0 by falling back to seed price.
-        // Safely re-seeds zero-price products WITHOUT overwriting valid user-edited prices.
-        // ----------------------------------------------------
-        const patchV47Done = localStorage.getItem('patch_fix_zero_prices_v47') === 'true';
-        if (!patchV47Done) {
-          try {
-            console.log('[DataLoader] Patch v47: Fixing zero-price products from seed...');
-            setLoadingMessage('جاري إصلاح المنتجات ذات السعر الصفري...');
-            const seedRespV47 = await fetch('/products_seed.json?t=' + Date.now());
-            if (seedRespV47.ok) {
-              const seedDataV47 = await seedRespV47.json();
-              const seedProductsV47 = seedDataV47.products || [];
-              const seedPriceMap = new Map(seedProductsV47.map(sp => [String(sp.id), sp.price]));
-
-              const currentProdsV47 = await databaseManager.getAll('products');
-              const nowStrV47 = new Date().toISOString();
-              let fixedCount = 0;
-
-              for (const prod of currentProdsV47) {
-                const prodId = String(prod.id);
-                const currentPrice = Number(prod.price);
-                // فقط نصلح المنتجات ذات السعر الصفري والتي لا تنتظر الرفع إلى السحاب
-                if ((currentPrice === 0 || prod.price === null || prod.price === undefined) && prod.sync_status !== 'pending') {
-                  const seedPrice = seedPriceMap.has(prodId) ? Number(seedPriceMap.get(prodId)) : 0;
-                  if (seedPrice > 0) {
-                    const fixedProd = { ...prod, price: seedPrice, sync_status: 'synced', updated_at: nowStrV47 };
-                    await databaseManager.update('products', fixedProd);
-                    fixedCount++;
-                  }
-                }
-              }
-
-              if (fixedCount > 0) {
-                const freshProdsV47 = await databaseManager.getAll('products');
-                window.__bypass_sync_proxy__ = true;
-                localStorage.setItem('products', JSON.stringify(freshProdsV47));
-                window.__bypass_sync_proxy__ = false;
-                console.log(`[DataLoader] Patch v47: Fixed ${fixedCount} zero-price products.`);
-              } else {
-                console.log('[DataLoader] Patch v47: No zero-price products found.');
-              }
-            }
-            localStorage.setItem('patch_fix_zero_prices_v47', 'true');
-          } catch (err) {
-            window.__bypass_sync_proxy__ = false;
-            console.error('[DataLoader] Patch v47 failed:', err);
-          }
-        }
+        // PATCH v47: RETIRED — violated INSERT-ONLY rule by modifying existing synced records.
+        // The correct fix is: seed files never touch existing records, period.
+        localStorage.setItem('patch_fix_zero_prices_v47', 'true');
         // ----------------------------------------------------
 
 
