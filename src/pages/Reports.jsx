@@ -6,6 +6,7 @@ import { useNotifications } from '../components/NotificationSystem';
 import soundManager from '../utils/soundManager.js';
 import emojiManager from '../utils/emojiManager.js';
 import storageOptimizer from '../utils/storageOptimizer.js';
+import { formatDate, formatTimeOnly, formatDateTime, formatDateOnly, getCurrentDate, formatDateToDDMMYYYY, safeParseDate } from '../utils/dateUtils.js';
 import safeMath from '../utils/safeMath.js';
 import invoiceEngine from '../utils/invoice/index.js';
 import { formatMoney, formatQuantity, formatPercentage, getLocalizedErrorMessage } from '../utils/formatters.js';
