@@ -28,6 +28,7 @@ import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
 import databaseManager from '../utils/database';
 import storageOptimizer from '../utils/storageOptimizer.js';
+import syncManager from '../utils/syncManager.js';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
@@ -1432,7 +1433,7 @@ const Products = () => {
 
     const nowIso = new Date().toISOString();
     const product = {
-      id: Date.now(),
+      id: String(Date.now()),
       ...newProduct,
       price: parseFloat(newProduct.price),
       stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
@@ -1443,9 +1444,15 @@ const Products = () => {
     const updatedProducts = [...products, product];
     setProducts(updatedProducts);
 
-    // حفظ المنتجات في localStorage
+    // 1. التحديث الصريح لـ IndexedDB مع علامة pending
+    databaseManager.update('products', product).catch(err => console.error('خطأ تحديث قاعدة البيانات للمنتج:', err));
+
+    // 2. الحفظ في LocalStorage وتفريق الكاش
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
+
+    // 3. تشغيل مزامنة السحابة الفورية خلفياً
+    syncManager.syncStore('products').catch(err => console.warn('مزامنة الإضافة خلفياً:', err));
 
     // إرسال إشارة لتحديث نقطة البيع فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1613,9 +1620,15 @@ const Products = () => {
     const updatedProducts = products.map(p => String(p.id) === targetIdStr ? updatedProduct : p);
     setProducts(updatedProducts);
 
-    // حفظ المنتجات في localStorage
+    // 1. التحديث الصريح لـ IndexedDB مع علامة pending
+    databaseManager.update('products', updatedProduct).catch(err => console.error('خطأ حفظ تعديل المنتج في IDB:', err));
+
+    // 2. الحفظ في LocalStorage وتفريغ الكاش
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
+
+    // 3. المزامنة السحابية الفورية
+    syncManager.syncStore('products').catch(err => console.warn('مزامنة التعديل خلفياً:', err));
 
     // إرسال إشارة لتحديث نقطة البيع والصفحات فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1652,15 +1665,22 @@ const Products = () => {
     notifyProductUpdated(updatedProduct.name);
   };
 
-  const handleDeleteProduct = (id) => {
-    const product = products.find(p => p.id === id);
+  const handleDeleteProduct = async (id) => {
+    const targetIdStr = String(id);
+    const product = products.find(p => String(p.id) === targetIdStr);
     if (window.confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-      const updatedProducts = products.filter(p => p.id !== id);
+      const updatedProducts = products.filter(p => String(p.id) !== targetIdStr);
       setProducts(updatedProducts);
 
-      // حفظ المنتجات في localStorage
+      // 1. الحذف الصريح المؤقت (Soft Delete) في IndexedDB لتعليم السجل كـ deleted
+      await databaseManager.delete('products', targetIdStr);
+
+      // 2. الحفظ في LocalStorage وتفريغ الكاش
       localStorage.setItem('products', JSON.stringify(updatedProducts));
       storageOptimizer.clearCache();
+
+      // 3. المزامنة الفورية مع السحابة لإرسال أمر DELETE نهائي وحذفه فورياً على جميع الأجهزة
+      syncManager.syncStore('products').catch(err => console.warn('مزامنة الحذف خلفياً:', err));
 
       // إرسال إشارة لتحديث نقطة البيع فورياً
       window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1674,12 +1694,12 @@ const Products = () => {
       // نشر حدث تغيير المنتجات
       publish(EVENTS.PRODUCTS_CHANGED, {
         type: 'delete',
-        productId: id,
+        productId: targetIdStr,
         products: updatedProducts
       });
 
       // إشعار نجاح الحذف
-      notifyProductDeleted(product.name);
+      if (product) notifyProductDeleted(product.name);
     }
   };
 
@@ -1983,20 +2003,49 @@ const Products = () => {
             </div>
 
             <button
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (selectedCategory === 'الكل' || !selectedCategory) { return; }
                 const newName = window.prompt('أدخل اسم الفئة الجديد', selectedCategory);
                 if (!newName || newName.trim() === '' || newName === selectedCategory) return;
                 if (categories.some(c => c.name === newName)) { notifyDuplicateError(newName, 'فئة'); return; }
-                const updatedCategories = categories.map(c => c.name === selectedCategory ? { ...c, name: newName } : c);
+                
+                const catToEdit = categories.find(c => c.name === selectedCategory);
+                const catIdStr = catToEdit ? String(catToEdit.id || catToEdit.name) : selectedCategory;
+
+                const updatedCategoryObj = {
+                  id: catIdStr,
+                  name: newName,
+                  parent_id: catToEdit ? catToEdit.parent_id : null,
+                  updated_at: new Date().toISOString(),
+                  sync_status: 'pending'
+                };
+
+                const updatedCategories = categories.map(c => (c.name === selectedCategory || String(c.id) === catIdStr) ? updatedCategoryObj : c);
                 setCategories(updatedCategories);
+                
+                // 1. تحديث صريح للفئة في IndexedDB
+                await databaseManager.update('categories', updatedCategoryObj);
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
-                const updatedProductsLocal = products.map(p => p.category === selectedCategory ? { ...p, category: newName } : p);
+
+                // 2. تحديث المنتجات التابعة
+                const updatedProductsLocal = products.map(p => {
+                  if (p.category === selectedCategory || String(p.subCategoryId) === catIdStr || String(p.mainCategoryId) === catIdStr) {
+                    const up = { ...p, category: newName, updated_at: new Date().toISOString(), sync_status: 'pending' };
+                    databaseManager.update('products', up).catch(err => console.error('خطأ تحديث منتج تكتيكي:', err));
+                    return up;
+                  }
+                  return p;
+                });
                 setProducts(updatedProductsLocal);
                 localStorage.setItem('products', JSON.stringify(updatedProductsLocal));
                 storageOptimizer.clearCache();
+
+                // 3. المزامنة الفورية للسحابة
+                syncManager.syncStore('categories').catch(err => console.warn('مزامنة الفئات خلفياً:', err));
+                syncManager.syncStore('products').catch(err => console.warn('مزامنة المنتجات خلفياً:', err));
+
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: selectedCategory, to: newName, categories: updatedCategories }); } catch (_) { }
                 try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: selectedCategory, to: newName }); } catch (_) { }
 
@@ -2026,23 +2075,38 @@ const Products = () => {
             </button>
 
             <button
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (selectedCategory === 'الكل' || !selectedCategory) { return; }
                 const productsInCategory = products.filter(p => p.category === selectedCategory);
                 if (!window.confirm(`سيتم حذف الفئة "${selectedCategory}" مع ${productsInCategory.length} منتج تابع لها. هل تريد المتابعة؟`)) return;
-                // حذف المنتجات التابعة لهذه الفئة
+                
+                const catToDelete = categories.find(c => c.name === selectedCategory);
+                const catIdStr = catToDelete ? String(catToDelete.id || catToDelete.name) : selectedCategory;
+
+                // 1. حذف المنتجات التابعة لهذه الفئة صراحة من IndexedDB
                 const remainingProducts = products.filter(p => p.category !== selectedCategory);
                 setProducts(remainingProducts);
+
+                for (const p of productsInCategory) {
+                  await databaseManager.delete('products', String(p.id));
+                }
                 localStorage.setItem('products', JSON.stringify(remainingProducts));
                 try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_delete_by_category', categoryName: selectedCategory, products: remainingProducts }); } catch (_) { }
 
-                // حذف الفئة نفسها
-                const updatedCategories = categories.filter(c => c.name !== selectedCategory);
+                // 2. حذف الفئة نفسها صراحة من IndexedDB
+                const updatedCategories = categories.filter(c => c.name !== selectedCategory && String(c.id) !== catIdStr);
                 setCategories(updatedCategories);
+                
+                await databaseManager.delete('categories', catIdStr);
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
                 storageOptimizer.clearCache();
+
+                // 3. المزامنة الفورية للسحابة لإرسال أمر DELETE النهائي
+                syncManager.syncStore('products').catch(err => console.warn('مزامنة حذف المنتجات خلفياً:', err));
+                syncManager.syncStore('categories').catch(err => console.warn('مزامنة حذف الفئة خلفياً:', err));
+
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'delete', categoryName: selectedCategory, categories: updatedCategories }); } catch (_) { }
 
                 notifyCategoryDeleted(selectedCategory);

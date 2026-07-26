@@ -24,7 +24,8 @@ import {
 import soundManager from '../utils/soundManager.js';
 import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
-import safeMath from '../utils/safeMath.js';
+import databaseManager from '../utils/database';
+import syncManager from '../utils/syncManager.js';
 import thermalPrinter from '../utils/thermalPrinter.js';
 
 const Customers = () => {
@@ -114,19 +115,25 @@ const Customers = () => {
   const handleAddCustomer = () => {
     if (newCustomer.name && newCustomer.phone) {
       const customer = {
-        id: Date.now(),
+        id: String(Date.now()),
         ...newCustomer,
         totalSpent: 0,
         orders: 0,
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
-        status: 'جديد'
+        status: 'جديد',
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending'
       };
       const updatedCustomers = [...customers, customer];
       setCustomers(updatedCustomers);
 
-      // حفظ العملاء في localStorage
+      // 1. التحديث الصريح لـ IndexedDB
+      databaseManager.update('customers', customer).catch(err => console.error('خطأ إدراج عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+
+      // 2. المزامنة الفورية للسحابة
+      syncManager.syncStore('customers').catch(err => console.warn('مزامنة إضافة عميل خلفياً:', err));
 
       // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {
@@ -164,13 +171,20 @@ const Customers = () => {
     if (editingCustomer && newCustomer.name && newCustomer.phone) {
       const updatedCustomer = {
         ...editingCustomer,
-        ...newCustomer
+        ...newCustomer,
+        id: String(editingCustomer.id),
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending'
       };
       const updatedCustomers = customers.map(c => String(c.id) === String(editingCustomer.id) ? updatedCustomer : c);
       setCustomers(updatedCustomers);
 
-      // حفظ العملاء في localStorage
+      // 1. التحديث الصريح لـ IndexedDB
+      databaseManager.update('customers', updatedCustomer).catch(err => console.error('خطأ تعديل عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+
+      // 2. المزامنة الفورية للسحابة
+      syncManager.syncStore('customers').catch(err => console.warn('مزامنة تعديل عميل خلفياً:', err));
 
       // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {
@@ -245,19 +259,25 @@ const Customers = () => {
     }
   };
 
-  const handleDeleteCustomer = (id) => {
+  const handleDeleteCustomer = async (id) => {
+    const targetIdStr = String(id);
     if (window.confirm('هل أنت متأكد من حذف هذا العميل؟ سيؤدي ذلك أيضاً إلى حذف جميع فواتيره ومرتجعاه المرتبطة به لمنع أي تداخل.')) {
-      const customerToDelete = customers.find(c => String(c.id) === String(id));
+      const customerToDelete = customers.find(c => String(c.id) === targetIdStr);
       if (!customerToDelete) return;
 
       const cleanPhone = (p) => p ? p.toString().trim().replace(/[\s\-\(\)\+]/g, '') : '';
       const customerPhoneClean = cleanPhone(customerToDelete.phone);
       const currentCustId = customerToDelete.id;
 
-      // 1. حذف العميل نفسه
-      const updatedCustomers = customers.filter(c => String(c.id) !== String(id));
+      // 1. حذف العميل صراحة من IndexedDB وتحديث حالة المزامنة لـ deleted
+      await databaseManager.delete('customers', targetIdStr);
+
+      const updatedCustomers = customers.filter(c => String(c.id) !== targetIdStr);
       setCustomers(updatedCustomers);
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
+
+      // المزامنة الفورية مع السحابة إرسال حذف العميل فورياً
+      syncManager.syncStore('customers').catch(err => console.warn('مزامنة حذف العميل خلفياً:', err));
 
       // 2. تصفية وحذف فواتير العميل من المبيعات النشطة
       try {
