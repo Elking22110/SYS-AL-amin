@@ -647,6 +647,7 @@ class SyncManager {
       let cloudUpdates = [];
       let allCloudIdsSet = new Set();
       let hasMore = true;
+      let hasChanges = false;
 
       if (useFullPull) {
         let fullPullOffset = 0;
@@ -688,6 +689,7 @@ class SyncManager {
           }
           if (purgedCount > 0) {
             console.log(`🧹 [SyncManager] تم تطهير وسحب ${purgedCount} سجل محذوف سحابياً لجدول ${storeName}`);
+            hasChanges = true;
           }
         }
       } else {
@@ -733,6 +735,7 @@ class SyncManager {
       // حفظ السجلات السحابية الأحدث في IndexedDB
       if (cloudUpdates.length > 0) {
         console.log(`📥 [SyncManager] تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
+        hasChanges = true;
         
         for (const cloudItem of cloudUpdates) {
           if (cloudItem.id !== undefined && cloudItem.id !== null) {
@@ -753,8 +756,10 @@ class SyncManager {
           localItem.sync_status = 'synced';
           await databaseManager.update(storeName, localItem);
         }
+      }
 
-        // تحديث LocalStorage من IndexedDB للحفاظ على تزامن واجهة المستخدم
+      // تحديث LocalStorage من IndexedDB للحفاظ على تزامن واجهة المستخدم عند حدوث أي تعديل أو حذف
+      if (hasChanges) {
         try {
           const allItems = await databaseManager.getAll(storeName);
           const keyMap = {
