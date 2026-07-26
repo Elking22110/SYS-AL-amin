@@ -1482,16 +1482,44 @@ const Products = () => {
 
   const handleEditProduct = (product) => {
     setEditingProduct(product);
-    let mainId = product.mainCategoryId || '';
-    let subId = product.subCategoryId || '';
 
-    // Fallback لمنتجات seeded القديمة
-    if (!mainId && product.category) {
-      const matchedCat = categories.find(c => c.name === product.category);
+    let mainId = '';
+    let subId = '';
+    let categoryName = product.category || '';
+
+    // البحث عن الفئة الرئيسية والفرعية سواء بالمعرف ID أو الاسم Name
+    if (product.mainCategoryId) {
+      const foundMain = categories.find(c => String(c.id) === String(product.mainCategoryId) || c.name === product.mainCategoryId);
+      if (foundMain) {
+        mainId = foundMain.id || foundMain.name;
+      }
+    }
+
+    if (product.subCategoryId) {
+      const foundSub = categories.find(c => String(c.id) === String(product.subCategoryId) || c.name === product.subCategoryId);
+      if (foundSub) {
+        subId = foundSub.id || foundSub.name;
+        if (!mainId && foundSub.parentId) {
+          const parentCat = categories.find(c => String(c.id) === String(foundSub.parentId) || c.name === foundSub.parentId);
+          if (parentCat) {
+            mainId = parentCat.id || parentCat.name;
+          }
+        }
+      }
+    }
+
+    // Fallback بأسماء الفئات لمنتجات قديمة
+    if (!mainId && categoryName) {
+      const matchedCat = categories.find(c => c.name === categoryName || String(c.id) === String(categoryName));
       if (matchedCat) {
         if (matchedCat.parentId) {
           subId = matchedCat.id || matchedCat.name;
-          mainId = matchedCat.parentId;
+          const parentCat = categories.find(c => String(c.id) === String(matchedCat.parentId) || c.name === matchedCat.parentId);
+          if (parentCat) {
+            mainId = parentCat.id || parentCat.name;
+          } else {
+            mainId = matchedCat.parentId;
+          }
         } else {
           mainId = matchedCat.id || matchedCat.name;
         }
@@ -1500,24 +1528,37 @@ const Products = () => {
 
     setNewProduct({
       ...product,
+      name: product.name || '',
+      price: product.price !== undefined ? product.price : '',
+      stock: product.stock !== undefined ? product.stock : '',
+      minStock: product.minStock !== undefined ? product.minStock : '',
+      barcode: product.barcode || '',
+      supplierCode: product.supplierCode || '',
+      customColor: product.customColor || '',
       mainCategoryId: mainId,
-      subCategoryId: subId
+      subCategoryId: subId,
+      category: categoryName
     });
+
     setShowAddModal(true);
   };
 
   const handleUpdateProduct = () => {
     if (!editingProduct) return;
 
-    // 1. التحقق من اسم المنتج
-    if (!newProduct.name || !newProduct.name.trim()) {
+    const trimmedName = (newProduct.name || '').trim();
+    if (!trimmedName) {
       notifyValidationError('اسم المنتج', 'اسم المنتج مطلوب ولا يمكن أن يكون فارغاً');
       return;
     }
 
-    // 2. التحقق من السعر
     if (newProduct.price === '' || newProduct.price === null || newProduct.price === undefined || isNaN(parseFloat(newProduct.price)) || parseFloat(newProduct.price) < 0) {
       notifyValidationError('السعر', 'يرجى إدخال سعر صحيح للمنتج');
+      return;
+    }
+
+    if (!newProduct.mainCategoryId) {
+      notifyValidationError('المجموعة الرئيسية', 'يرجى اختيار المجموعة الرئيسية للمنتج');
       return;
     }
 
@@ -1544,6 +1585,12 @@ const Products = () => {
       }
     }
 
+    // استخراج الفئة الرئيسية والفرعية بدقة
+    const mainCatObj = categories.find(c => String(c.id) === String(newProduct.mainCategoryId) || c.name === newProduct.mainCategoryId);
+    const subCatObj = newProduct.subCategoryId ? categories.find(c => String(c.id) === String(newProduct.subCategoryId) || c.name === newProduct.subCategoryId) : null;
+
+    const finalCategoryName = subCatObj ? subCatObj.name : (mainCatObj ? mainCatObj.name : newProduct.category || '');
+
     const nowIso = new Date().toISOString();
     const targetIdStr = String(editingProduct.id);
 
@@ -1551,14 +1598,18 @@ const Products = () => {
       ...editingProduct,
       ...newProduct,
       id: targetIdStr,
+      name: trimmedName,
       price: parseFloat(newProduct.price),
+      mainCategoryId: mainCatObj ? (mainCatObj.id || mainCatObj.name) : newProduct.mainCategoryId,
+      subCategoryId: subCatObj ? (subCatObj.id || subCatObj.name) : (newProduct.subCategoryId || null),
+      category: finalCategoryName,
       stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
       minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
       updated_at: nowIso,
       sync_status: 'pending'
     };
 
-    // مطابقة المعرفات بنص صريح لضمان التحديث بغض النظر عن نوع المعرف
+    // مطابقة المعرفات بنص صريح لضمان التحديث في القائمة
     const updatedProducts = products.map(p => String(p.id) === targetIdStr ? updatedProduct : p);
     setProducts(updatedProducts);
 
@@ -1566,7 +1617,7 @@ const Products = () => {
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
 
-    // إرسال إشارة لتحديث نقطة البيع فورياً
+    // إرسال إشارة لتحديث نقطة البيع والصفحات فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
       detail: {
         action: 'updated',
