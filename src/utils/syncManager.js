@@ -1017,11 +1017,18 @@ class SyncManager {
             await supabase.from('sales').update({ customer_id: null }).eq('customer_id', record.id);
             await supabase.from('returns').update({ customer_id: null }).eq('customer_id', record.id);
           } catch (_) {}
+        } else if (storeName === 'categories') {
+          try {
+            // تنظيف المنتجات والفئات الفرعية المرتبطة سحابياً أولاً لمنع تعارض القيود (Foreign Key Constraint 23503)
+            await supabase.from('products').delete().eq('main_category_id', record.id);
+            await supabase.from('products').delete().eq('sub_category_id', record.id);
+            await supabase.from('categories').delete().eq('parent_id', record.id);
+          } catch (_) {}
         }
         
         console.log(`🗑️ [SyncManager] إرسال طلب حذف شاهد (Tombstone) لسحابة ${storeName}/${record.id}`);
         const { error } = await supabase.from(storeName).delete().eq('id', record.id);
-        if (!error || error.code === 'PGRST116' || error.code === '23503') {
+        if (!error || error.code === 'PGRST116') {
           await databaseManager.deletePhysical(storeName, record.id);
           console.log(`✅ [SyncManager] تم تأكيد الحذف ومسح الشاهد فيزياءً لـ ${storeName}/${record.id}`);
         } else {
