@@ -215,50 +215,16 @@ class SyncManager {
         const eventMap = { categories: EVENTS.CATEGORIES_CHANGED, products: EVENTS.PRODUCTS_CHANGED, customers: EVENTS.CUSTOMERS_CHANGED, sales: EVENTS.INVOICES_CHANGED, shifts: EVENTS.SHIFTS_CHANGED, returns: EVENTS.RETURNS_CHANGED, users: EVENTS.USERS_CHANGED };
         if (lsKey) {
           const allItems = await databaseManager.getAll(table);
-
-          if (eventType === 'DELETE') {
-            // عند الحذف: نمسح العنصر صراحةً من localStorage بدون merge حتى لا يرجع
-            const deletedId = String((oldRecord && oldRecord.id) || (newRecord && newRecord.id) || '');
-            try {
-              let currentLS = JSON.parse(localStorage.getItem(lsKey) || '[]');
-              if (Array.isArray(currentLS) && deletedId) {
-                currentLS = currentLS.filter(item => item && String(item.id) !== deletedId);
-              }
-              // دمج مع IDB للحصول على أي تحديثات أخرى مع استبعاد المحذوف
-              const idbMap = new Map((allItems || []).map(item => [String(item.id), item]));
-              for (const lsItem of currentLS) {
-                if (lsItem && lsItem.id && !idbMap.has(String(lsItem.id)) && String(lsItem.id) !== deletedId) {
-                  idbMap.set(String(lsItem.id), lsItem);
-                }
-              }
-              window.__bypass_sync_proxy__ = true;
-              localStorage.setItem(lsKey, JSON.stringify(Array.from(idbMap.values())));
-              window.__bypass_sync_proxy__ = false;
-            } catch (_) {}
-          } else {
-            // عند INSERT/UPDATE: نعمل merge لحماية السجلات المعلقة (pending) من الضياع
-            let idbMap = new Map((allItems || []).map(item => [String(item.id), item]));
-            try {
-              const currentLS = JSON.parse(localStorage.getItem(lsKey) || '[]');
-              if (Array.isArray(currentLS)) {
-                for (const lsItem of currentLS) {
-                  if (lsItem && lsItem.id && !idbMap.has(String(lsItem.id))) {
-                    idbMap.set(String(lsItem.id), lsItem);
-                  }
-                }
-              }
-            } catch (_) {}
-            window.__bypass_sync_proxy__ = true;
-            localStorage.setItem(lsKey, JSON.stringify(Array.from(idbMap.values())));
-            window.__bypass_sync_proxy__ = false;
-          }
+          window.__bypass_sync_proxy__ = true;
+          localStorage.setItem(lsKey, JSON.stringify(allItems || []));
+          window.__bypass_sync_proxy__ = false;
+        }
 
           // إشعار واجهة المستخدم بالحدث المناسب
           const eventName = eventMap[table];
           if (eventName) {
             try { publish(eventName, { type: eventType.toLowerCase(), table }); } catch (_) {}
           }
-        }
 
       } else if (LOCALSTORAGE_TABLES.includes(table)) {
         // تحديث localStorage مباشرة
