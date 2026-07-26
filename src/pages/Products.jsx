@@ -1550,7 +1550,7 @@ const Products = () => {
     setShowAddModal(true);
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (!editingProduct) return;
 
     const trimmedName = (newProduct.name || '').trim();
@@ -1620,15 +1620,15 @@ const Products = () => {
     const updatedProducts = products.map(p => String(p.id) === targetIdStr ? updatedProduct : p);
     setProducts(updatedProducts);
 
-    // 1. التحديث الصريح لـ IndexedDB مع علامة pending
-    databaseManager.update('products', updatedProduct).catch(err => console.error('خطأ حفظ تعديل المنتج في IDB:', err));
+    // 1. التحديث الصريح لـ IndexedDB وانتظار اكتماله لضمان حفظ sync_status = 'pending'
+    await databaseManager.update('products', updatedProduct).catch(err => console.error('خطأ حفظ تعديل المنتج في IDB:', err));
 
     // 2. الحفظ في LocalStorage وتفريغ الكاش
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
 
-    // 3. المزامنة السحابية الفورية
-    syncManager.syncStore('products').catch(err => console.warn('مزامنة التعديل خلفياً:', err));
+    // 3. المزامنة السحابية الفورية بعد التأكد من حفظ الحالة المحلية
+    await syncManager.syncStore('products').catch(err => console.warn('مزامنة التعديل خلفياً:', err));
 
     // إرسال إشارة لتحديث نقطة البيع والصفحات فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
