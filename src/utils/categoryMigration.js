@@ -940,20 +940,9 @@ const ALL_CATEGORIES = [
 // دالة تُشغَّل لتهيئة الفئات في التثبيت الجديد فقط (Insert Only for Fresh Install)
 // لا تعيد حقن أي فئات محذوفة أو معدلة من قبل المستخدم إطلاقاً
 function enforceOnlyApprovedCategories() {
-  try {
-    const savedStr = localStorage.getItem('productCategories');
-    const saved = savedStr ? JSON.parse(savedStr) : null;
-    
-    // إذا كانت الفئات فارغة تماماً (التثبيت الأول فقط)، قم بتحميل الفئات الافتراضية
-    if (!saved || !Array.isArray(saved) || saved.length === 0) {
-      localStorage.setItem('productCategories', JSON.stringify(ALL_CATEGORIES));
-      console.log(`[CategoryMigration] Fresh install detected: seeded ${ALL_CATEGORIES.length} initial categories.`);
-      return;
-    }
-
-    // إذا كانت هناك فئات موجودة بالفعل، لا نلمسها ولا نعيد حقن الفئات المحذوفة إطلاقاً
-    // (قاعدة المعمارية: Seed/Migration لا يلمس بيانات المستخدم الموجودة ولا يعيد إضافة ما حذفه المستخدم)
-  } catch (_) {}
+  // RETIRED: Never auto-seed ALL_CATEGORIES into localStorage for new browser profiles.
+  // Categories must ONLY be fetched from Supabase Cloud / IndexedDB sync.
+  return;
 }
 
 export function runCategoryMigration() {
@@ -980,14 +969,13 @@ export function runCategoryMigration() {
 
     const migrationFlag = localStorage.getItem('categories_hierarchical_migration_v25');
     if (migrationFlag === 'true') {
-      enforceOnlyApprovedCategories();
       return;
     }
 
-    console.log('Running Category Hierarchy Overwrite & Seeding V24 (جوليت صيني single tab)...');
-
-    // 1. كتابة كافة الفئات الـ 24 الجديدة وحذف أي شيء قديم تمامًا
-    localStorage.setItem('productCategories', JSON.stringify(ALL_CATEGORIES));
+    // تعيين علامة الترحيل فقط دون كتابة فوق الفئات بالقيم الافتراضية
+    localStorage.setItem('categories_hierarchical_migration_v25', 'true');
+    console.log('[CategoryMigration] Migration v25 initialized (INSERT-ONLY mode).');
+    return;
 
     // 2. تحديث وتصنيف كافة المنتجات الموجودة لتشير للمعرفات والمجموعات الهرمية الجديدة تلقائياً
     const savedProducts = JSON.parse(localStorage.getItem('products') || '[]');
