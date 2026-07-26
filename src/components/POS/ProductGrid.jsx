@@ -783,45 +783,36 @@ const ProductGrid = ({
     return uniqueSubs.map(sub => ({ name: sub }));
   }, [categories, processedProducts, selectedMainGroup]);
 
-  // تصفية المنتجات المحسنة مع البحث الذكي والمجموعات
+  // تصفية المنتجات مع البحث الفوري الشامل بالاسم والكود والباركود (مثل صفحة المنتجات)
   const filteredProducts = React.useMemo(() => {
-    if (searchOptimizer.getSearchStats().indexSize === 0) {
-      searchOptimizer.createIndex(processedProducts, ['name', 'sku', 'barcode', 'description']);
+    const term = searchTerm.toLowerCase().trim();
+
+    if (!term) {
+      return processedProducts.filter(product => {
+        if (selectedMainGroup !== 'الكل' && product.computedMainGroup !== selectedMainGroup) return false;
+        if (selectedCategory !== 'الكل' && product.computedSubCategory !== selectedCategory) return false;
+        return true;
+      });
     }
 
-    let searchResults = processedProducts;
-    if (searchTerm.trim().length > 1) {
-      const term = searchTerm.toLowerCase().trim();
-      // بحث ذكي من الـ searchOptimizer
-      const optResults = searchOptimizer.performSearch(searchTerm, processedProducts, ['name', 'sku', 'barcode', 'description']);
-      
-      // بحث مباشر دقيق أو جزئي بالكود / الباركود لضمان ظهور الصنف فوراً
-      const directResults = processedProducts.filter(product => {
-        return (
-          String(product.id).includes(term) ||
-          (product.barcode && String(product.barcode).toLowerCase().includes(term)) ||
-          (product.supplierCode && String(product.supplierCode).toLowerCase().includes(term)) ||
-          (product.sku && String(product.sku).toLowerCase().includes(term))
-        );
-      });
+    // تقسيم كلمات البحث لدعم البحث المركب مثل "كوع 63" أو "اسمارت 90"
+    const keywords = term.split(/\s+/).filter(Boolean);
 
-      // دمج النتائج بدون تكرار
-      const combined = [...directResults];
-      optResults.forEach(p => {
-        if (p && p.id !== undefined) {
-          if (!combined.some(x => x && x.id === p.id)) {
-            combined.push(p);
-          }
-        }
-      });
-      searchResults = combined;
-    }
+    return processedProducts.filter(product => {
+      const nameStr = (product.name || '').toLowerCase();
+      const idStr = String(product.id || '').toLowerCase();
+      const barcodeStr = (product.barcode || '').toLowerCase();
+      const supplierCodeStr = (product.supplierCode || '').toLowerCase();
+      const skuStr = (product.sku || '').toLowerCase();
+      const descStr = (product.description || '').toLowerCase();
+      const categoryStr = (product.category || '').toLowerCase();
+      const mainGroupStr = (product.computedMainGroup || '').toLowerCase();
+      const subGroupStr = (product.computedSubCategory || '').toLowerCase();
 
-    return searchResults.filter(product => {
-      if (selectedMainGroup !== 'الكل') {
-        if (product.computedMainGroup !== selectedMainGroup) return false;
-      }
-      return selectedCategory === 'الكل' || product.computedSubCategory === selectedCategory;
+      const combinedText = `${nameStr} ${idStr} ${barcodeStr} ${supplierCodeStr} ${skuStr} ${descStr} ${categoryStr} ${mainGroupStr} ${subGroupStr}`;
+
+      // يجب أن توجد جميع كلمات البحث داخل السجل (تطابق شامل ودقيق)
+      return keywords.every(kw => combinedText.includes(kw));
     });
   }, [processedProducts, selectedMainGroup, selectedCategory, searchTerm]);
 
