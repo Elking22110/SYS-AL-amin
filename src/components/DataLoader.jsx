@@ -16,8 +16,8 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         // WIPE OPERATION: One-time automated wipe to start fresh (INCLUDING suppliers)
         // ----------------------------------------------------
-        const didWipeV4 = localStorage.getItem('did_one_time_clean_v4') === 'true';
-        if (!didWipeV4) {
+        const didWipeV5 = localStorage.getItem('did_one_time_clean_v5') === 'true';
+        if (!didWipeV5) {
           console.log('[DataLoader] Performing one-time operational data wipe (Including Suppliers)...');
           
           // 1. Wipe IndexedDB stores
@@ -60,8 +60,8 @@ const DataLoader = ({ children }) => {
             }
           });
 
-          // 3. Set the migration flag v4
-          localStorage.setItem('did_one_time_clean_v4', 'true');
+          // 3. Set the migration flag v5
+          localStorage.setItem('did_one_time_clean_v5', 'true');
           
           console.log('[DataLoader] One-time operational data wipe complete. Reloading page...');
           window.location.reload();
