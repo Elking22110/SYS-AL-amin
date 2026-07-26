@@ -374,7 +374,19 @@ class SyncManager {
     } else if (table === 'products') {
       if (record.main_category_id !== undefined) { mapped.mainCategoryId = record.main_category_id; delete mapped.main_category_id; }
       if (record.sub_category_id !== undefined) { mapped.subCategoryId = record.sub_category_id; delete mapped.sub_category_id; }
-      if (record.image_path !== undefined) { mapped.imagePath = record.image_path; delete mapped.image_path; }
+      if (record.cost !== undefined) { mapped.costPrice = record.cost; mapped.cost = record.cost; }
+      if (record.image_path !== undefined) {
+        mapped.imagePath = record.image_path;
+        if (typeof record.image_path === 'string' && record.image_path.startsWith('{')) {
+          try {
+            const parsed = JSON.parse(record.image_path);
+            mapped.customColor = parsed.color || '';
+            mapped.supplierCode = parsed.code || '';
+            mapped.imagePath = parsed.img || '';
+          } catch (_) {}
+        }
+        delete mapped.image_path;
+      }
       if (record.custom_color !== undefined) { mapped.customColor = record.custom_color ?? ''; delete mapped.custom_color; }
     } else if (table === 'users') {
       if (record.created_at !== undefined) { mapped.createdAt = record.created_at; delete mapped.created_at; }
@@ -577,14 +589,26 @@ class SyncManager {
 
     // 3. مطابقة القيم الحسابية والتشغيلية في حالة تساوى التواريخ للبيانات المتزامنة (synced)
     if (localRecord.sync_status === 'synced') {
-      if (cloudRecord.price !== undefined && Number(cloudRecord.price) !== Number(localRecord.price)) {
-        return true;
-      }
-      if (cloudRecord.stock !== undefined && Number(cloudRecord.stock) !== Number(localRecord.stock)) {
-        return true;
-      }
-      if (cloudRecord.name !== undefined && cloudRecord.name !== localRecord.name) {
-        return true;
+      const isProduct = localRecord.hasOwnProperty('price') || localRecord.hasOwnProperty('costPrice') || cloudRecord.hasOwnProperty('price');
+      if (isProduct) {
+        const cloudLocal = this.mapCloudToLocal('products', cloudRecord);
+        if (
+          cloudLocal.name !== localRecord.name ||
+          Number(cloudLocal.price || 0) !== Number(localRecord.price || 0) ||
+          Number(cloudLocal.costPrice || 0) !== Number(localRecord.costPrice || 0) ||
+          Number(cloudLocal.stock || 0) !== Number(localRecord.stock || 0) ||
+          (cloudLocal.barcode || null) !== (localRecord.barcode || null) ||
+          (cloudLocal.supplierCode || null) !== (localRecord.supplierCode || null) ||
+          (cloudLocal.customColor || null) !== (localRecord.customColor || null) ||
+          (cloudLocal.mainCategoryId || null) !== (localRecord.mainCategoryId || null) ||
+          (cloudLocal.subCategoryId || null) !== (localRecord.subCategoryId || null)
+        ) {
+          return true;
+        }
+      } else {
+        if (cloudRecord.name !== undefined && cloudRecord.name !== localRecord.name) {
+          return true;
+        }
       }
     }
 
@@ -811,7 +835,7 @@ class SyncManager {
             delete uploadData.supplierCode;
 
             let imageVal = record.imagePath || record.image_path || null;
-            if (record.customColor || record.supplierCode) {
+            if (record.hasOwnProperty('customColor') || record.hasOwnProperty('supplierCode')) {
               imageVal = JSON.stringify({
                 color: record.customColor || '',
                 code: record.supplierCode || '',
@@ -823,7 +847,7 @@ class SyncManager {
               id: String(record.id),
               name: uploadData.name,
               price: uploadData.price ?? 0,
-              cost: uploadData.cost ?? 0,
+              cost: record.costPrice ?? record.cost ?? uploadData.cost ?? uploadData.costPrice ?? 0,
               stock: uploadData.stock ?? 0,
               barcode: uploadData.barcode ?? null,
               main_category_id: record.mainCategoryId || uploadData.main_category_id || null,
