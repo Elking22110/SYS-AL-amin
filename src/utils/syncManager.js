@@ -519,23 +519,6 @@ class SyncManager {
       const pendingRecords = localRecords.filter(r => r && r.sync_status === 'pending');
       const deletedRecords = localRecords.filter(r => r && r.sync_status === 'deleted');
 
-      // جلب تواريخ التحديث السحابية للسجلات المعلقة للتحقق من وجود تعارضات (Last-Write-Wins)
-      let cloudMap = new Map();
-      if (pendingRecords.length > 0) {
-        try {
-          const { data: cloudTimestamps, error: timestampError } = await this.withCloudTimeout(
-            supabase.from(storeName).select('id, updated_at').in('id', pendingRecords.map(r => r.id)),
-            15000,
-            `timestamp-check ${storeName}`
-          );
-          if (!timestampError && cloudTimestamps) {
-            cloudMap = new Map(cloudTimestamps.map(c => [String(c.id), c.updated_at]));
-          }
-        } catch (err) {
-          console.warn(`فشل التحقق من تعارضات السحابة لـ ${storeName}، سيتم الرفع المباشر:`, err);
-        }
-      }
-
       // رفع الإضافات والتعديلات على شكل دفعات (Batches) لزيادة السرعة والترشيد
       if (pendingRecords.length > 0) {
         const batchData = [];
