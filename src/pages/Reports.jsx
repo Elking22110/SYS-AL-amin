@@ -210,6 +210,8 @@ const Reports = () => {
     const onDataUpdated = () => loadSalesData();
     window.addEventListener('dataUpdated', onDataUpdated);
     window.addEventListener('realtimeDataUpdate', onDataUpdated);
+    window.addEventListener('databaseSyncTrigger', onDataUpdated);
+    window.addEventListener('storage', onDataUpdated);
     return () => {
       clearInterval(interval);
       if (typeof unsubInvoices === 'function') unsubInvoices();
@@ -217,6 +219,8 @@ const Reports = () => {
       if (typeof unsubReturns === 'function') unsubReturns();
       window.removeEventListener('dataUpdated', onDataUpdated);
       window.removeEventListener('realtimeDataUpdate', onDataUpdated);
+      window.removeEventListener('databaseSyncTrigger', onDataUpdated);
+      window.removeEventListener('storage', onDataUpdated);
     };
   }, []);
 

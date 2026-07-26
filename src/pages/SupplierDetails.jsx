@@ -49,8 +49,27 @@ const SupplierDetails = () => {
     useEffect(() => {
         loadData();
 
-        // Listen to changes (if needed)
-        return () => { };
+        const handleSync = (e) => {
+            const target = e?.detail?.table || e?.detail?.type || e?.key;
+            if (!target || target === 'suppliers' || target === 'supplier_supplies' || target === 'supplier_payments') {
+                loadData();
+            }
+        };
+
+        window.addEventListener('storage', handleSync);
+        window.addEventListener('realtimeDataUpdate', handleSync);
+        window.addEventListener('dataUpdated', handleSync);
+        window.addEventListener('databaseSyncTrigger', handleSync);
+
+        const unsubSuppliers = typeof subscribe === 'function' ? subscribe(EVENTS.SUPPLIERS_CHANGED, loadData) : null;
+
+        return () => {
+            window.removeEventListener('storage', handleSync);
+            window.removeEventListener('realtimeDataUpdate', handleSync);
+            window.removeEventListener('dataUpdated', handleSync);
+            window.removeEventListener('databaseSyncTrigger', handleSync);
+            if (typeof unsubSuppliers === 'function') unsubSuppliers();
+        };
     }, [id]);
 
     const loadData = () => {

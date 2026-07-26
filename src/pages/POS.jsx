@@ -12,19 +12,36 @@ const POS = () => {
     } catch (_) {
       setActiveShift(null);
     }
-    // التحديث لحظياً عند بدء/إنهاء الوردية
-    const onStarted = (e) => {
+    // التحديث لحظياً عند بدء/إنهاء الوردية أو تزامنها سحابياً
+    const checkShift = () => {
+      storageOptimizer.clearCache('activeShift');
       const shift = storageOptimizer.get('activeShift', null);
       setActiveShift(shift && shift.status === 'active' ? shift : null);
     };
-    const onEnded = (e) => {
+    const onEnded = () => {
       setActiveShift(null);
     };
-    window.addEventListener('shiftStarted', onStarted);
+    const handleShiftSync = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'shifts' || target === 'active_shift' || target === 'activeShift') {
+        checkShift();
+      }
+    };
+
+    window.addEventListener('shiftStarted', checkShift);
     window.addEventListener('shiftEnded', onEnded);
+    window.addEventListener('realtimeDataUpdate', handleShiftSync);
+    window.addEventListener('dataUpdated', handleShiftSync);
+    window.addEventListener('databaseSyncTrigger', handleShiftSync);
+    window.addEventListener('storage', handleShiftSync);
+
     return () => {
-      window.removeEventListener('shiftStarted', onStarted);
+      window.removeEventListener('shiftStarted', checkShift);
       window.removeEventListener('shiftEnded', onEnded);
+      window.removeEventListener('realtimeDataUpdate', handleShiftSync);
+      window.removeEventListener('dataUpdated', handleShiftSync);
+      window.removeEventListener('databaseSyncTrigger', handleShiftSync);
+      window.removeEventListener('storage', handleShiftSync);
     };
   }, []);
 

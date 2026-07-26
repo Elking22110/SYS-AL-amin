@@ -38,18 +38,26 @@ const CustomerDetails = () => {
     useEffect(() => {
         loadData();
 
-        const handleStorageChange = (e) => {
-            if (e.key === 'customers' || e.key === 'sales' || e.key === 'shifts') {
+        const handleSync = (e) => {
+            const target = e?.detail?.table || e?.detail?.type || e?.key;
+            if (!target || target === 'customers' || target === 'sales' || target === 'shifts' || target === 'active_shift') {
                 loadData();
             }
         };
 
-        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('storage', handleSync);
+        window.addEventListener('realtimeDataUpdate', handleSync);
+        window.addEventListener('dataUpdated', handleSync);
+        window.addEventListener('databaseSyncTrigger', handleSync);
+
         const unsubCustomers = typeof subscribe === 'function' ? subscribe(EVENTS.CUSTOMERS_CHANGED, loadData) : null;
         const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, loadData) : null;
 
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('storage', handleSync);
+            window.removeEventListener('realtimeDataUpdate', handleSync);
+            window.removeEventListener('dataUpdated', handleSync);
+            window.removeEventListener('databaseSyncTrigger', handleSync);
             if (typeof unsubCustomers === 'function') unsubCustomers();
             if (typeof unsubInvoices === 'function') unsubInvoices();
         };
