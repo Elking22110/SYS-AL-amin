@@ -842,8 +842,14 @@ class SyncManager {
 
       // معالجة المرتجعات والمحذوفات في السحاب
       for (const record of deletedRecords) {
+        if (storeName === 'customers') {
+          try {
+            await supabase.from('sales').update({ customer_id: null }).eq('customer_id', record.id);
+            await supabase.from('returns').update({ customer_id: null }).eq('customer_id', record.id);
+          } catch (_) {}
+        }
         const { error } = await supabase.from(storeName).delete().eq('id', record.id);
-        if (!error || error.code === 'PGRST116') { // نجح الحذف أو السجل غير موجود أصلاً في السحاب
+        if (!error || error.code === 'PGRST116' || error.code === '23503') {
           await databaseManager.deletePhysical(storeName, record.id);
         } else {
           console.error(`خطأ في حذف الصنف ${record.id} من سحابة ${storeName}:`, error);
@@ -873,9 +879,13 @@ class SyncManager {
       let cloudUpdates = [];
       let hasMore = true;
 
+      // بناء مجموعة IDs المحذوفة محلياً لمنع استعادتها أثناء التحميل السحابي
+      const deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
+
       if (useFullPull) {
         // سحب كامل للجداول الصغيرة: جلب جميع السجلات ومقارنتها بالمحلي
         const localIdMap = new Map(localRecords.map(r => [String(r.id), r]));
+        const cloudIdSet = new Set();
         let fullPullOffset = 0;
         const fullPullPageSize = 1000;
         while (hasMore) {
@@ -888,19 +898,47 @@ class SyncManager {
           if (data && data.length > 0) {
             for (const cloudItem of data) {
               const cId = String(cloudItem.id ?? '');
+              cloudIdSet.add(cId);
+
+              // تخطي السجلات المحذوفة محلياً تماماً وعدم إعادة استعادتها أبداً
+              if (deletedIdsSet.has(cId)) {
+                continue;
+              }
+
               const local = localIdMap.get(cId);
               const cloudTs = new Date(cloudItem.updated_at || 0).getTime();
               const localTs = local ? new Date(local.updated_at || 0).getTime() : 0;
               const localIsPending = local && local.sync_status === 'pending';
-              // أضف السجل السحابي إذا: غير موجود محلياً، أو محلي synced وسحابي أحدث
-              if (!local || (!localIsPending && cloudTs > localTs)) {
-                cloudUpdates.push(cloudItem);
+              const localIsDeleted = local && local.sync_status === 'deleted';
+
+              if (!localIsDeleted) {
+                if (!local || (!localIsPending && cloudTs > localTs)) {
+                  cloudUpdates.push(cloudItem);
+                }
               }
             }
             fullPullOffset += data.length;
             hasMore = data.length === fullPullPageSize;
           } else {
             hasMore = false;
+          }
+        }
+
+        // اكتشاف السجلات المحلية النشطة غير الموجودة بالسحاب وإعدادها للرفع (مزامنة ثنائية الاتجاه)
+        for (const localRecord of localRecords) {
+          const lId = String(localRecord.id ?? '');
+          if (localRecord.sync_status !== 'deleted' && !cloudIdSet.has(lId)) {
+            if (localRecord.sync_status !== 'pending') {
+              console.log(`📤 [SyncManager] رفع سجل محلي مفقود بالسحاب لـ ${storeName}/${lId}`);
+              localRecord.sync_status = 'pending';
+              try {
+                const tx = databaseManager.db.transaction([storeName], 'readwrite');
+                tx.objectStore(storeName).put(localRecord);
+              } catch (_) {}
+              if (!pendingRecords.some(p => String(p.id) === lId)) {
+                pendingRecords.push(localRecord);
+              }
+            }
           }
         }
       } else {
@@ -934,8 +972,6 @@ class SyncManager {
         }
       }
 
-      // بناء مجموعة IDs المحذوفة محلياً لتجنب استعادة ما حذفه المستخدم من السحابة
-      const deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
 
       if (cloudUpdates.length > 0) {
         console.log(`📥 تم تحميل ${cloudUpdates.length} تحديثاً سحابياً لجدول ${storeName}`);
@@ -1083,19 +1119,8 @@ class SyncManager {
           if (localStorageKey) {
             // دمج العناصر في IndexedDB مع العناصر الحالية في localStorage
             // لمنع فقدان العناصر الجديدة التي لم تُحفظ في IndexedDB بعد (بسبب تأخر الـ proxy)
-            let idbMap = new Map(allItems.map(item => [String(item.id), item]));
-            try {
-              const currentLS = JSON.parse(localStorage.getItem(localStorageKey) || '[]');
-              if (Array.isArray(currentLS)) {
-                for (const lsItem of currentLS) {
-                  if (lsItem && lsItem.id && !idbMap.has(String(lsItem.id))) {
-                    // عنصر موجود في localStorage لكن غير موجود في IndexedDB بعد → نحتفظ به
-                    idbMap.set(String(lsItem.id), lsItem);
-                  }
-                }
-              }
-            } catch (_) {}
-            const mergedItems = Array.from(idbMap.values());
+            // اعتماد العناصر النشطة من IndexedDB مباشرة بدون إعادة الدمج لمنع استعادة العناصر المحذوفة
+            const mergedItems = allItems;
             window.__bypass_sync_proxy__ = true;
             localStorage.setItem(localStorageKey, JSON.stringify(mergedItems));
             window.__bypass_sync_proxy__ = false;
