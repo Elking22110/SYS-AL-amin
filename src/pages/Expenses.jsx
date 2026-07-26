@@ -4,6 +4,7 @@ import soundManager from '../utils/soundManager';
 import { getCurrentDate } from '../utils/dateUtils';
 import databaseManager from '../utils/database';
 import syncManager from '../utils/syncManager.js';
+import safeMath from '../utils/safeMath';
 import { useNotifications } from '../components/NotificationSystem';
 
 const Expenses = () => {

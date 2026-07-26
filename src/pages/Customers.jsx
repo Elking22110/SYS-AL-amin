@@ -26,6 +26,7 @@ import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.j
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import databaseManager from '../utils/database';
 import syncManager from '../utils/syncManager.js';
+import safeMath from '../utils/safeMath.js';
 import thermalPrinter from '../utils/thermalPrinter.js';
 
 const Customers = () => {
