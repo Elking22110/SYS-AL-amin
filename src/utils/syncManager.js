@@ -526,6 +526,37 @@ class SyncManager {
     }
   }
 
+  // ----------------------------------------------------
+  // SINGLE WRITE-AUTHORITY STATE TRANSITIONS
+  // ----------------------------------------------------
+  async markPending(storeName, item) {
+    if (!item) return item;
+    const updated = {
+      ...item,
+      id: String(item.id),
+      sync_status: 'pending',
+      updated_at: item.updated_at || new Date().toISOString()
+    };
+    await databaseManager.update(storeName, updated);
+    return updated;
+  }
+
+  async markSynced(storeName, item) {
+    if (!item) return item;
+    const updated = {
+      ...item,
+      id: String(item.id),
+      sync_status: 'synced'
+    };
+    await databaseManager.update(storeName, updated);
+    return updated;
+  }
+
+  async markDeleted(storeName, itemId) {
+    if (!itemId) return;
+    await databaseManager.delete(storeName, String(itemId));
+  }
+
   // مزامنة جدول فردي
   async syncStore(storeName) {
     const traceId = getTracedProductId();
@@ -545,8 +576,8 @@ class SyncManager {
         const originalRecordsMap = new Map();
 
         for (const record of pendingRecords) {
-          // تعديل المستخدم الصريح يُرفع دائماً للسحابة مع تحديث التوقيت لضمان التغليب
-          record.updated_at = new Date().toISOString();
+          // الحفاظ على توقيت التعديل الأصلي الموثوق للمستخدم لمنع استبدال تواريخ التعديلات بالوقت الحالي عند الرفع
+          record.updated_at = record.updated_at || new Date().toISOString();
 
           const { sync_status, ...uploadData } = record;
           uploadData.id = String(record.id);

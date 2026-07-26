@@ -481,9 +481,8 @@ const DataLoader = ({ children }) => {
                   if (item && item.id) {
                     const existing = await databaseManager.get(storeName, item.id);
                     if (!existing) {
-                      const itemToMigrate = { ...item };
-                      itemToMigrate.sync_status = 'pending';
-                      itemToMigrate.updated_at = new Date().toISOString();
+                      itemToMigrate.sync_status = 'synced';
+                      itemToMigrate.updated_at = itemToMigrate.updated_at || new Date().toISOString();
                       await databaseManager.update(storeName, itemToMigrate);
                     }
                   }
@@ -510,7 +509,7 @@ const DataLoader = ({ children }) => {
               for (const item of allItems) {
                 if (item && item.sync_status !== 'synced') {
                   const updatedItem = { ...item };
-                  updatedItem.sync_status = 'pending';
+                  updatedItem.sync_status = 'synced';
                   if (!updatedItem.updated_at) {
                     updatedItem.updated_at = new Date().toISOString();
                   }
@@ -977,7 +976,7 @@ const DataLoader = ({ children }) => {
                       barcode: sp.barcode || null,
                       mainCategoryId: sp.mainCategoryId,
                       subCategoryId: sp.subCategoryId,
-                      sync_status: 'pending',
+                      sync_status: 'synced',
                       updated_at: nowStr
                     };
                     await databaseManager.update('products', updated);
@@ -986,7 +985,7 @@ const DataLoader = ({ children }) => {
                 } else {
                   const newProduct = {
                     ...sp,
-                    sync_status: 'pending',
+                    sync_status: 'synced',
                     created_at: nowStr,
                     updated_at: nowStr
                   };
@@ -1040,7 +1039,7 @@ const DataLoader = ({ children }) => {
                   const updated = {
                     ...existing,
                     name: sp.name,
-                    sync_status: 'pending',
+                    sync_status: 'synced',
                     updated_at: nowStr
                   };
                   await databaseManager.update('products', updated);
@@ -1081,7 +1080,7 @@ const DataLoader = ({ children }) => {
               const p = await databaseManager.get('products', pid);
               if (p && p.subCategoryId !== NEW_SUBCAT) {
                 p.subCategoryId = NEW_SUBCAT;
-                p.sync_status = 'pending';
+                p.sync_status = 'synced';
                 p.updated_at = nowStr;
                 await databaseManager.update('products', p);
                 fixedCount++;

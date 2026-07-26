@@ -1383,7 +1383,7 @@ const Products = () => {
     }
   };
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     // التحقق من صحة البيانات
     if (!newProduct.name.trim()) {
       notifyValidationError('اسم المنتج', 'اسم المنتج مطلوب ولا يمكن أن يكون فارغاً');
@@ -1438,21 +1438,20 @@ const Products = () => {
       price: parseFloat(newProduct.price),
       stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
       minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
-      updated_at: nowIso,
-      sync_status: 'pending'
+      updated_at: nowIso
     };
     const updatedProducts = [...products, product];
     setProducts(updatedProducts);
 
-    // 1. التحديث الصريح لـ IndexedDB مع علامة pending
-    databaseManager.update('products', product).catch(err => console.error('خطأ تحديث قاعدة البيانات للمنتج:', err));
+    // 1. التحديث الصريح لـ IndexedDB من خلال syncManager (الجهة الوحيدة المسموح لها بتعيين pending)
+    await syncManager.markPending('products', product).catch(err => console.error('خطأ تحديث قاعدة البيانات للمنتج:', err));
 
-    // 2. الحفظ في LocalStorage وتفريق الكاش
+    // 2. الحفظ في LocalStorage وتفريغ الكاش
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
 
     // 3. تشغيل مزامنة السحابة الفورية خلفياً
-    syncManager.syncStore('products').catch(err => console.warn('مزامنة الإضافة خلفياً:', err));
+    await syncManager.syncStore('products').catch(err => console.warn('مزامنة الإضافة خلفياً:', err));
 
     // إرسال إشارة لتحديث نقطة البيع فورياً
     window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1612,16 +1611,15 @@ const Products = () => {
       category: finalCategoryName,
       stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
       minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
-      updated_at: nowIso,
-      sync_status: 'pending'
+      updated_at: nowIso
     };
 
     // مطابقة المعرفات بنص صريح لضمان التحديث في القائمة
     const updatedProducts = products.map(p => String(p.id) === targetIdStr ? updatedProduct : p);
     setProducts(updatedProducts);
 
-    // 1. التحديث الصريح لـ IndexedDB وانتظار اكتماله لضمان حفظ sync_status = 'pending'
-    await databaseManager.update('products', updatedProduct).catch(err => console.error('خطأ حفظ تعديل المنتج في IDB:', err));
+    // 1. التحديث الصريح لـ IndexedDB من خلال syncManager (الجهة الوحيدة المسموح لها بتعيين pending)
+    await syncManager.markPending('products', updatedProduct).catch(err => console.error('خطأ حفظ تعديل المنتج في IDB:', err));
 
     // 2. الحفظ في LocalStorage وتفريغ الكاش
     localStorage.setItem('products', JSON.stringify(updatedProducts));

@@ -158,13 +158,13 @@ localStorage.setItem = function(key, value) {
                     
                     let dbMutated = false;
 
-                    // تحديث الإضافات والتعديلات
+                    // تحديث الكاش وسجل المحفوظات دون فرض تعديل sync_status أو updated_at
                     const toUpsert = [...added, ...updated];
                     for (const item of toUpsert) {
-                        item.sync_status = 'pending';
-                        item.updated_at = new Date().toISOString();
-                        await databaseManager.update(idbStore, item);
-                        dbMutated = true;
+                        if (item && item.id) {
+                            await databaseManager.update(idbStore, item);
+                            dbMutated = true;
+                        }
                     }
 
                     // المحذوفات تتم الآن صراحة عبر databaseManager.delete() لمنع تدمير البيانات عند تصفية المصفوفات في الواجهة

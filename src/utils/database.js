@@ -210,10 +210,8 @@ class DatabaseManager {
     }
 
     if (SYNCABLE_STORES.includes(storeName)) {
-      if (data.sync_status !== 'synced') {
-        data.sync_status = 'pending';
-      }
-      data.updated_at = new Date().toISOString();
+      data.sync_status = data.sync_status || 'synced';
+      data.updated_at = data.updated_at || new Date().toISOString();
     }
 
     if (storeName === 'products' && traceId && data?.id === traceId) {
