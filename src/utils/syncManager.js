@@ -458,7 +458,7 @@ class SyncManager {
       this.syncInProgress = false;
       if (this.syncQueued) {
         this.syncQueued = false;
-        setTimeout(() => this.triggerSync(), 0);
+        setTimeout(() => this.triggerSync(), 1000);
       }
     }
   }
@@ -564,14 +564,31 @@ class SyncManager {
       }
     }
 
-    // 2. التراجع للتاريخ updated_at عند التساوي أو غياب الإصدار
+    // 2. التراجع للتاريخ updated_at عند غياب أو تباين الاصدارات
     const cloudTime = new Date(cloudRecord.updated_at || 0).getTime();
     const localTime = new Date(localRecord.updated_at || 0).getTime();
 
     const validCloudTime = isNaN(cloudTime) ? 0 : cloudTime;
     const validLocalTime = isNaN(localTime) ? 0 : localTime;
 
-    return validCloudTime > validLocalTime;
+    if (validCloudTime !== validLocalTime) {
+      return validCloudTime > validLocalTime;
+    }
+
+    // 3. مطابقة القيم الحسابية والتشغيلية في حالة تساوى التواريخ للبيانات المتزامنة (synced)
+    if (localRecord.sync_status === 'synced') {
+      if (cloudRecord.price !== undefined && Number(cloudRecord.price) !== Number(localRecord.price)) {
+        return true;
+      }
+      if (cloudRecord.stock !== undefined && Number(cloudRecord.stock) !== Number(localRecord.stock)) {
+        return true;
+      }
+      if (cloudRecord.name !== undefined && cloudRecord.name !== localRecord.name) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // مزامنة جدول فردي (Download-First مع Tombstones ومقارنة Version أولاً)
@@ -587,7 +604,7 @@ class SyncManager {
       // ----------------------------------------------------
       let localRecords = await databaseManager.getAllForSync(storeName);
       let localIdMap = new Map(localRecords.map(r => [String(r.id), r]));
-      let deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'deleted').map(r => String(r.id)));
+      let deletedIdsSet = new Set(localRecords.filter(r => r && r.sync_status === 'synced' ? false : r && r.sync_status === 'deleted').map(r => String(r.id)));
 
       const syncedRecords = localRecords.filter(r => r && r.sync_status === 'synced');
       let lastLocalUpdate = new Date(0).toISOString();
@@ -599,11 +616,12 @@ class SyncManager {
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
 
-      // الجداول الصغيرة والجداول المفاهيمية: نسحب الكل لمنع split-brain
-      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories']);
+      // الجداول المفاهيمية والكتالوجية: نسحب الكل مطابقة تامة ومباشرة لمنع split-brain والحفاظ على التناغم الكامل
+      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories', 'products']);
       const useFullPull = FULL_PULL_TABLES.has(storeName);
 
       let cloudUpdates = [];
+      let allCloudIdsSet = new Set();
       let hasMore = true;
 
       if (useFullPull) {
@@ -620,6 +638,7 @@ class SyncManager {
           if (data && data.length > 0) {
             for (const cloudItem of data) {
               const cId = String(cloudItem.id ?? '');
+              allCloudIdsSet.add(cId);
               if (deletedIdsSet.has(cId)) continue; // تخطي المحذوفات بشواهد محلية
 
               const local = localIdMap.get(cId);
@@ -631,6 +650,20 @@ class SyncManager {
             hasMore = data.length === fullPullPageSize;
           } else {
             hasMore = false;
+          }
+        }
+
+        // مطابقة الحذف التناغمي: تصفية وحذف أي سجل محلي بحالة synced لم يعد موجوداً في السحاب
+        if (allCloudIdsSet.size > 0) {
+          let purgedCount = 0;
+          for (const [lId, lRec] of localIdMap.entries()) {
+            if (lRec && lRec.sync_status === 'synced' && !allCloudIdsSet.has(lId)) {
+              await databaseManager.deletePhysical(storeName, lId);
+              purgedCount++;
+            }
+          }
+          if (purgedCount > 0) {
+            console.log(`🧹 [SyncManager] تم تطهير وسحب ${purgedCount} سجل محذوف سحابياً لجدول ${storeName}`);
           }
         }
       } else {
