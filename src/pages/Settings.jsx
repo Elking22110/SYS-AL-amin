@@ -1,34 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  User,
-  Shield,
-  Printer,
-  Globe,
-  Database,
-  Bell,
-  Palette,
-  Monitor,
-  Smartphone,
-  Download,
-  Upload,
-  Save,
-  RefreshCw,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Store,
-  Clock,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  EyeOff,
-  Key,
-  Mail,
-  Phone
+  User, Shield, Printer, Globe, Database, Bell, Palette, Monitor, Smartphone, Download, Upload, Save, RefreshCw, AlertTriangle, CheckCircle, XCircle, Store, Clock, Plus, Edit, Trash2, Eye, EyeOff, Key, Mail, Phone
 } from 'lucide-react';
 import DataManager from '../components/DataManager';
 import soundManager from '../utils/soundManager.js';
+import databaseManager from '../utils/database';
+import syncManager from '../utils/syncManager.js';
 import { hashPassword } from '../utils/security.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.js';
@@ -39,33 +16,6 @@ import { applyTheme, applyPrimaryColor, adjustColor } from '../utils/themeUtils'
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('store');
-
-  // تطبيق الإعدادات عند تحميل الصفحة
-  useEffect(() => {
-    // تطبيق المظهر المحفوظ
-    if (settings.theme) {
-      applyTheme(settings.theme);
-    }
-
-    // تطبيق اللون الأساسي المحفوظ
-    if (settings.primaryColor) {
-      applyPrimaryColor(settings.primaryColor);
-    }
-
-    // تطبيق طي القائمة الجانبية المحفوظ
-    if (settings.sidebarCollapsed !== undefined) {
-      applySidebarCollapse(settings.sidebarCollapsed);
-    }
-
-    // تطبيق إعدادات الأصوات المحفوظة
-    if (settings.soundsEnabled !== undefined) {
-      soundManager.setEnabled(settings.soundsEnabled);
-    }
-
-    if (settings.soundVolume !== undefined) {
-      soundManager.setVolume(settings.soundVolume);
-    }
-  }, []);
 
   // إعادة تحميل الإعدادات والمستخدمين عند حدوث تحديث خارجي (مزامنة سحابية)
   useEffect(() => {
@@ -493,7 +443,7 @@ const Settings = () => {
     alert('تم تحديث المستخدم بنجاح!');
   };
 
-  const deleteUser = (userId) => {
+  const deleteUser = async (userId) => {
     const userToDelete = users.find(user => user.id === userId);
 
     // منع حذف المستخدم admin
@@ -513,9 +463,12 @@ const Settings = () => {
 
     const confirmMessage = `هل أنت متأكد من حذف المستخدم "${userToDelete?.name}"؟\n\nهذا الإجراء لا يمكن التراجع عنه.`;
     if (window.confirm(confirmMessage)) {
-      const updatedUsers = users.filter(user => user.id !== userId);
+      const targetIdStr = String(userId);
+      const updatedUsers = users.filter(user => String(user.id) !== targetIdStr);
       setUsers(updatedUsers);
+      await databaseManager.delete('users', targetIdStr);
       localStorage.setItem('users', JSON.stringify(updatedUsers));
+      syncManager.syncStore('users').catch(err => console.warn('مزامنة حذف مستخدم خلفياً:', err));
       soundManager.play('delete');
       alert('تم حذف المستخدم بنجاح!');
     }

@@ -19,6 +19,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import soundManager from '../utils/soundManager.js';
 import { formatDate, formatTimeOnly, getCurrentDate } from '../utils/dateUtils.js';
+import databaseManager from '../utils/database';
+import syncManager from '../utils/syncManager.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
 
@@ -152,19 +154,25 @@ const Suppliers = () => {
   const handleAddSupplier = () => {
     if (newSupplier.name && newSupplier.phone) {
       const supplier = {
-        id: Date.now(),
+        id: String(Date.now()),
         ...newSupplier,
         totalSpent: 0,
         orders: 0,
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
-        status: 'جديد'
+        status: 'جديد',
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending'
       };
       const updatedSuppliers = [...suppliers, supplier];
       setSuppliers(updatedSuppliers);
 
-      // حفظ الموردين في localStorage
+      // 1. التحديث الصريح لـ IndexedDB
+      databaseManager.update('suppliers', supplier).catch(err => console.error('خطأ تحديث المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
+
+      // 2. المزامنة الفورية للسحابة
+      syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة المورد خلفياً:', err));
 
       // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
@@ -198,13 +206,20 @@ const Suppliers = () => {
     if (editingSupplier && newSupplier.name && newSupplier.phone) {
       const updatedSupplier = {
         ...editingSupplier,
-        ...newSupplier
+        ...newSupplier,
+        id: String(editingSupplier.id),
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending'
       };
-      const updatedSuppliers = suppliers.map(c => c.id === editingSupplier.id ? updatedSupplier : c);
+      const updatedSuppliers = suppliers.map(c => String(c.id) === String(editingSupplier.id) ? updatedSupplier : c);
       setSuppliers(updatedSuppliers);
 
-      // حفظ الموردين في localStorage
+      // 1. التحديث الصريح لـ IndexedDB
+      databaseManager.update('suppliers', updatedSupplier).catch(err => console.error('خطأ تعديل المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
+
+      // 2. المزامنة الفورية للسحابة
+      syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة تعديل المورد خلفياً:', err));
 
       // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
@@ -224,18 +239,23 @@ const Suppliers = () => {
     }
   };
 
-  const handleDeleteSupplier = (id) => {
+  const handleDeleteSupplier = async (id) => {
+    const targetIdStr = String(id);
     if (window.confirm('هل أنت متأكد من حذف هذا المورد؟')) {
-      const updatedSuppliers = suppliers.filter(c => c.id !== id);
+      const updatedSuppliers = suppliers.filter(c => String(c.id) !== targetIdStr);
       setSuppliers(updatedSuppliers);
 
-      // حفظ الموردين في localStorage
+      // 1. الحذف الصريح من IndexedDB
+      await databaseManager.delete('suppliers', targetIdStr);
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
+
+      // 2. المزامنة الفورية للسحابة إرسال الحذف
+      syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة حذف المورد خلفياً:', err));
 
       // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'delete',
-        supplierId: id,
+        supplierId: targetIdStr,
         suppliers: updatedSuppliers
       });
     }

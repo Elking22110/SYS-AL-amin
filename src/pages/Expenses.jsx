@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Search, Trash2, Edit, X, Filter, FileText, Check, DollarSign } from 'lucide-react';
 import soundManager from '../utils/soundManager';
 import { getCurrentDate } from '../utils/dateUtils';
-import safeMath from '../utils/safeMath';
+import databaseManager from '../utils/database';
+import syncManager from '../utils/syncManager.js';
 import { useNotifications } from '../components/NotificationSystem';
 
 const Expenses = () => {
@@ -94,16 +95,19 @@ const Expenses = () => {
             return;
         }
 
+        const targetIdStr = String(formData.id || Date.now());
         const newExpense = {
             ...formData,
             amount: Number(formData.amount),
-            id: formData.id || Date.now()
+            id: targetIdStr,
+            updated_at: new Date().toISOString(),
+            sync_status: 'pending'
         };
 
         let updatedExpenses;
         if (formData.id) {
             // وضع التعديل
-            updatedExpenses = expenses.map(exp => exp.id === formData.id ? newExpense : exp);
+            updatedExpenses = expenses.map(exp => String(exp.id) === targetIdStr ? newExpense : exp);
             notifySuccess('نجاح', 'تم تعديل المصروف بنجاح');
         } else {
             // إضافة جديدة
@@ -111,15 +115,29 @@ const Expenses = () => {
             notifySuccess('نجاح', 'تم تسجيل المصروف بنجاح');
         }
 
+        // 1. التحديث الصريح لـ IndexedDB
+        databaseManager.update('expenses', newExpense).catch(err => console.error('خطأ تسجيل المصروف في IDB:', err));
         saveExpenses(updatedExpenses);
+
+        // 2. المزامنة الفورية للسحابة
+        syncManager.syncStore('expenses').catch(err => console.warn('مزامنة المصروف خلفياً:', err));
+
         closeModal();
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         soundManager.play('delete');
+        const targetIdStr = String(id);
         if (window.confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-            const updatedExpenses = expenses.filter(exp => exp.id !== id);
+            const updatedExpenses = expenses.filter(exp => String(exp.id) !== targetIdStr);
+            
+            // 1. الحذف الصريح من IndexedDB
+            await databaseManager.delete('expenses', targetIdStr);
             saveExpenses(updatedExpenses);
+
+            // 2. المزامنة الفورية للسحابة إرسال الحذف
+            syncManager.syncStore('expenses').catch(err => console.warn('مزامنة حذف المصروف خلفياً:', err));
+
             notifySuccess('نجاح', 'تم حذف المصروف بنجاح');
         }
     };
