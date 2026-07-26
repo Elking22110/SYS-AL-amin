@@ -158,11 +158,16 @@ localStorage.setItem = function(key, value) {
                     
                     let dbMutated = false;
 
-                    // تحديث الكاش وسجل المحفوظات دون فرض تعديل sync_status أو updated_at
+                    // تحديث الكاش وسجل المحفوظات مع حماية وتعيين حالة المزامنة والتوقيت
                     const toUpsert = [...added, ...updated];
                     for (const item of toUpsert) {
                         if (item && item.id) {
-                            await databaseManager.update(idbStore, item);
+                            const mergedItem = {
+                                ...item,
+                                sync_status: 'pending',
+                                updated_at: new Date().toISOString()
+                            };
+                            await databaseManager.update(idbStore, mergedItem);
                             dbMutated = true;
                         }
                     }

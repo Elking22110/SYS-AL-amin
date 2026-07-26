@@ -169,6 +169,7 @@ class SyncManager {
 
   // معالجة تغيير قادم من Supabase Realtime (من جهاز آخر)
   async handleRealtimeChange(payload) {
+    window.__bypass_sync_proxy__ = true;
     try {
       const { table, eventType, new: newRecord, old: oldRecord } = payload;
       const INDEXEDDB_TABLES = ['customers', 'sales', 'shifts', 'returns', 'products', 'categories', 'users'];
@@ -323,8 +324,8 @@ class SyncManager {
           window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: lsKey } }));
         }
       }
-    } catch (err) {
-      console.error('❌ [Realtime] خطأ في معالجة التغيير الفوري:', err);
+    } finally {
+      window.__bypass_sync_proxy__ = false;
     }
   }
 
