@@ -89,15 +89,29 @@ const POSMain = () => {
     };
 
     loadActiveShift();
-    // تحدّث فور بدء/إنهاء الوردية دون رفرش
+    // تحدّث فور بدء/إنهاء الوردية أو تغيير البيانات دون رفرش
     const onStarted = () => loadActiveShift();
     const onEnded = () => setActiveShift(null);
+    const handleShiftSync = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'shifts' || target === 'active_shift' || target === 'activeShift') {
+        loadActiveShift();
+      }
+    };
+
     window.addEventListener('shiftStarted', onStarted);
     window.addEventListener('shiftEnded', onEnded);
+    window.addEventListener('realtimeDataUpdate', handleShiftSync);
+    window.addEventListener('dataUpdated', handleShiftSync);
+    window.addEventListener('storage', handleShiftSync);
     const unsubscribeShift = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, loadActiveShift) : null;
+
     return () => {
       window.removeEventListener('shiftStarted', onStarted);
       window.removeEventListener('shiftEnded', onEnded);
+      window.removeEventListener('realtimeDataUpdate', handleShiftSync);
+      window.removeEventListener('dataUpdated', handleShiftSync);
+      window.removeEventListener('storage', handleShiftSync);
       if (typeof unsubscribeShift === 'function') unsubscribeShift();
     };
   }, []);
@@ -106,14 +120,15 @@ const POSMain = () => {
   useEffect(() => {
     const reloadProducts = () => {
       try {
-        storageOptimizer.clearCache();
+        storageOptimizer.clearCache('products');
         const saved = JSON.parse(localStorage.getItem('products') || '[]');
         setProducts(saved);
       } catch (_) { }
     };
     const reloadCategories = () => {
       try {
-        storageOptimizer.clearCache();
+        storageOptimizer.clearCache('productCategories');
+        storageOptimizer.clearCache('categories');
         const saved = JSON.parse(localStorage.getItem('productCategories') || '[]');
         setCategories(saved);
       } catch (_) { }
@@ -124,10 +139,27 @@ const POSMain = () => {
     reloadCategories();
 
     // الاشتراك في تغييرات المنتجات والفئات
+    const handleRealtimeCatalog = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'products') reloadProducts();
+      if (!target || target === 'categories' || target === 'productCategories') reloadCategories();
+    };
+
+    window.addEventListener('realtimeDataUpdate', handleRealtimeCatalog);
+    window.addEventListener('dataUpdated', handleRealtimeCatalog);
+    window.addEventListener('databaseSyncTrigger', handleRealtimeCatalog);
+    window.addEventListener('storage', handleRealtimeCatalog);
+    window.addEventListener('productsUpdated', reloadProducts);
+
     const unsubProducts = typeof subscribe === 'function' ? subscribe(EVENTS.PRODUCTS_CHANGED, reloadProducts) : null;
     const unsubCategories = typeof subscribe === 'function' ? subscribe(EVENTS.CATEGORIES_CHANGED, reloadCategories) : null;
 
     return () => {
+      window.removeEventListener('realtimeDataUpdate', handleRealtimeCatalog);
+      window.removeEventListener('dataUpdated', handleRealtimeCatalog);
+      window.removeEventListener('databaseSyncTrigger', handleRealtimeCatalog);
+      window.removeEventListener('storage', handleRealtimeCatalog);
+      window.removeEventListener('productsUpdated', reloadProducts);
       if (typeof unsubProducts === 'function') unsubProducts();
       if (typeof unsubCategories === 'function') unsubCategories();
     };

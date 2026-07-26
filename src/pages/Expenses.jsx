@@ -28,13 +28,36 @@ const Expenses = () => {
     };
 
     useEffect(() => {
-        try {
-            const storedExpenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-            setExpenses(storedExpenses);
-        } catch (error) {
-            console.error("Error loading expenses:", error);
-            setExpenses([]);
-        }
+        const loadExpenses = () => {
+            try {
+                const storedExpenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+                setExpenses(storedExpenses);
+            } catch (error) {
+                console.error("Error loading expenses:", error);
+                setExpenses([]);
+            }
+        };
+
+        loadExpenses();
+
+        const handleSync = (e) => {
+            const target = e?.detail?.table || e?.detail?.type || e?.key;
+            if (!target || target === 'expenses') {
+                loadExpenses();
+            }
+        };
+
+        window.addEventListener('storage', handleSync);
+        window.addEventListener('realtimeDataUpdate', handleSync);
+        window.addEventListener('dataUpdated', handleSync);
+        window.addEventListener('databaseSyncTrigger', handleSync);
+
+        return () => {
+            window.removeEventListener('storage', handleSync);
+            window.removeEventListener('realtimeDataUpdate', handleSync);
+            window.removeEventListener('dataUpdated', handleSync);
+            window.removeEventListener('databaseSyncTrigger', handleSync);
+        };
     }, []);
 
     const saveExpenses = (newExpenses) => {

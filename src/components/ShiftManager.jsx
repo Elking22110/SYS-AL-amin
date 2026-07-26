@@ -111,16 +111,26 @@ const ShiftManager = () => {
     };
 
     const onDataUpdated = (e) => {
-      if (!e || !e.detail || !e.detail.type) { reload(); return; }
-      if (e.detail.type === 'shift' || e.detail.type === 'sales') reload();
+      const target = e?.detail?.type || e?.detail?.table || e?.key;
+      if (!target || target === 'shift' || target === 'shifts' || target === 'active_shift' || target === 'sales') {
+        storageOptimizer.clearCache('activeShift');
+        storageOptimizer.clearCache('shifts');
+        reload();
+      }
     };
     window.addEventListener('dataUpdated', onDataUpdated);
+    window.addEventListener('realtimeDataUpdate', onDataUpdated);
+    window.addEventListener('databaseSyncTrigger', onDataUpdated);
+    window.addEventListener('storage', onDataUpdated);
     window.addEventListener('shiftStarted', reload);
     window.addEventListener('shiftEnded', reload);
     // الاشتراك بقناة الوردية الموحدة
     const unsubscribe = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, reload) : null;
     return () => {
       window.removeEventListener('dataUpdated', onDataUpdated);
+      window.removeEventListener('realtimeDataUpdate', onDataUpdated);
+      window.removeEventListener('databaseSyncTrigger', onDataUpdated);
+      window.removeEventListener('storage', onDataUpdated);
       window.removeEventListener('shiftStarted', reload);
       window.removeEventListener('shiftEnded', reload);
       if (typeof unsubscribe === 'function') unsubscribe();

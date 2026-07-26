@@ -118,19 +118,26 @@ const Suppliers = () => {
 
     loadSuppliers();
 
-    // مراقبة التغييرات المحلية
-    const handleStorageChange = () => {
-      loadSuppliers();
+    // مراقبة التغييرات المحلية ومزامنة الأجهزة
+    const handleStorageChange = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'suppliers' || target === 'supplier_supplies' || target === 'supplier_payments') {
+        loadSuppliers();
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('realtimeDataUpdate', handleStorageChange);
+    window.addEventListener('dataUpdated', handleStorageChange);
+    window.addEventListener('databaseSyncTrigger', handleStorageChange);
     const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.SUPPLIERS_CHANGED, loadSuppliers) : null;
-
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('realtimeDataUpdate', handleStorageChange);
+      window.removeEventListener('dataUpdated', handleStorageChange);
+      window.removeEventListener('databaseSyncTrigger', handleStorageChange);
       if (typeof unsubInvoices === 'function') unsubInvoices();
-      if (typeof unsubShifts === 'function') unsubShifts();
     };
   }, []);
 

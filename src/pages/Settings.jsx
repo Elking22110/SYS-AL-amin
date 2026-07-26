@@ -113,9 +113,13 @@ const Settings = () => {
     };
 
     window.addEventListener('dataUpdated', handleDataUpdated);
+    window.addEventListener('realtimeDataUpdate', handleDataUpdated);
+    window.addEventListener('databaseSyncTrigger', handleDataUpdated);
     window.addEventListener('storage', handleStorage);
     return () => {
       window.removeEventListener('dataUpdated', handleDataUpdated);
+      window.removeEventListener('realtimeDataUpdate', handleDataUpdated);
+      window.removeEventListener('databaseSyncTrigger', handleDataUpdated);
       window.removeEventListener('storage', handleStorage);
     };
   }, []);

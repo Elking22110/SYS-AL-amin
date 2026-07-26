@@ -1682,16 +1682,26 @@ const Products = () => {
     };
   }, []);
 
-  // الاستماع لتغييرات التخزين (احتياطي) وتحديث فوري داخل نفس الصفحة
+  // الاستماع لتغييرات التخزين المحلية وأحداث Realtime القادمة من الأجهزة الأخرى
   useEffect(() => {
-    const onStorage = (e) => {
-      if (!e || !e.key) return;
-      if (e.key === 'products' || e.key === 'productCategories' || (e.key.startsWith('__evt__:'))) {
+    const handleReload = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'products' || target === 'categories' || target === 'productCategories' || String(target).startsWith('__evt__:')) {
         forceReloadProductsAndCategories();
       }
     };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+
+    window.addEventListener('storage', handleReload);
+    window.addEventListener('realtimeDataUpdate', handleReload);
+    window.addEventListener('dataUpdated', handleReload);
+    window.addEventListener('databaseSyncTrigger', handleReload);
+
+    return () => {
+      window.removeEventListener('storage', handleReload);
+      window.removeEventListener('realtimeDataUpdate', handleReload);
+      window.removeEventListener('dataUpdated', handleReload);
+      window.removeEventListener('databaseSyncTrigger', handleReload);
+    };
   }, [forceReloadProductsAndCategories]);
 
   // useEffect منفصل لتحديث المنتجات منخفضة المخزون

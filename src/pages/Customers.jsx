@@ -79,18 +79,25 @@ const Customers = () => {
 
     loadCustomers();
 
-    // مراقبة تغييرات العملاء
+    // مراقبة تغييرات العملاء محلياً وإقليمياً وميدانياً عبر الأجهزة
     const handleStorageChange = (e) => {
-      if (e.key === 'customers') {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'customers' || target === 'sales') {
         loadCustomers();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('realtimeDataUpdate', handleStorageChange);
+    window.addEventListener('dataUpdated', handleStorageChange);
+    window.addEventListener('databaseSyncTrigger', handleStorageChange);
     const unsubCustomers = typeof subscribe === 'function' ? subscribe(EVENTS.CUSTOMERS_CHANGED, loadCustomers) : null;
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('realtimeDataUpdate', handleStorageChange);
+      window.removeEventListener('dataUpdated', handleStorageChange);
+      window.removeEventListener('databaseSyncTrigger', handleStorageChange);
       if (typeof unsubCustomers === 'function') unsubCustomers();
     };
   }, []);

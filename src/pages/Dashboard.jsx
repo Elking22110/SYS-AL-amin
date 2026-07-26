@@ -113,8 +113,29 @@ const Dashboard = () => {
 
   useEffect(() => {
     analyzeRealData();
+
+    const handleDashboardSync = () => {
+      storageOptimizer.clearCache();
+      analyzeRealData();
+    };
+
+    window.addEventListener('realtimeDataUpdate', handleDashboardSync);
+    window.addEventListener('dataUpdated', handleDashboardSync);
+    window.addEventListener('databaseSyncTrigger', handleDashboardSync);
+    window.addEventListener('storage', handleDashboardSync);
+    window.addEventListener('shiftStarted', handleDashboardSync);
+    window.addEventListener('shiftEnded', handleDashboardSync);
+
     const interval = setInterval(analyzeRealData, 5000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('realtimeDataUpdate', handleDashboardSync);
+      window.removeEventListener('dataUpdated', handleDashboardSync);
+      window.removeEventListener('databaseSyncTrigger', handleDashboardSync);
+      window.removeEventListener('storage', handleDashboardSync);
+      window.removeEventListener('shiftStarted', handleDashboardSync);
+      window.removeEventListener('shiftEnded', handleDashboardSync);
+    };
   }, []);
 
   const getPaymentMethodText = (method) => {

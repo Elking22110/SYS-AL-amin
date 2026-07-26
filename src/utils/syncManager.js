@@ -203,14 +203,15 @@ class SyncManager {
           }
         }
 
-        // إخطار واجهة المستخدم بالتغيير الفوري
-        window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType } }));
-        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table } }));
-
-        // تحديث localStorage أيضاً
+        // تفريغ ذاكرة الـ cache وإشعار كافة المكونات بالتغيير الفوري
+        storageOptimizer.clearCache(table);
         const keyMap = { categories: 'productCategories', products: 'products', customers: 'customers', sales: 'sales', shifts: 'shifts', returns: 'returns', users: 'users' };
-        const eventMap = { categories: EVENTS.CATEGORIES_CHANGED, products: EVENTS.PRODUCTS_CHANGED, customers: EVENTS.CUSTOMERS_CHANGED, sales: EVENTS.INVOICES_CHANGED, shifts: EVENTS.SHIFTS_CHANGED, returns: EVENTS.RETURNS_CHANGED, users: EVENTS.USERS_CHANGED };
         const lsKey = keyMap[table];
+        if (lsKey) storageOptimizer.clearCache(lsKey);
+
+        window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType, record: newRecord || oldRecord } }));
+        window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table, eventType } }));
+        const eventMap = { categories: EVENTS.CATEGORIES_CHANGED, products: EVENTS.PRODUCTS_CHANGED, customers: EVENTS.CUSTOMERS_CHANGED, sales: EVENTS.INVOICES_CHANGED, shifts: EVENTS.SHIFTS_CHANGED, returns: EVENTS.RETURNS_CHANGED, users: EVENTS.USERS_CHANGED };
         if (lsKey) {
           const allItems = await databaseManager.getAll(table);
 

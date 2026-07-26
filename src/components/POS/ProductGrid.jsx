@@ -582,6 +582,29 @@ const ProductGrid = ({
 
   useEffect(() => {
     loadData();
+
+    const handleGridSync = (e) => {
+      const target = e?.detail?.table || e?.detail?.type || e?.key;
+      if (!target || target === 'products' || target === 'categories' || target === 'productCategories') {
+        storageOptimizer.clearCache('products');
+        storageOptimizer.clearCache('productCategories');
+        loadData();
+      }
+    };
+
+    window.addEventListener('realtimeDataUpdate', handleGridSync);
+    window.addEventListener('dataUpdated', handleGridSync);
+    window.addEventListener('databaseSyncTrigger', handleGridSync);
+    window.addEventListener('storage', handleGridSync);
+    window.addEventListener('productsUpdated', loadData);
+
+    return () => {
+      window.removeEventListener('realtimeDataUpdate', handleGridSync);
+      window.removeEventListener('dataUpdated', handleGridSync);
+      window.removeEventListener('databaseSyncTrigger', handleGridSync);
+      window.removeEventListener('storage', handleGridSync);
+      window.removeEventListener('productsUpdated', loadData);
+    };
   }, [loadData]);
 
   // تصنيف المنتجات للمجموعات والاقسام

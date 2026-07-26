@@ -1,4 +1,4 @@
-// محسن التخزين - تقليل استدعاءات localStorage
+// محسن التخزين - إدارة ذكية للذاكرة المخبئية وتفادي البيانات القديمة
 class StorageOptimizer {
   constructor() {
     this.cache = new Map();
@@ -6,13 +6,14 @@ class StorageOptimizer {
     this.batchUpdates = new Map();
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('storage', () => this.clearCache());
-      window.addEventListener('dataUpdated', () => this.clearCache());
-      window.addEventListener('realtimeDataUpdate', () => this.clearCache());
+      window.addEventListener('storage', (e) => this.clearCache(e.key));
+      window.addEventListener('dataUpdated', (e) => this.clearCache(e.detail?.type));
+      window.addEventListener('realtimeDataUpdate', (e) => this.clearCache(e.detail?.table));
+      window.addEventListener('databaseSyncTrigger', (e) => this.clearCache(e.detail?.storeName));
     }
   }
 
-  // قراءة محسنة مع cache
+  // قراءة محسنة مع فحص الـ Cache
   get(key, defaultValue = null) {
     if (this.cache.has(key)) {
       return this.cache.get(key);
@@ -29,16 +30,14 @@ class StorageOptimizer {
     }
   }
 
-  // كتابة محسنة مع debounce
-  set(key, value, debounceMs = 100) {
+  // كتابة مسبقة مع تفريغ فوري للـ Cache لضمان التزامن
+  set(key, value, debounceMs = 50) {
     this.cache.set(key, value);
     
-    // إلغاء المؤقت السابق
     if (this.debounceTimers.has(key)) {
       clearTimeout(this.debounceTimers.get(key));
     }
 
-    // إنشاء مؤقت جديد
     const timer = setTimeout(() => {
       try {
         localStorage.setItem(key, JSON.stringify(value));
@@ -51,7 +50,7 @@ class StorageOptimizer {
     this.debounceTimers.set(key, timer);
   }
 
-  // كتابة فورية (بدون debounce)
+  // كتابة فورية مع تفريغ فوري لضمان المزامنة اللحظية
   setImmediate(key, value) {
     this.cache.set(key, value);
     try {
@@ -61,7 +60,7 @@ class StorageOptimizer {
     }
   }
 
-  // حذف محسن
+  // حذف عنصر ومسحه من الـ Cache
   remove(key) {
     this.cache.delete(key);
     if (this.debounceTimers.has(key)) {
@@ -75,9 +74,25 @@ class StorageOptimizer {
     }
   }
 
-  // مسح الـ cache
-  clearCache() {
-    this.cache.clear();
+  // مسح الـ cache لعنصر محدد أو لكافة العناصر
+  clearCache(key = null) {
+    if (key && typeof key === 'string') {
+      this.cache.delete(key);
+      // مسح الأسماء المترادفة (مثلاً products <-> items)
+      const keyMap = {
+        products: ['products'],
+        categories: ['productCategories', 'categories'],
+        customers: ['customers'],
+        sales: ['sales', 'invoices'],
+        shifts: ['shifts', 'active_shift', 'activeShift'],
+        returns: ['returns'],
+        users: ['users']
+      };
+      const aliases = keyMap[key] || [key];
+      aliases.forEach(alias => this.cache.delete(alias));
+    } else {
+      this.cache.clear();
+    }
   }
 
   // إجبار حفظ جميع التحديثات المعلقة
@@ -93,12 +108,11 @@ class StorageOptimizer {
     return {
       cacheSize: this.cache.size,
       pendingWrites: this.debounceTimers.size,
-      memoryUsage: this.cache.size * 100 // تقدير تقريبي
+      memoryUsage: this.cache.size * 100
     };
   }
 }
 
-// إنشاء instance واحد للنظام
 const storageOptimizer = new StorageOptimizer();
 
 export default storageOptimizer;
