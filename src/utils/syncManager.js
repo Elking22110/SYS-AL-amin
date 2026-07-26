@@ -573,7 +573,12 @@ class SyncManager {
           // التحقق من التعارض
           const cloudUpdatedAt = cloudMap.get(String(record.id));
           if (cloudUpdatedAt && new Date(cloudUpdatedAt).getTime() > new Date(record.updated_at || 0).getTime()) {
-            console.warn(`⚠️ تعارض لجدول ${storeName} الصنف ${record.id}: النسخة السحابية أحدث. سيتم تخطي الرفع وتغليب السحاب.`);
+            // السحابة أحدث → لا نرفع. نُعلِّم السجل المحلي كـ synced لمنع تكرار التحذير في كل دورة
+            try {
+              const resolvedRecord = { ...record, sync_status: 'synced' };
+              const tx = databaseManager.db.transaction([storeName], 'readwrite');
+              tx.objectStore(storeName).put(resolvedRecord);
+            } catch (_) {}
             continue;
           }
 
