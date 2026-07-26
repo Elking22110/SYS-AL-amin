@@ -2022,43 +2022,59 @@ const Products = () => {
                 if (categories.some(c => c.name === newName)) { notifyDuplicateError(newName, 'فئة'); return; }
                 
                 const catToEdit = categories.find(c => c.name === selectedCategory);
-                const catIdStr = catToEdit ? String(catToEdit.id || catToEdit.name) : selectedCategory;
+                if (!catToEdit) return;
+                const catIdStr = String(catToEdit.id || catToEdit.name);
+                const isMainCat = !catToEdit.parentId;
 
+                const nowIso = new Date().toISOString();
                 const updatedCategoryObj = {
+                  ...catToEdit,
                   id: catIdStr,
                   name: newName,
-                  parent_id: catToEdit ? catToEdit.parent_id : null,
-                  updated_at: new Date().toISOString()
+                  updated_at: nowIso
                 };
 
-                const updatedCategories = categories.map(c => (c.name === selectedCategory || String(c.id) === catIdStr) ? updatedCategoryObj : c);
+                const updatedCategories = categories.map(c => {
+                  if (c.name === selectedCategory || String(c.id) === catIdStr) {
+                    return updatedCategoryObj;
+                  }
+                  if (isMainCat && (String(c.parentId) === catIdStr || c.parentId === selectedCategory)) {
+                    return { ...c, parentId: newName, updated_at: nowIso };
+                  }
+                  return c;
+                });
                 setCategories(updatedCategories);
                 
-                // 1. تحديث صريح للفئة في IndexedDB عبر syncManager
                 await syncManager.markPending('categories', updatedCategoryObj);
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
 
-                // 2. تحديث المنتجات التابعة عبر syncManager
                 const updatedProductsLocal = await Promise.all(products.map(async p => {
-                  if (p.category === selectedCategory || String(p.subCategoryId) === catIdStr || String(p.mainCategoryId) === catIdStr) {
-                    const up = { ...p, category: newName, updated_at: new Date().toISOString() };
+                  const isProductInMain = isMainCat && (String(p.mainCategoryId) === catIdStr || p.mainCategoryId === selectedCategory || p.category === selectedCategory);
+                  const isProductInSub = !isMainCat && (String(p.subCategoryId) === catIdStr || p.subCategoryId === selectedCategory || p.category === selectedCategory);
+
+                  if (isProductInMain || isProductInSub) {
+                    const up = { 
+                      ...p, 
+                      category: !isMainCat ? newName : (p.category === selectedCategory ? newName : p.category),
+                      mainCategoryId: isMainCat ? (p.mainCategoryId ? (String(p.mainCategoryId) === catIdStr ? catIdStr : newName) : newName) : p.mainCategoryId,
+                      updated_at: nowIso 
+                    };
                     await syncManager.markPending('products', up).catch(err => console.error('خطأ تحديث منتج تكتيكي:', err));
                     return up;
                   }
                   return p;
                 }));
+
                 setProducts(updatedProductsLocal);
                 localStorage.setItem('products', JSON.stringify(updatedProductsLocal));
                 storageOptimizer.clearCache();
 
-                // 3. المزامنة الفورية للسحابة
                 syncManager.syncStore('categories').catch(err => console.warn('مزامنة الفئات خلفياً:', err));
                 syncManager.syncStore('products').catch(err => console.warn('مزامنة المنتجات خلفياً:', err));
 
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: selectedCategory, to: newName, categories: updatedCategories }); } catch (_) { }
                 try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: selectedCategory, to: newName }); } catch (_) { }
 
-                // إرسال إشارة لتحديث نقطة البيع فورياً
                 window.dispatchEvent(new CustomEvent('categoriesUpdated', {
                   detail: {
                     action: 'updated',
@@ -2069,7 +2085,11 @@ const Products = () => {
                 }));
 
                 notifyCategoryUpdated(selectedCategory, newName);
-                setSelectedCategory(newName);
+                if (isMainCat) {
+                  setSelectedMainCategory(newName);
+                } else {
+                  setSelectedSubCategory(newName);
+                }
               }}
               disabled={selectedCategory === 'الكل' || !selectedCategory}
               className={`btn-primary flex items-center px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-semibold min-h-[50px] cursor-pointer ${selectedCategory === 'الكل' || !selectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -2088,38 +2108,77 @@ const Products = () => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (selectedCategory === 'الكل' || !selectedCategory) { return; }
-                const productsInCategory = products.filter(p => p.category === selectedCategory);
-                if (!window.confirm(`سيتم حذف الفئة "${selectedCategory}" مع ${productsInCategory.length} منتج تابع لها. هل تريد المتابعة؟`)) return;
                 
                 const catToDelete = categories.find(c => c.name === selectedCategory);
-                const catIdStr = catToDelete ? String(catToDelete.id || catToDelete.name) : selectedCategory;
+                if (!catToDelete) return;
+                const catIdStr = String(catToDelete.id || catToDelete.name);
+                const isMainCat = !catToDelete.parentId;
 
-                // 1. حذف المنتجات التابعة لهذه الفئة صراحة من IndexedDB
-                const remainingProducts = products.filter(p => p.category !== selectedCategory);
+                let subCatsToDelete = [];
+                let productsToDelete = [];
+
+                if (isMainCat) {
+                  subCatsToDelete = categories.filter(c => c.parentId && (String(c.parentId) === catIdStr || c.parentId === selectedCategory));
+                  const subCatIdsSet = new Set(subCatsToDelete.map(s => String(s.id || s.name)));
+                  const subCatNamesSet = new Set(subCatsToDelete.map(s => s.name));
+
+                  productsToDelete = products.filter(p => 
+                    String(p.mainCategoryId) === catIdStr || 
+                    p.mainCategoryId === selectedCategory ||
+                    (p.subCategoryId && subCatIdsSet.has(String(p.subCategoryId))) ||
+                    (p.category && subCatNamesSet.has(p.category)) ||
+                    p.category === selectedCategory
+                  );
+
+                  if (!window.confirm(`سيتم حذف المجموعة الرئيسية "${selectedCategory}" مع ${subCatsToDelete.length} مجموعة فرعية و ${productsToDelete.length} منتج تابع لها. هل تريد المتابعة؟`)) return;
+                } else {
+                  productsToDelete = products.filter(p => 
+                    String(p.subCategoryId) === catIdStr || 
+                    p.subCategoryId === selectedCategory || 
+                    p.category === selectedCategory
+                  );
+
+                  if (!window.confirm(`سيتم حذف المجموعة الفرعية "${selectedCategory}" مع ${productsToDelete.length} منتج تابع لها. هل تريد المتابعة؟`)) return;
+                }
+
+                // 1. حذف كافة المنتجات التابعة صراحة وإنشاء شواهد الحذف (Tombstones)
+                const deleteProdIdsSet = new Set(productsToDelete.map(p => String(p.id)));
+                const remainingProducts = products.filter(p => !deleteProdIdsSet.has(String(p.id)));
                 setProducts(remainingProducts);
 
-                for (const p of productsInCategory) {
+                for (const p of productsToDelete) {
                   await databaseManager.delete('products', String(p.id));
                 }
                 localStorage.setItem('products', JSON.stringify(remainingProducts));
                 try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_delete_by_category', categoryName: selectedCategory, products: remainingProducts }); } catch (_) { }
 
-                // 2. حذف الفئة نفسها صراحة من IndexedDB
-                const updatedCategories = categories.filter(c => c.name !== selectedCategory && String(c.id) !== catIdStr);
+                // 2. حذف الفئات والفرعيات صراحة من IndexedDB وإعداد الشواهد
+                const deleteCatIdsSet = new Set([catIdStr, ...subCatsToDelete.map(s => String(s.id || s.name))]);
+                const deleteCatNamesSet = new Set([selectedCategory, ...subCatsToDelete.map(s => s.name)]);
+                
+                const updatedCategories = categories.filter(c => !deleteCatIdsSet.has(String(c.id)) && !deleteCatNamesSet.has(c.name));
                 setCategories(updatedCategories);
                 
                 await databaseManager.delete('categories', catIdStr);
+                for (const sub of subCatsToDelete) {
+                  await databaseManager.delete('categories', String(sub.id || sub.name));
+                }
                 localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
                 storageOptimizer.clearCache();
 
-                // 3. المزامنة الفورية للسحابة لإرسال أمر DELETE النهائي
+                // 3. المزامنة الفورية للسحابة لإرسال أوامر DELETE النهائية
                 syncManager.syncStore('products').catch(err => console.warn('مزامنة حذف المنتجات خلفياً:', err));
                 syncManager.syncStore('categories').catch(err => console.warn('مزامنة حذف الفئة خلفياً:', err));
 
                 try { publish(EVENTS.CATEGORIES_CHANGED, { type: 'delete', categoryName: selectedCategory, categories: updatedCategories }); } catch (_) { }
 
                 notifyCategoryDeleted(selectedCategory);
-                setSelectedCategory('الكل');
+                if (isMainCat) {
+                  setSelectedMainCategory('الكل');
+                  setSelectedSubCategory('الكل');
+                } else {
+                  setSelectedSubCategory('الكل');
+                }
               }}
               disabled={selectedCategory === 'الكل' || !selectedCategory}
               className={`bg-gradient-to-r from-red-600 to-pink-600 text-slate-800 px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl hover:from-red-700 hover:to-pink-700 transition-all duration-300 flex items-center text-sm md:text-base font-semibold shadow-lg min-h-[50px] cursor-pointer ${selectedCategory === 'الكل' || !selectedCategory ? 'opacity-50 cursor-not-allowed' : ''}`}
