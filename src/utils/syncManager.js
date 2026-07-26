@@ -571,7 +571,7 @@ class SyncManager {
     const validCloudTime = isNaN(cloudTime) ? 0 : cloudTime;
     const validLocalTime = isNaN(localTime) ? 0 : localTime;
 
-    return validCloudTime >= validLocalTime;
+    return validCloudTime > validLocalTime;
   }
 
   // مزامنة جدول فردي (Download-First مع Tombstones ومقارنة Version أولاً)

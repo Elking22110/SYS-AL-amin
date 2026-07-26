@@ -1748,8 +1748,15 @@ const Products = () => {
   useEffect(() => {
     const handleReload = (e) => {
       const target = e?.detail?.table || e?.detail?.type || e?.key;
-      if (target === 'products' || target === 'categories' || target === 'productCategories') {
-        forceReloadProductsAndCategories();
+      if (!target || target === 'products' || target === 'categories' || target === 'productCategories') {
+        try {
+          const savedProducts = JSON.parse(localStorage.getItem('products') || '[]');
+          setProducts(savedProducts);
+          const savedCategories = JSON.parse(localStorage.getItem('productCategories') || '[]');
+          setCategories(savedCategories);
+        } catch (err) {
+          console.error('[Products] Failed to reload state from localStorage:', err);
+        }
       }
     };
 
@@ -1762,7 +1769,7 @@ const Products = () => {
       window.removeEventListener('realtimeDataUpdate', handleReload);
       window.removeEventListener('dataUpdated', handleReload);
     };
-  }, [forceReloadProductsAndCategories]);
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden">

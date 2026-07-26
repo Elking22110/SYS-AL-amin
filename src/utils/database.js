@@ -247,22 +247,23 @@ class DatabaseManager {
 
     if (SYNCABLE_STORES.includes(storeName)) {
       try {
-        const record = await this.get(storeName, id);
-        if (record) {
-          record.sync_status = 'deleted';
-          record.updated_at = new Date().toISOString();
-          
-          return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction([storeName], 'readwrite');
-            const store = transaction.objectStore(storeName);
-            const request = store.put(record);
-            request.onsuccess = () => {
-              resolve(request.result);
-              this.triggerSyncEvent(storeName);
-            };
-            request.onerror = () => reject(request.error);
-          });
+        let record = await this.get(storeName, id);
+        if (!record) {
+          record = { id: String(id) };
         }
+        record.sync_status = 'deleted';
+        record.updated_at = new Date().toISOString();
+        
+        return new Promise((resolve, reject) => {
+          const transaction = this.db.transaction([storeName], 'readwrite');
+          const store = transaction.objectStore(storeName);
+          const request = store.put(record);
+          request.onsuccess = () => {
+            resolve(request.result);
+            this.triggerSyncEvent(storeName);
+          };
+          request.onerror = () => reject(request.error);
+        });
       } catch (err) {
         console.error('خطأ في أرشفة الحذف المزامنة:', err);
       }
