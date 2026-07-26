@@ -915,7 +915,7 @@
     {
       "id": 10000,
       "name": "طبة كاب ١/٢",
-      "price": 0,
+      "price": 10,
       "mainCategoryId": "قطع اكوا استار",
       "subCategoryId": "قطع ١/٢ بوصة اكوا استار",
       "stock": 100,

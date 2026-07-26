@@ -961,9 +961,10 @@ const DataLoader = ({ children }) => {
                 const existing = currentProdsMap.get(spIdStr);
                 
                 if (existing) {
+                  const targetPrice = (existing.price !== undefined && existing.price !== null && Number(existing.price) > 0) ? existing.price : sp.price;
                   const needsUpdate = 
                     existing.name !== sp.name ||
-                    existing.price !== sp.price ||
+                    existing.price !== targetPrice ||
                     existing.barcode !== sp.barcode ||
                     existing.mainCategoryId !== sp.mainCategoryId ||
                     existing.subCategoryId !== sp.subCategoryId;
@@ -972,7 +973,7 @@ const DataLoader = ({ children }) => {
                     const updated = {
                       ...existing,
                       name: sp.name,
-                      price: sp.price,
+                      price: targetPrice,
                       barcode: sp.barcode || null,
                       mainCategoryId: sp.mainCategoryId,
                       subCategoryId: sp.subCategoryId,
