@@ -1507,81 +1507,98 @@ const Products = () => {
   };
 
   const handleUpdateProduct = () => {
-    if (editingProduct && newProduct.name && newProduct.price) {
-      if (inventoryEnabled) {
-        if (newProduct.stock === '' || isNaN(parseInt(newProduct.stock))) {
-          notifyValidationError('المخزون', 'يرجى إدخال كمية المخزون (إدارة المخزون مفعّلة)');
-          return;
-        }
-        if (parseInt(newProduct.stock) < 0) {
-          notifyValidationError('المخزون', 'المخزون لا يمكن أن يكون سالباً');
-          return;
-        }
-        if (newProduct.minStock === '' || isNaN(parseInt(newProduct.minStock))) {
-          notifyValidationError('الحد الأدنى', 'يرجى إدخال الحد الأدنى للمخزون');
-          return;
-        }
-        if (parseInt(newProduct.minStock) < 0) {
-          notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون سالباً');
-          return;
-        }
-        if (parseInt(newProduct.minStock) > parseInt(newProduct.stock)) {
-          notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون أكبر من المخزون الحالي');
-          return;
-        }
+    if (!editingProduct) return;
+
+    // 1. التحقق من اسم المنتج
+    if (!newProduct.name || !newProduct.name.trim()) {
+      notifyValidationError('اسم المنتج', 'اسم المنتج مطلوب ولا يمكن أن يكون فارغاً');
+      return;
+    }
+
+    // 2. التحقق من السعر
+    if (newProduct.price === '' || newProduct.price === null || newProduct.price === undefined || isNaN(parseFloat(newProduct.price)) || parseFloat(newProduct.price) < 0) {
+      notifyValidationError('السعر', 'يرجى إدخال سعر صحيح للمنتج');
+      return;
+    }
+
+    if (inventoryEnabled) {
+      if (newProduct.stock === '' || isNaN(parseInt(newProduct.stock))) {
+        notifyValidationError('المخزون', 'يرجى إدخال كمية المخزون (إدارة المخزون مفعّلة)');
+        return;
       }
+      if (parseInt(newProduct.stock) < 0) {
+        notifyValidationError('المخزون', 'المخزون لا يمكن أن يكون سالباً');
+        return;
+      }
+      if (newProduct.minStock === '' || isNaN(parseInt(newProduct.minStock))) {
+        notifyValidationError('الحد الأدنى', 'يرجى إدخال الحد الأدنى للمخزون');
+        return;
+      }
+      if (parseInt(newProduct.minStock) < 0) {
+        notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون سالباً');
+        return;
+      }
+      if (parseInt(newProduct.minStock) > parseInt(newProduct.stock)) {
+        notifyValidationError('الحد الأدنى', 'الحد الأدنى لا يمكن أن يكون أكبر من المخزون الحالي');
+        return;
+      }
+    }
 
-      const nowIso = new Date().toISOString();
-      const updatedProduct = {
-        ...editingProduct,
-        ...newProduct,
-        price: parseFloat(newProduct.price),
-        stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
-        minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
-        updated_at: nowIso,
-        sync_status: 'pending'
-      };
-      const updatedProducts = products.map(p => p.id === editingProduct.id ? updatedProduct : p);
-      setProducts(updatedProducts);
+    const nowIso = new Date().toISOString();
+    const targetIdStr = String(editingProduct.id);
 
-      // حفظ المنتجات في localStorage
-      localStorage.setItem('products', JSON.stringify(updatedProducts));
-      storageOptimizer.clearCache();
+    const updatedProduct = {
+      ...editingProduct,
+      ...newProduct,
+      id: targetIdStr,
+      price: parseFloat(newProduct.price),
+      stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
+      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
+      updated_at: nowIso,
+      sync_status: 'pending'
+    };
 
-      // إرسال إشارة لتحديث نقطة البيع فورياً
-      window.dispatchEvent(new CustomEvent('productsUpdated', {
-        detail: {
-          action: 'updated',
-          product: updatedProduct,
-          products: updatedProducts
-        }
-      }));
+    // مطابقة المعرفات بنص صريح لضمان التحديث بغض النظر عن نوع المعرف
+    const updatedProducts = products.map(p => String(p.id) === targetIdStr ? updatedProduct : p);
+    setProducts(updatedProducts);
 
-      // نشر حدث تغيير المنتجات
-      publish(EVENTS.PRODUCTS_CHANGED, {
-        type: 'update',
+    // حفظ المنتجات في localStorage
+    localStorage.setItem('products', JSON.stringify(updatedProducts));
+    storageOptimizer.clearCache();
+
+    // إرسال إشارة لتحديث نقطة البيع فورياً
+    window.dispatchEvent(new CustomEvent('productsUpdated', {
+      detail: {
+        action: 'updated',
         product: updatedProduct,
         products: updatedProducts
-      });
+      }
+    }));
 
-      setEditingProduct(null);
-      setNewProduct({
-        name: '',
-        price: '',
-        category: '',
-        mainCategoryId: '',
-        subCategoryId: '',
-        stock: '',
-        minStock: '',
-        barcode: '',
-        supplierCode: '',
-        customColor: ''
-      });
-      setShowAddModal(false);
+    // نشر حدث تغيير المنتجات
+    publish(EVENTS.PRODUCTS_CHANGED, {
+      type: 'update',
+      product: updatedProduct,
+      products: updatedProducts
+    });
 
-      // إشعار نجاح التحديث
-      notifyProductUpdated(updatedProduct.name);
-    }
+    setEditingProduct(null);
+    setNewProduct({
+      name: '',
+      price: '',
+      category: '',
+      mainCategoryId: '',
+      subCategoryId: '',
+      stock: '',
+      minStock: '',
+      barcode: '',
+      supplierCode: '',
+      customColor: ''
+    });
+    setShowAddModal(false);
+
+    // إشعار نجاح التحديث
+    notifyProductUpdated(updatedProduct.name);
   };
 
   const handleDeleteProduct = (id) => {
