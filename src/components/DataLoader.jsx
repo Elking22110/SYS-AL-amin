@@ -16,9 +16,9 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         // WIPE OPERATION: One-time automated wipe to start fresh (INCLUDING suppliers)
         // ----------------------------------------------------
-        const didWipeV5 = localStorage.getItem('did_one_time_clean_v5') === 'true';
-        if (!didWipeV5) {
-          console.log('[DataLoader] Performing one-time operational data wipe (Including Suppliers)...');
+        const didWipeV6 = localStorage.getItem('did_one_time_clean_v6') === 'true';
+        if (!didWipeV6) {
+          console.log('[DataLoader] Performing one-time operational data wipe & catalog refresh...');
           
           // 1. Wipe IndexedDB stores
           const db = databaseManager.db;
@@ -39,11 +39,9 @@ const DataLoader = ({ children }) => {
 
           // 2. Wipe LocalStorage keys (both prefixed and unprefixed) including suppliers
           const storesToClearLS = [
-            'sales', 'customers', 'shifts', 'returns', 'expenses', 'activeShift',
-            'suppliers', 'supplier_supplies', 'supplier_payments', 'suppliers_seeded',
-            'last_sync_sales', 'last_sync_customers', 'last_sync_shifts', 'last_sync_returns',
-            'last_sync_expenses', 'last_sync_activeShift',
-            'last_sync_suppliers', 'last_sync_supplier_supplies', 'last_sync_supplier_payments'
+            'sales', 'customers', 'shifts', 'returns',
+            'activeShift', 'suppliers', 'supplier_supplies',
+            'supplier_payments', 'expenses'
           ];
           
           const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -60,10 +58,10 @@ const DataLoader = ({ children }) => {
             }
           });
 
-          // 3. Set the migration flag v5
-          localStorage.setItem('did_one_time_clean_v5', 'true');
+          // 3. Set the migration flag v6
+          localStorage.setItem('did_one_time_clean_v6', 'true');
           
-          console.log('[DataLoader] One-time operational data wipe complete. Reloading page...');
+          console.log('[DataLoader] Refresh complete. Reloading page...');
           window.location.reload();
           return;
         }
