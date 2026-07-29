@@ -200,6 +200,7 @@ class SyncManager {
             if (table === 'products') {
               traceProductObject('syncManager', 'handleRealtimeChange() OVERWRITE', existingLocal, localRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
             }
+            await this.reconcileUniqueIndexConflicts(table, localRecord);
             await databaseManager.update(table, localRecord);
           }
         } else if (eventType === 'DELETE') {
@@ -529,6 +530,55 @@ class SyncManager {
     }
   }
 
+  /**
+   * مصالحة تعارضات المؤشرات الفرعية الفريدة (Unique Index Conflict Reconciliation)
+   * تمنع خطأ ConstraintError بحذف المفاتيح القديمة المكررة فيزياءً قبل إجراء store.put()
+   */
+  async reconcileUniqueIndexConflicts(storeName, record) {
+    if (!record || !record.id) return;
+    const stringId = String(record.id);
+
+    try {
+      if (storeName === 'users') {
+        if (record.email && typeof record.email === 'string' && record.email.trim()) {
+          const emailMatches = await databaseManager.search('users', 'email', record.email.trim());
+          if (Array.isArray(emailMatches)) {
+            for (const match of emailMatches) {
+              if (match && String(match.id) !== stringId) {
+                console.log(`🔄 [SyncManager] مصالحة تعارض البريد للمستخدم: مسح المفتاح القديم ${match.id} لصالح ${stringId}`);
+                await databaseManager.deletePhysical('users', String(match.id));
+              }
+            }
+          }
+        }
+        if (record.username && typeof record.username === 'string' && record.username.trim()) {
+          const usernameMatches = await databaseManager.search('users', 'username', record.username.trim());
+          if (Array.isArray(usernameMatches)) {
+            for (const match of usernameMatches) {
+              if (match && String(match.id) !== stringId) {
+                console.log(`🔄 [SyncManager] مصالحة تعارض اسم المستخدم: مسح المفتاح القديم ${match.id} لصالح ${stringId}`);
+                await databaseManager.deletePhysical('users', String(match.id));
+              }
+            }
+          }
+        }
+      } else if (storeName === 'customers') {
+        if (record.phone && typeof record.phone === 'string' && record.phone.trim()) {
+          const phoneMatches = await databaseManager.search('customers', 'phone', record.phone.trim());
+          if (Array.isArray(phoneMatches)) {
+            for (const match of phoneMatches) {
+              if (match && String(match.id) !== stringId) {
+                await databaseManager.deletePhysical('customers', String(match.id));
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`⚠️ [SyncManager] تعذر إتمام مصالحة المؤشرات الفريدة لـ ${storeName}:`, err);
+    }
+  }
+
   // ----------------------------------------------------
   // SINGLE WRITE-AUTHORITY STATE TRANSITIONS
   // ----------------------------------------------------
@@ -742,6 +792,7 @@ class SyncManager {
           
           const localItem = this.mapCloudToLocal(storeName, cloudItem);
           localItem.sync_status = 'synced';
+          await this.reconcileUniqueIndexConflicts(storeName, localItem);
           await databaseManager.update(storeName, localItem);
         }
       }
