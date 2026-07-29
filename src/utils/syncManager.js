@@ -377,6 +377,8 @@ class SyncManager {
       if (record.main_category_id !== undefined) { mapped.mainCategoryId = record.main_category_id; delete mapped.main_category_id; }
       if (record.sub_category_id !== undefined) { mapped.subCategoryId = record.sub_category_id; delete mapped.sub_category_id; }
       if (record.cost !== undefined) { mapped.costPrice = record.cost; mapped.cost = record.cost; }
+      if (record.wholesale_price !== undefined) { mapped.wholesalePrice = record.wholesale_price; }
+      if (record.wholesalePrice !== undefined) { mapped.wholesalePrice = record.wholesalePrice; }
       if (record.image_path !== undefined) {
         mapped.imagePath = record.image_path;
         if (typeof record.image_path === 'string' && record.image_path.startsWith('{')) {
@@ -892,6 +894,7 @@ class SyncManager {
               name: uploadData.name,
               price: uploadData.price ?? 0,
               cost: record.costPrice ?? record.cost ?? uploadData.cost ?? uploadData.costPrice ?? 0,
+              wholesale_price: record.wholesalePrice ?? record.wholesale_price ?? uploadData.wholesalePrice ?? uploadData.wholesale_price ?? 0,
               stock: uploadData.stock ?? 0,
               barcode: uploadData.barcode ?? null,
               main_category_id: record.mainCategoryId || uploadData.main_category_id || null,

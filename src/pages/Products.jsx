@@ -489,6 +489,7 @@ const Products = () => {
     minStock: '',
     barcode: '',
     supplierCode: '',
+    wholesalePrice: '',
     customColor: ''
   });
   const [productImages, setProductImages] = useState({});
@@ -1441,6 +1442,7 @@ const Products = () => {
       id: String(Date.now()),
       ...newProduct,
       price: parseFloat(newProduct.price),
+      wholesalePrice: newProduct.wholesalePrice !== '' && newProduct.wholesalePrice !== undefined && !isNaN(parseFloat(newProduct.wholesalePrice)) ? parseFloat(newProduct.wholesalePrice) : parseFloat(newProduct.price),
       stock: newProduct.stock !== '' && newProduct.stock !== undefined && !isNaN(parseInt(newProduct.stock)) ? parseInt(newProduct.stock) : 0,
       minStock: newProduct.minStock !== '' && newProduct.minStock !== undefined && !isNaN(parseInt(newProduct.minStock)) ? parseInt(newProduct.minStock) : 0,
       updated_at: nowIso
@@ -1483,7 +1485,8 @@ const Products = () => {
       stock: '',
       minStock: '',
       barcode: '',
-      supplierCode: ''
+      supplierCode: '',
+      wholesalePrice: ''
     });
     setShowAddModal(false);
 
@@ -1541,6 +1544,7 @@ const Products = () => {
       ...product,
       name: product.name || '',
       price: product.price !== undefined ? product.price : '',
+      wholesalePrice: product.wholesalePrice !== undefined ? product.wholesalePrice : '',
       stock: product.stock !== undefined ? product.stock : '',
       minStock: product.minStock !== undefined ? product.minStock : '',
       barcode: product.barcode || '',
@@ -1611,6 +1615,7 @@ const Products = () => {
       id: targetIdStr,
       name: trimmedName,
       price: parseFloat(newProduct.price),
+      wholesalePrice: newProduct.wholesalePrice !== '' && newProduct.wholesalePrice !== undefined && !isNaN(parseFloat(newProduct.wholesalePrice)) ? parseFloat(newProduct.wholesalePrice) : (editingProduct && editingProduct.wholesalePrice !== undefined ? editingProduct.wholesalePrice : parseFloat(newProduct.price)),
       mainCategoryId: mainCatObj ? (mainCatObj.id || mainCatObj.name) : newProduct.mainCategoryId,
       subCategoryId: subCatObj ? (subCatObj.id || subCatObj.name) : (newProduct.subCategoryId || null),
       category: finalCategoryName,
@@ -1660,6 +1665,7 @@ const Products = () => {
       minStock: '',
       barcode: '',
       supplierCode: '',
+      wholesalePrice: '',
       customColor: ''
     });
     setShowAddModal(false);
@@ -2521,13 +2527,23 @@ const Products = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">السعر</label>
+                  <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">السعر (قطاعي)</label>
                   <input
                     type="number"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                     className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
                     placeholder="0.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm md:text-base font-semibold text-purple-200 mb-2">سعر الجملة</label>
+                  <input
+                    type="number"
+                    value={newProduct.wholesalePrice || ''}
+                    onChange={(e) => setNewProduct({ ...newProduct, wholesalePrice: e.target.value })}
+                    className="input-modern w-full px-3 md:px-4 py-3 md:py-4 text-base md:text-lg text-right font-medium"
+                    placeholder="0.00 (اختياري)"
                   />
                 </div>
               </div>

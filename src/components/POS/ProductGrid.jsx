@@ -985,8 +985,8 @@ const ProductGrid = ({
                   </div>
                 </div>
 
-                {/* أكواد المنتج */}
-                {(product.supplierCode || product.barcode) && (
+                {/* أكواد المنتج ورقم الجملة */}
+                {(product.supplierCode || product.barcode || (product.wholesalePrice && Number(product.wholesalePrice) > 0)) && (
                   <div className="flex flex-wrap gap-1 mt-1">
                     {product.supplierCode && (
                       <span className="text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-600 font-mono border border-blue-200 leading-tight">
@@ -996,6 +996,11 @@ const ProductGrid = ({
                     {product.barcode && (
                       <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 text-purple-600 font-mono border border-purple-200 leading-tight">
                         {product.barcode}
+                      </span>
+                    )}
+                    {(product.wholesalePrice && Number(product.wholesalePrice) > 0 && Number(product.wholesalePrice) !== Number(product.price)) && (
+                      <span className="text-[9px] px-1 py-0.5 rounded bg-amber-50 text-amber-700 font-extrabold border border-amber-200 leading-tight">
+                        📦 جملة: {Number(product.wholesalePrice).toLocaleString('ar-EG')}
                       </span>
                     )}
                   </div>
