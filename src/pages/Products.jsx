@@ -1441,8 +1441,8 @@ const Products = () => {
       id: String(Date.now()),
       ...newProduct,
       price: parseFloat(newProduct.price),
-      stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
-      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
+      stock: newProduct.stock !== '' && newProduct.stock !== undefined && !isNaN(parseInt(newProduct.stock)) ? parseInt(newProduct.stock) : 0,
+      minStock: newProduct.minStock !== '' && newProduct.minStock !== undefined && !isNaN(parseInt(newProduct.minStock)) ? parseInt(newProduct.minStock) : 0,
       updated_at: nowIso
     };
     const updatedProducts = [...products, product];
@@ -1614,8 +1614,8 @@ const Products = () => {
       mainCategoryId: mainCatObj ? (mainCatObj.id || mainCatObj.name) : newProduct.mainCategoryId,
       subCategoryId: subCatObj ? (subCatObj.id || subCatObj.name) : (newProduct.subCategoryId || null),
       category: finalCategoryName,
-      stock: inventoryEnabled ? (parseInt(newProduct.stock) || 0) : 0,
-      minStock: inventoryEnabled ? (parseInt(newProduct.minStock) || 0) : 0,
+      stock: newProduct.stock !== '' && newProduct.stock !== undefined && !isNaN(parseInt(newProduct.stock)) ? parseInt(newProduct.stock) : (editingProduct && editingProduct.stock !== undefined ? editingProduct.stock : 0),
+      minStock: newProduct.minStock !== '' && newProduct.minStock !== undefined && !isNaN(parseInt(newProduct.minStock)) ? parseInt(newProduct.minStock) : (editingProduct && editingProduct.minStock !== undefined ? editingProduct.minStock : 0),
       updated_at: nowIso
     };
 
