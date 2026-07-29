@@ -174,11 +174,18 @@ localStorage.setItem = function(key, value) {
 
                     // تفعيل شواهد الحذف (Tombstones) لجميع العناصر المحذوفة من localStorage لضمان مزامنة الحذف مع السحاب
                     if (deleted.length > 0) {
-                        for (const item of deleted) {
-                            if (item && item.id) {
-                                console.log(`🗑️ [SyncProxy] إنشاء شاهد حذف (Tombstone) لـ ${idbStore}/${item.id}`);
-                                await databaseManager.delete(idbStore, item.id);
-                                dbMutated = true;
+                        // حماية من الحذف الجماعي الخاطئ: إذا كان عدد المحذوفات كبيراً جداً
+                        // فمن المرجح أنه تحديث سحابي جزئي وليس حذف حقيقي - نتجاهله ونطلب sync
+                        const isBulkWipe = deleted.length > 10 && (oldArray.length === 0 || deleted.length / oldArray.length > 0.2);
+                        if (isBulkWipe) {
+                            console.warn(`⚠️ [SyncProxy] تم تجاهل حذف جماعي مشبوه لـ ${idbStore}: ${deleted.length} من ${oldArray.length} — تجنب Tombstones خاطئة`);
+                        } else {
+                            for (const item of deleted) {
+                                if (item && item.id) {
+                                    console.log(`🗑️ [SyncProxy] إنشاء شاهد حذف (Tombstone) لـ ${idbStore}/${item.id}`);
+                                    await databaseManager.delete(idbStore, item.id);
+                                    dbMutated = true;
+                                }
                             }
                         }
                     }

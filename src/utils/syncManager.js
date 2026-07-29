@@ -224,9 +224,9 @@ class SyncManager {
           this._realtimeDebounceTimers[table] = setTimeout(async () => {
             try {
               const allItems = await databaseManager.getAll(table);
-              window.__isCloudSyncing = true;
+              window.__bypass_sync_proxy__ = true;
               localStorage.setItem(lsKey, JSON.stringify(allItems || []));
-              window.__isCloudSyncing = false;
+              window.__bypass_sync_proxy__ = false;
 
               window.dispatchEvent(new CustomEvent('realtimeDataUpdate', { detail: { table, eventType, record: newRecord || oldRecord } }));
               window.dispatchEvent(new CustomEvent('dataUpdated', { detail: { type: table, eventType } }));
@@ -680,7 +680,10 @@ class SyncManager {
         }
 
         // مطابقة الحذف التناغمي: تصفية وحذف أي سجل محلي بحالة synced لم يعد موجوداً في السحاب
-        if (allCloudIdsSet.size > 0) {
+        // حماية: فقط نحذف إذا كانت السحاب أعادت عدد سجلات كافٍ (> 50% من المحلي) لتجنب الحذف بسبب partial pull
+        const localSyncedCount = Array.from(localIdMap.values()).filter(r => r && r.sync_status === 'synced').length;
+        const cloudReturnedEnough = allCloudIdsSet.size > 0 && (localSyncedCount === 0 || allCloudIdsSet.size >= localSyncedCount * 0.5);
+        if (allCloudIdsSet.size > 0 && cloudReturnedEnough) {
           let purgedCount = 0;
           for (const [lId, lRec] of localIdMap.entries()) {
             if (lRec && lRec.sync_status === 'synced' && !allCloudIdsSet.has(lId)) {
@@ -692,6 +695,8 @@ class SyncManager {
             console.log(`🧹 [SyncManager] تم تطهير وسحب ${purgedCount} سجل محذوف سحابياً لجدول ${storeName}`);
             hasChanges = true;
           }
+        } else if (allCloudIdsSet.size > 0 && !cloudReturnedEnough) {
+          console.warn(`⚠️ [SyncManager] تم تخطي الحذف التناغمي لـ ${storeName}: السحاب أعاد ${allCloudIdsSet.size} سجل مقابل ${localSyncedCount} محلي — قد يكون الـ pull ناقصاً!`);
         }
       } else {
         // سحب تدريجي للجداول الكبيرة (مثل المنتجات): نعتمد هامش أمان زماني ولا نعتمد على lastLocalUpdate فقط
