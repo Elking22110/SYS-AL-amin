@@ -272,34 +272,8 @@ const ProductGrid = ({
     } else if (mainGroup === 'كيسيل') {
       if (fullName.includes('بلاعة') || fullName.includes('بلاعه') || fullName.includes('بلاعات') || fullName.includes('صفاية') || fullName.includes('صفايه')) {
         subCategory = 'بلاعات كيسل';
-      } else if (fullName.includes('مدفون') || fullName.includes('نظام') || fullName.includes('شاسيه') || fullName.includes('خزان')) {
-        if (fullName.includes('110') || fullName.includes('١١٠')) {
-          subCategory = 'نظام كيسيل المدفون ١١٠';
-        } else if (fullName.includes('160') || fullName.includes('١٦٠')) {
-          subCategory = 'نظام كيسيل المدفون ١٦٠';
-        } else {
-          subCategory = 'نظام كيسل المدفون ٢٠٠';
-        }
-      } else if (fullName.includes('ماسور') || fullName.includes('مواسير')) {
-        subCategory = 'مواسير كيسل';
       } else {
-        if (fullName.includes('63') || fullName.includes('٦٣')) {
-          subCategory = 'قطع ٦٣ كيسل';
-        } else if (fullName.includes('40') || fullName.includes('٤٠')) {
-          subCategory = 'قطع ٤٠ كيسل';
-        } else if (fullName.includes('50') || fullName.includes('٥٠')) {
-          subCategory = 'قطع ٥٠';
-        } else if (fullName.includes('75') || fullName.includes('٧٥')) {
-          subCategory = 'قطع ٧٥';
-        } else if (fullName.includes('110') || fullName.includes('١١٠')) {
-          subCategory = 'قطع ١١٠';
-        } else if (fullName.includes('160') || fullName.includes('١٦٠')) {
-          subCategory = 'قطع ١٦٠';
-        } else if (fullName.includes('1') || fullName.includes('١') || fullName.includes('بوصه') || fullName.includes('بوصة')) {
-          subCategory = 'قطع ١بوصه كيسل';
-        } else {
-          subCategory = 'قطع ٥٠';
-        }
+        subCategory = 'كيسيل عام';
       }
     } else if (mainGroup === 'تكنو بولي') {
       if (fullName.includes('صرف')) {
@@ -665,6 +639,24 @@ const ProductGrid = ({
     });
   }, [products, getProductGroupAndSub]);
 
+  // أسماء فئات بلاعات كيسيل (تبقى منفصلة)
+  const KEISEL_DRAIN_NAMES = React.useMemo(() => [
+    'بلاعات كيسل', 'بلاعات كيسيل', 'بلاعة كيسل', 'بلاعة كيسيل'
+  ], []);
+
+  // الفئات المطلوب دمجها في مجموعة واحدة (قطع ١١٠ + نظام مدفون + مواسير)
+  const KEISEL_TO_MERGE_NAMES = React.useMemo(() => [
+    'قطع ١١٠', 'قطع 110',
+    'نظام كيسيل المدفون ١١٠', 'نظام كيسل المدفون ١١٠',
+    'قطع ١٦٠', 'قطع 160',
+    'نظام كيسيل المدفون ١٦٠', 'نظام كيسل المدفون ١٦٠',
+    'نظام كيسيل المدفون ٢٠٠', 'نظام كيسل المدفون ٢٠٠',
+    'مواسير كيسل', 'مواسير كيسيل'
+  ], []);
+
+  // اسم المجموعة المدمجة
+  const KEISEL_MERGED_LABEL = React.useMemo(() => 'نظام وقطع ١١٠-٢٠٠ ومواسير', []);
+
   // تصفية الفئات الفرعية المتاحة بناء على المجموعة الرئيسية المحددة من قاعدة البيانات
   const filteredCategories = React.useMemo(() => {
     if (selectedMainGroup === 'الكل') {
@@ -674,11 +666,30 @@ const ProductGrid = ({
 
     const selectedGroup = categories.find(c => (String(c.id) === String(selectedMainGroup) || c.name === selectedMainGroup) && !c.parentId);
     if (selectedGroup) {
-      const filtered = categories
+      const isKeisel = selectedGroup.name === 'كيسيل' || selectedGroup.name === 'كيسل';
+      const allSubs = categories
         .filter(c => String(c.parentId) === String(selectedGroup.id) || String(c.parentId) === String(selectedGroup.name))
         .map(c => ({ id: c.id, name: c.name }));
 
-      return sortSubcategories(filtered, selectedGroup.name);
+      if (isKeisel) {
+        // الفئات التي لا تُدمج ولا تُعدّ بلاعات (الصغيرة: ٤٠، ٥٠، ٦٣، ٧٥، بوصة ...)
+        const keepSeparate = allSubs.filter(
+          c => !KEISEL_DRAIN_NAMES.includes(c.name) && !KEISEL_TO_MERGE_NAMES.includes(c.name)
+        );
+        // البلاعات
+        const drainSubs = allSubs.filter(c => KEISEL_DRAIN_NAMES.includes(c.name));
+        // هل يوجد فئات تستحق الدمج في قاعدة البيانات؟
+        const hasMerged = allSubs.some(c => KEISEL_TO_MERGE_NAMES.includes(c.name));
+
+        const result = [
+          ...sortSubcategories(keepSeparate, selectedGroup.name),
+          ...(hasMerged ? [{ id: '__keisel_merged__', name: KEISEL_MERGED_LABEL }] : []),
+          ...drainSubs
+        ];
+        return result;
+      }
+
+      return sortSubcategories(allSubs, selectedGroup.name);
     }
 
     // Fallback في حال كانت المجموعة الرئيسية مجموعة الكلمات المفتاحية القديمة (مثل "أخرى")
@@ -688,40 +699,69 @@ const ProductGrid = ({
     }
     const uniqueSubs = Array.from(new Set(relevantProducts.map(p => p.computedSubCategory)));
     return uniqueSubs.map(sub => ({ name: sub }));
-  }, [categories, processedProducts, selectedMainGroup]);
+  }, [categories, processedProducts, selectedMainGroup, KEISEL_DRAIN_NAMES, KEISEL_TO_MERGE_NAMES]);
+
+  // دالة استخراج المقاس الرقمي من اسم المنتج للترتيب من الأصغر للأكبر
+  const extractSizeNumber = useCallback((name) => {
+    if (!name) return 9999;
+    const str = name.toLowerCase();
+    // البحث عن مقاسات شائعة بالترتيب
+    const patterns = [
+      { re: /(?:^|\D)(\d+(?:[.,]\d+)?)\s*(?:مم|mm)/i, mul: 1 },
+      { re: /(?:^|\D)(\d+(?:[.,]\d+)?)\s*(?:سم|cm)/i, mul: 10 },
+      { re: /pp\s*(\d+)/i, mul: 1 },
+      { re: /(?:^|\D)(\d+(?:[.,]\d+)?)/,               mul: 1 }
+    ];
+    for (const { re, mul } of patterns) {
+      const m = str.match(re);
+      if (m) return parseFloat(m[1].replace(',', '.')) * mul;
+    }
+    return 9999;
+  }, []);
 
   // تصفية المنتجات مع البحث الفوري الشامل بالاسم والكود والباركود (مثل صفحة المنتجات)
   const filteredProducts = React.useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
+    const isKeiselMerged = selectedCategory === KEISEL_MERGED_LABEL;
 
+    let result;
     if (!term) {
-      return processedProducts.filter(product => {
+      result = processedProducts.filter(product => {
         if (selectedMainGroup !== 'الكل' && product.computedMainGroup !== selectedMainGroup) return false;
+        // المجموعة المدمجة = منتجات ذات فئات ١١٠+ ومواسير
+        if (isKeiselMerged) {
+          return KEISEL_TO_MERGE_NAMES.includes(product.computedSubCategory);
+        }
         if (selectedCategory !== 'الكل' && product.computedSubCategory !== selectedCategory) return false;
         return true;
       });
+    } else {
+      // تقسيم كلمات البحث لدعم البحث المركب مثل "كوع 63" أو "اسمارت 90"
+      const keywords = term.split(/\s+/).filter(Boolean);
+      result = processedProducts.filter(product => {
+        const nameStr = (product.name || '').toLowerCase();
+        const idStr = String(product.id || '').toLowerCase();
+        const barcodeStr = (product.barcode || '').toLowerCase();
+        const supplierCodeStr = (product.supplierCode || '').toLowerCase();
+        const skuStr = (product.sku || '').toLowerCase();
+        const descStr = (product.description || '').toLowerCase();
+        const categoryStr = (product.category || '').toLowerCase();
+        const mainGroupStr = (product.computedMainGroup || '').toLowerCase();
+        const subGroupStr = (product.computedSubCategory || '').toLowerCase();
+        const combinedText = `${nameStr} ${idStr} ${barcodeStr} ${supplierCodeStr} ${skuStr} ${descStr} ${categoryStr} ${mainGroupStr} ${subGroupStr}`;
+        // يجب أن توجد جميع كلمات البحث داخل السجل (تطابق شامل ودقيق)
+        return keywords.every(kw => combinedText.includes(kw));
+      });
     }
 
-    // تقسيم كلمات البحث لدعم البحث المركب مثل "كوع 63" أو "اسمارت 90"
-    const keywords = term.split(/\s+/).filter(Boolean);
+    // ترتيب منتجات المجموعة المدمجة من الأصغر للأكبر حسب المقاس
+    if (isKeiselMerged) {
+      result = [...result].sort((a, b) => extractSizeNumber(a.name) - extractSizeNumber(b.name));
+    }
 
-    return processedProducts.filter(product => {
-      const nameStr = (product.name || '').toLowerCase();
-      const idStr = String(product.id || '').toLowerCase();
-      const barcodeStr = (product.barcode || '').toLowerCase();
-      const supplierCodeStr = (product.supplierCode || '').toLowerCase();
-      const skuStr = (product.sku || '').toLowerCase();
-      const descStr = (product.description || '').toLowerCase();
-      const categoryStr = (product.category || '').toLowerCase();
-      const mainGroupStr = (product.computedMainGroup || '').toLowerCase();
-      const subGroupStr = (product.computedSubCategory || '').toLowerCase();
+    return result;
+  }, [processedProducts, selectedMainGroup, selectedCategory, searchTerm, KEISEL_DRAIN_NAMES, KEISEL_TO_MERGE_NAMES, KEISEL_MERGED_LABEL, extractSizeNumber]);
 
-      const combinedText = `${nameStr} ${idStr} ${barcodeStr} ${supplierCodeStr} ${skuStr} ${descStr} ${categoryStr} ${mainGroupStr} ${subGroupStr}`;
-
-      // يجب أن توجد جميع كلمات البحث داخل السجل (تطابق شامل ودقيق)
-      return keywords.every(kw => combinedText.includes(kw));
-    });
-  }, [processedProducts, selectedMainGroup, selectedCategory, searchTerm]);
 
   // إعادة ضبط مؤشر عدد المنتجات المعروضة عند تغيير الفلاتر لتجنب البطء
   useEffect(() => {
