@@ -49,16 +49,23 @@ class DatabaseManager {
         const db = event.target.result;
         const oldVersion = event.oldVersion;
 
-        // ترقية من v5 → v6: إصلاح unique constraint على barcode
-        if (oldVersion < 6 && db.objectStoreNames.contains('products')) {
-          const transaction = event.target.transaction;
+        // ترقية وإصلاح الـ unique constraints في IndexedDB
+        const transaction = event.target.transaction;
+        if (db.objectStoreNames.contains('products')) {
           const productsStore = transaction.objectStore('products');
-          // حذف الـ index القديم (unique) وإعادة إنشائه بدون unique
           if (productsStore.indexNames.contains('barcode')) {
             productsStore.deleteIndex('barcode');
           }
           productsStore.createIndex('barcode', 'barcode', { unique: false });
-          console.log('[DB v6] barcode index recreated as non-unique');
+        }
+
+        if (db.objectStoreNames.contains('users')) {
+          const usersStore = transaction.objectStore('users');
+          if (usersStore.indexNames.contains('email')) {
+            usersStore.deleteIndex('email');
+          }
+          usersStore.createIndex('email', 'email', { unique: false });
+          console.log('[DB] users email index recreated as non-unique');
         }
 
         // إنشاء جداول جديدة لو مش موجودة
@@ -118,7 +125,7 @@ class DatabaseManager {
     if (!db.objectStoreNames.contains('users')) {
       const usersStore = db.createObjectStore('users', { keyPath: 'id' });
       usersStore.createIndex('username', 'username', { unique: true });
-      usersStore.createIndex('email', 'email', { unique: true });
+      usersStore.createIndex('email', 'email', { unique: false });
     }
 
     // جدول الإعدادات
