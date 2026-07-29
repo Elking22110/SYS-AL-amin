@@ -641,8 +641,8 @@ class SyncManager {
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
 
-      // الجداول المفاهيمية والكتالوجية: نسحب الكل مطابقة تامة ومباشرة لمنع split-brain والحفاظ على التناغم الكامل
-      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories', 'products']);
+      // الجداول المفاهيمية والكتالوجية (المنتجات تعتمد السحب التدريجي الأمني لمنع مسح المنتجات محلياً)
+      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories']);
       const useFullPull = FULL_PULL_TABLES.has(storeName);
 
       let cloudUpdates = [];
@@ -679,25 +679,7 @@ class SyncManager {
           }
         }
 
-        // مطابقة الحذف التناغمي: تصفية وحذف أي سجل محلي بحالة synced لم يعد موجوداً في السحاب
-        // حماية: فقط نحذف إذا كانت السحاب أعادت عدد سجلات كافٍ (> 50% من المحلي) لتجنب الحذف بسبب partial pull
-        const localSyncedCount = Array.from(localIdMap.values()).filter(r => r && r.sync_status === 'synced').length;
-        const cloudReturnedEnough = allCloudIdsSet.size > 0 && (localSyncedCount === 0 || allCloudIdsSet.size >= localSyncedCount * 0.5);
-        if (allCloudIdsSet.size > 0 && cloudReturnedEnough) {
-          let purgedCount = 0;
-          for (const [lId, lRec] of localIdMap.entries()) {
-            if (lRec && lRec.sync_status === 'synced' && !allCloudIdsSet.has(lId)) {
-              await databaseManager.deletePhysical(storeName, lId);
-              purgedCount++;
-            }
-          }
-          if (purgedCount > 0) {
-            console.log(`🧹 [SyncManager] تم تطهير وسحب ${purgedCount} سجل محذوف سحابياً لجدول ${storeName}`);
-            hasChanges = true;
-          }
-        } else if (allCloudIdsSet.size > 0 && !cloudReturnedEnough) {
-          console.warn(`⚠️ [SyncManager] تم تخطي الحذف التناغمي لـ ${storeName}: السحاب أعاد ${allCloudIdsSet.size} سجل مقابل ${localSyncedCount} محلي — قد يكون الـ pull ناقصاً!`);
-        }
+        // تم تعطيل التطهير الفيزيائي التلقائي لحماية المنتجات والبيانات المحلية من أي مسح غير مقصود
       } else {
         // سحب تدريجي للجداول الكبيرة (مثل المنتجات): نعتمد هامش أمان زماني ولا نعتمد على lastLocalUpdate فقط
         let lastFetchedTime = lastLocalUpdate;
@@ -1054,10 +1036,10 @@ class SyncManager {
           } catch (_) {}
         } else if (storeName === 'categories') {
           try {
-            // تنظيف المنتجات والفئات الفرعية المرتبطة سحابياً أولاً لمنع تعارض القيود (Foreign Key Constraint 23503)
-            await supabase.from('products').delete().eq('main_category_id', record.id);
-            await supabase.from('products').delete().eq('sub_category_id', record.id);
-            await supabase.from('categories').delete().eq('parent_id', record.id);
+            // فك ارتباط المنتجات بالفئة المحذوفة بدلاً من مسح المنتجات لمنع فقدان البيانات
+            await supabase.from('products').update({ main_category_id: null }).eq('main_category_id', record.id);
+            await supabase.from('products').update({ sub_category_id: null }).eq('sub_category_id', record.id);
+            await supabase.from('categories').update({ parent_id: null }).eq('parent_id', record.id);
           } catch (_) {}
         }
         
