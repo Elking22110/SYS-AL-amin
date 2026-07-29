@@ -59,15 +59,6 @@ class DatabaseManager {
           productsStore.createIndex('barcode', 'barcode', { unique: false });
         }
 
-        if (db.objectStoreNames.contains('users')) {
-          const usersStore = transaction.objectStore('users');
-          if (usersStore.indexNames.contains('email')) {
-            usersStore.deleteIndex('email');
-          }
-          usersStore.createIndex('email', 'email', { unique: false });
-          console.log('[DB] users email index recreated as non-unique');
-        }
-
         // إنشاء جداول جديدة لو مش موجودة
         this.createStores(db);
       };
@@ -125,7 +116,7 @@ class DatabaseManager {
     if (!db.objectStoreNames.contains('users')) {
       const usersStore = db.createObjectStore('users', { keyPath: 'id' });
       usersStore.createIndex('username', 'username', { unique: true });
-      usersStore.createIndex('email', 'email', { unique: false });
+      usersStore.createIndex('email', 'email', { unique: true });
     }
 
     // جدول الإعدادات
