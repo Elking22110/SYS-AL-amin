@@ -50,14 +50,14 @@ export function parseInchSize(name) {
   if (str.includes('25')) return 0.75;
   if (str.includes('20')) return 0.5;
 
-  // Whole inch sizes
-  if (/\b8\b|8\s*بوص|8بوص/.test(str)) return 8.0;
-  if (/\b6\b|6\s*بوص|6بوص/.test(str)) return 6.0;
-  if (/\b5\b|5\s*بوص|5بوص/.test(str)) return 5.0;
-  if (/\b4\b|4\s*بوص|4بوص/.test(str)) return 4.0;
-  if (/\b3\b|3\s*بوص|3بوص/.test(str)) return 3.0;
+  // Whole inch sizes (checked in ascending order to prioritize smaller size when multiple exist)
+  if (/\b1\b|1\s*بوص|1بوص|ابوص|ا\s*بوص/.test(str)) return 1.0;
   if (/\b2\b|2\s*بوص|2بوص/.test(str)) return 2.0;
-  if (/\b1\b|1\s*بوص|1بوص/.test(str)) return 1.0;
+  if (/\b3\b|3\s*بوص|3بوص/.test(str)) return 3.0;
+  if (/\b4\b|4\s*بوص|4بوص/.test(str)) return 4.0;
+  if (/\b5\b|5\s*بوص|5بوص/.test(str)) return 5.0;
+  if (/\b6\b|6\s*بوص|6بوص/.test(str)) return 6.0;
+  if (/\b8\b|8\s*بوص|8بوص/.test(str)) return 8.0;
 
   const numMatch = str.match(/(\d+(?:\.\d+)?)/);
   if (numMatch) {
@@ -81,15 +81,13 @@ export function getBrandRank(subName, mainCategoryName = '') {
   const isAhramGroup = mainLower.includes('الاهرام') || mainLower.includes('الأهرام') || subLower.includes('الاهرام') || subLower.includes('الأهرام');
 
   if (isAhramGroup) {
-    if (subLower.includes('بولي') || subLower.includes('بولى') || subLower.includes('poly')) {
-      return 1;
-    }
     if (subLower.includes('ابيض') || subLower.includes('أبيض')) {
       return 2;
     }
-    if (subLower.includes('صرف') || subLower.includes('كيسل') || subLower.includes('كيسيل')) {
+    if (subLower.includes('صرف') || subLower.includes('كيسل') || subLower.includes('كيسيل') || subLower.includes('kisel') || subLower.includes('kessel')) {
       return 3;
     }
+    return 1; // Default inside Ahram group is Poly
   }
 
   // Explicit Subcategory Brand match takes priority

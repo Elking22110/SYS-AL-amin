@@ -4,7 +4,7 @@ import storageOptimizer from '../../utils/storageOptimizer.js';
 import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
 import soundManager from '../../utils/soundManager.js';
-import { sortSubcategories } from '../../utils/subcategorySorter.js';
+import { sortSubcategories, parseInchSize, getBrandRank } from '../../utils/subcategorySorter.js';
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
@@ -342,44 +342,42 @@ const ProductGrid = ({
       const isAhramBoly = fullName.includes('بولي') || fullName.includes('بولى') || (!isAhramSarf && !isAhramAbiad);
 
       if (isAhramBoly) {
-        // --- قطع بولي الاهرام مصنفة بالمقاس ---
-        if (fullName.includes('٤/٣') || fullName.includes('4/3') || fullName.includes('3/4')) {
+        // --- قطع بولي الاهرام مصنفة بالمقاس من الأصغر للأكبر ---
+        if (fullName.includes('٢/١') || fullName.includes('2/1') || fullName.includes('1/2') || fullName.includes('نص')) {
+          subCategory = 'قطع ٢/١ بولى الاهرام';
+        } else if (fullName.includes('٤/٣') || fullName.includes('4/3') || fullName.includes('3/4')) {
           subCategory = 'قطع ٤/٣ بولى الاهرام';
         } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('1½')) {
           subCategory = 'قطع ١,٥ بولى الاهرام';
-        } else if (fullName.includes('٢/١') || fullName.includes('2/1') || fullName.includes('1/2') || fullName.includes('نص')) {
-          subCategory = 'قطع ٢/١ بولى الاهرام';
         } else if (fullName.includes('1 1/4') || fullName.includes('١ ١/٤') || fullName.includes('1.25') || fullName.includes('١.٢٥')) {
-          subCategory = 'قطع ١,٢٥ بولى الاهرام';
-        } else if (fullName.includes('75') || fullName.includes('٧٥')) {
+          subCategory = 'قطع ١,٥ بولى الاهرام';
+        } else if (fullName.includes('75') || fullName.includes('٧٥') || fullName.includes('2') || fullName.includes('٢') || fullName.includes('3') || fullName.includes('٣')) {
           subCategory = 'بولى ٢ و ٣ بوصه الاهرام';
-        } else if (fullName.includes('2') || fullName.includes('٢')) {
-          subCategory = 'قطع ٢ بوصه بولى الاهرام';
-        } else if (fullName.includes('1') || fullName.includes('١')) {
-          subCategory = 'قطع ١ بوصه بولى الاهرام';
+        } else if (fullName.includes('1') || fullName.includes('١') || fullName.includes('ابوصه') || fullName.includes('أبوصه')) {
+          subCategory = 'قطع ١بوصه بولى الاهرام';
         } else {
           subCategory = 'قطع ٢/١ بولى الاهرام';
         }
       } else if (isAhramSarf) {
-        // --- قطع صرف الاهرام مصنفة بالمقاس ---
+        // --- قطع صرف/كيسل الاهرام مصنفة بالمقاس ---
         if (fullName.includes('١٦٠') || fullName.includes('160')) {
-          subCategory = 'قطع ١٦٠ ملى صرف الاهرام';
+          subCategory = 'قطع ١٦٠ ملى كيسل الاهرام';
         } else if (fullName.includes('١١٠') || fullName.includes('110')) {
-          subCategory = 'قطع ١١٠ ملى صرف الاهرام';
+          subCategory = 'قطع ١١٠ ملى كيسل الاهرام';
         } else if (fullName.includes('٧٥') || fullName.includes('75')) {
-          subCategory = 'قطع ٧٥ ملى صرف الاهرام';
+          subCategory = 'قطع ٧٥ ملى كيسل الاهرام';
         } else if (fullName.includes('٥٠') || fullName.includes('50')) {
-          subCategory = 'قطع ٥٠ ملى صرف الاهرام';
+          subCategory = 'قطع ٥٠ ملى كيسل الاهرام';
         } else if (fullName.includes('٦') || fullName.includes('6')) {
-          subCategory = 'قطع ١٦٠ ملى صرف الاهرام';
+          subCategory = 'قطع ١٦٠ ملى كيسل الاهرام';
         } else if (fullName.includes('٤') || fullName.includes('4')) {
-          subCategory = 'قطع ١١٠ ملى صرف الاهرام';
+          subCategory = 'قطع ١١٠ ملى كيسل الاهرام';
         } else if (fullName.includes('٣') || fullName.includes('3')) {
-          subCategory = 'قطع ٧٥ ملى صرف الاهرام';
+          subCategory = 'قطع ٧٥ ملى كيسل الاهرام';
         } else if (fullName.includes('٢') || fullName.includes('2')) {
-          subCategory = 'قطع ٥٠ ملى صرف الاهرام';
+          subCategory = 'قطع ٥٠ ملى كيسل الاهرام';
         } else {
-          subCategory = 'قطع صرف الاهرام';
+          subCategory = 'قطع ٥٠ ملى كيسل الاهرام';
         }
       } else if (isAhramAbiad) {
         // --- قطع أبيض الاهرام مصنفة بالمقاس ---
@@ -393,7 +391,7 @@ const ProductGrid = ({
           subCategory = 'قطع ٢بوصه الاهرام ابيض';
         } else if (fullName.includes('1.5') || fullName.includes('١.٥') || fullName.includes('١,٥') || fullName.includes('1,5') || fullName.includes('1 1/2') || fullName.includes('نص')) {
           subCategory = 'قطع ١,٥ ابيض الاهرام';
-        } else if (fullName.includes('1') || fullName.includes('١')) {
+        } else if (fullName.includes('1') || fullName.includes('١') || fullName.includes('ابوصه') || fullName.includes('أبوصه')) {
           subCategory = 'قطع ١بوصه الاهرام ابيض';
         } else {
           subCategory = 'قطع ١بوصه الاهرام ابيض';
@@ -661,7 +659,8 @@ const ProductGrid = ({
   const filteredCategories = React.useMemo(() => {
     if (selectedMainGroup === 'الكل') {
       // عرض جميع المجموعات الفرعية (التي لها أب)
-      return categories.filter(c => c.parentId).map(c => ({ id: c.id, name: c.name }));
+      const allChildSubs = categories.filter(c => c.parentId).map(c => ({ id: c.id, name: c.name }));
+      return sortSubcategories(allChildSubs, selectedMainGroup);
     }
 
     const selectedGroup = categories.find(c => (String(c.id) === String(selectedMainGroup) || c.name === selectedMainGroup) && !c.parentId);
@@ -698,7 +697,8 @@ const ProductGrid = ({
       relevantProducts = processedProducts.filter(p => p.computedMainGroup === selectedMainGroup);
     }
     const uniqueSubs = Array.from(new Set(relevantProducts.map(p => p.computedSubCategory)));
-    return uniqueSubs.map(sub => ({ name: sub }));
+    const mappedSubs = uniqueSubs.map(sub => ({ name: sub }));
+    return sortSubcategories(mappedSubs, selectedMainGroup);
   }, [categories, processedProducts, selectedMainGroup, KEISEL_DRAIN_NAMES, KEISEL_TO_MERGE_NAMES]);
 
   // دالة استخراج المقاس الرقمي من اسم المنتج للترتيب من الأصغر للأكبر
@@ -757,6 +757,18 @@ const ProductGrid = ({
     // ترتيب منتجات المجموعة المدمجة من الأصغر للأكبر حسب المقاس
     if (isKeiselMerged) {
       result = [...result].sort((a, b) => extractSizeNumber(a.name) - extractSizeNumber(b.name));
+    } else if (selectedMainGroup && (selectedMainGroup.includes('الاهرام') || selectedMainGroup.includes('الأهرام'))) {
+      result = [...result].sort((a, b) => {
+        const subA = a.computedSubCategory || a.name || '';
+        const subB = b.computedSubCategory || b.name || '';
+        const brandA = getBrandRank(subA, selectedMainGroup);
+        const brandB = getBrandRank(subB, selectedMainGroup);
+        if (brandA !== brandB) return brandA - brandB;
+        const sizeA = parseInchSize(a.name) !== 999 ? parseInchSize(a.name) : parseInchSize(subA);
+        const sizeB = parseInchSize(b.name) !== 999 ? parseInchSize(b.name) : parseInchSize(subB);
+        if (sizeA !== sizeB) return sizeA - sizeB;
+        return (a.name || '').localeCompare(b.name || '', 'ar');
+      });
     }
 
     return result;

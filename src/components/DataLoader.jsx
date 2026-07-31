@@ -1107,6 +1107,150 @@ const DataLoader = ({ children }) => {
         }
         // ----------------------------------------------------
 
+        // PATCH v49: Enforce Ahram 1.5-inch poly subcategory separation
+        const patchV49Done = localStorage.getItem('patch_ahram_1_5_poly_v49') === 'true';
+        if (!patchV49Done) {
+          try {
+            console.log('[DataLoader] Patch v49: Enforcing Ahram 1.5-inch poly subcategory separation...');
+            setLoadingMessage('جاري فصل تصنيفات قطع ١,٥ بولي الأهرام عن الأبيض...');
+            const POLY_1_5_IDS = new Set([
+              '80183', '80184', '80185', '80186', '80187', '80188', '80189', '80190',
+              '80191', '80192', '80193', '80194', '80195', '80196', '80197', '80198',
+              '171070'
+            ]);
+            const NEW_SUBCAT = 'قطع ١,٥ بولى الاهرام';
+            const nowStr = new Date().toISOString();
+            let fixedCount = 0;
+            for (const pid of POLY_1_5_IDS) {
+              const p = await databaseManager.get('products', pid);
+              if (p) {
+                p.mainCategoryId = 'الاهرام بولي+صرف';
+                p.subCategoryId = NEW_SUBCAT;
+                delete p.category;
+                p.sync_status = 'synced';
+                p.updated_at = nowStr;
+                await databaseManager.update('products', p);
+                fixedCount++;
+              }
+            }
+            const freshProds = await databaseManager.getAll('products');
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('products', JSON.stringify(freshProds));
+            window.__bypass_sync_proxy__ = false;
+            console.log(`[DataLoader] Patch v49: Successfully separated ${fixedCount} Poly 1.5 products.`);
+            localStorage.setItem('patch_ahram_1_5_poly_v49', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v49 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
+        // PATCH v50: Inject missing Ahram Poly subcategories into categories store & localStorage
+        const patchV50Done = localStorage.getItem('patch_ahram_poly_cats_v50') === 'true';
+        if (!patchV50Done) {
+          try {
+            console.log('[DataLoader] Patch v50: Injecting missing Ahram Poly subcategories...');
+            setLoadingMessage('جاري إضافة المجاميع الفرعية لقطع بولي الأهرام...');
+            const MISSING_CATS = [
+              { id: 'قطع ١بوصه بولى الاهرام', name: 'قطع ١بوصه بولى الاهرام', parentId: 'الاهرام بولي+صرف' },
+              { id: 'قطع ١,٥ بولى الاهرام', name: 'قطع ١,٥ بولى الاهرام', parentId: 'الاهرام بولي+صرف' },
+              { id: 'بولى ٢ و ٣ بوصه الاهرام', name: 'بولى ٢ و ٣ بوصه الاهرام', parentId: 'الاهرام بولي+صرف' }
+            ];
+            
+            for (const cat of MISSING_CATS) {
+              await databaseManager.update('categories', cat);
+            }
+            
+            const currentLSCats = JSON.parse(localStorage.getItem('productCategories') || '[]');
+            const existingCatIds = new Set(currentLSCats.map(c => c.id || c.name));
+            const toAdd = MISSING_CATS.filter(c => !existingCatIds.has(c.id));
+            if (toAdd.length > 0) {
+              window.__bypass_sync_proxy__ = true;
+              localStorage.setItem('productCategories', JSON.stringify([...currentLSCats, ...toAdd]));
+              window.__bypass_sync_proxy__ = false;
+            }
+            console.log(`[DataLoader] Patch v50: Successfully added ${toAdd.length} missing Ahram Poly categories.`);
+            localStorage.setItem('patch_ahram_poly_cats_v50', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v50 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
+        // PATCH v51: Delete Kisel categories from Al-Ahram group
+        const patchV51Done = localStorage.getItem('patch_remove_kisel_ahram_v51') === 'true';
+        if (!patchV51Done) {
+          try {
+            console.log('[DataLoader] Patch v51: Removing Kisel categories from Al-Ahram group...');
+            setLoadingMessage('جاري حذف مجاميع كيسيل من الأهرام...');
+            const KISEL_AHRAM_IDS = new Set([
+              'قطع ٥٠ ملى كيسل الاهرام',
+              'قطع ٧٥ ملى كيسل الاهرام',
+              'قطع ١١٠ ملى كيسل الاهرام',
+              'قطع ١٦٠ ملى كيسل الاهرام'
+            ]);
+            
+            const tx = databaseManager.db.transaction(['categories'], 'readwrite');
+            const store = tx.objectStore('categories');
+            for (const catId of KISEL_AHRAM_IDS) {
+              try { store.delete(catId); } catch (_) {}
+            }
+            
+            const currentLSCats = JSON.parse(localStorage.getItem('productCategories') || '[]');
+            const cleanedLSCats = currentLSCats.filter(c => !KISEL_AHRAM_IDS.has(c.id || c.name));
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('productCategories', JSON.stringify(cleanedLSCats));
+            window.__bypass_sync_proxy__ = false;
+            
+            console.log('[DataLoader] Patch v51: Successfully removed Kisel Ahram categories.');
+            localStorage.setItem('patch_remove_kisel_ahram_v51', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v51 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
+        // PATCH v52: Assign Poly 2 & 3 Ahram products (80199-80211) to 'بولى ٢ و ٣ بوصه الاهرام'
+        const patchV52Done = localStorage.getItem('patch_ahram_poly2and3_v52') === 'true';
+        if (!patchV52Done) {
+          try {
+            console.log('[DataLoader] Patch v52: Assigning Poly 2 & 3 products to correct subcategory...');
+            setLoadingMessage('جاري تصنيف منتجات بولي ٢ و ٣ بوصة الأهرام...');
+            const POLY_2_3_IDS = new Set([
+              '80199', '80200', '80201', '80202', '80203', '80204', '80205',
+              '80206', '80207', '80208', '80209', '80210', '80211'
+            ]);
+            const NEW_SUBCAT = 'بولى ٢ و ٣ بوصه الاهرام';
+            const nowStr = new Date().toISOString();
+            let fixedCount = 0;
+            for (const pid of POLY_2_3_IDS) {
+              const p = await databaseManager.get('products', pid);
+              if (p) {
+                p.mainCategoryId = 'الاهرام بولي+صرف';
+                p.subCategoryId = NEW_SUBCAT;
+                delete p.category;
+                p.sync_status = 'synced';
+                p.updated_at = nowStr;
+                await databaseManager.update('products', p);
+                fixedCount++;
+              }
+            }
+            const freshProds = await databaseManager.getAll('products');
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('products', JSON.stringify(freshProds));
+            window.__bypass_sync_proxy__ = false;
+            console.log(`[DataLoader] Patch v52: Successfully assigned ${fixedCount} Poly 2 & 3 products.`);
+            localStorage.setItem('patch_ahram_poly2and3_v52', 'true');
+          } catch (err) {
+            window.__bypass_sync_proxy__ = false;
+            console.error('[DataLoader] Patch v52 failed:', err);
+          }
+        }
+        // ----------------------------------------------------
+
 
         setLoadingMessage('جاري التحقق من البيانات...');
 
