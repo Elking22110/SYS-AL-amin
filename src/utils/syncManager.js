@@ -386,6 +386,9 @@ class SyncManager {
             const parsed = JSON.parse(record.image_path);
             mapped.customColor = parsed.color || '';
             mapped.supplierCode = parsed.code || '';
+            if (parsed.wp !== undefined) {
+              mapped.wholesalePrice = parsed.wp;
+            }
             mapped.imagePath = parsed.img || '';
           } catch (_) {}
         }
@@ -879,12 +882,16 @@ class SyncManager {
             delete uploadData.category;
             delete uploadData.customColor;
             delete uploadData.supplierCode;
+            delete uploadData.wholesalePrice;
+            delete uploadData.wholesale_price;
 
             let imageVal = record.imagePath || record.image_path || null;
-            if (record.hasOwnProperty('customColor') || record.hasOwnProperty('supplierCode')) {
+            if (record.hasOwnProperty('customColor') || record.hasOwnProperty('supplierCode') || record.hasOwnProperty('wholesalePrice') || record.hasOwnProperty('wholesale_price')) {
+              const wpVal = record.wholesalePrice ?? record.wholesale_price ?? uploadData.wholesalePrice ?? uploadData.wholesale_price ?? 0;
               imageVal = JSON.stringify({
                 color: record.customColor || '',
                 code: record.supplierCode || '',
+                wp: wpVal,
                 img: (typeof imageVal === 'string' && imageVal.startsWith('{')) ? (JSON.parse(imageVal).img || '') : (imageVal || '')
               });
             }
@@ -894,7 +901,6 @@ class SyncManager {
               name: uploadData.name,
               price: uploadData.price ?? 0,
               cost: record.costPrice ?? record.cost ?? uploadData.cost ?? uploadData.costPrice ?? 0,
-              wholesale_price: record.wholesalePrice ?? record.wholesale_price ?? uploadData.wholesalePrice ?? uploadData.wholesale_price ?? 0,
               stock: uploadData.stock ?? 0,
               barcode: uploadData.barcode ?? null,
               main_category_id: record.mainCategoryId || uploadData.main_category_id || null,
