@@ -3,6 +3,7 @@ import databaseManager from './database.js';
 import { publish, EVENTS } from './observerManager.js';
 import storageOptimizer from './storageOptimizer.js';
 import { trace, traceProductObject, traceProductsArray, traceSupabaseResponse, getTracedProductId } from './productTrace.js';
+import { invalidateCategoryCache } from './categoryService.js';
 
 class SyncManager {
   constructor() {
@@ -235,6 +236,10 @@ class SyncManager {
               const eventName = eventMap[table];
               if (eventName) {
                 try { publish(eventName, { type: eventType.toLowerCase(), table }); } catch (_) {}
+              }
+              // إبطال cache الـ categoryService عند أي حدث Realtime على جدول categories
+              if (table === 'categories') {
+                try { invalidateCategoryCache(); } catch (_) {}
               }
             } catch (_) {}
           }, 150);
@@ -696,8 +701,8 @@ class SyncManager {
         lastLocalUpdate = new Date(Math.max(...times)).toISOString();
       }
 
-      // الجداول المفاهيمية والكتالوجية (المنتجات تعتمد السحب التدريجي الأمني لمنع مسح المنتجات محلياً)
-      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories']);
+      // جداول السحب الكامل: كل سجل محلي متزامن (synced) غائب عن السحاب يُحذف بضمانات صارمة (منع Zombie Resurrection)
+      const FULL_PULL_TABLES = new Set(['customers', 'sales', 'shifts', 'returns', 'users', 'categories', 'products']);
       const useFullPull = FULL_PULL_TABLES.has(storeName);
 
       let cloudUpdates = [];
@@ -734,7 +739,25 @@ class SyncManager {
           }
         }
 
-        // تم تعطيل التطهير الفيزيائي التلقائي لحماية المنتجات والبيانات المحلية من أي مسح غير مقصود
+        // ═══ منع Zombie Resurrection: حذف آمن بضمانات ستة كاملة ═══
+        // يتم حذف سجل محلي فقط إذا تحققت جميع الشروط:
+        // 1. غير موجود في نتائج السحب الكامل من السحاب
+        // 2. sync_status === 'synced' (ليس pending وليس deleted)
+        // 3. السحاب أعاد بيانات حقيقية (allCloudIdsSet.size > 0) لتجنب وهم إيجابي
+        if (allCloudIdsSet.size > 0) {
+          for (const localRecord of localRecords) {
+            const localId = String(localRecord.id);
+            if (
+              !allCloudIdsSet.has(localId) &&          // 1. غائب من السحاب
+              localRecord.sync_status === 'synced' &&   // 2. متزامن بالكامل
+              !deletedIdsSet.has(localId)               // 3. لا يوجد Tombstone محلي
+            ) {
+              console.log(`🧹 [SyncManager] Zombie Prevention | Store: ${storeName} | ID: ${localId} | حذف سجل محلي synced غائب من السحاب (${allCloudIdsSet.size} سجل سحاب متحقق)`); 
+              await databaseManager.deletePhysical(storeName, localId);
+              hasChanges = true;
+            }
+          }
+        }
       } else {
         // سحب تدريجي للجداول الكبيرة (مثل المنتجات): نعتمد هامش أمان زماني ولا نعتمد على lastLocalUpdate فقط
         let lastFetchedTime = lastLocalUpdate;
@@ -833,6 +856,10 @@ class SyncManager {
             const eventName = eventMap[storeName];
             if (eventName) {
               publish(eventName, { type: 'import', storeName });
+            }
+            // إبطال cache الـ categoryService عند تحديث بيانات الأصناف لضمان تزامن جميع الشاشات
+            if (storeName === 'categories') {
+              invalidateCategoryCache();
             }
           }
         } catch (err) {

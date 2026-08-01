@@ -2637,13 +2637,13 @@ const Products = () => {
                 <div className="flex flex-wrap gap-2 mb-2">
                   {[
                     { color: '', label: 'بدون', bg: 'bg-slate-600 border-slate-500' },
-                    { color: '#111827', label: 'أسود', bg: 'bg-black border-slate-600' },
-                    { color: '#78350f', label: 'بني', bg: 'bg-amber-900 border-amber-700' },
-                    { color: '#1e3a5f', label: 'كحلي', bg: 'bg-blue-950 border-blue-800' },
-                    { color: '#14532d', label: 'أخضر', bg: 'bg-green-900 border-green-700' },
-                    { color: '#7f1d1d', label: 'أحمر', bg: 'bg-red-900 border-red-700' },
-                    { color: '#4a1d96', label: 'بنفسجي', bg: 'bg-violet-900 border-violet-700' },
-                    { color: '#713f12', label: 'برتقالي', bg: 'bg-orange-900 border-orange-700' },
+                    { color: '#1E293B', label: 'أسود', bg: 'bg-slate-800 border-slate-600' },
+                    { color: '#854D0E', label: 'بني', bg: 'bg-amber-800 border-amber-600' },
+                    { color: '#1E40AF', label: 'كحلي', bg: 'bg-blue-800 border-blue-600' },
+                    { color: '#15803D', label: 'أخضر', bg: 'bg-green-700 border-green-500' },
+                    { color: '#DC2626', label: 'أحمر', bg: 'bg-red-600 border-red-400' },
+                    { color: '#6D28D9', label: 'بنفسجي', bg: 'bg-purple-700 border-purple-500' },
+                    { color: '#F97316', label: 'برتقالي', bg: 'bg-orange-500 border-orange-400' },
                   ].map(({ color, label, bg }) => (
                     <button
                       key={color || 'none'}

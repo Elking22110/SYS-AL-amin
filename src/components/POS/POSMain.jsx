@@ -1032,9 +1032,9 @@ const POSMain = () => {
                 </tr>
               ` : ''}
               ${totalReturnedAmount > 0 ? `
-                <tr style="color: #ea580c; font-weight: 800;">
-                  <td class="label" style="color: #ea580c;">قيمة المرتجعات:</td>
-                  <td class="value" style="color: #ea580c;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
+                <tr style="color: #F97316; font-weight: 800;">
+                  <td class="label" style="color: #F97316;">قيمة المرتجعات:</td>
+                  <td class="value" style="color: #F97316;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
                 </tr>
               ` : ''}
               <tr class="total-row">

@@ -20,7 +20,7 @@ class DatabaseManager {
     this.db = null;
     const prefix = getProjectPrefix();
     this.dbName = `POS_Database_${prefix}`;
-    this.version = 6; // رُفع من 5→6 لإصلاح unique constraint على barcode
+    this.version = 7; // رُفع من 6→7 لإزالة unique constraint على email في users و customers
   }
 
   // تهيئة قاعدة البيانات
@@ -48,9 +48,9 @@ class DatabaseManager {
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
         const oldVersion = event.oldVersion;
-
-        // ترقية وإصلاح الـ unique constraints في IndexedDB
         const transaction = event.target.transaction;
+
+        // ─── v6: إصلاح unique constraint على barcode في products ───
         if (db.objectStoreNames.contains('products')) {
           const productsStore = transaction.objectStore('products');
           if (productsStore.indexNames.contains('barcode')) {
@@ -59,7 +59,29 @@ class DatabaseManager {
           productsStore.createIndex('barcode', 'barcode', { unique: false });
         }
 
-        // إنشاء جداول جديدة لو مش موجودة
+        // ─── v7: إزالة unique constraint على email في users و customers ───
+        // البريد الإلكتروني غير مستخدم كمفتاح تعريفي في هذا النظام
+        // إبقاء unique: true يسبب ConstraintError عند وجود مستخدمين بدون بريد
+        if (oldVersion < 7) {
+          if (db.objectStoreNames.contains('users')) {
+            const usersStore = transaction.objectStore('users');
+            if (usersStore.indexNames.contains('email')) {
+              usersStore.deleteIndex('email');
+              usersStore.createIndex('email', 'email', { unique: false });
+              console.log('[DB v7] ✅ users.email: تم إزالة قيد unique بأمان – لا يوجد فقدان بيانات');
+            }
+          }
+          if (db.objectStoreNames.contains('customers')) {
+            const customersStore = transaction.objectStore('customers');
+            if (customersStore.indexNames.contains('email')) {
+              customersStore.deleteIndex('email');
+              customersStore.createIndex('email', 'email', { unique: false });
+              console.log('[DB v7] ✅ customers.email: تم إزالة قيد unique بأمان – لا يوجد فقدان بيانات');
+            }
+          }
+        }
+
+        // إنشاء جداول جديدة لو مش موجودة (للتثبيت الجديد)
         this.createStores(db);
       };
     });
@@ -87,7 +109,7 @@ class DatabaseManager {
       const customersStore = db.createObjectStore('customers', { keyPath: 'id' });
       customersStore.createIndex('name', 'name', { unique: false });
       customersStore.createIndex('phone', 'phone', { unique: true });
-      customersStore.createIndex('email', 'email', { unique: true });
+      customersStore.createIndex('email', 'email', { unique: false }); // unique: false – البريد ليس مفتاح تعريفي
     }
 
     // جدول المبيعات
@@ -116,7 +138,7 @@ class DatabaseManager {
     if (!db.objectStoreNames.contains('users')) {
       const usersStore = db.createObjectStore('users', { keyPath: 'id' });
       usersStore.createIndex('username', 'username', { unique: true });
-      usersStore.createIndex('email', 'email', { unique: true });
+      usersStore.createIndex('email', 'email', { unique: false }); // unique: false – البريد غير مستخدم كمعرف
     }
 
     // جدول الإعدادات
