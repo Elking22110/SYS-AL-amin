@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DataValidator } from '../utils/dataValidation';
 import databaseManager from '../utils/database';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient';
+import syncManager from '../utils/syncManager';
+
 
 const DataLoader = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -133,53 +136,97 @@ const DataLoader = ({ children }) => {
         }
         localStorage.setItem('last_app_build_time', currentBuildTime);
 
-        // تشغيل هجرة البيانات الصحية (seeding) إذا لم تكن قد جرت
-        const migrationDone = localStorage.getItem('migration_sanitary_alamin_v20') === 'true';
+        // ─── CLOUD-FIRST CANONICAL HYDRATION GUARD ───
+        // إذا كان التخزين المحلي فارغاً أو جديداً، الأولوية الصارمة هي للسحب من سحابة Supabase (المصدر النهائي للحقيقة)
+        // يمنع نهائياً إعادة استيراد seed القديم عند مسح local-storage أو IndexedDB
+        const existingProdsOnInit = await databaseManager.getAll('products');
+        const migrationDone = localStorage.getItem('migration_sanitary_alamin_v20') === 'true' || (existingProdsOnInit && existingProdsOnInit.length > 0);
         if (!migrationDone) {
-          setLoadingMessage('جاري استيراد قاعدة البيانات لأول مرة (قد يستغرق ذلك ثوانٍ)...');
-          console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لElking من DataLoader...');
-          const response = await fetch('/products_seed.json');
-          if (!response.ok) {
-            throw new Error('فشل تحميل ملف البيانات الأولية للمنتجات');
-          }
-          const seedData = await response.json();
-          const categories = seedData.categories || [];
-          const products = seedData.products || [];
+          let pulledFromCloud = false;
+          if (isKeysConfigured && supabase) {
+            try {
+              setLoadingMessage('جاري سحب كتالوج المنتجات والتصنيفات القانوني من السحاب...');
+              console.log('[DataLoader] Cloud-First Hydration: Pulling canonical products & categories from Supabase...');
+              const { data: cloudProds, error: pErr } = await supabase.from('products').select('*');
+              const { data: cloudCats, error: cErr } = await supabase.from('categories').select('*');
 
-          // مسح مفاتيح التهجير القديمة فقط — لا نمسح أبداً sales أو customers أو shifts لحماية البيانات التشغيلية
-          const keysToClear = [
-            'products', 'productCategories',
-            'reseed_done_msgroupplast_v3', 'reseed_done_msgroupplast_v2',
-            'reseed_done_msgroupplast_v1', 'pos-settings', 
-            'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2',
-            'migration_sanitary_alamin_v3', 'migration_sanitary_alamin_v4',
-            'migration_sanitary_alamin_v5', 'migration_sanitary_alamin_v6', 'migration_sanitary_alamin_v7', 'migration_sanitary_alamin_v8', 'migration_sanitary_alamin_v9', 'migration_sanitary_alamin_v10', 'migration_sanitary_alamin_v11', 'migration_sanitary_alamin_v12', 'migration_sanitary_alamin_v13', 'migration_sanitary_alamin_v14', 'migration_sanitary_alamin_v15', 'migration_sanitary_alamin_v16', 'migration_sanitary_alamin_v17',
-            'categories_hierarchical_migration_v6', 'categories_hierarchical_migration_v7'
-          ];
-          keysToClear.forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+              if (!pErr && cloudProds && cloudProds.length > 0) {
+                const mappedProds = cloudProds.map(p => {
+                  const local = syncManager.mapCloudToLocal('products', p);
+                  local.sync_status = 'synced';
+                  return local;
+                });
+                const mappedCats = (cloudCats || []).map(c => {
+                  const local = syncManager.mapCloudToLocal('categories', c);
+                  local.sync_status = 'synced';
+                  return local;
+                });
 
-          // مسح IndexedDB القديمة وإعادة تهيئتها بالبيانات الكاملة
-          await databaseManager.importData({
-            products: products,
-            categories: categories,
-            users: [
-              {
-                id: 'admin',
-                username: 'admin',
-                email: 'admin@alaminstore.com',
-                role: 'admin',
-                name: 'المدير العام'
+                for (const p of mappedProds) {
+                  await databaseManager.update('products', p);
+                }
+                for (const c of mappedCats) {
+                  await databaseManager.update('categories', c);
+                }
+
+                window.__bypass_sync_proxy__ = true;
+                localStorage.setItem('products', JSON.stringify(mappedProds));
+                localStorage.setItem('productCategories', JSON.stringify(mappedCats));
+                window.__bypass_sync_proxy__ = false;
+
+                pulledFromCloud = true;
+                console.log(`[DataLoader] Cloud-First Hydration SUCCESS: loaded ${mappedProds.length} products & ${mappedCats.length} categories.`);
               }
-            ]
-          });
-          console.log('تم استيراد البيانات إلى IndexedDB بنجاح');
+            } catch (err) {
+              console.warn('[DataLoader] Cloud-First Hydration failed, fallback to local seed:', err);
+            }
+          }
 
-          window.__bypass_sync_proxy__ = true;
-          localStorage.setItem('productCategories', JSON.stringify(categories));
-          localStorage.setItem('products', JSON.stringify(products));
-          window.__bypass_sync_proxy__ = false;
-          localStorage.setItem('migration_sanitary_alamin_v20', 'true');
+          if (!pulledFromCloud) {
+            setLoadingMessage('جاري استيراد قاعدة البيانات لأول مرة (قد يستغرق ذلك ثوانٍ)...');
+            console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لElking من DataLoader...');
+            const response = await fetch('/products_seed.json');
+            if (!response.ok) {
+              throw new Error('فشل تحميل ملف البيانات الأولية للمنتجات');
+            }
+            const seedData = await response.json();
+            const categories = seedData.categories || [];
+            const products = seedData.products || [];
+
+            const keysToClear = [
+              'products', 'productCategories',
+              'reseed_done_msgroupplast_v3', 'reseed_done_msgroupplast_v2',
+              'reseed_done_msgroupplast_v1', 'pos-settings', 
+              'migration_sanitary_alamin_v1', 'migration_sanitary_alamin_v2',
+              'migration_sanitary_alamin_v3', 'migration_sanitary_alamin_v4',
+              'migration_sanitary_alamin_v5', 'migration_sanitary_alamin_v6', 'migration_sanitary_alamin_v7', 'migration_sanitary_alamin_v8', 'migration_sanitary_alamin_v9', 'migration_sanitary_alamin_v10', 'migration_sanitary_alamin_v11', 'migration_sanitary_alamin_v12', 'migration_sanitary_alamin_v13', 'migration_sanitary_alamin_v14', 'migration_sanitary_alamin_v15', 'migration_sanitary_alamin_v16', 'migration_sanitary_alamin_v17',
+              'categories_hierarchical_migration_v6', 'categories_hierarchical_migration_v7'
+            ];
+            keysToClear.forEach(k => { try { localStorage.removeItem(k); } catch (_) {} });
+
+            await databaseManager.importData({
+              products: products,
+              categories: categories,
+              users: [
+                {
+                  id: 'admin',
+                  username: 'admin',
+                  email: 'admin@alaminstore.com',
+                  role: 'admin',
+                  name: 'المدير العام'
+                }
+              ]
+            });
+            console.log('تم استيراد البيانات إلى IndexedDB بنجاح');
+
+            window.__bypass_sync_proxy__ = true;
+            localStorage.setItem('productCategories', JSON.stringify(categories));
+            localStorage.setItem('products', JSON.stringify(products));
+            window.__bypass_sync_proxy__ = false;
+          }
         }
+        localStorage.setItem('migration_sanitary_alamin_v20', 'true');
+
 
         // ----------------------------------------------------
         // PATCH: Inject new subcategory products for "قطع بلاكور+محابس+شيك بلف"
@@ -553,40 +600,27 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         try {
           const currentProducts = await databaseManager.getAll('products');
-          if (currentProducts.length < 2746) {
-            console.log(`[DataLoader] Missing products detected (${currentProducts.length} < 2746). Auto-importing gaps...`);
-            setLoadingMessage('جاري استيراد المنتجات المفقودة...');
-            const response = await fetch('/products_seed.json');
-            if (response.ok) {
-              const seedData = await response.json();
-              const seedProducts = seedData.products || [];
-              const existingIds = new Set(currentProducts.map(p => p.id));
-              
-              const toAdd = seedProducts.filter(p => !existingIds.has(p.id));
-              if (toAdd.length > 0) {
-                console.log(`[DataLoader] Merging ${toAdd.length} missing products...`);
-                for (const p of toAdd) {
-                  const cleanP = { ...p };
-                  if (cleanP.hasOwnProperty('category')) {
-                    delete cleanP.category;
-                  }
-                  cleanP.sync_status = 'synced';
-                  cleanP.updated_at = new Date().toISOString();
-                  await databaseManager.update('products', cleanP);
+          if (currentProducts.length === 0) {
+            console.log('[DataLoader] Local cache empty. Pulling canonical product catalog from Supabase Cloud...');
+            setLoadingMessage('جاري سحب كتالوج المنتجات من السحاب...');
+            try {
+              const { data: cloudProds, error: pullErr } = await supabase.from('products').select('*');
+              if (!pullErr && cloudProds && cloudProds.length > 0) {
+                console.log(`[DataLoader] Hydrated ${cloudProds.length} canonical products from Supabase Cloud.`);
+                for (const p of cloudProds) {
+                  const local = syncManager.mapCloudToLocal('products', p);
+                  local.sync_status = 'synced';
+                  await databaseManager.update('products', local);
                 }
-                
-                // Also update localStorage products
-                const currentLS = JSON.parse(localStorage.getItem('products') || '[]');
-                const currentLSIds = new Set(currentLS.map(p => p.id));
-                const updatedLS = [...currentLS, ...toAdd.filter(p => !currentLSIds.has(p.id))];
-                localStorage.setItem('products', JSON.stringify(updatedLS));
-                console.log(`[DataLoader] Successfully merged ${toAdd.length} missing products.`);
               }
+            } catch (cloudErr) {
+              console.warn('[DataLoader] Cloud pull fallback failed:', cloudErr);
             }
           }
         } catch (err) {
-          console.error('[DataLoader] Failed to self-heal missing products:', err);
+          console.error('[DataLoader] Failed cache check:', err);
         }
+
         // ----------------------------------------------------
 
         // ----------------------------------------------------

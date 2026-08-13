@@ -23,6 +23,7 @@ import databaseManager from '../utils/database';
 import syncManager from '../utils/syncManager.js';
 import { publish, subscribe, EVENTS } from '../utils/observerManager';
 import safeMath from '../utils/safeMath.js';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
 const Suppliers = () => {
   const navigate = useNavigate();
@@ -153,6 +154,7 @@ const Suppliers = () => {
 
   const handleAddSupplier = async () => {
     if (newSupplier.name && newSupplier.phone) {
+      const nowIso = new Date().toISOString();
       const supplier = {
         id: String(Date.now()),
         ...newSupplier,
@@ -161,19 +163,39 @@ const Suppliers = () => {
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
         status: 'جديد',
-        updated_at: new Date().toISOString()
+        sync_status: 'pending',
+        _isNewLocally: true,
+        created_at: nowIso,
+        updated_at: nowIso
       };
       const updatedSuppliers = [...suppliers, supplier];
       setSuppliers(updatedSuppliers);
 
-      // 1. التحديث الصريح لـ IndexedDB عبر syncManager
-      await syncManager.markPending('suppliers', supplier).catch(err => console.error('خطأ تحديث المورد في IDB:', err));
+      // 1. التحديث الفوري في IndexedDB وحفظ LocalStorage
+      await databaseManager.update('suppliers', supplier).catch(err => console.error('خطأ تحديث المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
-      // 2. المزامنة الفورية للسحابة
+      // 2. الإدراج المباشر في سحابة Supabase
+      if (isKeysConfigured && supabase) {
+        try {
+          const { error: supErr } = await supabase.from('suppliers').upsert({
+            id: supplier.id,
+            value: supplier,
+            updated_at: nowIso
+          });
+          if (!supErr) {
+            supplier.sync_status = 'synced';
+            delete supplier._isNewLocally;
+            await databaseManager.update('suppliers', supplier);
+          }
+        } catch (err) {
+          console.warn('⚠️ Direct cloud supplier insert warning:', err);
+        }
+      }
+
+      // 3. المزامنة الفورية للسحابة
       await syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة المورد خلفياً:', err));
 
-      // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'create',
         supplier: supplier,
@@ -203,23 +225,41 @@ const Suppliers = () => {
 
   const handleUpdateSupplier = async () => {
     if (editingSupplier && newSupplier.name && newSupplier.phone) {
+      const nowIso = new Date().toISOString();
       const updatedSupplier = {
         ...editingSupplier,
         ...newSupplier,
         id: String(editingSupplier.id),
-        updated_at: new Date().toISOString()
+        sync_status: 'pending',
+        updated_at: nowIso
       };
       const updatedSuppliers = suppliers.map(c => String(c.id) === String(editingSupplier.id) ? updatedSupplier : c);
       setSuppliers(updatedSuppliers);
 
-      // 1. التحديث الصريح لـ IndexedDB عبر syncManager
-      await syncManager.markPending('suppliers', updatedSupplier).catch(err => console.error('خطأ تعديل المورد في IDB:', err));
+      // 1. التحديث الفوري في IndexedDB وحفظ LocalStorage
+      await databaseManager.update('suppliers', updatedSupplier).catch(err => console.error('خطأ تعديل المورد في IDB:', err));
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
-      // 2. المزامنة الفورية للسحابة
+      // 2. التحديث المباشر في سحابة Supabase
+      if (isKeysConfigured && supabase) {
+        try {
+          const { error: supErr } = await supabase.from('suppliers').upsert({
+            id: updatedSupplier.id,
+            value: updatedSupplier,
+            updated_at: nowIso
+          });
+          if (!supErr) {
+            updatedSupplier.sync_status = 'synced';
+            await databaseManager.update('suppliers', updatedSupplier);
+          }
+        } catch (err) {
+          console.warn('⚠️ Direct cloud supplier update warning:', err);
+        }
+      }
+
+      // 3. المزامنة الفورية للسحابة
       await syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة تعديل المورد خلفياً:', err));
 
-      // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'update',
         supplier: updatedSupplier,
@@ -239,18 +279,28 @@ const Suppliers = () => {
 
   const handleDeleteSupplier = async (id) => {
     const targetIdStr = String(id);
+    const nowIso = new Date().toISOString();
     if (window.confirm('هل أنت متأكد من حذف هذا المورد؟')) {
       const updatedSuppliers = suppliers.filter(c => String(c.id) !== targetIdStr);
       setSuppliers(updatedSuppliers);
 
-      // 1. الحذف الصريح من IndexedDB
+      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB
+      syncManager.addDeletedTombstone('suppliers', targetIdStr, nowIso);
       await databaseManager.delete('suppliers', targetIdStr);
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
-      // 2. المزامنة الفورية للسحابة إرسال الحذف
+      // 2. الحذف المباشر من Supabase Cloud
+      if (isKeysConfigured && supabase) {
+        try {
+          await supabase.from('suppliers').delete().eq('id', targetIdStr);
+          await databaseManager.deletePhysical('suppliers', targetIdStr);
+        } catch (cloudErr) {
+          console.warn('⚠️ Direct cloud supplier delete warning:', cloudErr);
+        }
+      }
+
       syncManager.syncStore('suppliers').catch(err => console.warn('مزامنة حذف المورد خلفياً:', err));
 
-      // نشر حدث تغيير الموردين
       publish(EVENTS.SUPPLIERS_CHANGED, {
         type: 'delete',
         supplierId: targetIdStr,

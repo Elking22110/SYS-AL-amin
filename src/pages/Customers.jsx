@@ -28,6 +28,7 @@ import databaseManager from '../utils/database';
 import syncManager from '../utils/syncManager.js';
 import safeMath from '../utils/safeMath.js';
 import thermalPrinter from '../utils/thermalPrinter.js';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
 const Customers = () => {
   const navigate = useNavigate();
@@ -115,6 +116,7 @@ const Customers = () => {
 
   const handleAddCustomer = async () => {
     if (newCustomer.name && newCustomer.phone) {
+      const nowIso = new Date().toISOString();
       const customer = {
         id: String(Date.now()),
         ...newCustomer,
@@ -123,19 +125,44 @@ const Customers = () => {
         lastVisit: getCurrentDate().split('T')[0],
         joinDate: getCurrentDate().split('T')[0],
         status: 'جديد',
-        updated_at: new Date().toISOString()
+        sync_status: 'pending',
+        _isNewLocally: true,
+        created_at: nowIso,
+        updated_at: nowIso
       };
+
+      // 1. التحديث الفوري في IndexedDB لحماية البيانات من الضياع
+      await databaseManager.update('customers', customer).catch(err => console.error('خطأ إدراج عميل في IDB:', err));
       const updatedCustomers = [...customers, customer];
       setCustomers(updatedCustomers);
-
-      // 1. التحديث الصريح لـ IndexedDB من خلال syncManager
-      await syncManager.markPending('customers', customer).catch(err => console.error('خطأ إدراج عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-      // 2. المزامنة الفورية للسحابة
+      // 2. الإدراج الصريح والمباشر في سحابة Supabase
+      if (isKeysConfigured && supabase) {
+        try {
+          const { error: custErr } = await supabase.from('customers').insert({
+            id: customer.id,
+            name: customer.name,
+            phone: customer.phone,
+            email: customer.email || null,
+            address: customer.address || null,
+            type: customer.type || 'عميل عادي',
+            debt: customer.debt || 0,
+            updated_at: nowIso
+          });
+          if (!custErr) {
+            customer.sync_status = 'synced';
+            delete customer._isNewLocally;
+            await databaseManager.update('customers', customer);
+          }
+        } catch (err) {
+          console.warn('⚠️ Direct cloud customer insert warning:', err);
+        }
+      }
+
+      // 3. المزامنة الفورية للسحابة
       await syncManager.syncStore('customers').catch(err => console.warn('مزامنة إضافة عميل خلفياً:', err));
 
-      // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {
         type: 'create',
         customer: customer,
@@ -169,23 +196,46 @@ const Customers = () => {
 
   const handleUpdateCustomer = async () => {
     if (editingCustomer && newCustomer.name && newCustomer.phone) {
+      const nowIso = new Date().toISOString();
       const updatedCustomer = {
         ...editingCustomer,
         ...newCustomer,
         id: String(editingCustomer.id),
-        updated_at: new Date().toISOString()
+        sync_status: 'pending',
+        updated_at: nowIso
       };
+
+      // 1. التحديث الفوري في IndexedDB
+      await databaseManager.update('customers', updatedCustomer).catch(err => console.error('خطأ تعديل عميل في IDB:', err));
       const updatedCustomers = customers.map(c => String(c.id) === String(editingCustomer.id) ? updatedCustomer : c);
       setCustomers(updatedCustomers);
-
-      // 1. التحديث الصريح لـ IndexedDB من خلال syncManager
-      await syncManager.markPending('customers', updatedCustomer).catch(err => console.error('خطأ تعديل عميل في IDB:', err));
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-      // 2. المزامنة الفورية للسحابة
+      // 2. التحديث المباشر في Supabase Cloud
+      if (isKeysConfigured && supabase) {
+        try {
+          const { error: custErr } = await supabase.from('customers').upsert({
+            id: updatedCustomer.id,
+            name: updatedCustomer.name,
+            phone: updatedCustomer.phone,
+            email: updatedCustomer.email || null,
+            address: updatedCustomer.address || null,
+            type: updatedCustomer.type || 'عميل عادي',
+            debt: updatedCustomer.debt || 0,
+            updated_at: nowIso
+          });
+          if (!custErr) {
+            updatedCustomer.sync_status = 'synced';
+            await databaseManager.update('customers', updatedCustomer);
+          }
+        } catch (err) {
+          console.warn('⚠️ Direct cloud customer update warning:', err);
+        }
+      }
+
+      // 3. المزامنة الفورية للسحابة
       await syncManager.syncStore('customers').catch(err => console.warn('مزامنة تعديل عميل خلفياً:', err));
 
-      // نشر حدث تغيير العملاء
       publish(EVENTS.CUSTOMERS_CHANGED, {
         type: 'update',
         customer: updatedCustomer,
@@ -225,7 +275,6 @@ const Customers = () => {
       setCustomers(updatedCustomers);
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-      // تسجيل الدفعة في الوردية النشطة لضمان دقة الحسابات
       try {
         const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
         if (activeShift && activeShift.status === 'active') {
@@ -233,7 +282,7 @@ const Customers = () => {
             id: 'DP-' + Date.now(),
             isDebtPayment: true,
             total: amount,
-            paymentMethod: 'cash', // الافتراضي نقدي من شاشة العملاء
+            paymentMethod: 'cash',
             timestamp: new Date().toISOString(),
             shiftId: activeShift.id,
             customer: settlingCustomer
@@ -260,6 +309,7 @@ const Customers = () => {
 
   const handleDeleteCustomer = async (id) => {
     const targetIdStr = String(id);
+    const nowIso = new Date().toISOString();
     if (window.confirm('هل أنت متأكد من حذف هذا العميل؟ سيؤدي ذلك أيضاً إلى حذف جميع فواتيره ومرتجعاه المرتبطة به لمنع أي تداخل.')) {
       const customerToDelete = customers.find(c => String(c.id) === targetIdStr);
       if (!customerToDelete) return;
@@ -268,14 +318,24 @@ const Customers = () => {
       const customerPhoneClean = cleanPhone(customerToDelete.phone);
       const currentCustId = customerToDelete.id;
 
-      // 1. حذف العميل صراحة من IndexedDB وتحديث حالة المزامنة لـ deleted
+      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه فورياً من IndexedDB
+      syncManager.addDeletedTombstone('customers', targetIdStr, nowIso);
       await databaseManager.delete('customers', targetIdStr);
 
       const updatedCustomers = customers.filter(c => String(c.id) !== targetIdStr);
       setCustomers(updatedCustomers);
       localStorage.setItem('customers', JSON.stringify(updatedCustomers));
 
-      // المزامنة الفورية مع السحابة إرسال حذف العميل فورياً
+      // 2. الحذف المباشر من سحابة Supabase
+      if (isKeysConfigured && supabase) {
+        try {
+          await supabase.from('customers').delete().eq('id', targetIdStr);
+          await databaseManager.deletePhysical('customers', targetIdStr);
+        } catch (cloudErr) {
+          console.warn('⚠️ Direct cloud customer delete warning:', cloudErr);
+        }
+      }
+
       syncManager.syncStore('customers').catch(err => console.warn('مزامنة حذف العميل خلفياً:', err));
 
       // 2. تصفية وحذف فواتير العميل من المبيعات النشطة

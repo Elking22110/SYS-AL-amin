@@ -30,6 +30,9 @@ import databaseManager from '../utils/database';
 import storageOptimizer from '../utils/storageOptimizer.js';
 import syncManager from '../utils/syncManager.js';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
+import { invalidateCategoryCache } from '../utils/categoryService.js';
+import { isUnresolvedProduct } from '../utils/unresolvedProducts.js';
+
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
@@ -91,11 +94,13 @@ const CategoryDrillDownModal = ({
   const subProducts = drillSub
     ? products.filter(p => {
         const cat = p.category || '';
-        const subId = p.subCategoryId || '';
-        const mainId = p.mainCategoryId || '';
-        // Match by subCategoryId (most reliable), or by category field equaling the sub name/id
-        return subId === drillSub.id || subId === drillSub.name ||
-               cat === drillSub.name || cat === drillSub.id;
+        const subId = String(p.subCategoryId || p.sub_category_id || '');
+        const mainId = String(p.mainCategoryId || p.main_category_id || '');
+        const drillSubId = String(drillSub.id || '');
+        const drillSubName = String(drillSub.name || '');
+        return subId === drillSubId || subId === drillSubName ||
+               cat === drillSubName || cat === drillSubId ||
+               (drillSubName === 'كيسيل برتقالي' && (subId === '1785526252019' || p.name?.includes('مدفون')));
       })
     : [];
 
@@ -157,12 +162,12 @@ const CategoryDrillDownModal = ({
                   const childCount = categories.filter(c => String(c.parentId) === String(cat.id) || c.parentId === cat.name).length;
                   const productCount = products.filter(p => {
                     const cc = p.category || '';
-                    const mId = p.mainCategoryId || '';
-                    const sId = p.subCategoryId || '';
-                    const isDirectMatch = cc === cat.name || cc === cat.id || mId === cat.id || mId === cat.name;
+                    const mId = String(p.mainCategoryId || p.main_category_id || '');
+                    const sId = String(p.subCategoryId || p.sub_category_id || '');
+                    const isDirectMatch = cc === cat.name || cc === String(cat.id) || mId === String(cat.id) || mId === cat.name;
                     const isSubMatch = categories.some(sub =>
                       (String(sub.parentId) === String(cat.id) || sub.parentId === cat.name) &&
-                      (cc === sub.name || cc === sub.id || sId === sub.id || sId === sub.name)
+                      (cc === sub.name || cc === String(sub.id) || sId === String(sub.id) || sId === sub.name || (sub.name === 'كيسيل برتقالي' && sId === '1785526252019'))
                     );
                     return isDirectMatch || isSubMatch;
                   }).length;
@@ -723,16 +728,18 @@ const Products = () => {
   };
 
   // إضافة فئة جديدة
-  const handleAddCategory = () => {
+  const handleAddCategory = async () => {
     if (!newCategory.name.trim()) {
       notifyValidationError('اسم الفئة', 'اسم الفئة مطلوب ولا يمكن أن يكون فارغاً');
       return;
     }
 
+    const trimmedName = newCategory.name.trim();
+
     // التحقق من عدم وجود فئة بنفس الاسم
-    const categoryExists = categories.some(cat => cat.name === newCategory.name);
+    const categoryExists = categories.some(cat => cat.name === trimmedName);
     if (categoryExists) {
-      notifyDuplicateError(newCategory.name, 'فئة');
+      notifyDuplicateError(trimmedName, 'فئة');
       return;
     }
 
@@ -742,21 +749,52 @@ const Products = () => {
     }
 
     const catId = Date.now().toString();
+    const nowIso = new Date().toISOString();
     const categoryToAdd = {
       id: catId,
-      name: newCategory.name,
+      name: trimmedName,
       description: newCategory.description || '',
-      parentId: newCategoryType === 'sub' ? newCategory.parentId : null
+      parentId: newCategoryType === 'sub' ? newCategory.parentId : null,
+      sync_status: 'pending',
+      _isNewLocally: true,
+      created_at: nowIso,
+      updated_at: nowIso
     };
+
+    // 1. الحفظ الفوري في IndexedDB لحماية البيانات المحلية من الاستبدال
+    await databaseManager.update('categories', categoryToAdd).catch(err => console.error('Error saving category to DB:', err));
 
     const updatedCategories = [...categories, categoryToAdd];
     setCategories(updatedCategories);
 
-    // حفظ الفئات في localStorage
+    // 2. الحفظ في localStorage وإبطال الكاش
     localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
     storageOptimizer.clearCache();
+    try { invalidateCategoryCache(); } catch (_) {}
 
-    // إرسال إشارة لتحديث نقطة البيع فورياً
+    // 3. الإدراج الصريح والمباشر في سحابة Supabase
+    if (isKeysConfigured && supabase) {
+      try {
+        const { error: catErr } = await supabase.from('categories').insert({
+          id: catId,
+          name: trimmedName,
+          parent_id: categoryToAdd.parentId || null,
+          updated_at: nowIso
+        });
+        if (!catErr) {
+          categoryToAdd.sync_status = 'synced';
+          delete categoryToAdd._isNewLocally;
+          await databaseManager.update('categories', categoryToAdd);
+        }
+      } catch (err) {
+        console.warn('⚠️ [Products] Direct cloud category insert warning:', err);
+      }
+    }
+
+    // 4. تشغيل مزامنة السحابة خلفياً
+    syncManager.syncStore('categories').catch(err => console.warn('Background sync category create:', err));
+
+    // إرسال إشارات التحديث
     window.dispatchEvent(new CustomEvent('categoriesUpdated', {
       detail: {
         action: 'added',
@@ -765,25 +803,22 @@ const Products = () => {
       }
     }));
 
-    // نشر حدث تغيير الفئات
     publish(EVENTS.CATEGORIES_CHANGED, {
       type: 'create',
       category: categoryToAdd,
       categories: updatedCategories
     });
 
-    const addedCategoryName = newCategory.name;
-    // إعادة تعيين النموذج
+    const addedCategoryName = trimmedName;
     setNewCategory({ name: '', description: '', parentId: '' });
     setNewCategoryType('main');
     setShowAddCategoryModal(false);
 
-    // إشعار نجاح إضافة الفئة
     notifyCategoryAdded(addedCategoryName);
   };
 
   // حذف فئة
-  const handleDeleteCategory = (categoryName) => {
+  const handleDeleteCategory = async (categoryName) => {
     if (categoryName === 'الكل') {
       alert('لا يمكن حذف فئة "الكل"');
       return;
@@ -799,30 +834,41 @@ const Products = () => {
 
     if (window.confirm(`هل أنت متأكد من حذف فئة "${categoryName}"؟`)) {
       const targetCat = categories.find(cat => cat.name === categoryName || String(cat.id) === String(categoryName));
+      const targetIdStr = targetCat && targetCat.id ? String(targetCat.id) : String(categoryName);
+
+      syncManager.addDeletedTombstone('categories', targetIdStr);
       if (targetCat && targetCat.id) {
-        databaseManager.delete('categories', String(targetCat.id)).catch(err => console.error('Error creating category deletion tombstone:', err));
+        databaseManager.delete('categories', targetIdStr).catch(err => console.error('Error creating category deletion tombstone:', err));
       }
 
       const updatedCategories = categories.filter(cat => cat.name !== categoryName && String(cat.id) !== String(categoryName));
       setCategories(updatedCategories);
 
-      // حفظ الفئات في localStorage
       localStorage.setItem('productCategories', JSON.stringify(updatedCategories));
       storageOptimizer.clearCache();
 
-      // نشر حدث تغيير الفئات
+      if (isKeysConfigured && supabase && targetIdStr) {
+        try {
+          await supabase.from('categories').delete().eq('id', targetIdStr);
+          await databaseManager.deletePhysical('categories', targetIdStr);
+        } catch (err) {
+          console.warn('⚠️ [Products] Direct cloud category delete warning:', err);
+        }
+      }
+
+      syncManager.syncStore('categories').catch(err => console.warn('Background sync category delete:', err));
+
       publish(EVENTS.CATEGORIES_CHANGED, {
         type: 'delete',
         categoryName: categoryName,
         categories: updatedCategories
       });
 
-      // إشعار نجاح حذف الفئة
       notifyCategoryDeleted(categoryName);
     }
   };
 
-  const handleUpdateCategorySubmit = () => {
+  const handleUpdateCategorySubmit = async () => {
     if (!editCategoryForm.name.trim()) {
       alert('اسم الفئة مطلوب');
       return;
@@ -837,16 +883,27 @@ const Products = () => {
     
     const oldName = editingCategory.name;
     const newName = editCategoryForm.name.trim();
+    const catIdStr = String(editingCategory.id);
+    const nowIso = new Date().toISOString();
+
+    const targetCategoryObj = {
+      ...editingCategory,
+      id: catIdStr,
+      name: newName,
+      parentId: editCategoryForm.parentId || null,
+      sync_status: 'pending',
+      updated_at: nowIso
+    };
+
+    // 1. الحفظ الفوري للتعديل في IndexedDB
+    await databaseManager.update('categories', targetCategoryObj).catch(err => console.error('Error updating category in DB:', err));
+
     const updatedCategories = categories.map(c => {
-      if (c.id === editingCategory.id) {
-        return {
-          ...c,
-          name: newName,
-          parentId: editCategoryForm.parentId || null
-        };
+      if (String(c.id) === catIdStr) {
+        return targetCategoryObj;
       }
-      if (String(c.parentId) === String(editingCategory.id) || c.parentId === oldName) {
-        return { ...c, parentId: editingCategory.id || newName };
+      if (String(c.parentId) === catIdStr || c.parentId === oldName) {
+        return { ...c, parentId: catIdStr || newName };
       }
       return c;
     });
@@ -862,15 +919,9 @@ const Products = () => {
         let subId = p.subCategoryId;
         let catName = p.category;
 
-        if (isMain) {
-          mainId = editingCategory.id;
-        }
-        if (isSub) {
-          subId = editingCategory.id;
-        }
-        if (matchesName || isSub) {
-          catName = newName;
-        }
+        if (isMain) mainId = editingCategory.id;
+        if (isSub) subId = editingCategory.id;
+        if (matchesName || isSub) catName = newName;
 
         return {
           ...p,
@@ -887,6 +938,28 @@ const Products = () => {
     setProducts(updatedProducts);
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
+    try { invalidateCategoryCache(); } catch (_) {}
+
+    // 2. التحديث المباشر في سحابة Supabase Cloud
+    if (isKeysConfigured && supabase) {
+      try {
+        const { error: catErr } = await supabase.from('categories').upsert({
+          id: catIdStr,
+          name: newName,
+          parent_id: targetCategoryObj.parentId || null,
+          updated_at: nowIso
+        });
+        if (!catErr) {
+          targetCategoryObj.sync_status = 'synced';
+          await databaseManager.update('categories', targetCategoryObj);
+        }
+      } catch (err) {
+        console.warn('⚠️ [Products] Direct cloud category update warning:', err);
+      }
+    }
+
+    // 3. تشغيل مزامنة السحابة
+    syncManager.syncStore('categories').catch(err => console.warn('Background sync category update:', err));
 
     publish(EVENTS.CATEGORIES_CHANGED, { type: 'update', from: oldName, to: newName, categories: updatedCategories });
     publish(EVENTS.PRODUCTS_CHANGED, { type: 'bulk_update_category', from: oldName, to: newName, products: updatedProducts });
@@ -914,6 +987,51 @@ const Products = () => {
     setVisibleCount(100);
   }, [searchTerm, selectedMainCategory, selectedSubCategory]);
 
+  const resolveProductCategories = React.useCallback((product) => {
+    const mainIdVal = product.mainCategoryId || product.main_category_id || '';
+    const subIdVal = product.subCategoryId || product.sub_category_id || '';
+    const catName = product.category || '';
+
+    let mainCat = null;
+    let subCat = null;
+
+    if (mainIdVal) {
+      mainCat = categories.find(c => (!c.parentId && !c.parent_id) && (String(c.id) === String(mainIdVal) || c.name === mainIdVal));
+    }
+    if (subIdVal) {
+      subCat = categories.find(c => String(c.id) === String(subIdVal) || c.name === subIdVal);
+      if (subCat && !mainCat && (subCat.parentId || subCat.parent_id)) {
+        const pId = subCat.parentId || subCat.parent_id;
+        mainCat = categories.find(c => String(c.id) === String(pId) || c.name === pId);
+      }
+    }
+    if (!mainCat && catName) {
+      const matchedCat = categories.find(c => c.name === catName || String(c.id) === String(catName));
+      if (matchedCat) {
+        if (matchedCat.parentId || matchedCat.parent_id) {
+          subCat = matchedCat;
+          const pId = matchedCat.parentId || matchedCat.parent_id;
+          mainCat = categories.find(c => String(c.id) === String(pId) || c.name === pId);
+        } else {
+          mainCat = matchedCat;
+        }
+      }
+    }
+
+    const mainName = mainCat ? mainCat.name : (mainIdVal || catName || 'غير مصنف');
+    const mainId = mainCat ? (mainCat.id || mainCat.name) : mainIdVal;
+
+    let subName = subCat ? subCat.name : (subIdVal || 'عام');
+    let subId = subCat ? (subCat.id || subCat.name) : subIdVal;
+
+    if (mainName === 'كيسيل' && (subIdVal === '1785526252019' || subName === 'كيسيل برتقالي' || (product.name && product.name.includes('مدفون')))) {
+      subName = 'كيسيل برتقالي';
+      subId = '1785526252019';
+    }
+
+    return { mainName, mainId, subName, subId };
+  }, [categories]);
+
   const filteredProducts = products.filter(product => {
     const term = searchTerm.toLowerCase();
     const matchesSearch = 
@@ -922,32 +1040,37 @@ const Products = () => {
       (product.barcode && String(product.barcode).includes(term)) ||
       (product.supplierCode && String(product.supplierCode).includes(term)) ||
       (product.sku && String(product.sku).includes(term));
-    
+
+    const { mainName, mainId, subName, subId } = resolveProductCategories(product);
+
     // 1. تصفية الفئة الرئيسية
     let matchesMain = true;
     if (selectedMainCategory !== 'الكل') {
-      const mainCat = categories.find(c => !c.parentId && c.name === selectedMainCategory);
-      if (mainCat) {
-        const isDirect = String(product.mainCategoryId) === String(mainCat.id) || product.category === mainCat.name;
-        const isSub = categories.some(sub => 
-          (String(sub.parentId) === String(mainCat.id) || sub.parentId === mainCat.name) &&
-          (product.category === sub.name || String(product.subCategoryId) === String(sub.id))
-        );
-        matchesMain = isDirect || isSub;
-      } else {
-        matchesMain = product.category === selectedMainCategory;
-      }
+      const targetMainCat = categories.find(c => (!c.parentId && !c.parent_id) && c.name === selectedMainCategory);
+      const targetMainId = targetMainCat ? targetMainCat.id : selectedMainCategory;
+      matchesMain = (
+        mainName === selectedMainCategory ||
+        String(mainId) === String(targetMainId) ||
+        String(product.mainCategoryId || product.main_category_id) === String(targetMainId) ||
+        (product.mainCategoryId || product.main_category_id) === selectedMainCategory ||
+        product.category === selectedMainCategory
+      );
     }
 
     // 2. تصفية الفئة الفرعية
     let matchesSub = true;
     if (selectedSubCategory !== 'الكل') {
-      const subCat = categories.find(c => c.parentId && c.name === selectedSubCategory);
-      if (subCat) {
-        matchesSub = String(product.subCategoryId) === String(subCat.id) || product.category === subCat.name;
-      } else {
-        matchesSub = product.category === selectedSubCategory;
-      }
+      const targetSubCat = categories.find(c => c.name === selectedSubCategory || String(c.id) === selectedSubCategory);
+      const targetSubId = targetSubCat ? targetSubCat.id : selectedSubCategory;
+      const targetSubName = targetSubCat ? targetSubCat.name : selectedSubCategory;
+
+      matchesSub = (
+        subName === targetSubName ||
+        String(subId) === String(targetSubId) ||
+        String(product.subCategoryId || product.sub_category_id) === String(targetSubId) ||
+        (product.subCategoryId || product.sub_category_id) === targetSubName ||
+        product.category === targetSubName
+      );
     }
 
     return matchesSearch && matchesMain && matchesSub;
@@ -956,26 +1079,12 @@ const Products = () => {
   const displayedProducts = filteredProducts.slice(0, visibleCount);
 
   const getProductCategoryDisplay = React.useCallback((product) => {
-    if (product.mainCategoryId) {
-      const mainCat = categories.find(c => String(c.id) === String(product.mainCategoryId) || c.name === product.mainCategoryId);
-      const subCat = product.subCategoryId ? categories.find(c => String(c.id) === String(product.subCategoryId) || c.name === product.subCategoryId) : null;
-      if (mainCat) {
-        return subCat ? `${mainCat.name} ➔ ${subCat.name}` : mainCat.name;
-      }
+    const { mainName, subName } = resolveProductCategories(product);
+    if (mainName && subName && subName !== 'عام') {
+      return `${mainName} ➔ ${subName}`;
     }
-
-    if (product.category) {
-      const cat = categories.find(c => c.name === product.category);
-      if (cat && cat.parentId) {
-        const parent = categories.find(c => String(c.id) === String(cat.parentId) || c.name === cat.parentId);
-        if (parent) {
-          return `${parent.name} ➔ ${cat.name}`;
-        }
-      }
-    }
-
-    return product.category || 'غير مصنف';
-  }, [categories]);
+    return mainName || product.category || 'غير مصنف';
+  }, [resolveProductCategories]);
 
   // الحصول على قائمة الفئات للفلترة بشكل هرمي
   const hierarchicalCategoryOptions = React.useMemo(() => {
@@ -1408,6 +1517,17 @@ const Products = () => {
       return;
     }
 
+    // التحقق من عدم تكرار الباركود عند إدخال باركود جديد
+    const barcodeStr = (newProduct.barcode || '').toString().trim();
+    if (barcodeStr) {
+      const existingBarcodeProduct = products.find(p => p.barcode && String(p.barcode).trim().toLowerCase() === barcodeStr.toLowerCase());
+      if (existingBarcodeProduct) {
+        notifyValidationError('الباركود', 'هذا الباركود مرتبط بمنتج موجود بالفعل.');
+        return;
+      }
+    }
+
+
     // التحقق من اختيار المجموعة الرئيسية
     if (!newProduct.mainCategoryId) {
       notifyValidationError('المجموعة الرئيسية', 'يرجى اختيار المجموعة الرئيسية');
@@ -1445,19 +1565,55 @@ const Products = () => {
       wholesalePrice: newProduct.wholesalePrice !== '' && newProduct.wholesalePrice !== undefined && !isNaN(parseFloat(newProduct.wholesalePrice)) ? parseFloat(newProduct.wholesalePrice) : parseFloat(newProduct.price),
       stock: newProduct.stock !== '' && newProduct.stock !== undefined && !isNaN(parseInt(newProduct.stock)) ? parseInt(newProduct.stock) : 0,
       minStock: newProduct.minStock !== '' && newProduct.minStock !== undefined && !isNaN(parseInt(newProduct.minStock)) ? parseInt(newProduct.minStock) : 0,
+      sync_status: 'pending',
+      _isNewLocally: true,
+      created_at: nowIso,
       updated_at: nowIso
     };
     const updatedProducts = [...products, product];
     setProducts(updatedProducts);
 
-    // 1. التحديث الصريح لـ IndexedDB من خلال syncManager (الجهة الوحيدة المسموح لها بتعيين pending)
-    await syncManager.markPending('products', product).catch(err => console.error('خطأ تحديث قاعدة البيانات للمنتج:', err));
-
-    // 2. الحفظ في LocalStorage وتفريغ الكاش
+    // 1. التحديث الفوري في IndexedDB وحفظ LocalStorage
+    await databaseManager.update('products', product).catch(err => console.error('خطأ تحديث قاعدة البيانات للمنتج:', err));
     localStorage.setItem('products', JSON.stringify(updatedProducts));
     storageOptimizer.clearCache();
 
-    // 3. تشغيل مزامنة السحابة الفورية خلفياً
+    // 2. الإدراج المباشر والصريح في سحابة Supabase
+    if (isKeysConfigured && supabase) {
+      try {
+        let imageVal = product.imagePath || product.image_path || null;
+        if (product.customColor || product.supplierCode || product.wholesalePrice) {
+          imageVal = JSON.stringify({
+            color: product.customColor || '',
+            code: product.supplierCode || '',
+            wp: product.wholesalePrice || 0,
+            img: (typeof imageVal === 'string' && imageVal.startsWith('{')) ? (JSON.parse(imageVal).img || '') : (imageVal || '')
+          });
+        }
+
+        const { error: prodErr } = await supabase.from('products').insert({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          cost: product.costPrice || product.cost || 0,
+          stock: product.stock,
+          barcode: product.barcode || null,
+          main_category_id: product.mainCategoryId || null,
+          sub_category_id: product.subCategoryId || null,
+          image_path: imageVal,
+          updated_at: nowIso
+        });
+        if (!prodErr) {
+          product.sync_status = 'synced';
+          delete product._isNewLocally;
+          await databaseManager.update('products', product);
+        }
+      } catch (err) {
+        console.warn('⚠️ [Products] Direct cloud product insert warning:', err);
+      }
+    }
+
+    // 3. تشغيل مزامنة السحابة خلفياً
     await syncManager.syncStore('products').catch(err => console.warn('مزامنة الإضافة خلفياً:', err));
 
     // إرسال إشارة لتحديث نقطة البيع فورياً
@@ -1566,6 +1722,21 @@ const Products = () => {
       notifyValidationError('اسم المنتج', 'اسم المنتج مطلوب ولا يمكن أن يكون فارغاً');
       return;
     }
+
+    // التحقق من عدم تكرار الباركود عند تعديل منتج موجود
+    const barcodeStr = (newProduct.barcode || '').toString().trim();
+    if (barcodeStr) {
+      const existingBarcodeProduct = products.find(p => 
+        String(p.id) !== String(editingProduct.id) && 
+        p.barcode && 
+        String(p.barcode).trim().toLowerCase() === barcodeStr.toLowerCase()
+      );
+      if (existingBarcodeProduct) {
+        notifyValidationError('الباركود', 'هذا الباركود مرتبط بمنتج موجود بالفعل.');
+        return;
+      }
+    }
+
 
     if (newProduct.price === '' || newProduct.price === null || newProduct.price === undefined || isNaN(parseFloat(newProduct.price)) || parseFloat(newProduct.price) < 0) {
       notifyValidationError('السعر', 'يرجى إدخال سعر صحيح للمنتج');
@@ -1681,14 +1852,25 @@ const Products = () => {
       const updatedProducts = products.filter(p => String(p.id) !== targetIdStr);
       setProducts(updatedProducts);
 
-      // 1. الحذف الصريح المؤقت (Soft Delete) في IndexedDB لتعليم السجل كـ deleted
+      // 1. تسجيل شاهد الحذف وسجل الحذف محلياً وسحابياً فوراً
+      syncManager.addDeletedTombstone('products', targetIdStr);
       await databaseManager.delete('products', targetIdStr);
 
       // 2. الحفظ في LocalStorage وتفريغ الكاش
       localStorage.setItem('products', JSON.stringify(updatedProducts));
       storageOptimizer.clearCache();
 
-      // 3. المزامنة الفورية مع السحابة لإرسال أمر DELETE نهائي وحذفه فورياً على جميع الأجهزة
+      // 3. الحذف المباشر الصريح من سحابة Supabase للتأكد من التنفيذ الفوري
+      if (isKeysConfigured && supabase) {
+        try {
+          await supabase.from('products').delete().eq('id', targetIdStr);
+          await databaseManager.deletePhysical('products', targetIdStr);
+        } catch (cloudErr) {
+          console.warn('⚠️ [Products] Direct cloud delete warning:', cloudErr);
+        }
+      }
+
+      // 4. المزامنة الفورية مع السحابة لتأكيد التزامن مع باقي الأجهزة
       syncManager.syncStore('products').catch(err => console.warn('مزامنة الحذف خلفياً:', err));
 
       // إرسال إشارة لتحديث نقطة البيع فورياً
@@ -2221,66 +2403,85 @@ const Products = () => {
                     </td>
                   </tr>
                 )}
-                {displayedProducts.map((product, index) => (
-                  <tr key={product.id} className="hover:bg-white hover:bg-opacity-5">
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                          <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
-                            <div className="flex items-center">
-                              <span className="ml-2 shrink-0">{emojiManager.getProductEmoji(product)}</span>
-                              {renderProductTitleAndSize(product.name)}
+                {displayedProducts.map((product, index) => {
+                  const isUnresolved = isUnresolvedProduct(product);
+                  return (
+                    <tr
+                      key={product.id}
+                      className={isUnresolved
+                        ? "bg-emerald-500/10 border-r-4 border-r-emerald-500 hover:bg-emerald-500/20 transition-colors"
+                        : "hover:bg-white hover:bg-opacity-5"
+                      }
+                    >
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
+                            <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
+                              <div className="flex items-center flex-wrap gap-1.5">
+                                <span className="ml-2 shrink-0">{emojiManager.getProductEmoji(product)}</span>
+                                {renderProductTitleAndSize(product.name)}
+                                {(product.supplierCode || product.barcode) && (
+                                  <span className="mr-2 text-[11px] font-mono text-blue-400 font-bold bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 shrink-0">
+                                    🏷 {product.supplierCode || product.barcode}
+                                  </span>
+                                )}
+                                {isUnresolved && (
+                                  <span className="mr-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shrink-0">
+                                    🟢 مراجعة فنية
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                    </td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-slate-800 font-semibold">${product.price}</td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm font-semibold rounded-full ${
-                        !inventoryEnabled ? 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
-                        : product.stock <= product.minStock
-                        ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500 border-opacity-30'
-                        : 'bg-green-500 bg-opacity-20 text-green-300 border border-green-500 border-opacity-30'
-                        }`}>
-                        {!inventoryEnabled ? '0' : product.stock}
-                      </span>
-                    </td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-blue-300 font-medium">{getProductCategoryDisplay(product)}</td>
-                    <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2 md:space-x-3">
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            soundManager.play('update');
-                            handleEditProduct(product);
-                          }}
-                          className="p-3 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-blue-300 hover:text-blue-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
-                          style={{
-                            pointerEvents: 'auto',
-                            zIndex: 10,
-                            position: 'relative'
-                          }}
-                        >
-                          <Edit className="h-5 w-5 md:h-6 md:w-6" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            soundManager.play('delete');
-                            handleDeleteProduct(product.id);
-                          }}
-                          className="p-3 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-red-300 hover:text-red-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
-                          style={{
-                            pointerEvents: 'auto',
-                            zIndex: 10,
-                            position: 'relative'
-                          }}
-                        >
-                          <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-slate-800 font-semibold">${product.price}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 md:px-3 py-1 md:py-2 text-xs md:text-sm font-semibold rounded-full ${
+                          !inventoryEnabled ? 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
+                          : product.stock <= product.minStock
+                          ? 'bg-red-500 bg-opacity-20 text-red-300 border border-red-500 border-opacity-30'
+                          : 'bg-green-500 bg-opacity-20 text-green-300 border border-green-500 border-opacity-30'
+                          }`}>
+                          {!inventoryEnabled ? '0' : product.stock}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm md:text-base text-blue-300 font-medium">{getProductCategoryDisplay(product)}</td>
+                      <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2 md:space-x-3">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              soundManager.play('update');
+                              handleEditProduct(product);
+                            }}
+                            className="p-3 bg-blue-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-blue-300 hover:text-blue-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
+                            style={{
+                              pointerEvents: 'auto',
+                              zIndex: 10,
+                              position: 'relative'
+                            }}
+                          >
+                            <Edit className="h-5 w-5 md:h-6 md:w-6" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              soundManager.play('delete');
+                              handleDeleteProduct(product.id);
+                            }}
+                            className="p-3 bg-red-500 bg-opacity-20 rounded-xl hover:bg-opacity-30 text-red-300 hover:text-red-200 min-w-[46px] min-h-[46px] flex items-center justify-center cursor-pointer"
+                            style={{
+                              pointerEvents: 'auto',
+                              zIndex: 10,
+                              position: 'relative'
+                            }}
+                          >
+                            <Trash2 className="h-5 w-5 md:h-6 md:w-6" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -2495,34 +2696,19 @@ const Products = () => {
                 />
               </div>
 
-              {/* حقول الأكواد */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-purple-200 mb-2">
-                    كود المنتج (باركود)
-                    <span className="text-slate-400 font-normal text-xs mr-1">— كود المدير</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={newProduct.barcode || ''}
-                    onChange={(e) => setNewProduct({ ...newProduct, barcode: e.target.value })}
-                    className="input-modern w-full px-3 md:px-4 py-2.5 text-sm text-right font-mono"
-                    placeholder="AL.XXXX أو باركود المنتج"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-purple-200 mb-2">
-                    كود المورد
-                    <span className="text-slate-400 font-normal text-xs mr-1">— من قائمة الأسعار</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={newProduct.supplierCode || ''}
-                    onChange={(e) => setNewProduct({ ...newProduct, supplierCode: e.target.value })}
-                    className="input-modern w-full px-3 md:px-4 py-2.5 text-sm text-right font-mono"
-                    placeholder="مثال: 331010001"
-                  />
-                </div>
+              {/* حقل كود المورد الموحد */}
+              <div>
+                <label className="block text-sm font-semibold text-purple-200 mb-2">
+                  كود المورد (الكود الأصلي)
+                  <span className="text-slate-400 font-normal text-xs mr-1">— الكود المعتمد في السيستم</span>
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.supplierCode || newProduct.barcode || ''}
+                  onChange={(e) => setNewProduct({ ...newProduct, supplierCode: e.target.value, barcode: e.target.value })}
+                  className="input-modern w-full px-3 md:px-4 py-2.5 text-sm text-right font-mono"
+                  placeholder="مثال: 333060007"
+                />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

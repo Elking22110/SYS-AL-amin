@@ -6,6 +6,7 @@ import databaseManager from '../utils/database';
 import syncManager from '../utils/syncManager.js';
 import safeMath from '../utils/safeMath';
 import { useNotifications } from '../components/NotificationSystem';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 
 const Expenses = () => {
     const [expenses, setExpenses] = useState([]);
@@ -96,14 +97,21 @@ const Expenses = () => {
             return;
         }
 
+        const isNew = !formData.id;
         const targetIdStr = String(formData.id || Date.now());
+        const nowIso = new Date().toISOString();
+
         const newExpense = {
             ...formData,
             amount: Number(formData.amount),
             id: targetIdStr,
-            updated_at: new Date().toISOString(),
+            updated_at: nowIso,
             sync_status: 'pending'
         };
+        if (isNew) {
+            newExpense._isNewLocally = true;
+            newExpense.created_at = nowIso;
+        }
 
         let updatedExpenses;
         if (formData.id) {
@@ -116,11 +124,29 @@ const Expenses = () => {
             notifySuccess('نجاح', 'تم تسجيل المصروف بنجاح');
         }
 
-        // 1. التحديث الصريح لـ IndexedDB عبر syncManager
-        await syncManager.markPending('expenses', newExpense).catch(err => console.error('خطأ تسجيل المصروف في IDB:', err));
+        // 1. التحديث الفوري في IndexedDB وحفظ LocalStorage
+        await databaseManager.update('expenses', newExpense).catch(err => console.error('خطأ تسجيل المصروف في IDB:', err));
         saveExpenses(updatedExpenses);
 
-        // 2. المزامنة الفورية للسحابة
+        // 2. الكتابة المباشرة في سحابة Supabase
+        if (isKeysConfigured && supabase) {
+            try {
+                const { error: expErr } = await supabase.from('expenses').upsert({
+                    id: targetIdStr,
+                    value: newExpense,
+                    updated_at: nowIso
+                });
+                if (!expErr) {
+                    newExpense.sync_status = 'synced';
+                    delete newExpense._isNewLocally;
+                    await databaseManager.update('expenses', newExpense);
+                }
+            } catch (err) {
+                console.warn('⚠️ Direct cloud expense upsert warning:', err);
+            }
+        }
+
+        // 3. المزامنة الفورية للسحابة
         await syncManager.syncStore('expenses').catch(err => console.warn('مزامنة المصروف خلفياً:', err));
 
         closeModal();
@@ -129,14 +155,25 @@ const Expenses = () => {
     const handleDelete = async (id) => {
         soundManager.play('delete');
         const targetIdStr = String(id);
+        const nowIso = new Date().toISOString();
         if (window.confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
             const updatedExpenses = expenses.filter(exp => String(exp.id) !== targetIdStr);
             
-            // 1. الحذف الصريح من IndexedDB
+            // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB
+            syncManager.addDeletedTombstone('expenses', targetIdStr, nowIso);
             await databaseManager.delete('expenses', targetIdStr);
             saveExpenses(updatedExpenses);
 
-            // 2. المزامنة الفورية للسحابة إرسال الحذف
+            // 2. الحذف المباشر من Supabase Cloud
+            if (isKeysConfigured && supabase) {
+                try {
+                    await supabase.from('expenses').delete().eq('id', targetIdStr);
+                    await databaseManager.deletePhysical('expenses', targetIdStr);
+                } catch (cloudErr) {
+                    console.warn('⚠️ Direct cloud expense delete warning:', cloudErr);
+                }
+            }
+
             syncManager.syncStore('expenses').catch(err => console.warn('مزامنة حذف المصروف خلفياً:', err));
 
             notifySuccess('نجاح', 'تم حذف المصروف بنجاح');

@@ -4,7 +4,12 @@ import storageOptimizer from '../../utils/storageOptimizer.js';
 import errorHandler from '../../utils/errorHandler.js';
 import searchOptimizer from '../../utils/searchOptimizer.js';
 import soundManager from '../../utils/soundManager.js';
-import { sortSubcategories, parseInchSize, getBrandRank } from '../../utils/subcategorySorter.js';
+import { sortSubcategories, parseInchSize, getBrandRank, sortProductsByHistoricalOrder } from '../../utils/subcategorySorter.js';
+import { isUnresolvedProduct } from '../../utils/unresolvedProducts.js';
+
+
+
+
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
 const renderProductTitleAndSize = (name) => {
@@ -729,7 +734,12 @@ const ProductGrid = ({
         if (sizeA !== sizeB) return sizeA - sizeB;
         return (a.name || '').localeCompare(b.name || '', 'ar');
       });
+    } else if (selectedMainGroup && (selectedMainGroup === 'اسمارت ابيض' || selectedMainGroup.includes('اسمارت'))) {
+      result = sortProductsByHistoricalOrder(result, 'اسمارت ابيض');
+    } else if (selectedMainGroup && (selectedMainGroup === 'كيسيل' || selectedMainGroup.includes('كيسيل') || selectedMainGroup.includes('كيسل'))) {
+      result = sortProductsByHistoricalOrder(result, 'كيسيل');
     }
+
 
     return result;
   }, [processedProducts, selectedMainGroup, selectedCategory, searchTerm]);
@@ -924,10 +934,14 @@ const ProductGrid = ({
               const isOrangeOrBuried = name.includes('مدفون') || name.includes('برتقالي') || name.includes('برتقالى') || subName.includes('مدفون') || subName.includes('برتقالي') || subName.includes('برتقالى');
               const isInsulated = name.includes('معزول') || name.includes('معزوله') || name.includes('معزولة') || subName.includes('معزول') || subName.includes('معزوله') || subName.includes('معزولة');
               
+              const isUnresolved = isUnresolvedProduct(product);
+
               let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group ";
               let inlineStyle = {};
 
-              if (hasCustomColor) {
+              if (isUnresolved) {
+                cardClass += "bg-emerald-500/10 border-emerald-500 border-r-4 border-r-emerald-600";
+              } else if (hasCustomColor) {
                 cardClass += "bg-white border-r-4";
                 inlineStyle = { borderColor: product.customColor, borderRightColor: product.customColor };
               } else if (isBlack) {
@@ -954,20 +968,20 @@ const ProductGrid = ({
                 <div className="flex-1 overflow-hidden">
                   <div className="text-right leading-tight">
                     {renderProductTitleAndSize(product.name)}
+                    {isUnresolved && (
+                      <span className="mt-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
+                        🟢 مراجعة فنية
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* أكواد المنتج ورقم الجملة */}
+                {/* كود المورد ورقم الجملة */}
                 {(product.supplierCode || product.barcode || (product.wholesalePrice && Number(product.wholesalePrice) > 0)) && (
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {product.supplierCode && (
-                      <span className="text-[9px] px-1 py-0.5 rounded bg-blue-50 text-blue-600 font-mono border border-blue-200 leading-tight">
-                        🏷 {product.supplierCode}
-                      </span>
-                    )}
-                    {product.barcode && (
-                      <span className="text-[9px] px-1 py-0.5 rounded bg-purple-50 text-purple-600 font-mono border border-purple-200 leading-tight">
-                        {product.barcode}
+                    {(product.supplierCode || product.barcode) && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-mono font-bold border border-blue-200 leading-tight">
+                        🏷 {product.supplierCode || product.barcode}
                       </span>
                     )}
                     {(product.wholesalePrice && Number(product.wholesalePrice) > 0 && Number(product.wholesalePrice) !== Number(product.price)) && (

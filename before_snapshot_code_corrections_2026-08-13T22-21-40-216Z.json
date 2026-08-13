@@ -1,0 +1,104 @@
+[
+  {
+    "targetCorrection": {
+      "name": "متر مواسير 3 بوصة 3 مم سمارت ابيض",
+      "currentCode": "333030005",
+      "correctCode": "333030002",
+      "reason": "Company catalog: 333030002 = 75mm / 3mm pipe; 333030005 = 90mm / 3mm pipe."
+    },
+    "beforeRecord": {
+      "id": "20083",
+      "name": "متر مواسير 3 بوصة 3 مم سمارت ابيض",
+      "barcode": "333030005",
+      "price": 154.75,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656351526"
+    }
+  },
+  {
+    "targetCorrection": {
+      "name": "كوع 3بوصه عادة سمارت أبيض",
+      "currentCode": "353010003",
+      "correctCode": "353020003",
+      "reason": "353010003 = 45°/Open elbow; 353020003 = 90°/Normal elbow ('عادة' = 90°)."
+    },
+    "beforeRecord": {
+      "id": "20087",
+      "name": "كوع 3بوصه عادة سمارت أبيض",
+      "barcode": "353010003",
+      "price": 75.5,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "sw_sub_1786657317747_hsnp"
+    }
+  },
+  {
+    "targetCorrection": {
+      "name": "كوع 3بوصه مفتوح سمارت أبيض",
+      "currentCode": "353020003",
+      "correctCode": "353010003",
+      "reason": "353020003 = 90°/Normal elbow; 353010003 = 45°/Open elbow ('مفتوح' = 45°)."
+    },
+    "beforeRecord": {
+      "id": "20089",
+      "name": "كوع 3بوصه مفتوح سمارت أبيض",
+      "barcode": "353020003",
+      "price": 79.75,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "sw_sub_1786657317747_hsnp"
+    }
+  },
+  {
+    "targetCorrection": {
+      "name": "كوع 1.5 بوصه مفتوح سمارت أبيض",
+      "currentCode": "353020001",
+      "correctCode": "353010001",
+      "reason": "353020001 = 90° normal; 353010001 = 45° open."
+    },
+    "beforeRecord": {
+      "id": "20114",
+      "name": "كوع 1.5 بوصه مفتوح سمارت أبيض",
+      "barcode": "353020001",
+      "price": 28.5,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656372836"
+    }
+  },
+  {
+    "targetCorrection": {
+      "name": "كوع 1 بوصه مفتوح اسمارت هوم",
+      "currentCode": "353020007",
+      "correctCode": "353010007",
+      "reason": "353020007 = 90° normal; 353010007 = 45° open."
+    },
+    "beforeRecord": {
+      "id": "20126",
+      "name": "كوع 1 بوصه مفتوح اسمارت هوم",
+      "barcode": "353020007",
+      "price": 18.75,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656382194"
+    }
+  },
+  {
+    "targetCorrection": {
+      "name": "بوش 2×1.5 سمارت أبيض",
+      "currentCode": "373050001",
+      "correctCode": "373050001",
+      "reason": "Verified correct technical code 373050001 (60 / 48 mm reducer)."
+    },
+    "beforeRecord": {
+      "id": "20076",
+      "name": "بوش 2×1.5 سمارت أبيض",
+      "barcode": "373050001",
+      "price": 37.75,
+      "stock": 100,
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656362646"
+    }
+  }
+]

@@ -39,6 +39,61 @@ class SyncManager {
     }
   }
 
+  // ─── CANONICAL DELETE TOMBSTONE PROTECTION (TIMESTAMPED) ───
+  getDeletedTombstonesMap(storeName) {
+    try {
+      const key = `deleted_tombstones_ts_${storeName}`;
+      const raw = localStorage.getItem(key);
+      if (raw) return JSON.parse(raw);
+      // Fallback for legacy format
+      const legacyKey = `deleted_tombstones_${storeName}`;
+      const legacyRaw = localStorage.getItem(legacyKey);
+      const legacySet = legacyRaw ? JSON.parse(legacyRaw) : [];
+      const map = {};
+      const defaultTs = new Date(0).toISOString();
+      legacySet.forEach(id => { map[String(id)] = defaultTs; });
+      return map;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  getDeletedTombstones(storeName) {
+    const map = this.getDeletedTombstonesMap(storeName);
+    return new Set(Object.keys(map));
+  }
+
+  addDeletedTombstone(storeName, id, timestamp) {
+    if (id === undefined || id === null || id === '') return;
+    try {
+      const strId = String(id);
+      const ts = timestamp || new Date().toISOString();
+      const map = this.getDeletedTombstonesMap(storeName);
+      map[strId] = ts;
+      const key = `deleted_tombstones_ts_${storeName}`;
+      localStorage.setItem(key, JSON.stringify(map));
+
+      const legacyKey = `deleted_tombstones_${storeName}`;
+      const set = new Set(Object.keys(map));
+      localStorage.setItem(legacyKey, JSON.stringify(Array.from(set)));
+    } catch (_) {}
+  }
+
+  isRecordTombstoned(storeName, id, recordTimestamp) {
+    if (!id) return false;
+    const strId = String(id);
+    const map = this.getDeletedTombstonesMap(storeName);
+    const deletedAt = map[strId];
+    if (!deletedAt) return false;
+
+    if (!recordTimestamp) return true;
+    const delTime = new Date(deletedAt).getTime();
+    const recTime = new Date(recordTimestamp).getTime();
+
+    if (isNaN(delTime) || isNaN(recTime)) return true;
+    return delTime >= recTime;
+  }
+
   // التحقق من تغيير المشروع وتصفير مؤشرات المزامنة القديمة لتجنب حذف البيانات المحلية
   async checkProjectSwitch() {
     if (!isKeysConfigured || !supabase) return;
@@ -186,6 +241,13 @@ class SyncManager {
           if (newRecord && newRecord.id) {
             newRecord.id = String(newRecord.id);
 
+            // 🛡️ Timestamp-Aware Tombstone Guard: يتجاهل الأحداث القديمة المحذوفة ولا يعطل الإضافات الجديدة
+            const recTime = newRecord.updated_at || newRecord.created_at;
+            if (this.isRecordTombstoned(table, newRecord.id, recTime)) {
+              console.log(`🛡️ [Realtime] تجاهل حدث ${eventType} لسجل محذوف بشاهد: ${table}/${newRecord.id}`);
+              return;
+            }
+
             // فحص إذا كان هناك تعديل محلي معلق لم يُرفع بعد — حماية التعديل المحلي
             const existingLocal = await databaseManager.get(table, newRecord.id);
             if (existingLocal && existingLocal.sync_status === 'pending') {
@@ -205,8 +267,12 @@ class SyncManager {
             await databaseManager.update(table, localRecord);
           }
         } else if (eventType === 'DELETE') {
-          if (oldRecord && oldRecord.id) {
-            await databaseManager.deletePhysical(table, String(oldRecord.id));
+          const targetId = String(oldRecord?.id || newRecord?.id || payload.old?.id || payload.new?.id || '');
+          if (targetId) {
+            const delTime = payload.commit_timestamp || new Date().toISOString();
+            this.addDeletedTombstone(table, targetId, delTime);
+            await databaseManager.deletePhysical(table, targetId);
+            console.log(`🗑️ [Realtime] تم حذف السجل نهائياً وتسجيل الشاهد: ${table}/${targetId}`);
           }
         }
 
@@ -598,6 +664,7 @@ class SyncManager {
       ...item,
       id: String(item.id),
       sync_status: 'pending',
+      _isNewLocally: item._isNewLocally !== undefined ? item._isNewLocally : true,
       updated_at: item.updated_at || new Date().toISOString()
     };
     await databaseManager.update(storeName, updated);
@@ -747,14 +814,20 @@ class SyncManager {
         if (allCloudIdsSet.size > 0) {
           for (const localRecord of localRecords) {
             const localId = String(localRecord.id);
-            if (
-              !allCloudIdsSet.has(localId) &&          // 1. غائب من السحاب
-              localRecord.sync_status === 'synced' &&   // 2. متزامن بالكامل
-              !deletedIdsSet.has(localId)               // 3. لا يوجد Tombstone محلي
-            ) {
-              console.log(`🧹 [SyncManager] Zombie Prevention | Store: ${storeName} | ID: ${localId} | حذف سجل محلي synced غائب من السحاب (${allCloudIdsSet.size} سجل سحاب متحقق)`); 
-              await databaseManager.deletePhysical(storeName, localId);
-              hasChanges = true;
+            const isCloudPresent = allCloudIdsSet.has(localId);
+            if (!isCloudPresent) {
+              const recTime = localRecord.created_at || localRecord.updated_at;
+              const isTombstone = this.isRecordTombstoned(storeName, localId, recTime) || localRecord.sync_status === 'deleted';
+              const isStaleSynced = localRecord.sync_status === 'synced';
+
+              // 🛡️ CRITICAL RULE: السجلات المعلقة pending (إضافة جديدة أو تعديل) لا تُحذف إطلاقاً في الخطوة 1
+              // يجب إعطاؤها الفرصة للرفع في الخطوة 2 (Upload-Second)
+              if (isTombstone || isStaleSynced) {
+                console.log(`🧹 [SyncManager] Zombie Prevention | Store: ${storeName} | ID: ${localId} | حذف سجل محلي قديم غائب من السحاب (${allCloudIdsSet.size} سجل سحاب متحقق)`);
+                this.addDeletedTombstone(storeName, localId);
+                await databaseManager.deletePhysical(storeName, localId);
+                hasChanges = true;
+              }
             }
           }
         }
@@ -882,9 +955,22 @@ class SyncManager {
         const originalRecordsMap = new Map();
 
         for (const record of pendingRecords) {
+          const recordId = String(record.id);
+          const recTime = record.created_at || record.updated_at;
+          const isTombstoned = this.isRecordTombstoned(storeName, recordId, recTime);
+          if (
+            isTombstoned ||
+            (useFullPull && allCloudIdsSet.size > 0 && !allCloudIdsSet.has(recordId) && !record._isNewLocally)
+          ) {
+            console.log(`🛡️ [SyncManager] Pre-Upload Guard REJECTED stale pending write for deleted record: ${storeName}/${recordId}`);
+            this.addDeletedTombstone(storeName, recordId);
+            await databaseManager.deletePhysical(storeName, recordId);
+            continue;
+          }
+
           record.updated_at = record.updated_at || new Date().toISOString();
           const { sync_status, ...uploadData } = record;
-          uploadData.id = String(record.id);
+          uploadData.id = recordId;
           
           if (storeName === 'categories') {
             uploadData.parent_id = record.parentId;
@@ -1116,27 +1202,31 @@ class SyncManager {
 
       // 3. رفع معالجة شواهد الحذف (Deleted Tombstones) إلى السحاب ومسح الشاهد فيزياءً عند النجاح
       for (const record of deletedRecords) {
+        if (!record || !record.id) continue;
+        const targetIdStr = String(record.id);
+        this.addDeletedTombstone(storeName, targetIdStr);
+
         if (storeName === 'customers') {
           try {
-            await supabase.from('sales').update({ customer_id: null }).eq('customer_id', record.id);
-            await supabase.from('returns').update({ customer_id: null }).eq('customer_id', record.id);
+            await supabase.from('sales').update({ customer_id: null }).eq('customer_id', targetIdStr);
+            await supabase.from('returns').update({ customer_id: null }).eq('customer_id', targetIdStr);
           } catch (_) {}
         } else if (storeName === 'categories') {
           try {
             // فك ارتباط المنتجات بالفئة المحذوفة بدلاً من مسح المنتجات لمنع فقدان البيانات
-            await supabase.from('products').update({ main_category_id: null }).eq('main_category_id', record.id);
-            await supabase.from('products').update({ sub_category_id: null }).eq('sub_category_id', record.id);
-            await supabase.from('categories').update({ parent_id: null }).eq('parent_id', record.id);
+            await supabase.from('products').update({ main_category_id: null }).eq('main_category_id', targetIdStr);
+            await supabase.from('products').update({ sub_category_id: null }).eq('sub_category_id', targetIdStr);
+            await supabase.from('categories').update({ parent_id: null }).eq('parent_id', targetIdStr);
           } catch (_) {}
         }
         
-        console.log(`🗑️ [SyncManager] إرسال طلب حذف شاهد (Tombstone) لسحابة ${storeName}/${record.id}`);
-        const { error } = await supabase.from(storeName).delete().eq('id', record.id);
+        console.log(`🗑️ [SyncManager] إرسال طلب حذف شاهد (Tombstone) لسحابة ${storeName}/${targetIdStr}`);
+        const { error } = await supabase.from(storeName).delete().eq('id', targetIdStr);
         if (!error || error.code === 'PGRST116') {
-          await databaseManager.deletePhysical(storeName, record.id);
-          console.log(`✅ [SyncManager] تم تأكيد الحذف ومسح الشاهد فيزياءً لـ ${storeName}/${record.id}`);
+          await databaseManager.deletePhysical(storeName, targetIdStr);
+          console.log(`✅ [SyncManager] تم تأكيد الحذف ومسح الشاهد فيزياءً لـ ${storeName}/${targetIdStr}`);
         } else {
-          console.error(`❌ خطأ في حذف الصنف ${record.id} من سحابة ${storeName}:`, error);
+          console.error(`❌ خطأ في حذف الصنف ${targetIdStr} من سحابة ${storeName}:`, error);
         }
       }
 
