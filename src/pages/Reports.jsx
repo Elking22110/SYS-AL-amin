@@ -175,31 +175,33 @@ const Reports = () => {
     setConfirmModal(prev => ({ ...prev, isOpen: false }));
   };
 
-  // تحميل البيانات
-  const loadSalesData = () => {
+  // تحميل البيانات شاملة الوردية النشطة والسجل التاريخي وIndexedDB
+  const loadSalesData = async () => {
     try {
+      const dbSales = await databaseManager.getAll('sales').catch(() => []);
       const activeSales = JSON.parse(localStorage.getItem('sales') || '[]');
       const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
-      const historicalSales = shifts.flatMap(shift => shift.sales || []);
+      const activeShift = JSON.parse(localStorage.getItem('activeShift') || '{}');
+      const activeShiftSales = Array.isArray(activeShift?.sales) ? activeShift.sales : [];
+      const historicalSales = shifts.flatMap(shift => (Array.isArray(shift.sales) ? shift.sales : []));
 
       const salesMap = new Map();
-      [...historicalSales, ...activeSales].forEach(sale => {
+      [...dbSales, ...historicalSales, ...activeSales, ...activeShiftSales].forEach(sale => {
         if (sale && sale.id) {
-          salesMap.set(sale.id, sale);
+          salesMap.set(String(sale.id), sale);
         }
       });
 
       const salesList = Array.from(salesMap.values()).sort((a, b) => {
-        const ta = safeParseDate(a.date || a.timestamp).getTime();
-        const tb = safeParseDate(b.date || b.timestamp).getTime();
-        if (tb !== ta) return tb - ta;
+        const ta = safeParseDate(a.date || a.timestamp || a.created_at).getTime();
+        const tb = safeParseDate(b.date || b.timestamp || b.created_at).getTime();
+        if (!isNaN(tb) && !isNaN(ta) && tb !== ta) return tb - ta;
         return (Number(b.id) || 0) - (Number(a.id) || 0);
       });
 
       setAllSales(salesList);
     } catch (error) {
       console.error('Error loading sales data:', error);
-      notifyError('خطأ في تحميل الفواتير');
     }
   };
 
@@ -1156,15 +1158,17 @@ const Reports = () => {
     if (periodFilter !== 'all' && activeTab !== 'returns') {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
       result = result.filter(inv => {
-        const d = safeParseDate(inv.date || inv.timestamp);
+        const d = safeParseDate(inv.date || inv.timestamp || inv.created_at);
+        if (!d || isNaN(d.getTime())) return true; // الحفاظ على إظهار الفواتير إذا كان التاريخ غير محدد
         switch (periodFilter) {
           case 'day':
             return d >= today;
           case 'week':
             const w = new Date(today); w.setDate(w.getDate() - 7); return d >= w;
           case 'month':
-            const m = new Date(today); m.setMonth(m.getMonth() - 1); return d >= m;
+            return d >= monthStart || d >= new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
           default:
             return true;
         }
