@@ -29,6 +29,7 @@ import { hashPassword } from './utils/security.js';
 import { initTheme } from "./utils/themeUtils";
 import { runCategoryMigration } from "./utils/categoryMigration";
 import syncManager from "./utils/syncManager";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function MainAppShell() {
   const navigate = useNavigate();
@@ -169,28 +170,30 @@ function MainAppShell() {
 
   // ─── GATE 4: FULL PROTECTED APPLICATION (READY) ───
   return (
-    <DataLoader>
-      <div className="flex h-screen overflow-hidden">
-        <Sidebar />
-        <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ipad-main-content ipad-pro-main-content pt-14 md:pt-0 pb-16 md:pb-0">
-          <Routes>
-            <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/pos" element={<ProtectedRoute requiredPermission="pos_access"><POS /></ProtectedRoute>} />
-            <Route path="/products" element={<ProtectedRoute requiredPermission="manage_products"><Products /></ProtectedRoute>} />
-            <Route path="/reports" element={<ProtectedRoute requiredPermission="view_reports"><Reports /></ProtectedRoute>} />
-            <Route path="/customers" element={<ProtectedRoute requiredPermission="manage_customers"><Customers /></ProtectedRoute>} />
-            <Route path="/customers/:id" element={<ProtectedRoute requiredPermission="manage_customers"><CustomerDetails /></ProtectedRoute>} />
-            <Route path="/suppliers" element={<ProtectedRoute requiredPermission="manage_customers"><Suppliers /></ProtectedRoute>} />
-            <Route path="/suppliers/:id" element={<ProtectedRoute requiredPermission="manage_customers"><SupplierDetails /></ProtectedRoute>} />
-            <Route path="/shifts" element={<ProtectedRoute requiredPermission="manage_shifts"><Shifts /></ProtectedRoute>} />
-            <Route path="/expenses" element={<ProtectedRoute requiredPermission="view_reports"><Expenses /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+    <ErrorBoundary>
+      <DataLoader>
+        <div className="flex h-screen overflow-hidden">
+          <Sidebar />
+          <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full w-full h-full ipad-main-content ipad-pro-main-content pt-14 md:pt-0 pb-16 md:pb-0">
+            <Routes>
+              <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/pos" element={<ProtectedRoute requiredPermission="pos_access"><POS /></ProtectedRoute>} />
+              <Route path="/products" element={<ProtectedRoute requiredPermission="manage_products"><Products /></ProtectedRoute>} />
+              <Route path="/reports" element={<ProtectedRoute requiredPermission="view_reports"><Reports /></ProtectedRoute>} />
+              <Route path="/customers" element={<ProtectedRoute requiredPermission="manage_customers"><Customers /></ProtectedRoute>} />
+              <Route path="/customers/:id" element={<ProtectedRoute requiredPermission="manage_customers"><CustomerDetails /></ProtectedRoute>} />
+              <Route path="/suppliers" element={<ProtectedRoute requiredPermission="manage_customers"><Suppliers /></ProtectedRoute>} />
+              <Route path="/suppliers/:id" element={<ProtectedRoute requiredPermission="manage_customers"><SupplierDetails /></ProtectedRoute>} />
+              <Route path="/shifts" element={<ProtectedRoute requiredPermission="manage_shifts"><Shifts /></ProtectedRoute>} />
+              <Route path="/expenses" element={<ProtectedRoute requiredPermission="view_reports"><Expenses /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </DataLoader>
+      </DataLoader>
+    </ErrorBoundary>
   );
 }
 
