@@ -12,6 +12,8 @@ import invoiceEngine from '../utils/invoice/index.js';
 import { formatMoney, formatQuantity, formatPercentage, getLocalizedErrorMessage } from '../utils/formatters.js';
 import { useAuth } from '../components/AuthProvider';
 import databaseManager from '../utils/database';
+import syncManager from '../utils/syncManager.js';
+import { supabase, isKeysConfigured } from '../utils/supabaseClient.js';
 import {
   Calendar,
   Download,
@@ -206,16 +208,102 @@ const Reports = () => {
   };
 
   useEffect(() => {
-    // تحديث أمان كل 60 ثانية كـ fallback مع الاعتماد على الأحداث الفورية
+    // 1. التحميل الأولي فور التثبيت
+    loadSalesData();
+
+    // 2. تحديث أمان كـ Fallback دوري كل 60 ثانية
     const interval = setInterval(loadSalesData, 60000);
-    const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, loadSalesData) : null;
+
+    // 3. معالج إدخال/تعديل/حذف جديد فورياً من الأحداث المحلية داخل التطبيق
+    const handleInvoiceEvent = (data) => {
+      if (data && data.invoice) {
+        const inv = data.invoice;
+        console.log('[REPORTS ORDER INSERT]', 'orderId:', inv.id, 'source: local_event', 'action: insert');
+        setAllSales(prev => {
+          const exists = prev.some(s => String(s.id) === String(inv.id));
+          let updated;
+          if (exists) {
+            updated = prev.map(s => String(s.id) === String(inv.id) ? { ...s, ...inv } : s);
+          } else {
+            updated = [inv, ...prev];
+          }
+          return updated.sort((a, b) => {
+            const ta = safeParseDate(a.date || a.timestamp || a.created_at).getTime();
+            const tb = safeParseDate(b.date || b.timestamp || b.created_at).getTime();
+            if (!isNaN(tb) && !isNaN(ta) && tb !== ta) return tb - ta;
+            return (Number(b.id) || 0) - (Number(a.id) || 0);
+          });
+        });
+      } else {
+        loadSalesData();
+      }
+    };
+
+    const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, handleInvoiceEvent) : null;
     const unsubShifts = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, loadSalesData) : null;
     const unsubReturns = typeof subscribe === 'function' ? subscribe(EVENTS.RETURNS_CHANGED, loadSalesData) : null;
-    const onDataUpdated = () => loadSalesData();
+
+    const onDataUpdated = (e) => {
+      if (e?.detail?.type === 'sales' || !e?.detail?.type) {
+        loadSalesData();
+      }
+    };
+
     window.addEventListener('dataUpdated', onDataUpdated);
     window.addEventListener('realtimeDataUpdate', onDataUpdated);
     window.addEventListener('databaseSyncTrigger', onDataUpdated);
     window.addEventListener('storage', onDataUpdated);
+
+    // 4. الاشتراك المباشر في قناة Supabase Realtime لجدول المبيعات sales (للأجهزة المتعددة)
+    let salesChannel = null;
+    if (isKeysConfigured && supabase) {
+      try {
+        salesChannel = supabase
+          .channel('reports_sales_realtime_channel')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'sales' },
+            (payload) => {
+              console.log('[REPORTS REALTIME EVENT]', payload.eventType, payload);
+              if (payload.eventType === 'INSERT' && payload.new) {
+                const newSale = payload.new;
+                console.log('[REPORTS ORDER INSERT]', 'orderId:', newSale.id, 'source: realtime', 'action: insert');
+                if (syncManager && syncManager.isRecordTombstoned('sales', newSale.id)) {
+                  return;
+                }
+                setAllSales(prev => {
+                  const exists = prev.some(s => String(s.id) === String(newSale.id));
+                  let updated;
+                  if (exists) {
+                    updated = prev.map(s => String(s.id) === String(newSale.id) ? { ...s, ...newSale } : s);
+                  } else {
+                    updated = [newSale, ...prev];
+                  }
+                  return updated.sort((a, b) => {
+                    const ta = safeParseDate(a.date || a.timestamp || a.created_at).getTime();
+                    const tb = safeParseDate(b.date || b.timestamp || b.created_at).getTime();
+                    if (!isNaN(tb) && !isNaN(ta) && tb !== ta) return tb - ta;
+                    return (Number(b.id) || 0) - (Number(a.id) || 0);
+                  });
+                });
+              } else if (payload.eventType === 'UPDATE' && payload.new) {
+                const updatedSale = payload.new;
+                console.log('[REPORTS ORDER UPDATE]', 'orderId:', updatedSale.id);
+                setAllSales(prev => prev.map(s => String(s.id) === String(updatedSale.id) ? { ...s, ...updatedSale } : s));
+              } else if (payload.eventType === 'DELETE' && payload.old) {
+                const deletedId = payload.old.id;
+                console.log('[REPORTS ORDER DELETE]', 'orderId:', deletedId);
+                setAllSales(prev => prev.filter(s => String(s.id) !== String(deletedId)));
+              }
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.error('[REPORTS REALTIME SUBSCRIPTION ERROR]', err);
+      }
+    }
+
+    // تنظيف المستمعين والاشتراكات عند مغادرة الصفحة
     return () => {
       clearInterval(interval);
       if (typeof unsubInvoices === 'function') unsubInvoices();
@@ -225,6 +313,9 @@ const Reports = () => {
       window.removeEventListener('realtimeDataUpdate', onDataUpdated);
       window.removeEventListener('databaseSyncTrigger', onDataUpdated);
       window.removeEventListener('storage', onDataUpdated);
+      if (salesChannel && supabase) {
+        supabase.removeChannel(salesChannel);
+      }
     };
   }, []);
 
@@ -488,28 +579,42 @@ const Reports = () => {
     const invoice = allSales.find(sale => String(sale.id) === String(invoiceId));
     if (!invoice) return;
 
+    // فحص الصلاحيات الأمنية قبل إجراء أي تعديل
+    const canDelete = user?.role === 'admin' || user?.role === 'manager' || (typeof hasPermission === 'function' && (hasPermission('delete_invoice') || hasPermission('delete_invoices') || hasPermission('delete_sales')));
+    if (!canDelete) {
+      console.error('[REPORTS DELETE ERROR] orderId:', invoiceId, 'code: 403', 'message: Unauthorized');
+      notifyError('غير مصرح لك بحذف الفواتير. هذه الصلاحية للمدير أو الإدارة فقط.');
+      return;
+    }
+
     const confirmDelete = async () => {
       try {
         const strId = String(invoiceId);
+        console.log('[REPORTS ORDER DELETE]', 'orderId:', strId);
 
-        // 1. تسجيل شاهد الحذف المستدام (Tombstone) لمنع إعادة استرجاع الفاتورة من السحاب
+        // 1. محاولة حذف الفاتورة سحابياً أولاً وحماية الصلاحيات
+        if (isKeysConfigured && supabase) {
+          const { error: cloudError } = await supabase.from('sales').delete().eq('id', strId);
+          if (cloudError && (cloudError.code === '42501' || cloudError.status === 403 || cloudError.status === 401)) {
+            console.error('[REPORTS DELETE ERROR] orderId:', strId, 'code:', cloudError.code || cloudError.status, 'message:', cloudError.message);
+            notifyError('فشل حذف الفاتورة: تم رفض العملية بسبب صلاحيات السحاب.');
+            return;
+          }
+        }
+
+        // 2. تسجيل شاهد الحذف المستدام (Tombstone) لمنع إعادة استرجاع الفاتورة من السحاب
         if (syncManager && typeof syncManager.addDeletedTombstone === 'function') {
           syncManager.addDeletedTombstone('sales', strId);
         }
 
-        // 2. إرجاع الكميات للمخزن
+        // 3. إرجاع الكميات للمخزن
         (invoice.items || []).forEach(item => {
           adjustProductStock(item.id, -item.quantity);
         });
 
-        // 3. حذف الفاتورة صراحة من قاعدة البيانات المحلية المستدامة (IndexedDB)
+        // 4. حذف الفاتورة صراحة من قاعدة البيانات المحلية المستدامة (IndexedDB)
         await databaseManager.deletePhysical('sales', strId).catch(() => {});
         await databaseManager.delete('sales', strId).catch(() => {});
-
-        // 4. حذف الفاتورة من السحاب وقاعدة بيانات Supabase
-        if (isKeysConfigured && supabase) {
-          await supabase.from('sales').delete().eq('id', strId).catch(err => console.warn('Cloud delete invoice warning:', err));
-        }
 
         // 5. إضافة أمر حذف في الـ Outbox للمزامنة المستدامة
         await databaseManager.addOutboxOp({
@@ -600,7 +705,7 @@ const Reports = () => {
         syncManager.syncStore('sales').catch(() => {});
         try { publish(EVENTS.INVOICES_CHANGED, { type: 'delete', invoiceId: strId }); } catch (_) {}
       } catch (error) {
-        console.error('Error deleting invoice:', error);
+        console.error('[REPORTS DELETE ERROR] orderId:', invoiceId, 'code: 500', 'message:', error?.message || error);
         notifyError('خطأ في حذف الفاتورة');
       }
     };
