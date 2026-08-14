@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./components/AuthProvider";
 import { NotificationProvider } from "./components/NotificationSystem";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -32,6 +32,7 @@ import syncManager from "./utils/syncManager";
 
 function MainAppShell() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading: authLoading } = useAuth();
   const [bootState, setBootState] = useState('BOOTING'); // 'BOOTING' | 'LICENSE_REQUIRED' | 'AUTH_REQUIRED' | 'READY'
 
@@ -57,6 +58,12 @@ function MainAppShell() {
     // Step C: License Valid + User Authenticated -> READY
     setBootState('READY');
     syncManager.startAutoSync();
+
+    // Redirection Guard: ensure valid page path
+    const validPaths = ['/', '/pos', '/products', '/reports', '/customers', '/suppliers', '/shifts', '/expenses', '/settings', '/profile'];
+    if (!validPaths.some(p => location.pathname === p || location.pathname.startsWith(p + '/'))) {
+      navigate('/', { replace: true });
+    }
   };
 
   useEffect(() => {
@@ -179,6 +186,7 @@ function MainAppShell() {
             <Route path="/expenses" element={<ProtectedRoute requiredPermission="view_reports"><Expenses /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </div>
