@@ -483,33 +483,71 @@ const Reports = () => {
     }
   };
 
-  // حذف الفاتورة بالكامل
+  // حذف الفاتورة بالكامل (حذف فيزيائي نهائي محلي وسحابي وتسجيل شاهد الحذف لمنع الإعادة)
   const handleDeleteInvoice = (invoiceId) => {
-    const invoice = allSales.find(sale => sale.id === invoiceId);
+    const invoice = allSales.find(sale => String(sale.id) === String(invoiceId));
     if (!invoice) return;
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
       try {
-        // إرجاع المنتجات للمخزن
+        const strId = String(invoiceId);
+
+        // 1. تسجيل شاهد الحذف المستدام (Tombstone) لمنع إعادة استرجاع الفاتورة من السحاب
+        if (syncManager && typeof syncManager.addDeletedTombstone === 'function') {
+          syncManager.addDeletedTombstone('sales', strId);
+        }
+
+        // 2. إرجاع الكميات للمخزن
         (invoice.items || []).forEach(item => {
           adjustProductStock(item.id, -item.quantity);
         });
 
-        // إزالة من المبيعات
+        // 3. حذف الفاتورة صراحة من قاعدة البيانات المحلية المستدامة (IndexedDB)
+        await databaseManager.deletePhysical('sales', strId).catch(() => {});
+        await databaseManager.delete('sales', strId).catch(() => {});
+
+        // 4. حذف الفاتورة من السحاب وقاعدة بيانات Supabase
+        if (isKeysConfigured && supabase) {
+          await supabase.from('sales').delete().eq('id', strId).catch(err => console.warn('Cloud delete invoice warning:', err));
+        }
+
+        // 5. إضافة أمر حذف في الـ Outbox للمزامنة المستدامة
+        await databaseManager.addOutboxOp({
+          store_name: 'sales',
+          record_id: strId,
+          operation_type: 'DELETE',
+          payload: { id: strId }
+        }).catch(() => {});
+
+        // 6. إزالة الفاتورة من سجل المبيعات المحلي
         const sales = JSON.parse(localStorage.getItem('sales') || '[]');
-        const updatedSales = sales.filter(sale => sale.id !== invoiceId);
+        const updatedSales = sales.filter(sale => String(sale.id) !== strId);
         localStorage.setItem('sales', JSON.stringify(updatedSales));
 
-        // إزالة من الوردية النشطة
+        // 7. إزالة الفاتورة من الوردية النشطة
         const activeShift = JSON.parse(localStorage.getItem('activeShift') || 'null');
         if (activeShift) {
-          activeShift.sales = (activeShift.sales || []).filter(sale => sale.id !== invoiceId);
+          activeShift.sales = (activeShift.sales || []).filter(sale => String(sale.id) !== strId);
           activeShift.totalSales = activeShift.sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
           activeShift.totalOrders = activeShift.sales.length;
           localStorage.setItem('activeShift', JSON.stringify(activeShift));
         }
 
-        // تحديث مديونية ومشتريات العميل بعد حذف الفاتورة
+        // 8. إزالة الفاتورة من الشفتات السابقة التاريخية
+        try {
+          const shifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+          const updatedShifts = shifts.map(shift => {
+            if (Array.isArray(shift.sales)) {
+              shift.sales = shift.sales.filter(s => String(s.id) !== strId);
+              shift.totalSales = shift.sales.reduce((sum, s) => sum + (Number(s.total) || 0), 0);
+              shift.totalOrders = shift.sales.length;
+            }
+            return shift;
+          });
+          localStorage.setItem('shifts', JSON.stringify(updatedShifts));
+        } catch (_) {}
+
+        // 9. تحديث مديونية ومشتريات العميل بعد حذف الفاتورة
         if (invoice.customer?.phone || invoice.customer?.id || invoice.customerId) {
           try {
             const customers = JSON.parse(localStorage.getItem('customers') || '[]');
@@ -540,6 +578,7 @@ const Reports = () => {
               customers[cIndex].orders = Math.max(0, (customers[cIndex].orders || 1) - 1);
 
               localStorage.setItem('customers', JSON.stringify(customers));
+              await databaseManager.update('customers', customers[cIndex]).catch(() => {});
               try { publish(EVENTS.CUSTOMERS_CHANGED, { type: 'update' }); } catch (_) {}
             }
           } catch (e) {
@@ -547,16 +586,19 @@ const Reports = () => {
           }
         }
 
-        setAllSales(updatedSales);
+        setAllSales(prev => prev.filter(s => String(s.id) !== strId));
         setShowInvoiceModal(false);
         setSelectedInvoice(null);
         closeConfirmModal();
-        notifySuccess('تم حذف الفاتورة بنجاح');
+        notifySuccess('تم حذف الفاتورة نهائياً بنجاح');
         if (backUrl) {
           navigate(backUrl);
           setBackUrl(null);
         }
-        try { publish(EVENTS.INVOICES_CHANGED, { type: 'delete', invoiceId }); } catch (_) {}
+
+        // إطلاق مزامنة خلفية لتأكيد الحذف صراحة
+        syncManager.syncStore('sales').catch(() => {});
+        try { publish(EVENTS.INVOICES_CHANGED, { type: 'delete', invoiceId: strId }); } catch (_) {}
       } catch (error) {
         console.error('Error deleting invoice:', error);
         notifyError('خطأ في حذف الفاتورة');
