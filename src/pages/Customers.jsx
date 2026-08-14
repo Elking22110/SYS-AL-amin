@@ -318,9 +318,15 @@ const Customers = () => {
       const customerPhoneClean = cleanPhone(customerToDelete.phone);
       const currentCustId = customerToDelete.id;
 
-      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه فورياً من IndexedDB
+      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه فورياً من IndexedDB والـ Outbox
       syncManager.addDeletedTombstone('customers', targetIdStr, nowIso);
-      await databaseManager.delete('customers', targetIdStr);
+      await databaseManager.delete('customers', targetIdStr).catch(() => {});
+      await databaseManager.addOutboxOp({
+        store_name: 'customers',
+        record_id: targetIdStr,
+        operation_type: 'DELETE',
+        payload: { id: targetIdStr }
+      }).catch(() => {});
 
       const updatedCustomers = customers.filter(c => String(c.id) !== targetIdStr);
       setCustomers(updatedCustomers);

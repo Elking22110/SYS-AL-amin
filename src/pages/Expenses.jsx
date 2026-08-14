@@ -159,9 +159,15 @@ const Expenses = () => {
         if (window.confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
             const updatedExpenses = expenses.filter(exp => String(exp.id) !== targetIdStr);
             
-            // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB
+            // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB والـ Outbox
             syncManager.addDeletedTombstone('expenses', targetIdStr, nowIso);
-            await databaseManager.delete('expenses', targetIdStr);
+            await databaseManager.delete('expenses', targetIdStr).catch(() => {});
+            await databaseManager.addOutboxOp({
+                store_name: 'expenses',
+                record_id: targetIdStr,
+                operation_type: 'DELETE',
+                payload: { id: targetIdStr }
+            }).catch(() => {});
             saveExpenses(updatedExpenses);
 
             // 2. الحذف المباشر من Supabase Cloud
