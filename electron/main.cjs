@@ -76,9 +76,18 @@ function createMainWindow() {
     mainWindow = null;
   });
 
-  // منع التنقل إلى روابط خارجية
+  // معالجة فتح النوافذ والروابط الخارجية مع السماح بنوافذ الطباعة والصفحات الداخلية
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+    // 🛡️ السماح بنوافذ الطباعة والصفحات المؤقتة والمسارات المحلية (about:blank, file:, data:, blob:)
+    if (!url || url === 'about:blank' || url.startsWith('about:') || url.startsWith('file:') || url.startsWith('blob:') || url.startsWith('data:')) {
+      return { action: 'allow' };
+    }
+
+    // فتح الروابط الخارجية الحقيقية (http / https) في المتصفح الخارجي
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      shell.openExternal(url);
+    }
+
     return { action: 'deny' };
   });
 
