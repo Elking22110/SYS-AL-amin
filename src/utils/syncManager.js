@@ -178,7 +178,7 @@ class SyncManager {
     }
   }
 
-  // بدء التزامن التلقائي الدوري (كل 5 ثوانٍ fallback) + Realtime فوري
+  // بدء التزامن التلقائي الدوري التكيفي (60 ثانية عند وجود Realtime / 20 ثانية كـ fallback) + Realtime فوري
   startAutoSync() {
     if (!this.isSyncAllowed()) {
       this.stopAutoSync();
@@ -188,16 +188,20 @@ class SyncManager {
     // 1. تفعيل المزامنة الفورية عبر Supabase Realtime (WebSocket)
     this.startRealtimeSync();
 
-    // 2. المزامنة الدورية كـ fallback كل 5 ثوانٍ
-    if (this.syncIntervalId) return;
+    // 2. المزامنة الدورية التكيفية (Adaptive Polling)
+    if (this.syncIntervalId) clearInterval(this.syncIntervalId);
+    
+    // عند تفعيل الـ Realtime بنجاح، يُكفى بمصالحة أمان كل 60 ثانية لتقليل الضغط بنسبة 90%
+    const intervalMs = this.realtimeChannel ? 60000 : 20000;
     this.syncIntervalId = setInterval(() => {
       if (this.isSyncAllowed()) {
         this.triggerSync();
       } else {
         this.stopAutoSync();
       }
-    }, 5000);
-    console.log('⏰ تم تفعيل المزامنة الدورية الخلفية (كل 5 ثوانٍ) + Realtime فوري');
+    }, intervalMs);
+
+    console.log(`⏰ تم تفعيل المزامنة الدورية الخلفية التكيفية (كل ${intervalMs / 1000} ثانية) + Realtime فوري`);
   }
 
   // إيقاف التزامن الدوري والـ Realtime

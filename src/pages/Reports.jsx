@@ -204,8 +204,8 @@ const Reports = () => {
   };
 
   useEffect(() => {
-    loadSalesData();
-    const interval = setInterval(loadSalesData, 15000);
+    // تحديث أمان كل 60 ثانية كـ fallback مع الاعتماد على الأحداث الفورية
+    const interval = setInterval(loadSalesData, 60000);
     const unsubInvoices = typeof subscribe === 'function' ? subscribe(EVENTS.INVOICES_CHANGED, loadSalesData) : null;
     const unsubShifts = typeof subscribe === 'function' ? subscribe(EVENTS.SHIFTS_CHANGED, loadSalesData) : null;
     const unsubReturns = typeof subscribe === 'function' ? subscribe(EVENTS.RETURNS_CHANGED, loadSalesData) : null;

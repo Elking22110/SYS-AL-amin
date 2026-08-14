@@ -20,9 +20,8 @@ function createMainWindow() {
       webSecurity: true,
       allowRunningInsecureContent: false,
       experimentalFeatures: false,
-      // إعدادات إضافية لحل مشاكل الـ cache والـ GPU
+      // إعدادات التسمية والسرعة الجرافيكية
       cache: false,
-      disableHardwareAcceleration: true,
       offscreen: false
     },
     icon: path.join(__dirname, '../public/favicon.ico'),

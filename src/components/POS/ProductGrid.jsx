@@ -77,6 +77,7 @@ const ProductGrid = ({
   setProductImages
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = React.useDeferredValue(searchTerm);
   const [selectedMainGroup, setSelectedMainGroup] = useState('الكل');
   const [isMainGroupsExpanded, setIsMainGroupsExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(36);
@@ -713,7 +714,7 @@ const ProductGrid = ({
 
   // تصفية المنتجات مع البحث الفوري الشامل بالاسم والكود والباركود (مثل صفحة المنتجات)
   const filteredProducts = React.useMemo(() => {
-    const term = searchTerm.toLowerCase().trim();
+    const term = deferredSearchTerm.toLowerCase().trim();
 
     const effectiveSubCat = (selectedCategory === 'الكل' && filteredCategories.length > 0)
       ? filteredCategories[0].name
@@ -783,7 +784,7 @@ const ProductGrid = ({
 
 
     return result;
-  }, [processedProducts, selectedMainGroup, selectedCategory, searchTerm]);
+  }, [processedProducts, selectedMainGroup, selectedCategory, deferredSearchTerm]);
 
 
   // إعادة ضبط مؤشر عدد المنتجات المعروضة عند تغيير الفلاتر لتجنب البطء

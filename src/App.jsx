@@ -129,7 +129,8 @@ function MainAppShell() {
       DataValidator.repairData();
     }
 
-    const backupInterval = setInterval(() => DataValidator.createBackup(), 60000);
+    // إنشاء نسخة احتياطية كل 15 دقيقة لتخفيف الضغط على الذاكرة والـ CPU
+    const backupInterval = setInterval(() => DataValidator.createBackup(), 900000);
     const cleanupInterval = setInterval(() => DataValidator.cleanupOldData(), 86400000);
 
     return () => {

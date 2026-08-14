@@ -272,31 +272,30 @@ class ObserverManager {
     // Notify local subscribers
     this.notifySubscribers(topic, payload, true);
 
-    // Broadcast to other tabs/windows
+    // Broadcast to other tabs/windows via BroadcastChannel
     if (this.broadcastChannel) {
       try {
         this.broadcastChannel.postMessage({ topic, payload });
       } catch (e) {
         console.warn('Failed to broadcast message:', e);
       }
-    }
+    } else {
+      // Fallback to localStorage for cross-tab sync ONLY if BroadcastChannel is unavailable
+      try {
+        const eventKey = `__evt__:${topic}`;
+        const eventData = JSON.stringify({
+          payload,
+          timestamp: Date.now(),
+          origin: window.location.href
+        });
+        localStorage.setItem(eventKey, eventData);
 
-    // Fallback to localStorage for cross-tab sync
-    try {
-      const eventKey = `__evt__:${topic}`;
-      const eventData = JSON.stringify({
-        payload,
-        timestamp: Date.now(),
-        origin: window.location.href
-      });
-      localStorage.setItem(eventKey, eventData);
-
-      // Clean up old event keys after a short delay
-      setTimeout(() => {
-        localStorage.removeItem(eventKey);
-      }, 500);
-    } catch (e) {
-      console.warn('Failed to sync via localStorage:', e);
+        setTimeout(() => {
+          localStorage.removeItem(eventKey);
+        }, 500);
+      } catch (e) {
+        console.warn('Failed to sync via localStorage:', e);
+      }
     }
   }
 

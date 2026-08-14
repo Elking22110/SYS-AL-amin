@@ -126,7 +126,8 @@ const Dashboard = () => {
     window.addEventListener('shiftStarted', handleDashboardSync);
     window.addEventListener('shiftEnded', handleDashboardSync);
 
-    const interval = setInterval(analyzeRealData, 5000);
+    // تحديث أمان كل 60 ثانية كـ fallback مع الاعتماد على الأحداث الفورية
+    const interval = setInterval(analyzeRealData, 60000);
     return () => {
       clearInterval(interval);
       window.removeEventListener('realtimeDataUpdate', handleDashboardSync);
