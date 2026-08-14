@@ -19,8 +19,7 @@ class DatabaseManager {
   constructor() {
     this.db = null;
     const prefix = getProjectPrefix();
-    this.dbName = `POS_Database_${prefix}`;
-    this.version = 8; // رُفع من 7→8 لإزالة unique constraint على name في categories لتجنب ConstraintError
+    this.version = 9; // رُفع إلى 9 لإضافة جدول sync_outbox للمزامنة المستدامة المعزولة
   }
 
   // تهيئة قاعدة البيانات
@@ -161,6 +160,14 @@ class DatabaseManager {
       const backupsStore = db.createObjectStore('backups', { keyPath: 'id' });
       backupsStore.createIndex('date', 'date', { unique: false });
       backupsStore.createIndex('type', 'type', { unique: false });
+    }
+
+    // جدول الـ Outbox للمزايدات والتغييرات الآمنة
+    if (!db.objectStoreNames.contains('sync_outbox')) {
+      const outboxStore = db.createObjectStore('sync_outbox', { keyPath: 'operation_id' });
+      outboxStore.createIndex('status', 'status', { unique: false });
+      outboxStore.createIndex('record_id', 'record_id', { unique: false });
+      outboxStore.createIndex('store_name', 'store_name', { unique: false });
     }
     console.log('تم إنشاء جميع جداول قاعدة البيانات بنجاح');
   }
@@ -824,6 +831,73 @@ class DatabaseManager {
       console.error('خطأ في استيراد البيانات:', error);
       throw error;
     }
+  }
+
+  // ─── OUTBOX PATTERN HELPERS FOR SAFE MUTATION LOCKDOWN ───
+  async addOutboxOp(op) {
+    if (!this.db) await this.init();
+    if (!op || !op.store_name || !op.record_id) return null;
+
+    const fullOp = {
+      operation_id: op.operation_id || `op_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      store_name: String(op.store_name),
+      record_id: String(op.record_id),
+      operation_type: op.operation_type || 'UPDATE', // 'CREATE' | 'UPDATE' | 'DELETE'
+      payload: op.payload || {},
+      created_at: op.created_at || new Date().toISOString(),
+      base_version: op.base_version || 1,
+      attempt_count: op.attempt_count || 0,
+      status: 'pending' // 'pending' | 'in_progress' | 'completed' | 'failed'
+    };
+
+    return new Promise((resolve, reject) => {
+      if (!this.db.objectStoreNames.contains('sync_outbox')) {
+        resolve(fullOp);
+        return;
+      }
+      const tx = this.db.transaction(['sync_outbox'], 'readwrite');
+      const store = tx.objectStore('sync_outbox');
+      const req = store.put(fullOp);
+      req.onsuccess = () => resolve(fullOp);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async getPendingOutboxOps(storeName = null) {
+    if (!this.db) await this.init();
+    return new Promise((resolve, reject) => {
+      if (!this.db.objectStoreNames.contains('sync_outbox')) {
+        resolve([]);
+        return;
+      }
+      const tx = this.db.transaction(['sync_outbox'], 'readonly');
+      const store = tx.objectStore('sync_outbox');
+      const req = store.getAll();
+      req.onsuccess = () => {
+        let ops = req.result || [];
+        ops = ops.filter(op => op.status === 'pending' || op.status === 'failed');
+        if (storeName) {
+          ops = ops.filter(op => op.store_name === storeName);
+        }
+        resolve(ops);
+      };
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async markOutboxCompleted(opId) {
+    if (!this.db || !opId) return;
+    return new Promise((resolve, reject) => {
+      if (!this.db.objectStoreNames.contains('sync_outbox')) {
+        resolve();
+        return;
+      }
+      const tx = this.db.transaction(['sync_outbox'], 'readwrite');
+      const store = tx.objectStore('sync_outbox');
+      const req = store.delete(String(opId));
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
   }
 
   // إحصائيات قاعدة البيانات
