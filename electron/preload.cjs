@@ -123,42 +123,13 @@ contextBridge.exposeInMainWorld('userData', {
 // تعريض واجهة للتحكم في النافذة
 contextBridge.exposeInMainWorld('windowControl', {
   // تصغير النافذة
-  minimize: () => {
-    const { remote } = require('electron');
-    if (remote) {
-      remote.getCurrentWindow().minimize();
-    }
-  },
-
+  minimize: () => ipcRenderer.invoke('window-minimize'),
   // تكبير/تصغير النافذة
-  maximize: () => {
-    const { remote } = require('electron');
-    if (remote) {
-      const window = remote.getCurrentWindow();
-      if (window.isMaximized()) {
-        window.unmaximize();
-      } else {
-        window.maximize();
-      }
-    }
-  },
-
+  maximize: () => ipcRenderer.invoke('window-maximize'),
   // إغلاق النافذة
-  close: () => {
-    const { remote } = require('electron');
-    if (remote) {
-      remote.getCurrentWindow().close();
-    }
-  },
-
+  close: () => ipcRenderer.invoke('window-close'),
   // التحقق من حالة النافذة
-  isMaximized: () => {
-    const { remote } = require('electron');
-    if (remote) {
-      return remote.getCurrentWindow().isMaximized();
-    }
-    return false;
-  }
+  isMaximized: () => ipcRenderer.invoke('window-is-maximized')
 });
 
 // تعريض واجهة للتحكم في الصوت

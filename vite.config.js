@@ -4,6 +4,7 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
   plugins: [
     react()
   ],
@@ -38,11 +39,9 @@ export default defineConfig({
   // إعدادات البناء
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: false, // P2 FIX: Never ship sourcemaps in production — exposes full source code in packaged Electron ASAR
     minify: 'esbuild',
     target: 'esnext',
-    // إعدادات خاصة بـ Electron
-    base: './',
     assetsDir: 'assets',
     rollupOptions: {
       output: {
@@ -54,10 +53,10 @@ export default defineConfig({
           charts: ['recharts'],
           utils: ['lodash', 'date-fns', 'axios']
         },
-        // تحسين الأسماء
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        // تحسين الأسماء لضمان مسارات نسبية فائقة الدقة في Electron
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
     // إعدادات خاصة بـ Electron

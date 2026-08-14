@@ -664,11 +664,23 @@ const ProductGrid = ({
 
     const selectedGroup = categories.find(c => (String(c.id) === String(selectedMainGroup) || c.name === selectedMainGroup) && !c.parentId);
     if (selectedGroup) {
-      const allSubs = categories
-        .filter(c => String(c.parentId) === String(selectedGroup.id) || String(c.parentId) === String(selectedGroup.name))
-        .map(c => ({ id: c.id, name: c.name }));
+      const seenNames = new Set();
+      const uniqueSubs = [];
+      for (const c of categories) {
+        if (String(c.parentId) === String(selectedGroup.id) || String(c.parentId) === String(selectedGroup.name)) {
+          const normKey = (c.name || '')
+            .replace(/[۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)])
+            .replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'['0123456789'.indexOf(d)])
+            .replace(/\s+/g, ' ')
+            .trim();
+          if (!seenNames.has(normKey)) {
+            seenNames.add(normKey);
+            uniqueSubs.push({ id: c.id, name: c.name });
+          }
+        }
+      }
 
-      return sortSubcategories(allSubs, selectedGroup.name);
+      return sortSubcategories(uniqueSubs, selectedGroup.name);
     }
 
     // Fallback في حال كانت المجموعة الرئيسية مجموعة الكلمات المفتاحية القديمة (مثل "أخرى")
@@ -703,11 +715,28 @@ const ProductGrid = ({
   const filteredProducts = React.useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
 
+    const effectiveSubCat = (selectedCategory === 'الكل' && filteredCategories.length > 0)
+      ? filteredCategories[0].name
+      : selectedCategory;
+
     let result;
     if (!term) {
       result = processedProducts.filter(product => {
         if (selectedMainGroup !== 'الكل' && product.computedMainGroup !== selectedMainGroup) return false;
-        if (selectedCategory !== 'الكل' && product.computedSubCategory !== selectedCategory) return false;
+        if (effectiveSubCat !== 'الكل') {
+          const prodSub = product.computedSubCategory || product.subCategory || product.sub_category_id || '';
+          const prodName = product.name || '';
+
+          if (effectiveSubCat === 'كيسيل برتقالي') {
+            const isOrange = (product.customColor === '#ea580c') || prodSub.includes('برتقال') || prodSub.includes('مدفون') || prodName.includes('برتقال') || prodName.includes('مدفون');
+            if (!isOrange) return false;
+          } else {
+            const normEff = effectiveSubCat.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'['0123456789'.indexOf(d)]).replace(/[۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]).replace(/\s+/g, '');
+            const normProd = prodSub.replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'['0123456789'.indexOf(d)]).replace(/[۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]).replace(/\s+/g, '');
+            const isMatch = normProd === normEff || normProd.includes(normEff) || normEff.includes(normProd);
+            if (!isMatch) return false;
+          }
+        }
         return true;
       });
     } else {
@@ -964,16 +993,6 @@ const ProductGrid = ({
           <span className="block text-center text-xs font-black text-slate-600 border-b border-slate-300 pb-2 mb-2">
             مجموعات فرعية
           </span>
-          <button
-            onClick={() => onCategoryChange('الكل')}
-            className={`w-full py-3 px-3 rounded-lg text-right font-extrabold transition-colors text-xs border ${
-              selectedCategory === 'الكل'
-                ? 'bg-blue-600 text-white border-blue-600 shadow-md font-black'
-                : 'bg-white text-slate-800 hover:bg-slate-50 border-slate-200'
-            }`}
-          >
-            📂 عرض الكل
-          </button>
           {filteredCategories.map((category, index) => (
             <button
               key={category.id || category.name || index}

@@ -226,6 +226,12 @@ class ThermalPrinterManager {
         await this.sendCommand('\x1B\x45\x00'); // إلغاء النص العريض
       }
 
+      // هاتف المتجر في نفس السطر تحت اسم المتجر مباشرة (Phone 1 | Phone 2)
+      const phoneList = [receiptData.storePhone1 || receiptData.storePhone, receiptData.storePhone2].filter(Boolean);
+      if (phoneList.length > 0) {
+        await this.sendCommand(`الهاتف: ${phoneList.join(' | ')}\n`);
+      }
+
       // وصف المتجر
       if (receiptData.storeDescription) {
         await this.sendCommand(receiptData.storeDescription + '\n');
@@ -247,11 +253,6 @@ class ThermalPrinterManager {
       // عنوان المتجر
       if (receiptData.storeAddress) {
         await this.sendCommand(`العنوان: ${receiptData.storeAddress}\n`);
-      }
-
-      // هاتف المتجر
-      if (receiptData.storePhone) {
-        await this.sendCommand(`الهاتف: ${receiptData.storePhone}\n`);
       }
 
       await this.sendCommand('\n'); // سطر فارغ
@@ -335,10 +336,11 @@ class ThermalPrinterManager {
       await this.printLine('=', 48);
       await this.sendCommand('\n'); // سطر فارغ
 
-      // رسالة شكر
+      // رسالة شكر وتذييل ELKING
       await this.sendCommand('\x1B\x61\x01'); // محاذاة وسط
       await this.sendCommand('شكراً لثقتكم - جودة وخدمة مميزة\n');
-      await this.sendCommand('برمجة وتطوير Elking للبرمجيات 01553448631\n');
+      await this.sendCommand('تم طباعة الفاتورة بواسطة سيستم ELKING\n');
+      await this.sendCommand('01553448631\n');
 
       // قطع الورق
       await this.cutPaper();

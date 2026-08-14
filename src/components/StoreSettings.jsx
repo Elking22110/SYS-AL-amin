@@ -3,7 +3,7 @@ import { Store, Save, RefreshCw, Building, Phone, Mail, MapPin } from 'lucide-re
 
 const StoreSettings = () => {
   const [storeInfo, setStoreInfo] = useState({
-    storeName: 'Elking',
+    storeName: 'الأمين',
     storePhone: '01029022006',
     storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
     storeEmail: 'info@msgroupplast.com',

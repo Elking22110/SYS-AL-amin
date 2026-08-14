@@ -26,7 +26,7 @@ function createMainWindow() {
       offscreen: false
     },
     icon: path.join(__dirname, '../public/favicon.ico'),
-    title: 'نظام إدارة المبيعات - إبراهيم العراقي',
+    title: 'SIS AL AMEEN - نظام الأمين',
     titleBarStyle: 'default',
     show: false, // إخفاء النافذة حتى تحميل المحتوى
     frame: true,
@@ -42,18 +42,9 @@ function createMainWindow() {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
-    // في وضع الإنتاج
-    // محاولة تحميل الملف المخصص لـ Electron أولاً
-    const electronIndexPath = path.join(__dirname, '../public/electron-index.html');
-    const distIndexPath = path.join(__dirname, '../dist/index.html');
-    
-    // التحقق من وجود الملف المخصص
-    const fs = require('fs');
-    if (fs.existsSync(electronIndexPath)) {
-      mainWindow.loadFile(electronIndexPath);
-    } else {
-      mainWindow.loadFile(distIndexPath);
-    }
+    // في وضع الإنتاج: تحميل dist/index.html الذي تنتجه Vite مباشرة لمنع خطأ الملفات المفقودة
+    const distIndexPath = path.join(app.getAppPath(), 'dist', 'index.html');
+    mainWindow.loadFile(distIndexPath);
   }
 
   // إظهار النافذة عند تحميل المحتوى
@@ -196,15 +187,16 @@ function createMenu() {
             dialog.showMessageBox(mainWindow, {
               type: 'info',
               title: 'حول التطبيق',
-              message: 'نظام إدارة المبيعات',
-              detail: 'إصدار 2.0.0\nتم تطويره بواسطة إبراهيم العراقي\n\nنظام متكامل لإدارة نقاط البيع والمخزون'
+              message: 'SIS AL AMEEN - نظام الأمين',
+              detail: 'إصدار 2.0.0\nنظام متكامل لإدارة نقاط البيع والمخزون\nجميع الحقوق محفوظة © 2026 SIS AL AMEEN'
             });
           }
         },
         {
           label: 'دليل المستخدم',
           click: () => {
-            shell.openExternal('https://github.com/your-repo/pos-system/wiki');
+            // دليل المستخدم — يُضاف لاحقاً عند توفر الرابط الرسمي
+            dialog.showMessageBox(mainWindow, { type: 'info', title: 'دليل المستخدم', message: 'يرجى التواصل مع فريق الدعم الفني للحصول على دليل المستخدم.' });
           }
         }
       ]
@@ -243,11 +235,10 @@ app.commandLine.appendSwitch('--disable-renderer-backgrounding');
 
 // معالجة أحداث التطبيق
 app.whenReady().then(() => {
-  // تنظيف الـ cache عند بدء التطبيق
-  const { session } = require('electron');
-  session.defaultSession.clearCache();
-  session.defaultSession.clearStorageData();
-  
+  // ⚠️ P0 FIX: DO NOT call session.clearStorageData() or clearCache() here.
+  // clearStorageData() wipes ALL IndexedDB data (products, sales, customers, etc.) on every launch.
+  // clearCache() breaks offline access to cached assets.
+  // Both are FORBIDDEN in a production POS application.
   createMainWindow();
 
   app.on('activate', () => {
@@ -270,6 +261,23 @@ ipcMain.handle('app-version', () => {
 
 ipcMain.handle('app-path', () => {
   return app.getAppPath();
+});
+
+// معالجة التحكم في النافذة (بديل عن remote المحذوف في Electron 14+)
+ipcMain.handle('window-minimize', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+ipcMain.handle('window-maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) mainWindow.unmaximize();
+    else mainWindow.maximize();
+  }
+});
+ipcMain.handle('window-close', () => {
+  if (mainWindow) mainWindow.close();
+});
+ipcMain.handle('window-is-maximized', () => {
+  return mainWindow ? mainWindow.isMaximized() : false;
 });
 
 ipcMain.handle('show-save-dialog', async (event, options) => {

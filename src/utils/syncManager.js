@@ -248,20 +248,45 @@ class SyncManager {
               return;
             }
 
-            // فحص إذا كان هناك تعديل محلي معلق لم يُرفع بعد — حماية التعديل المحلي
             const existingLocal = await databaseManager.get(table, newRecord.id);
             if (existingLocal && existingLocal.sync_status === 'pending') {
               console.log(`🛡️ [SyncManager] حماية التعديل المحلي المعلق من الاستبدال بـ Realtime: ${table}/${newRecord.id}`);
-              if (table === 'products') {
-                traceProductObject('syncManager', 'handleRealtimeChange() SKIPPED pending', existingLocal, newRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
-              }
               return;
             }
 
             const localRecord = this.mapCloudToLocal(table, newRecord);
             localRecord.sync_status = 'synced';
+
+            if (existingLocal) {
+              const incomingTime = new Date(newRecord.updated_at || 0).getTime();
+              const localTime = new Date(existingLocal.updated_at || 0).getTime();
+
+              // 🛡️ Stale Realtime Update Guard
+              if (incomingTime < localTime) {
+                console.log(`[REALTIME OVERWRITE LOG] productId: ${newRecord.id} | eventType: ${eventType} | incoming.updated_at: ${newRecord.updated_at} | local.updated_at: ${existingLocal.updated_at} | reason: IGNORE_STALE`);
+                return;
+              }
+
+              // 🛡️ Same-Value Update Suppression
+              const isIdentical = 
+                existingLocal.name === localRecord.name &&
+                Number(existingLocal.price || 0) === Number(localRecord.price || 0) &&
+                Number(existingLocal.costPrice || existingLocal.cost || 0) === Number(localRecord.costPrice || localRecord.cost || 0) &&
+                Number(existingLocal.stock || 0) === Number(localRecord.stock || 0) &&
+                (existingLocal.barcode || null) === (localRecord.barcode || null) &&
+                (existingLocal.mainCategoryId || null) === (localRecord.mainCategoryId || null) &&
+                (existingLocal.subCategoryId || null) === (localRecord.subCategoryId || null) &&
+                (existingLocal.sort_order ?? null) === (localRecord.sort_order ?? null);
+
+              if (isIdentical) {
+                console.log(`[REALTIME OVERWRITE LOG] productId: ${newRecord.id} | eventType: ${eventType} | reason: SAME_VALUE_SUPPRESSED`);
+                return;
+              }
+            }
+
             if (table === 'products') {
-              traceProductObject('syncManager', 'handleRealtimeChange() OVERWRITE', existingLocal, localRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
+              console.log(`[REALTIME OVERWRITE LOG] productId: ${newRecord.id} | eventType: ${eventType} | incoming.updated_at: ${newRecord.updated_at} | local.updated_at: ${existingLocal?.updated_at || 'NONE'} | reason: APPLY`);
+              traceProductObject('syncManager', 'handleRealtimeChange() APPLY', existingLocal, localRecord, { file: 'syncManager.js', fn: 'handleRealtimeChange', eventType });
             }
             await this.reconcileUniqueIndexConflicts(table, localRecord);
             await databaseManager.update(table, localRecord);
@@ -269,10 +294,22 @@ class SyncManager {
         } else if (eventType === 'DELETE') {
           const targetId = String(oldRecord?.id || newRecord?.id || payload.old?.id || payload.new?.id || '');
           if (targetId) {
-            const delTime = payload.commit_timestamp || new Date().toISOString();
-            this.addDeletedTombstone(table, targetId, delTime);
-            await databaseManager.deletePhysical(table, targetId);
-            console.log(`🗑️ [Realtime] تم حذف السجل نهائياً وتسجيل الشاهد: ${table}/${targetId}`);
+            // 🛡️ REALTIME DELETE GUARD: Never blindly delete on Realtime event.
+            // Check local record first — if it's newer than the DELETE event or is pending, KEEP IT.
+            const existing = await databaseManager.get(table, targetId);
+            const eventTime = payload.commit_timestamp ? new Date(payload.commit_timestamp).getTime() : 0;
+            const localTime = existing ? new Date(existing.updated_at || 0).getTime() : 0;
+
+            if (existing && existing.sync_status === 'pending') {
+              console.warn(`[Realtime DELETE REJECTED] ${table}/${targetId} — local record is PENDING (has unsent changes). Keeping.`);
+            } else if (existing && localTime > eventTime) {
+              console.warn(`[Realtime DELETE REJECTED] ${table}/${targetId} — local record (${existing.updated_at}) is NEWER than DELETE event (${payload.commit_timestamp}). Keeping.`);
+            } else {
+              const delTime = payload.commit_timestamp || new Date().toISOString();
+              this.addDeletedTombstone(table, targetId, delTime);
+              await databaseManager.deletePhysical(table, targetId);
+              console.log(`🗑️ [Realtime] تم حذف السجل نهائياً وتسجيل الشاهد: ${table}/${targetId}`);
+            }
           }
         }
 
@@ -813,11 +850,9 @@ class SyncManager {
           }
         }
 
-        // ═══ منع Zombie Resurrection: حذف آمن بضمانات ستة كاملة ═══
-        // يتم حذف سجل محلي فقط إذا تحققت جميع الشروط:
-        // 1. غير موجود في نتائج السحب الكامل من السحاب
-        // 2. sync_status === 'synced' (ليس pending وليس deleted)
-        // 3. السحاب أعاد بيانات حقيقية (allCloudIdsSet.size > 0) لتجنب وهم إيجابي
+        // ═══ ZOMBIE SAFE MODE: حذف معطل — لا حذف فيزيائي حتى التحقق اليدوي ═══
+        // CRITICAL RULE: No local record is physically deleted automatically.
+        // All missing-from-cloud records are logged as KEEP_FOR_AUDIT.
         if (allCloudIdsSet.size > 0) {
           for (const localRecord of localRecords) {
             const localId = String(localRecord.id);
@@ -827,13 +862,11 @@ class SyncManager {
               const isTombstone = this.isRecordTombstoned(storeName, localId, recTime) || localRecord.sync_status === 'deleted';
               const isStaleSynced = localRecord.sync_status === 'synced';
 
-              // 🛡️ CRITICAL RULE: السجلات المعلقة pending (إضافة جديدة أو تعديل) لا تُحذف إطلاقاً في الخطوة 1
-              // يجب إعطاؤها الفرصة للرفع في الخطوة 2 (Upload-Second)
               if (isTombstone || isStaleSynced) {
-                console.log(`🧹 [SyncManager] Zombie Prevention | Store: ${storeName} | ID: ${localId} | حذف سجل محلي قديم غائب من السحاب (${allCloudIdsSet.size} سجل سحاب متحقق)`);
-                this.addDeletedTombstone(storeName, localId);
-                await databaseManager.deletePhysical(storeName, localId);
-                hasChanges = true;
+                // 🛡️ ZOMBIE SAFE MODE — KEEP_FOR_AUDIT: log only, no physical delete
+                console.warn(`[ZOMBIE SAFE MODE] Store: ${storeName} | ID: ${localId} | cloudSize: ${allCloudIdsSet.size} | sync_status: ${localRecord.sync_status} | action: KEEP_FOR_AUDIT — physical delete DISABLED`);
+                // ❌ NO databaseManager.deletePhysical() — disabled for customer data safety
+                // ❌ NO this.addDeletedTombstone() — disabled for customer data safety
               }
             }
           }
@@ -965,13 +998,13 @@ class SyncManager {
           const recordId = String(record.id);
           const recTime = record.created_at || record.updated_at;
           const isTombstoned = this.isRecordTombstoned(storeName, recordId, recTime);
-          if (
-            isTombstoned ||
-            (useFullPull && allCloudIdsSet.size > 0 && !allCloudIdsSet.has(recordId) && !record._isNewLocally)
-          ) {
-            console.log(`🛡️ [SyncManager] Pre-Upload Guard REJECTED stale pending write for deleted record: ${storeName}/${recordId}`);
-            this.addDeletedTombstone(storeName, recordId);
-            await databaseManager.deletePhysical(storeName, recordId);
+          if (isTombstoned) {
+            console.log(`🛡️ [SyncManager] Pre-Upload Guard REJECTED stale pending write for tombstoned record: ${storeName}/${recordId}`);
+            continue;
+          }
+
+          if (useFullPull && allCloudIdsSet.size > 0 && !allCloudIdsSet.has(recordId) && !record._isNewLocally) {
+            console.log(`🛡️ [SyncManager] [ZOMBIE SAFE MODE] Logged potential missing cloud item for audit: ${storeName}/${recordId} | action = KEEP_FOR_AUDIT`);
             continue;
           }
 

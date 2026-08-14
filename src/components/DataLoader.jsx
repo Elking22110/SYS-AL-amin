@@ -127,13 +127,9 @@ const DataLoader = ({ children }) => {
         // تفريغ الكاش التلقائي عند تحديث وإعادة بناء المشروع (Build)
         // ----------------------------------------------------
         const currentBuildTime = typeof __BUILD_TIME__ !== 'undefined' ? __BUILD_TIME__ : 'dev';
-        const lastBuildTime = localStorage.getItem('last_app_build_time');
-        if (currentBuildTime !== 'dev' && lastBuildTime && lastBuildTime !== currentBuildTime) {
-          console.log(`[DataLoader] App updated from build ${lastBuildTime} to ${currentBuildTime}. Resetting patch flags (protecting database)...`);
-          localStorage.removeItem('patch_company_codes_v40_all');
-          localStorage.removeItem('patch_company_codes_v41_all_v2');
-          localStorage.removeItem('patch_sync_seed_v43');
-        }
+        // NOTE: Do NOT reset seed patch flags on build update.
+        // All seed patches are historical one-time migrations — customer cloud data is canonical.
+        // Resetting flags would cause seed fetches to re-run and fail in packaged Electron.
         localStorage.setItem('last_app_build_time', currentBuildTime);
 
         // ─── CLOUD-FIRST CANONICAL HYDRATION GUARD ───
@@ -185,9 +181,13 @@ const DataLoader = ({ children }) => {
           if (!pulledFromCloud) {
             setLoadingMessage('جاري استيراد قاعدة البيانات لأول مرة (قد يستغرق ذلك ثوانٍ)...');
             console.log('جارِ استيراد قاعدة بيانات الأدوات الصحية الكاملة لElking من DataLoader...');
-            const response = await fetch('/products_seed.json');
-            if (!response.ok) {
-              throw new Error('فشل تحميل ملف البيانات الأولية للمنتجات');
+            let response;
+            try { response = await fetch('/products_seed.json'); } catch (_) {}
+            if (!response || !response.ok) {
+              // Seed file unavailable (packaged Electron — no dev server). Skip gracefully.
+              console.warn('[DataLoader] products_seed.json unavailable (Electron production). Skipping initial seed import. Cloud data is canonical.');
+              localStorage.setItem('migration_sanitary_alamin_v20', 'true');
+              return;
             }
             const seedData = await response.json();
             const categories = seedData.categories || [];
@@ -233,9 +233,12 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         const patchDone = localStorage.getItem('patch_alamin_v21_products') === 'true';
         if (!patchDone) {
+          // Mark done immediately — if seed unavailable in Electron, skip gracefully
+          localStorage.setItem('patch_alamin_v21_products', 'true');
+          try {
           console.log('DataLoader: Running patch_alamin_v21_products to inject new products...');
-          const response = await fetch('/products_seed.json');
-          if (response.ok) {
+          let response; try { response = await fetch('/products_seed.json'); } catch (_) {}
+          if (response && response.ok) {
             const seedData = await response.json();
             const products = seedData.products || [];
             const categories = seedData.categories || [];
@@ -273,8 +276,8 @@ const DataLoader = ({ children }) => {
               }
             }
 
-            localStorage.setItem('patch_alamin_v21_products', 'true');
           }
+          } catch (err) { console.warn('[DataLoader] patch_alamin_v21 skipped:', err.message); }
         }
         // ----------------------------------------------------
 
@@ -283,9 +286,11 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         const patchAquaDone = localStorage.getItem('patch_alamin_v22_aqua') === 'true';
         if (!patchAquaDone) {
+          localStorage.setItem('patch_alamin_v22_aqua', 'true');
+          try {
           console.log('DataLoader: Running patch_alamin_v22_aqua to inject Aqua Star products...');
-          const aquaResponse = await fetch('/products_seed.json');
-          if (aquaResponse.ok) {
+          let aquaResponse; try { aquaResponse = await fetch('/products_seed.json'); } catch (_) {}
+          if (aquaResponse && aquaResponse.ok) {
             const aquaSeedData = await aquaResponse.json();
             const aquaAllProducts = aquaSeedData.products || [];
             const aquaAllCategories = aquaSeedData.categories || [];
@@ -326,8 +331,8 @@ const DataLoader = ({ children }) => {
               localStorage.setItem('productCategories', JSON.stringify([...aquaLocalCats, ...aquaCatsToAdd]));
             }
 
-            localStorage.setItem('patch_alamin_v22_aqua', 'true');
           }
+          } catch (err) { console.warn('[DataLoader] patch_alamin_v22 skipped:', err.message); }
         }
         // ----------------------------------------------------
 
@@ -400,9 +405,11 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         const patchFaucetsDone = localStorage.getItem('patch_alamin_v25_faucets') === 'true';
         if (!patchFaucetsDone) {
+          localStorage.setItem('patch_alamin_v25_faucets', 'true');
+          try {
           console.log('DataLoader: Running patch_alamin_v25_faucets to inject Faucets & Nickel products...');
-          const response = await fetch('/products_seed.json');
-          if (response.ok) {
+          let response; try { response = await fetch('/products_seed.json'); } catch (_) {}
+          if (response && response.ok) {
             const seedData = await response.json();
             const products = seedData.products || [];
             const categories = seedData.categories || [];
@@ -445,6 +452,7 @@ const DataLoader = ({ children }) => {
 
             localStorage.setItem('patch_alamin_v25_faucets', 'true');
           }
+          } catch (err) { console.warn('[DataLoader] patch_alamin_v25 skipped:', err.message); }
         }
         // ----------------------------------------------------
 
@@ -453,9 +461,11 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         const patchRemainingDone = localStorage.getItem('patch_alamin_v26_remaining') === 'true';
         if (!patchRemainingDone) {
+          localStorage.setItem('patch_alamin_v26_remaining', 'true');
+          try {
           console.log('DataLoader: Running patch_alamin_v26_remaining to inject remaining products...');
-          const response = await fetch('/products_seed.json');
-          if (response.ok) {
+          let response; try { response = await fetch('/products_seed.json'); } catch (_) {}
+          if (response && response.ok) {
             const seedData = await response.json();
             const products = seedData.products || [];
             const categories = seedData.categories || [];
@@ -500,6 +510,7 @@ const DataLoader = ({ children }) => {
 
             localStorage.setItem('patch_alamin_v26_remaining', 'true');
           }
+          } catch (err) { console.warn('[DataLoader] patch_alamin_v26 skipped:', err.message); }
         }
         // ----------------------------------------------------
 
