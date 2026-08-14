@@ -132,6 +132,7 @@ export const AuthProvider = ({ children }) => {
       // حفظ في localStorage مع تشفير
       localStorage.setItem('auth_token', mockToken);
       localStorage.setItem('user_data', encryptData(mockUser));
+      localStorage.removeItem('user_logged_out');
 
       // تحديث آخر دخول في قاعدة بيانات المستخدمين
       if (foundUserInLocalStorage) {
@@ -179,6 +180,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
+    localStorage.setItem('user_logged_out', 'true');
   };
 
   // التحقق من الصلاحيات
@@ -236,6 +238,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const savedToken = localStorage.getItem('auth_token');
         const savedUserData = localStorage.getItem('user_data');
+        const explicitLogout = localStorage.getItem('user_logged_out') === 'true';
 
         if (savedToken && savedUserData) {
           const decryptedUser = decryptData(savedUserData);
@@ -247,10 +250,25 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user_data');
           }
+        } else if (!explicitLogout) {
+          // التغيير التلقائي لتطبيق POS المكتبي: الدخول التلقائي بحساب المدير عند التشغيل لأول مرة
+          const defaultAdmin = {
+            id: 'admin',
+            username: 'admin',
+            email: 'admin@admin.com',
+            role: 'admin',
+            permissions: ['read', 'write', 'delete', 'admin', 'pos_access', 'manage_products', 'view_reports', 'customer_access', 'manage_shifts'],
+            lastLogin: getCurrentDate(),
+            avatar: 'https://ui-avatars.com/api/?name=admin&background=random&color=ffffff'
+          };
+          const mockToken = encryptData(defaultAdmin);
+          setUser(defaultAdmin);
+          setToken(mockToken);
+          localStorage.setItem('auth_token', mockToken);
+          localStorage.setItem('user_data', encryptData(defaultAdmin));
         }
       } catch (error) {
         console.error('خطأ في تحميل بيانات المستخدم:', error);
-        // مسح البيانات التالفة
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user_data');
       } finally {
@@ -258,7 +276,6 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    // تأخير صغير لتجنب التحديثات المتكررة
     const timeoutId = setTimeout(loadUserData, 100);
     return () => clearTimeout(timeoutId);
   }, []);

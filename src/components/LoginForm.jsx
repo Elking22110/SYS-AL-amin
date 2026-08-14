@@ -4,7 +4,7 @@ import { User, Lock, Eye, EyeOff, Loader2, Shield, Key, AlertCircle, CheckCircle
 
 const LoginForm = () => {
   const { login, loading } = useAuth();
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ username: 'admin', password: 'admin' });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -26,47 +26,47 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-slate-900">
       <div className="relative z-10 w-full max-w-md mx-4">
-        <div className="glass-card hover-lift p-8">
+        <div className="bg-slate-800/90 border border-slate-700 rounded-2xl shadow-2xl p-8 backdrop-blur-xl">
           <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse-custom">
-              <Shield className="h-10 w-10 text-slate-800" />
+            <div className="w-20 h-20 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Shield className="h-10 w-10 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2">تسجيل الدخول</h1>
-            <p className="text-purple-200 text-sm">مرحبا بك</p>
+            <h1 className="text-2xl font-bold text-white mb-2">SIS AL AMEEN - نظام الأمين</h1>
+            <p className="text-slate-400 text-sm">تسجيل الدخول إلى النظام</p>
           </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500 bg-opacity-20 border border-red-500 border-opacity-30 rounded-lg">
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-xl">
               <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 text-red-300 mr-2" />
-                <span className="text-red-300 text-sm">{error}</span>
+                <AlertCircle className="h-5 w-5 text-red-400 mr-2 shrink-0" />
+                <span className="text-red-200 text-sm">{error}</span>
               </div>
             </div>
           )}
           {success && (
-            <div className="mb-6 p-4 bg-green-500 bg-opacity-20 border border-green-500 border-opacity-30 rounded-lg">
+            <div className="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-xl">
               <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 text-green-300 mr-2" />
-                <span className="text-green-300 text-sm">{success}</span>
+                <CheckCircle className="h-5 w-5 text-emerald-400 mr-2 shrink-0" />
+                <span className="text-emerald-200 text-sm">{success}</span>
               </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="relative">
-              <User className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-300 h-5 w-5" />
-              <input type="text" name="username" value={formData.username} onChange={(e)=>setFormData({...formData, username:e.target.value})} className="input-modern w-full pr-12 pl-4 py-4 text-right font-medium" placeholder="اسم المستخدم" disabled={loading} autoComplete="username" />
+              <User className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+              <input type="text" name="username" value={formData.username} onChange={(e)=>setFormData({...formData, username:e.target.value})} className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pr-12 pl-4 py-3.5 text-right font-medium text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all" placeholder="اسم المستخدم" disabled={loading} autoComplete="username" />
             </div>
             <div className="relative">
-              <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-purple-300 h-5 w-5" />
-              <input type={showPassword?'text':'password'} name="password" value={formData.password} onChange={(e)=>setFormData({...formData, password:e.target.value})} className="input-modern w-full pr-12 pl-12 py-4 text-right font-medium" placeholder="كلمة المرور" disabled={loading} autoComplete="current-password" />
-              <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-slate-800 transition-colors" disabled={loading}>
+              <Lock className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 h-5 w-5" />
+              <input type={showPassword?'text':'password'} name="password" value={formData.password} onChange={(e)=>setFormData({...formData, password:e.target.value})} className="w-full bg-slate-900/80 border border-slate-700 rounded-xl pr-12 pl-12 py-3.5 text-right font-medium text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all" placeholder="كلمة المرور" disabled={loading} autoComplete="current-password" />
+              <button type="button" onClick={()=>setShowPassword(!showPassword)} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition-colors" disabled={loading}>
                 {showPassword ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
               </button>
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+            <button type="submit" disabled={loading} className="w-full py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-lg font-bold shadow-lg shadow-violet-600/30 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
               {loading ? (<><Loader2 className="h-5 w-5 mr-2 animate-spin"/>جاري تسجيل الدخول...</>) : (<><Key className="h-5 w-5 mr-2"/>تسجيل الدخول</>)}
             </button>
           </form>
