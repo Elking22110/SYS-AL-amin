@@ -20,7 +20,7 @@ class DatabaseManager {
     this.db = null;
     const prefix = getProjectPrefix();
     this.dbName = `POS_Database_${prefix}`;
-    this.version = 7; // رُفع من 6→7 لإزالة unique constraint على email في users و customers
+    this.version = 8; // رُفع من 7→8 لإزالة unique constraint على name في categories لتجنب ConstraintError
   }
 
   // تهيئة قاعدة البيانات
@@ -60,8 +60,6 @@ class DatabaseManager {
         }
 
         // ─── v7: إزالة unique constraint على email في users و customers ───
-        // البريد الإلكتروني غير مستخدم كمفتاح تعريفي في هذا النظام
-        // إبقاء unique: true يسبب ConstraintError عند وجود مستخدمين بدون بريد
         if (oldVersion < 7) {
           if (db.objectStoreNames.contains('users')) {
             const usersStore = transaction.objectStore('users');
@@ -77,6 +75,18 @@ class DatabaseManager {
               customersStore.deleteIndex('email');
               customersStore.createIndex('email', 'email', { unique: false });
               console.log('[DB v7] ✅ customers.email: تم إزالة قيد unique بأمان – لا يوجد فقدان بيانات');
+            }
+          }
+        }
+
+        // ─── v8: إزالة unique constraint على name في categories (التميز بالمعرف id) ───
+        if (oldVersion < 8) {
+          if (db.objectStoreNames.contains('categories')) {
+            const categoriesStore = transaction.objectStore('categories');
+            if (categoriesStore.indexNames.contains('name')) {
+              categoriesStore.deleteIndex('name');
+              categoriesStore.createIndex('name', 'name', { unique: false });
+              console.log('[DB v8] ✅ categories.name: تم إزالة قيد unique بأمان – التميز بالمعرف (id) وليس الاسم');
             }
           }
         }
@@ -101,7 +111,7 @@ class DatabaseManager {
     // جدول التصنيفات
     if (!db.objectStoreNames.contains('categories')) {
       const categoriesStore = db.createObjectStore('categories', { keyPath: 'id' });
-      categoriesStore.createIndex('name', 'name', { unique: true });
+      categoriesStore.createIndex('name', 'name', { unique: false });
     }
 
     // جدول العملاء

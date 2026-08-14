@@ -460,10 +460,16 @@ class SyncManager {
             if (parsed.wp !== undefined) {
               mapped.wholesalePrice = parsed.wp;
             }
+            if (parsed.so !== undefined && parsed.so !== null) {
+              mapped.sort_order = Number(parsed.so);
+            }
             mapped.imagePath = parsed.img || '';
           } catch (_) {}
         }
         delete mapped.image_path;
+      }
+      if (record.sort_order !== undefined && record.sort_order !== null) {
+        mapped.sort_order = Number(record.sort_order);
       }
       if (record.custom_color !== undefined) { mapped.customColor = record.custom_color ?? ''; delete mapped.custom_color; }
     } else if (table === 'users') {
@@ -725,6 +731,7 @@ class SyncManager {
           Number(cloudLocal.price || 0) !== Number(localRecord.price || 0) ||
           Number(cloudLocal.costPrice || 0) !== Number(localRecord.costPrice || 0) ||
           Number(cloudLocal.stock || 0) !== Number(localRecord.stock || 0) ||
+          Number(cloudLocal.sort_order || 0) !== Number(localRecord.sort_order || 0) ||
           (cloudLocal.barcode || null) !== (localRecord.barcode || null) ||
           (cloudLocal.supplierCode || null) !== (localRecord.supplierCode || null) ||
           (cloudLocal.customColor || null) !== (localRecord.customColor || null) ||
@@ -999,14 +1006,20 @@ class SyncManager {
             delete uploadData.wholesale_price;
 
             let imageVal = record.imagePath || record.image_path || null;
-            if (record.hasOwnProperty('customColor') || record.hasOwnProperty('supplierCode') || record.hasOwnProperty('wholesalePrice') || record.hasOwnProperty('wholesale_price')) {
+            let currentMeta = (typeof imageVal === 'string' && imageVal.startsWith('{')) ? JSON.parse(imageVal) : { img: imageVal || '' };
+
+            if (record.hasOwnProperty('customColor') || record.hasOwnProperty('supplierCode') || record.hasOwnProperty('wholesalePrice') || record.hasOwnProperty('wholesale_price') || record.hasOwnProperty('sort_order')) {
               const wpVal = record.wholesalePrice ?? record.wholesale_price ?? uploadData.wholesalePrice ?? uploadData.wholesale_price ?? 0;
-              imageVal = JSON.stringify({
-                color: record.customColor || '',
-                code: record.supplierCode || '',
+              const soVal = (record.sort_order !== undefined && record.sort_order !== null) ? Number(record.sort_order) : (currentMeta.so ?? null);
+              
+              currentMeta = {
+                color: record.customColor || currentMeta.color || '',
+                code: record.supplierCode || currentMeta.code || '',
                 wp: wpVal,
+                so: soVal,
                 img: (typeof imageVal === 'string' && imageVal.startsWith('{')) ? (JSON.parse(imageVal).img || '') : (imageVal || '')
-              });
+              };
+              imageVal = JSON.stringify(currentMeta);
             }
 
             const prod = {
@@ -1149,7 +1162,12 @@ class SyncManager {
           }
           
           if (error) {
-            console.warn(`⚠️ [SyncManager] فشل رفع دفعة لـ ${storeName}، الانتقال للرفع الفردي التراجعي...`, error);
+            console.warn(`⚠️ [SyncManager] فشل رفع دفعة لـ ${storeName}:`, {
+              code: error.code,
+              message: error.message,
+              details: error.details,
+              hint: error.hint
+            });
             if (error.code === 'TIMEOUT') continue;
 
             for (const uploadItemData of chunk) {

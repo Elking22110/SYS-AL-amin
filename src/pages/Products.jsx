@@ -32,6 +32,9 @@ import syncManager from '../utils/syncManager.js';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 import { invalidateCategoryCache } from '../utils/categoryService.js';
 import { isUnresolvedProduct } from '../utils/unresolvedProducts.js';
+import { useLongPressDrag } from '../hooks/useLongPressDrag.js';
+import { calculateReorder, getNextSortOrder } from '../utils/reorderManager.js';
+import { sortSubcategories, parseInchSize, getBrandRank, sortProductsByHistoricalOrder } from '../utils/subcategorySorter.js';
 
 
 // دالة لتصحيح التنسيق وإزالة الرموز الزائدة وفك التداخل في أسماء المنتجات
@@ -1076,7 +1079,87 @@ const Products = () => {
     return matchesSearch && matchesMain && matchesSub;
   });
 
-  const displayedProducts = filteredProducts.slice(0, visibleCount);
+  const sortedFilteredProducts = React.useMemo(() => {
+    return sortProductsByHistoricalOrder(filteredProducts, selectedMainCategory);
+  }, [filteredProducts, selectedMainCategory]);
+
+  const displayedProducts = sortedFilteredProducts.slice(0, visibleCount);
+
+  // معالج إعادة الترتيب لسحب المنتجات بالضغط المطول في جدول المنتجات
+  const handleReorderProducts = React.useCallback(async (fromIdx, toIdx) => {
+    const { updatedProducts } = calculateReorder(displayedProducts, fromIdx, toIdx);
+    if (!updatedProducts || updatedProducts.length === 0) return;
+
+    const updatedMap = new Map(updatedProducts.map(p => [String(p.id), p]));
+    const newAllProducts = products.map(p => updatedMap.get(String(p.id)) || p);
+
+    setProducts(newAllProducts);
+    localStorage.setItem('products', JSON.stringify(newAllProducts));
+    storageOptimizer.clearCache('products');
+
+    const nowIso = new Date().toISOString();
+
+    await Promise.all(
+      updatedProducts.map(async (p) => {
+        const payload = { ...p, sync_status: 'pending', updated_at: nowIso };
+        await syncManager.markPending('products', payload).catch(err => console.error('Reorder IDB error:', err));
+      })
+    );
+
+    if (isKeysConfigured && supabase) {
+      try {
+        const cloudPayloads = updatedProducts.map(p => {
+          const rawImg = p.image_path || p.imagePath || null;
+          let meta = (typeof rawImg === 'string' && rawImg.startsWith('{')) ? JSON.parse(rawImg) : { img: rawImg || '' };
+          meta.so = Number(p.sort_order);
+          if (p.customColor) meta.color = p.customColor;
+          if (p.supplierCode) meta.code = p.supplierCode;
+
+          return {
+            id: String(p.id),
+            name: p.name,
+            price: Number(p.price || 0),
+            cost: Number(p.costPrice || p.cost || 0),
+            stock: Number(p.stock || 0),
+            barcode: p.barcode || null,
+            main_category_id: p.mainCategoryId || p.main_category_id || null,
+            sub_category_id: p.subCategoryId || p.sub_category_id || null,
+            image_path: JSON.stringify(meta),
+            updated_at: nowIso
+          };
+        });
+
+        const { error } = await supabase.from('products').upsert(cloudPayloads);
+        if (!error) {
+          await Promise.all(updatedProducts.map(async (p) => {
+            p.sync_status = 'synced';
+            delete p._isNewLocally;
+            await databaseManager.update('products', p);
+          }));
+        }
+      } catch (cloudErr) {
+        console.warn('⚠️ [ProductsPage] Cloud reorder upsert warning:', cloudErr);
+      }
+    }
+
+    syncManager.syncStore('products').catch(err => console.warn('Cloud sync reorder warning:', err));
+    window.dispatchEvent(new CustomEvent('productsUpdated', { detail: { action: 'reordered', products: newAllProducts } }));
+    try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'reorder', products: newAllProducts }); } catch (_) {}
+  }, [displayedProducts, products, setProducts]);
+
+  const {
+    dragState,
+    containerRef,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    cancelDrag,
+    shouldSuppressClick
+  } = useLongPressDrag({
+    items: displayedProducts,
+    onReorder: handleReorderProducts,
+    longPressDelay: 600
+  });
 
   const getProductCategoryDisplay = React.useCallback((product) => {
     const { mainName, subName } = resolveProductCategories(product);
@@ -1558,6 +1641,9 @@ const Products = () => {
     }
 
     const nowIso = new Date().toISOString();
+    const subProds = products.filter(p => String(p.subCategoryId || p.category) === String(newProduct.subCategoryId || finalCategoryName));
+    const nextSort = getNextSortOrder(subProds);
+
     const product = {
       id: String(Date.now()),
       ...newProduct,
@@ -1565,6 +1651,7 @@ const Products = () => {
       wholesalePrice: newProduct.wholesalePrice !== '' && newProduct.wholesalePrice !== undefined && !isNaN(parseFloat(newProduct.wholesalePrice)) ? parseFloat(newProduct.wholesalePrice) : parseFloat(newProduct.price),
       stock: newProduct.stock !== '' && newProduct.stock !== undefined && !isNaN(parseInt(newProduct.stock)) ? parseInt(newProduct.stock) : 0,
       minStock: newProduct.minStock !== '' && newProduct.minStock !== undefined && !isNaN(parseInt(newProduct.minStock)) ? parseInt(newProduct.minStock) : 0,
+      sort_order: nextSort,
       sync_status: 'pending',
       _isNewLocally: true,
       created_at: nowIso,
@@ -1600,6 +1687,7 @@ const Products = () => {
           barcode: product.barcode || null,
           main_category_id: product.mainCategoryId || null,
           sub_category_id: product.subCategoryId || null,
+          sort_order: product.sort_order,
           image_path: imageVal,
           updated_at: nowIso
         });
@@ -2382,10 +2470,17 @@ const Products = () => {
           </div>
         </div>
 
+        {/* معالج إعادة الترتيب لسحب المنتجات بالضغط المطول في جدول المنتجات */}
+        {(() => {
+          return null;
+        })()}
+
+
+        
         {/* Products Table */}
         <div className="glass-card overflow-hidden relative z-0 mt-6" style={{ transform: 'none', transition: 'none' }}>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="w-full select-none" ref={containerRef} data-reorder-container="true">
               <thead className="bg-white bg-opacity-10">
                 <tr>
                   <th className="px-4 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold text-slate-600 uppercase tracking-wider">المنتج</th>
@@ -2405,13 +2500,38 @@ const Products = () => {
                 )}
                 {displayedProducts.map((product, index) => {
                   const isUnresolved = isUnresolvedProduct(product);
+                  const isItemDragging = dragState.isDragging && dragState.draggedIndex === index;
+                  const isItemTarget = dragState.isDragging && dragState.targetIndex === index;
+
+                  let trClass = "transition-colors cursor-pointer ";
+                  if (isUnresolved) {
+                    trClass += "bg-emerald-500/10 border-r-4 border-r-emerald-500 hover:bg-emerald-500/20";
+                  } else {
+                    trClass += "hover:bg-white hover:bg-opacity-5";
+                  }
+
+                  if (isItemDragging) {
+                    trClass += dragState.isOverValid ? " bg-blue-500/20 border-blue-500 ring-2 ring-blue-500" : " bg-red-500/20 border-red-500 ring-2 ring-red-500 opacity-60";
+                  } else if (isItemTarget && dragState.isOverValid) {
+                    trClass += " bg-emerald-500/20 border-emerald-500 ring-2 ring-emerald-500";
+                  }
+
                   return (
                     <tr
                       key={product.id}
-                      className={isUnresolved
-                        ? "bg-emerald-500/10 border-r-4 border-r-emerald-500 hover:bg-emerald-500/20 transition-colors"
-                        : "hover:bg-white hover:bg-opacity-5"
-                      }
+                      data-reorder-index={index}
+                      onPointerDown={(e) => handlePointerDown(e, index, product)}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={handlePointerUp}
+                      onPointerCancel={cancelDrag}
+                      onClick={(e) => {
+                        if (shouldSuppressClick() || dragState.isDragging) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          return;
+                        }
+                      }}
+                      className={trClass}
                     >
                       <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                             <div className="text-sm md:text-base font-semibold text-slate-800 text-right" style={{ direction: 'rtl', unicodeBidi: 'plaintext' }}>
@@ -2511,6 +2631,46 @@ const Products = () => {
             </div>
           )}
         </div>
+
+        {/* Floating Drag Preview Overlay */}
+        {dragState.isDragging && dragState.draggedIndex !== null && displayedProducts[dragState.draggedIndex] && (
+          <div
+            className={`fixed top-0 left-0 pointer-events-none z-[99999] shadow-2xl rounded-xl p-3 bg-slate-900/95 text-white border-2 ${dragState.isOverValid ? 'border-blue-500 ring-4 ring-blue-500/30' : 'border-red-500 ring-4 ring-red-500/30'} flex flex-col justify-between select-none`}
+            style={{
+              transform: `translate3d(${dragState.pointerPos.x - (dragState.grabOffset?.x || 0)}px, ${dragState.pointerPos.y - (dragState.grabOffset?.y || 0)}px, 0px)`,
+              width: `${dragState.cardDimensions?.width || 260}px`,
+              height: `${dragState.cardDimensions?.height || 60}px`,
+              willChange: 'transform',
+              pointerEvents: 'none'
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-blue-400">🖐️ إعادة ترتيب المنتج</span>
+              <span className={`text-[10px] ${dragState.isOverValid ? 'bg-blue-900 text-blue-200' : 'bg-red-900 text-red-200'} px-2 py-0.5 rounded font-mono font-bold`}>
+                {dragState.isOverValid ? 'سحب صالح' : 'غير صالح'}
+              </span>
+            </div>
+            <div className="font-bold text-slate-100 text-sm truncate text-right mt-1">
+              {displayedProducts[dragState.draggedIndex].name}
+            </div>
+          </div>
+        )}
+
+        {/* Temporary Runtime Debug Panel for Reorder Verification */}
+        {dragState.isDragging && (
+          <div className="fixed bottom-4 left-4 z-[999999] bg-slate-900/90 text-white text-xs p-3 rounded-lg shadow-2xl border border-slate-700 font-mono space-y-1 pointer-events-none max-w-xs select-none">
+            <div className="text-emerald-400 font-bold border-b border-slate-700 pb-1">
+              🐞 [DRAG HIT TEST DEBUG]
+            </div>
+            <div>Pointer: ({dragState.pointerPos.x}, {dragState.pointerPos.y})</div>
+            <div>Hit Stage: <span className="text-yellow-300 font-bold">{dragState.hitStage || 'GAP'}</span></div>
+            <div>Target Card: <span className="text-emerald-300 font-bold">{dragState.targetProductName || 'None'}</span></div>
+            <div>Target ID: {dragState.targetProductId || 'N/A'}</div>
+            <div>Target Index: {dragState.targetIndex}</div>
+            <div>Side: <span className="text-blue-300 font-bold">{dragState.targetPositionSide || 'BEFORE'}</span></div>
+            <div>Dragged Item: {displayedProducts[dragState.draggedIndex]?.name}</div>
+          </div>
+        )}
 
 
         {/* نافذة إضافة فئة جديدة */}

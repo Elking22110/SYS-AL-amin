@@ -244,15 +244,27 @@ export function sortProductsByHistoricalOrder(products = [], mainCategoryName = 
       const rankA = SMART_SUBCAT_RANKS[subA] || 99;
       const rankB = SMART_SUBCAT_RANKS[subB] || 99;
       if (rankA !== rankB) return rankA - rankB;
-
-      const posA = SMART_HISTORICAL_POS[String(a.id)] || 999999;
-      const posB = SMART_HISTORICAL_POS[String(b.id)] || 999999;
-      if (posA !== posB) return posA - posB;
     } else if (isKessel) {
       const rankA = KESSEL_SUBCAT_RANKS[subA] || 99;
       const rankB = KESSEL_SUBCAT_RANKS[subB] || 99;
       if (rankA !== rankB) return rankA - rankB;
+    }
 
+    // Explicit user sort_order takes priority inside the same subcategory
+    const sortA = (a.sort_order !== undefined && a.sort_order !== null && !isNaN(Number(a.sort_order))) ? Number(a.sort_order) : null;
+    const sortB = (b.sort_order !== undefined && b.sort_order !== null && !isNaN(Number(b.sort_order))) ? Number(b.sort_order) : null;
+
+    if (sortA !== null && sortB !== null && sortA !== sortB) {
+      return sortA - sortB;
+    }
+    if (sortA !== null && sortB === null) return -1;
+    if (sortA === null && sortB !== null) return 1;
+
+    if (isSmart) {
+      const posA = SMART_HISTORICAL_POS[String(a.id)] || 999999;
+      const posB = SMART_HISTORICAL_POS[String(b.id)] || 999999;
+      if (posA !== posB) return posA - posB;
+    } else if (isKessel) {
       const posA = KESSEL_HISTORICAL_POS[String(a.id)] || 999999;
       const posB = KESSEL_HISTORICAL_POS[String(b.id)] || 999999;
       if (posA !== posB) return posA - posB;

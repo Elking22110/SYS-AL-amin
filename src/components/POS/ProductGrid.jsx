@@ -6,6 +6,13 @@ import searchOptimizer from '../../utils/searchOptimizer.js';
 import soundManager from '../../utils/soundManager.js';
 import { sortSubcategories, parseInchSize, getBrandRank, sortProductsByHistoricalOrder } from '../../utils/subcategorySorter.js';
 import { isUnresolvedProduct } from '../../utils/unresolvedProducts.js';
+import { useLongPressDrag } from '../../hooks/useLongPressDrag.js';
+import { calculateReorder } from '../../utils/reorderManager.js';
+import databaseManager from '../../utils/database.js';
+import syncManager from '../../utils/syncManager.js';
+import { supabase, isKeysConfigured } from '../../utils/supabaseClient.js';
+import { publish, EVENTS } from '../../utils/observerManager.js';
+
 
 
 
@@ -729,15 +736,20 @@ const ProductGrid = ({
         const brandA = getBrandRank(subA, selectedMainGroup);
         const brandB = getBrandRank(subB, selectedMainGroup);
         if (brandA !== brandB) return brandA - brandB;
+
+        const sortA = (a.sort_order !== undefined && a.sort_order !== null && !isNaN(Number(a.sort_order))) ? Number(a.sort_order) : null;
+        const sortB = (b.sort_order !== undefined && b.sort_order !== null && !isNaN(Number(b.sort_order))) ? Number(b.sort_order) : null;
+        if (sortA !== null && sortB !== null && sortA !== sortB) return sortA - sortB;
+        if (sortA !== null && sortB === null) return -1;
+        if (sortA === null && sortB !== null) return 1;
+
         const sizeA = parseInchSize(a.name) !== 999 ? parseInchSize(a.name) : parseInchSize(subA);
         const sizeB = parseInchSize(b.name) !== 999 ? parseInchSize(b.name) : parseInchSize(subB);
         if (sizeA !== sizeB) return sizeA - sizeB;
         return (a.name || '').localeCompare(b.name || '', 'ar');
       });
-    } else if (selectedMainGroup && (selectedMainGroup === 'اسمارت ابيض' || selectedMainGroup.includes('اسمارت'))) {
-      result = sortProductsByHistoricalOrder(result, 'اسمارت ابيض');
-    } else if (selectedMainGroup && (selectedMainGroup === 'كيسيل' || selectedMainGroup.includes('كيسيل') || selectedMainGroup.includes('كيسل'))) {
-      result = sortProductsByHistoricalOrder(result, 'كيسيل');
+    } else if (selectedMainGroup) {
+      result = sortProductsByHistoricalOrder(result, selectedMainGroup);
     }
 
 
@@ -753,6 +765,82 @@ const ProductGrid = ({
   const displayedProducts = React.useMemo(() => {
     return filteredProducts.slice(0, visibleCount);
   }, [filteredProducts, visibleCount]);
+
+  // معالج إعادة ترتيب المنتجات بسلاسة ودون مساس بالبيانات الأخرى
+  const handleReorderProducts = useCallback(async (fromIdx, toIdx) => {
+    const { updatedProducts } = calculateReorder(displayedProducts, fromIdx, toIdx);
+    if (!updatedProducts || updatedProducts.length === 0) return;
+
+    const updatedMap = new Map(updatedProducts.map(p => [String(p.id), p]));
+    const newAllProducts = products.map(p => updatedMap.get(String(p.id)) || p);
+
+    setProducts(newAllProducts);
+    localStorage.setItem('products', JSON.stringify(newAllProducts));
+    storageOptimizer.clearCache('products');
+
+    const nowIso = new Date().toISOString();
+
+    await Promise.all(
+      updatedProducts.map(async (p) => {
+        const payload = { ...p, sync_status: 'pending', updated_at: nowIso };
+        await syncManager.markPending('products', payload).catch(err => console.error('Reorder IDB error:', err));
+      })
+    );
+
+    if (isKeysConfigured && supabase) {
+      try {
+        const cloudPayloads = updatedProducts.map(p => {
+          const rawImg = p.image_path || p.imagePath || null;
+          let meta = (typeof rawImg === 'string' && rawImg.startsWith('{')) ? JSON.parse(rawImg) : { img: rawImg || '' };
+          meta.so = Number(p.sort_order);
+          if (p.customColor) meta.color = p.customColor;
+          if (p.supplierCode) meta.code = p.supplierCode;
+
+          return {
+            id: String(p.id),
+            name: p.name,
+            price: Number(p.price || 0),
+            cost: Number(p.cost || 0),
+            stock: Number(p.stock || 0),
+            barcode: p.barcode || null,
+            main_category_id: p.mainCategoryId || p.main_category_id || null,
+            sub_category_id: p.subCategoryId || p.sub_category_id || null,
+            image_path: JSON.stringify(meta),
+            updated_at: nowIso
+          };
+        });
+
+        const { error } = await supabase.from('products').upsert(cloudPayloads);
+        if (!error) {
+          await Promise.all(updatedProducts.map(async (p) => {
+            p.sync_status = 'synced';
+            delete p._isNewLocally;
+            await databaseManager.update('products', p);
+          }));
+        }
+      } catch (cloudErr) {
+        console.warn('⚠️ [ProductGrid] Cloud reorder upsert warning:', cloudErr);
+      }
+    }
+
+    syncManager.syncStore('products').catch(err => console.warn('Cloud sync reorder warning:', err));
+    window.dispatchEvent(new CustomEvent('productsUpdated', { detail: { action: 'reordered', products: newAllProducts } }));
+    try { publish(EVENTS.PRODUCTS_CHANGED, { type: 'reorder', products: newAllProducts }); } catch (_) {}
+  }, [displayedProducts, products, setProducts]);
+
+  const {
+    dragState,
+    containerRef,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    cancelDrag,
+    shouldSuppressClick
+  } = useLongPressDrag({
+    items: displayedProducts,
+    onReorder: handleReorderProducts,
+    longPressDelay: 600
+  });
 
   // إضافة معالج Enter للإضافة السريعة عند تصفية منتج واحد
   const handleSearchKeyDown = (e) => {
@@ -901,10 +989,10 @@ const ProductGrid = ({
           ))}
         </div>
 
-        {/* شبكة المنتجات على اليسار */}
-        <div className="flex-1 w-full">
+        {/* شبكة المنتجات على اليسار (المكان المعتمد لإعادة الترتيب) */}
+        <div className="flex-1 w-full" ref={containerRef} data-reorder-container="true">
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-3">
-            {displayedProducts.map((product) => {
+            {displayedProducts.map((product, index) => {
               const name = product.name || '';
               const subName = String(product.subCategoryId || product.subCategory || '');
               const mainCatName = String(product.mainCategoryId || product.category || '');
@@ -936,7 +1024,7 @@ const ProductGrid = ({
               
               const isUnresolved = isUnresolvedProduct(product);
 
-              let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group ";
+              let cardClass = "pos-product-card relative cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-blue-400 hover:-translate-y-0.5 border-2 flex flex-col rounded-xl group select-none ";
               let inlineStyle = {};
 
               if (isUnresolved) {
@@ -956,13 +1044,46 @@ const ProductGrid = ({
                 cardClass += "bg-white border-slate-200";
               }
 
+              const isItemDragging = dragState.isDragging && dragState.draggedIndex === index;
+              const isItemTarget = dragState.isDragging && dragState.targetIndex === index;
+
+              if (isItemDragging) {
+                if (dragState.isOverValid) {
+                  cardClass += " opacity-30 border-dashed border-blue-500 scale-95 z-10";
+                } else {
+                  cardClass += " opacity-30 border-dashed border-red-500 scale-95 z-10";
+                }
+              } else if (isItemTarget && dragState.isOverValid) {
+                cardClass += " ring-4 ring-emerald-500 border-emerald-500 bg-emerald-50/60 shadow-xl scale-102 transition-transform duration-150";
+              }
+
               return (
-                <div
-                  key={product.id}
-                  onClick={() => onAddToCart(product)}
-                  className={cardClass}
-                  style={inlineStyle}
-                >
+                <React.Fragment key={product.id}>
+                  <div
+                    data-reorder-index={index}
+                    onPointerDown={(e) => handlePointerDown(e, index, product)}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={cancelDrag}
+                    onClick={(e) => {
+                      if (shouldSuppressClick() || dragState.isDragging) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                      }
+                      onAddToCart(product);
+                    }}
+                    className={cardClass}
+                    style={inlineStyle}
+                  >
+                    {/* In-Place Target Highlight Overlay (Flicker-Free, No Layout Shift) */}
+                    {isItemTarget && dragState.isOverValid && !isItemDragging && (
+                      <div className="absolute inset-0 ring-4 ring-emerald-500 border-2 border-emerald-500 bg-emerald-500/20 rounded-xl pointer-events-none z-20 flex flex-col items-center justify-center backdrop-blur-[1px] transition-all duration-150">
+                        <div className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg flex items-center gap-1.5 animate-bounce">
+                          <span>📍 المكان الجديد للمنتج</span>
+                        </div>
+                      </div>
+                    )}
 
                 {/* اسم المنتج */}
                 <div className="flex-1 overflow-hidden">
@@ -1052,9 +1173,53 @@ const ProductGrid = ({
                   }
                 })()}
               </div>
-            );
-          })}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {/* Floating Drag Preview Overlay */}
+      {dragState.isDragging && dragState.draggedIndex !== null && displayedProducts[dragState.draggedIndex] && (
+        <div
+          className={`fixed top-0 left-0 pointer-events-none z-[99999] shadow-2xl rounded-xl p-3 bg-white/95 border-2 ${dragState.isOverValid ? 'border-blue-500 ring-4 ring-blue-500/30' : 'border-red-500 ring-4 ring-red-500/30'} flex flex-col justify-between select-none`}
+          style={{
+            transform: `translate3d(${dragState.pointerPos.x - (dragState.grabOffset?.x || 0)}px, ${dragState.pointerPos.y - (dragState.grabOffset?.y || 0)}px, 0px)`,
+            width: `${dragState.cardDimensions?.width || 180}px`,
+            height: `${dragState.cardDimensions?.height || 110}px`,
+            willChange: 'transform',
+            pointerEvents: 'none'
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-blue-600">🖐️ ترتيب المنتج</span>
+            <span className={`text-[10px] ${dragState.isOverValid ? 'bg-blue-100 text-blue-700' : 'bg-red-100 text-red-700'} px-1.5 py-0.5 rounded font-mono font-bold`}>
+              {dragState.isOverValid ? 'سحب صالح' : 'غير صالح'}
+            </span>
+          </div>
+          <div className="font-bold text-slate-800 text-sm truncate text-right mt-1">
+            {displayedProducts[dragState.draggedIndex].name}
+          </div>
+          <div className="text-left font-black text-blue-700 text-sm mt-1">
+            {Number(displayedProducts[dragState.draggedIndex].price || 0).toLocaleString('ar-EG')} ج.م
+          </div>
         </div>
+      )}
+
+      {/* Temporary Runtime Debug Panel for Reorder Verification */}
+      {dragState.isDragging && (
+        <div className="fixed bottom-4 left-4 z-[999999] bg-slate-900/90 text-white text-xs p-3 rounded-lg shadow-2xl border border-slate-700 font-mono space-y-1 pointer-events-none max-w-xs select-none">
+          <div className="text-emerald-400 font-bold border-b border-slate-700 pb-1">
+            🐞 [DRAG HIT TEST DEBUG]
+          </div>
+          <div>Pointer: ({dragState.pointerPos.x}, {dragState.pointerPos.y})</div>
+          <div>Hit Stage: <span className="text-yellow-300 font-bold">{dragState.hitStage || 'GAP'}</span></div>
+          <div>Target Card: <span className="text-emerald-300 font-bold">{dragState.targetProductName || 'None'}</span></div>
+          <div>Target ID: {dragState.targetProductId || 'N/A'}</div>
+          <div>Target Index: {dragState.targetIndex}</div>
+          <div>Side: <span className="text-blue-300 font-bold">{dragState.targetPositionSide || 'BEFORE'}</span></div>
+          <div>Dragged Item: {displayedProducts[dragState.draggedIndex]?.name}</div>
+        </div>
+      )}
 
           {/* زر تحميل المزيد */}
           {filteredProducts.length > visibleCount && (

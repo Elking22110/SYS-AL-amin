@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS public.products (
     main_category_id TEXT,
     sub_category_id TEXT,
     image_path TEXT,
+    sort_order NUMERIC,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ALTER TABLE public.products DISABLE ROW LEVEL SECURITY;

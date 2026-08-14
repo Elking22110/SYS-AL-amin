@@ -20,8 +20,6 @@ ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'عمي�
 ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'نشط';
 ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS debt NUMERIC DEFAULT 0;
 
--- ③ إصلاح جدول المستخدمين (users) - إضافة الأعمدة الناقصة
-ALTER TABLE public.users ADD COLUMN IF NOT EXISTS name TEXT;
-ALTER TABLE public.users ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
-ALTER TABLE public.users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZONE;
-ALTER TABLE public.users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+-- ④ إصلاح جدول المنتجات (products) - إضافة حقل الترتيب الناقص
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS sort_order NUMERIC;
+
