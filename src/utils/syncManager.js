@@ -4,6 +4,7 @@ import { publish, EVENTS } from './observerManager.js';
 import storageOptimizer from './storageOptimizer.js';
 import { trace, traceProductObject, traceProductsArray, traceSupabaseResponse, getTracedProductId } from './productTrace.js';
 import { invalidateCategoryCache } from './categoryService.js';
+import { licenseManager } from './licenseManager.js';
 
 class SyncManager {
   constructor() {
@@ -159,15 +160,42 @@ class SyncManager {
     }
   }
 
+  // 🛡️ SECURITY GATE: Check valid license AND valid user auth before syncing
+  isSyncAllowed() {
+    try {
+      const licCheck = licenseManager.verifyActivation();
+      if (!licCheck || !licCheck.isActivated) {
+        return false;
+      }
+      const token = localStorage.getItem('auth_token');
+      const userData = localStorage.getItem('user_data');
+      if (!token || !userData) {
+        return false;
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // بدء التزامن التلقائي الدوري (كل 5 ثوانٍ fallback) + Realtime فوري
   startAutoSync() {
+    if (!this.isSyncAllowed()) {
+      this.stopAutoSync();
+      return;
+    }
+
     // 1. تفعيل المزامنة الفورية عبر Supabase Realtime (WebSocket)
     this.startRealtimeSync();
 
     // 2. المزامنة الدورية كـ fallback كل 5 ثوانٍ
     if (this.syncIntervalId) return;
     this.syncIntervalId = setInterval(() => {
-      this.triggerSync();
+      if (this.isSyncAllowed()) {
+        this.triggerSync();
+      } else {
+        this.stopAutoSync();
+      }
     }, 5000);
     console.log('⏰ تم تفعيل المزامنة الدورية الخلفية (كل 5 ثوانٍ) + Realtime فوري');
   }
@@ -183,6 +211,10 @@ class SyncManager {
 
   // تفعيل مزامنة Realtime الفورية عبر WebSocket
   startRealtimeSync() {
+    if (!this.isSyncAllowed()) {
+      this.stopRealtimeSync();
+      return;
+    }
     if (!isKeysConfigured || !supabase) return;
     if (this.realtimeChannel) return; // منع الاشتراك المزدوج
 
@@ -561,6 +593,9 @@ class SyncManager {
 
   // مشغل المزامنة الآمن
   async triggerSync() {
+    if (!this.isSyncAllowed()) {
+      return;
+    }
     if (this.syncInProgress) {
       this.syncQueued = true;
       return;

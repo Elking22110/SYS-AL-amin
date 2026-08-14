@@ -28,10 +28,8 @@ const Sidebar = () => {
 
   useEffect(() => {
     const unsubscribe = syncManager.subscribe(status => setSyncStatus(status));
-    syncManager.startAutoSync();
     return () => {
       unsubscribe();
-      syncManager.stopAutoSync();
     };
   }, []);
 
