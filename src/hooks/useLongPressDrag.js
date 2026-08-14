@@ -81,10 +81,13 @@ export function useLongPressDrag({
       cancelAnimationFrame(autoScrollRafRef.current);
       autoScrollRafRef.current = null;
     }
-    if (activeTargetElRef.current && activeTargetElRef.current.releasePointerCapture) {
+    if (activeTargetElRef.current) {
       try {
-        activeTargetElRef.current.releasePointerCapture(activeTargetElRef.current.__pointerId);
+        if (activeTargetElRef.current.releasePointerCapture && activeTargetElRef.current.__pointerId !== undefined) {
+          activeTargetElRef.current.releasePointerCapture(activeTargetElRef.current.__pointerId);
+        }
       } catch (_) {}
+      activeTargetElRef.current.__pointerId = undefined;
     }
     activeTargetElRef.current = null;
 
@@ -101,6 +104,12 @@ export function useLongPressDrag({
     activeIndexRef.current = null;
     lastTargetIndexRef.current = null;
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__cancelDrag = cancelDrag;
+    }
+  }, [cancelDrag]);
 
   /**
    * High-Precision Multi-Column & Single-Column Target Detection
@@ -390,12 +399,18 @@ export function useLongPressDrag({
 
     const target = e.target;
     if (
+      !target ||
       target.closest('button') ||
       target.closest('input') ||
       target.closest('select') ||
+      target.closest('textarea') ||
       target.closest('a') ||
-      target.closest('.no-drag')
+      target.closest('[contenteditable="true"]') ||
+      target.closest('.no-drag') ||
+      target.closest('.fixed') ||
+      target.closest('[role="dialog"]')
     ) {
+      cancelDrag();
       return;
     }
 

@@ -477,16 +477,37 @@ const Products = () => {
   const [bulkImportMessage, setBulkImportMessage] = useState('');
   const [isParsingPdf, setIsParsingPdf] = useState(false);
 
-  // تركيز تلقائي على اسم المنتج عند فتح المودال لتسهيل وسرعة الإضافة
+  // تركيز تلقائي على اسم المنتج عند فتح المودال وإلغاء أي سحب معلق
   useEffect(() => {
     if (showAddModal) {
-      setTimeout(() => {
+      if (typeof window.__cancelDrag === 'function') {
+        try { window.__cancelDrag(); } catch (_) {}
+      }
+      const timer = setTimeout(() => {
         if (productNameInputRef.current) {
           productNameInputRef.current.focus();
+          try { productNameInputRef.current.select(); } catch (_) {}
         }
-      }, 150);
+      }, 50);
+      return () => clearTimeout(timer);
     }
   }, [showAddModal, editingProduct]);
+
+  const categoryNameInputRef = useRef(null);
+  useEffect(() => {
+    if (showAddCategoryModal) {
+      if (typeof window.__cancelDrag === 'function') {
+        try { window.__cancelDrag(); } catch (_) {}
+      }
+      const timer = setTimeout(() => {
+        if (categoryNameInputRef.current) {
+          categoryNameInputRef.current.focus();
+          try { categoryNameInputRef.current.select(); } catch (_) {}
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [showAddCategoryModal, newCategoryType]);
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -3164,12 +3185,13 @@ const Products = () => {
                   {newCategoryType === 'sub' ? 'اسم الفئة الفرعية' : 'اسم المجموعة الرئيسية'} <span className="text-red-400">*</span>
                 </label>
                 <input
+                  ref={categoryNameInputRef}
                   type="text"
                   value={newCategory.name}
                   onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                  className="input-modern w-full font-bold text-lg"
+                  className="input-modern w-full font-bold text-lg select-text"
                   placeholder={newCategoryType === 'sub' ? 'مثال: قطع ١/٢ بوصة' : 'مثال: قطع اكوا استار'}
-                  autoFocus
+                  style={{ pointerEvents: 'auto', userSelect: 'text' }}
                 />
               </div>
 
