@@ -2,7 +2,7 @@
 import { getCurrentDate } from './dateUtils.js';
 import { traceProductObject, getTracedProductId } from './productTrace.js';
 
-const SYNCABLE_STORES = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users'];
+const SYNCABLE_STORES = ['products', 'categories', 'customers', 'suppliers', 'expenses', 'sales', 'shifts', 'returns', 'users'];
 
 // الحصول على كود المشروع من البيئة لتفادي تداخل البيانات بين المشاريع على نفس الدومين
 const getProjectPrefix = () => {
@@ -19,7 +19,7 @@ class DatabaseManager {
   constructor() {
     this.db = null;
     const prefix = getProjectPrefix();
-    this.version = 9; // رُفع إلى 9 لإضافة جدول sync_outbox للمزامنة المستدامة المعزولة
+    this.version = 10; // رُفع إلى 10 لإضافة جداول suppliers و expenses لضمان التكامل الشامل لجميع الكيانات
   }
 
   // تهيئة قاعدة البيانات
@@ -40,7 +40,7 @@ class DatabaseManager {
 
       request.onsuccess = () => {
         this.db = request.result;
-        console.log('تم فتح قاعدة البيانات بنجاح');
+        console.log('تم فتح قاعدة البيانات بنجاح (الإصدار ' + this.db.version + ')');
         resolve(this.db);
       };
 
@@ -78,16 +78,30 @@ class DatabaseManager {
           }
         }
 
-        // ─── v8: إزالة unique constraint على name في categories (التميز بالمعرف id) ───
+        // ─── v8: إزالة unique constraint على name في categories ───
         if (oldVersion < 8) {
           if (db.objectStoreNames.contains('categories')) {
             const categoriesStore = transaction.objectStore('categories');
             if (categoriesStore.indexNames.contains('name')) {
               categoriesStore.deleteIndex('name');
               categoriesStore.createIndex('name', 'name', { unique: false });
-              console.log('[DB v8] ✅ categories.name: تم إزالة قيد unique بأمان – التميز بالمعرف (id) وليس الاسم');
+              console.log('[DB v8] ✅ categories.name: تم إزالة قيد unique بأمان');
             }
           }
+        }
+
+        // ─── v10: إضافة جداول suppliers و expenses لضمان الشمولية ───
+        if (!db.objectStoreNames.contains('suppliers')) {
+          const suppliersStore = db.createObjectStore('suppliers', { keyPath: 'id' });
+          suppliersStore.createIndex('name', 'name', { unique: false });
+          suppliersStore.createIndex('phone', 'phone', { unique: false });
+          console.log('[DB v10] ✅ suppliers: تم إنشاء جدول الموردين بنجاح');
+        }
+        if (!db.objectStoreNames.contains('expenses')) {
+          const expensesStore = db.createObjectStore('expenses', { keyPath: 'id' });
+          expensesStore.createIndex('type', 'type', { unique: false });
+          expensesStore.createIndex('date', 'date', { unique: false });
+          console.log('[DB v10] ✅ expenses: تم إنشاء جدول المصروفات بنجاح');
         }
 
         // إنشاء جداول جديدة لو مش موجودة (للتثبيت الجديد)
@@ -162,6 +176,20 @@ class DatabaseManager {
       backupsStore.createIndex('type', 'type', { unique: false });
     }
 
+    // جدول الموردين
+    if (!db.objectStoreNames.contains('suppliers')) {
+      const suppliersStore = db.createObjectStore('suppliers', { keyPath: 'id' });
+      suppliersStore.createIndex('name', 'name', { unique: false });
+      suppliersStore.createIndex('phone', 'phone', { unique: false });
+    }
+
+    // جدول المصروفات
+    if (!db.objectStoreNames.contains('expenses')) {
+      const expensesStore = db.createObjectStore('expenses', { keyPath: 'id' });
+      expensesStore.createIndex('type', 'type', { unique: false });
+      expensesStore.createIndex('date', 'date', { unique: false });
+    }
+
     // جدول الـ Outbox للمزايدات والتغييرات الآمنة
     if (!db.objectStoreNames.contains('sync_outbox')) {
       const outboxStore = db.createObjectStore('sync_outbox', { keyPath: 'operation_id' });
@@ -173,17 +201,22 @@ class DatabaseManager {
   }
 
   // إنشاء الجداول المفقودة
-  async ensureStoresExist() {
+  async ensureStoresExist(targetStoreName) {
     if (!this.db) {
       await this.init();
     }
 
-    const requiredStores = ['products', 'categories', 'customers', 'sales', 'shifts', 'returns', 'users', 'settings', 'backups'];
+    const requiredStores = ['products', 'categories', 'customers', 'suppliers', 'expenses', 'sales', 'shifts', 'returns', 'users', 'settings', 'backups', 'sync_outbox'];
+    if (targetStoreName && !requiredStores.includes(targetStoreName)) {
+      requiredStores.push(targetStoreName);
+    }
     const missingStores = requiredStores.filter(storeName => !this.db.objectStoreNames.contains(storeName));
 
     if (missingStores.length > 0) {
       console.log('جداول مفقودة:', missingStores);
-      // إعادة تهيئة قاعدة البيانات لإنشاء الجداول المفقودة
+      const currentVersion = this.db.version || this.version;
+      this.db.close();
+      this.version = currentVersion + 1;
       await this.init();
     }
   }

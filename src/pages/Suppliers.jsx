@@ -284,9 +284,15 @@ const Suppliers = () => {
       const updatedSuppliers = suppliers.filter(c => String(c.id) !== targetIdStr);
       setSuppliers(updatedSuppliers);
 
-      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB
+      // 1. تسجيل شاهد الحذف بالطابع الزمني وحذفه من IndexedDB والـ Outbox
       syncManager.addDeletedTombstone('suppliers', targetIdStr, nowIso);
-      await databaseManager.delete('suppliers', targetIdStr);
+      await databaseManager.delete('suppliers', targetIdStr).catch(() => {});
+      await databaseManager.addOutboxOp({
+        store_name: 'suppliers',
+        record_id: targetIdStr,
+        operation_type: 'DELETE',
+        payload: { id: targetIdStr }
+      }).catch(() => {});
       localStorage.setItem('suppliers', JSON.stringify(updatedSuppliers));
 
       // 2. الحذف المباشر من Supabase Cloud
