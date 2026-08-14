@@ -655,7 +655,7 @@ const POSMain = () => {
         try {
           if (navigator.serial && invoiceData) {
             const receiptData = {
-              printerSettings: printer.getPrinterSettings(),
+              printerSettings: thermalPrinterManager.getPrinterSettings(),
               storeInfo: {
                 storeName: storeInfo.companyName || storeInfo.storeName || 'Elking',
                 storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || '',
