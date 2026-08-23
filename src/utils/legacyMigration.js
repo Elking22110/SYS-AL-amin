@@ -16,9 +16,10 @@
 const MIGRATION_MARKER_KEY = 'legacy_db_migration_v1_completed';
 const MIGRATION_LOCK_LS_KEY = '__legacy_migration_in_progress__';
 
-// All known POS store names — used to verify migration coverage
+// All operational POS store names for migration (EXCLUDES catalog stores: products & categories)
+// Catalog baseline (2,539 approved items) is strictly managed by products_seed.json and Supabase
 const KNOWN_POS_STORES = [
-  'products', 'categories', 'customers', 'suppliers', 'expenses',
+  'customers', 'suppliers', 'expenses',
   'sales', 'shifts', 'returns', 'users', 'settings', 'backups',
   'sync_outbox'
 ];
@@ -362,6 +363,13 @@ async function migrateAllStores(legacyDb, canonicalDb) {
   logMigration('INFO', `Migrating stores: [${storeNames.join(', ')}]`);
 
   for (const storeName of storeNames) {
+    // Explicitly skip catalog stores (products and categories) during legacy migration
+    if (storeName === 'products' || storeName === 'categories') {
+      logMigration('INFO', `Skipping catalog store "${storeName}" during legacy DB migration (canonical baseline is 2,539 approved products)`);
+      results[storeName] = { skipped: true, reason: 'catalog_store_managed_by_canonical_baseline' };
+      continue;
+    }
+
     // Skip stores that don't exist in canonical DB (they will be created by ensureStoresExist)
     if (!canonicalDb.objectStoreNames.contains(storeName)) {
       logMigration('WARN', `Store "${storeName}" not in canonical DB — will skip (ensureStoresExist will create it on next cycle)`);

@@ -4,6 +4,7 @@ import databaseManager from '../utils/database';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 import syncManager from '../utils/syncManager';
 import { runLegacyMigration } from '../utils/legacyMigration';
+import bundledProductsSeed from '../../public/products_seed.json';
 
 const DataLoader = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -13,15 +14,10 @@ const DataLoader = ({ children }) => {
     const loadData = async () => {
       try {
         setLoadingMessage('جاري تهيئة قاعدة البيانات...');
-        // ✅ FIX #2: استخدام Singleton — init() آمنة الآن (لن تُفتح IDB مرتين بسبب الـ guard)
-        // App.jsx يستدعيها أيضاً لكن الـ Singleton يضمن فتح واحد فقط
         await databaseManager.init();
         await databaseManager.ensureStoresExist();
 
         // ── LEGACY DB MIGRATION ──────────────────────────────────────────────
-        // يجب أن تعمل قبل أي قراءة لبيانات تجارية
-        // تنسخ بيانات العميل من DB القديمة (undefined) للجديدة (pos-system-xxx)
-        // تعمل مرة واحدة فقط ولا تحذف أي بيانات
         setLoadingMessage('جاري فحص بيانات التثبيت القديم...');
         let migResult = { migrationExecuted: false, migrationRequired: false, verificationPassed: false };
         try {
@@ -39,10 +35,8 @@ const DataLoader = ({ children }) => {
             console.log('[DataLoader] No legacy migration needed (fresh install or already done)');
           }
         } catch (migErr) {
-          // Migration failure is NOT fatal — app continues with whatever data is in canonical DB
           console.error('[DataLoader] Legacy migration encountered an error (non-fatal):', migErr);
         }
-        // ─────────────────────────────────────────────────────────────────────
 
         // ----------------------------------------------------
         // WIPE OPERATIONAL DATA TRIGGER CHECK
@@ -75,13 +69,6 @@ const DataLoader = ({ children }) => {
         // ----------------------------------------------------
         // DETERMINISTIC STARTUP STATE MACHINE (v61)
         // ----------------------------------------------------
-        // States:
-        //   FIRST_INSTALL    — No products, no prior cloud sync, no migration done
-        //   POST_MIGRATION   — Migration just ran but left 0 products (legacy had none)
-        //   ALREADY_SYNCED   — Has synced with cloud before (last_sync_ key present)
-        //   READY_LOCAL      — Has products locally; no cloud download needed
-        //   UNKNOWN          — Fallback; treat conservatively as READY_LOCAL
-        // ----------------------------------------------------
         const existingProdsOnInit = await databaseManager.getAll('products');
         const localProductCount = Array.isArray(existingProdsOnInit) ? existingProdsOnInit.length : 0;
         const schemaVersion = Number(localStorage.getItem('app_data_schema_version') || 0);
@@ -89,18 +76,10 @@ const DataLoader = ({ children }) => {
         const hasSyncHistory = Object.keys(localStorage).some(k => k.startsWith('last_sync_'));
 
         const resolveStartupState = () => {
-          // Has products locally — safest path, never download
           if (localProductCount > 0 || schemaVersion >= 60) return 'READY_LOCAL';
-          // Already hydrated from cloud before (flag persists across restarts)
           if (cloudHydrationDone) return 'ALREADY_SYNCED';
-          // Has sync history — was connected before, incremental sync will handle it
           if (hasSyncHistory) return 'ALREADY_SYNCED';
-          // Migration just ran: legacy DB had records (e.g. only shifts, no products)
-          // Do NOT treat 0-products-after-migration as first install for catalog purposes
           if (migResult.migrationExecuted || migResult.migrationRequired) return 'POST_MIGRATION';
-          // Migration marker in settings store means it ran in a previous session
-          // (migResult.migrationExecuted = false because it was already done)
-          // Use schemaVersion as proxy — if not set, this may truly be first install
           return 'FIRST_INSTALL';
         };
 
@@ -119,7 +98,6 @@ const DataLoader = ({ children }) => {
         ];
 
         if (startupState === 'READY_LOCAL' || startupState === 'ALREADY_SYNCED') {
-          // Production data exists locally — mark all historical patch flags done
           HISTORICAL_PATCH_FLAGS.forEach(flag => {
             try { localStorage.setItem(flag, 'true'); } catch (_) {}
           });
@@ -127,9 +105,6 @@ const DataLoader = ({ children }) => {
           console.log(`[DataLoader] ${startupState}: Production catalog active (${localProductCount} products). Skipping cloud hydration.`);
 
         } else if (startupState === 'POST_MIGRATION') {
-          // Legacy migration ran but had no catalog products (only shifts/settings)
-          // Do NOT download 1000 products — incremental sync will handle cloud state
-          // Mark schema version so we don't re-enter this branch next startup
           HISTORICAL_PATCH_FLAGS.forEach(flag => {
             try { localStorage.setItem(flag, 'true'); } catch (_) {}
           });
@@ -170,9 +145,7 @@ const DataLoader = ({ children }) => {
                 localStorage.setItem('productCategories', JSON.stringify(mappedCats));
                 window.__bypass_sync_proxy__ = false;
 
-                // ✅ Mark hydration complete — prevents re-download on next startup
                 localStorage.setItem('cloud_hydration_done', new Date().toISOString());
-
                 pulledFromCloud = true;
                 console.log(`[DataLoader] FIRST_INSTALL Cloud Hydration SUCCESS: loaded ${mappedProds.length} products & ${mappedCats.length} categories.`);
               }
@@ -184,36 +157,30 @@ const DataLoader = ({ children }) => {
           if (!pulledFromCloud) {
             setLoadingMessage('جاري استيراد البيانات الأولية...');
             try {
-              let response;
-              try { response = await fetch('/products_seed.json'); } catch (_) {}
-              if (response && response.ok) {
-                const seedData = await response.json();
-                const categories = seedData.categories || [];
-                const products = seedData.products || [];
+              const seedData = bundledProductsSeed;
+              const categories = seedData.categories || [];
+              const products = seedData.products || [];
 
-                await databaseManager.importData({
-                  products: products,
-                  categories: categories,
-                  users: [
-                    {
-                      id: 'admin',
-                      username: 'admin',
-                      email: 'admin@alaminstore.com',
-                      role: 'admin',
-                      name: 'المدير العام'
-                    }
-                  ]
-                });
-                window.__bypass_sync_proxy__ = true;
-                localStorage.setItem('productCategories', JSON.stringify(categories));
-                localStorage.setItem('products', JSON.stringify(products));
-                window.__bypass_sync_proxy__ = false;
-                console.log('[DataLoader] Seed import complete.');
-              } else {
-                console.warn('[DataLoader] products_seed.json unavailable (Electron production). Skipping initial seed import. Cloud data is canonical.');
-              }
+              await databaseManager.importData({
+                products: products,
+                categories: categories,
+                users: [
+                  {
+                    id: 'admin',
+                    username: 'admin',
+                    email: 'admin@alaminstore.com',
+                    role: 'admin',
+                    name: 'المدير العام'
+                  }
+                ]
+              });
+              window.__bypass_sync_proxy__ = true;
+              localStorage.setItem('productCategories', JSON.stringify(categories));
+              localStorage.setItem('products', JSON.stringify(products));
+              window.__bypass_sync_proxy__ = false;
+              console.log(`[DataLoader] Seed import complete (${products.length} products & ${categories.length} categories).`);
             } catch (err) {
-              console.warn('[DataLoader] Seed fetch skipped:', err.message);
+              console.warn('[DataLoader] Seed import error:', err.message);
             }
           }
 
