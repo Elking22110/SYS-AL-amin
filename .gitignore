@@ -134,3 +134,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# ── Electron Build Artifacts (large binaries — use GitHub Releases instead) ──
+release/
+release_dist/
+dist_electron/
+out/
+*.exe
+*.blockmap
+*.AppImage
+*.dmg
+*.snap
