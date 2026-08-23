@@ -1,0 +1,2838 @@
+{
+  "generatedAt": "2026-08-23T06:44:47.480Z",
+  "totalExtra": 282,
+  "byCategory": {
+    "بولي + صرف": 152,
+    "عام": 70,
+    "كيسيل": 22,
+    "مجموعه حنفيات+نواكل": 13,
+    "قطع اكوا استار": 11,
+    "خلاطات": 6,
+    "وصله متعدده": 4,
+    "اسمارت ابيض": 2,
+    "الاهرام بولي+صرف": 1,
+    "1785090872897": 1
+  },
+  "products": [
+    {
+      "id": "171149",
+      "name": "طبة كاب ١/٢",
+      "price": 0,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171150",
+      "name": "كوع لحام ١/٢",
+      "price": 5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171151",
+      "name": "تى لحام ١/٢",
+      "price": 5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171152",
+      "name": "كوع لحام مفتوح ١/٢",
+      "price": 6,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171153",
+      "name": "محبس دفن ١/٢",
+      "price": 185,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171154",
+      "name": "محبس بلاكور ١/٢",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بو��ة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171157",
+      "name": "كوع سن ١/٢",
+      "price": 30,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171158",
+      "name": "تى سن ١/٢",
+      "price": 30,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171159",
+      "name": "جلبة سن خارجي ١/٢",
+      "price": 45,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171161",
+      "name": "كرنك لحام ١/٢",
+      "price": 10,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171248",
+      "name": "محبس زاوية استانلس",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171249",
+      "name": "محبس زاوية p.g",
+      "price": 100,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171250",
+      "name": "محبس زاوية vagner",
+      "price": 90,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171251",
+      "name": "محبس زاوية H.R نحاس",
+      "price": 120,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171252",
+      "name": "محبس زاوية ROVA صغير",
+      "price": 120,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171253",
+      "name": "محبس زاوية p.g plus",
+      "price": 140,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171254",
+      "name": "محبس زاوية ROVA ثقيل",
+      "price": 150,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171255",
+      "name": "محبس زاوية SMART صغير",
+      "price": 105,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171256",
+      "name": "محبس زاوية SMART كبير",
+      "price": 155,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171257",
+      "name": "محبس زاوية SMART بوش",
+      "price": 130,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171258",
+      "name": "محبس زاوية Active اسود",
+      "price": 165,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171260",
+      "name": "محبس زاوية استانلس MARVEL",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171261",
+      "name": "محبس زاوية ROVA كبير",
+      "price": 150,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "مجموعه حنفيات+نواكل",
+      "sub_category_id": "محبس زاوية",
+      "updated_at": "2026-08-13T16:42:44.088799+00:00"
+    },
+    {
+      "id": "171412",
+      "name": "وصلة ٣٠ سم تجاري",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "وصله متعدده",
+      "sub_category_id": "وصلة مرنة تجاري",
+      "updated_at": "2026-08-13T16:42:44.865392+00:00"
+    },
+    {
+      "id": "171413",
+      "name": "وصلة ٤٠ سم تجاري",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "وصله متعدده",
+      "sub_category_id": "وصلة مرنة تجاري",
+      "updated_at": "2026-08-13T16:42:44.865392+00:00"
+    },
+    {
+      "id": "171414",
+      "name": "وصلة ٥٠ سم تجاري",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "وصله متعدده",
+      "sub_category_id": "وصلة مرنة تجاري",
+      "updated_at": "2026-08-13T16:42:44.865392+00:00"
+    },
+    {
+      "id": "1785079861617",
+      "name": "طبه كاب 1/2",
+      "price": 1,
+      "stock": 0,
+      "barcode": "",
+      "main_category_id": "قطع اكوا استار",
+      "sub_category_id": "قطع ١/٢ بوصة اكوا استار",
+      "updated_at": "2026-08-13T16:42:46.344079+00:00"
+    },
+    {
+      "id": "1785081115574",
+      "name": " جلتراپ الاهرام 20 * 20",
+      "price": 220,
+      "stock": 0,
+      "barcode": "",
+      "main_category_id": "الاهرام بولي+صرف",
+      "sub_category_id": "قطع ٢بوصه الاهرام ابيض",
+      "updated_at": "2026-08-13T16:42:46.344079+00:00"
+    },
+    {
+      "id": "1785596955002",
+      "name": "TEST-PRODUCT-E2E-001",
+      "price": 99.99,
+      "stock": 0,
+      "barcode": "TEST-E2E-001",
+      "main_category_id": "1785090872897",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:46.344079+00:00"
+    },
+    {
+      "id": "1786295173779",
+      "name": "سماعه جواد",
+      "price": 650,
+      "stock": 0,
+      "barcode": "345",
+      "main_category_id": "خلاطات",
+      "sub_category_id": "خلاط شطاف",
+      "updated_at": "2026-08-09T17:06:14.007+00:00"
+    },
+    {
+      "id": "1786295308778",
+      "name": "جلبه جواد",
+      "price": 55,
+      "stock": 0,
+      "barcode": "890",
+      "main_category_id": "خلاطات",
+      "sub_category_id": "خلاط شطاف",
+      "updated_at": "2026-08-09T17:08:32.850491+00:00"
+    },
+    {
+      "id": "1786295410663",
+      "name": "غطاء بلاعه اسود",
+      "price": 465,
+      "stock": 0,
+      "barcode": "899",
+      "main_category_id": "خلاطات",
+      "sub_category_id": "خلاط شطاف",
+      "updated_at": "2026-08-09T17:10:10.663+00:00"
+    },
+    {
+      "id": "1786295743793",
+      "name": "محبس دفن اسود ",
+      "price": 420,
+      "stock": 0,
+      "barcode": "678",
+      "main_category_id": "خلاطات",
+      "sub_category_id": "خلاط شطاف",
+      "updated_at": "2026-08-09T17:15:44.057+00:00"
+    },
+    {
+      "id": "1786295817381",
+      "name": "نطره دفن ",
+      "price": 125,
+      "stock": 0,
+      "barcode": "99",
+      "main_category_id": "خلاطات",
+      "sub_category_id": "خلاط شطاف",
+      "updated_at": "2026-08-09T17:16:57.596+00:00"
+    },
+    {
+      "id": "1786296143836",
+      "name": "وش جواد ",
+      "price": 35,
+      "stock": 0,
+      "barcode": "888",
+      "main_category_id": "خلاطات",
+      "sub_category_id": null,
+      "updated_at": "2026-08-09T17:22:24.086+00:00"
+    },
+    {
+      "id": "1786720571643",
+      "name": "متر 4 بوصه 3 ملي اسمارت ",
+      "price": 207.75,
+      "stock": 0,
+      "barcode": "333040002",
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656351526",
+      "updated_at": "2026-08-14T20:38:33.406031+00:00"
+    },
+    {
+      "id": "1786720666411",
+      "name": "متر 4 بوصه 5ملي اسمارت",
+      "price": 320.25,
+      "stock": 0,
+      "barcode": "333040004",
+      "main_category_id": "اسمارت ابيض",
+      "sub_category_id": "1786656351526",
+      "updated_at": "2026-08-14T20:38:33.406031+00:00"
+    },
+    {
+      "id": "1787232865536",
+      "name": "متر 32 كيسيل",
+      "price": 57.75,
+      "stock": 0,
+      "barcode": "332020009",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-23T06:29:33.14794+00:00"
+    },
+    {
+      "id": "1787233033855",
+      "name": "كوع عاده 32 كيسيل",
+      "price": 21,
+      "stock": 0,
+      "barcode": "352020008",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:37:13.958+00:00"
+    },
+    {
+      "id": "1787233100591",
+      "name": "كوع مفتوح 32 كيسيل",
+      "price": 25.5,
+      "stock": 0,
+      "barcode": "352010008",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:38:20.689+00:00"
+    },
+    {
+      "id": "1787233182638",
+      "name": "جلبه 32 كيسيل",
+      "price": 30.5,
+      "stock": 0,
+      "barcode": "352080009",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:39:42.703+00:00"
+    },
+    {
+      "id": "1787233297415",
+      "name": "مشترك مفتوح 32 كيسيل",
+      "price": 52,
+      "stock": 0,
+      "barcode": "352040015",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:41:37.485+00:00"
+    },
+    {
+      "id": "1787233356509",
+      "name": "مشترك عاده 32 كيسيل",
+      "price": 51,
+      "stock": 0,
+      "barcode": "352050016",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:42:36.578+00:00"
+    },
+    {
+      "id": "1787233757804",
+      "name": "مسلوب 50*1 كيسيل",
+      "price": 33.75,
+      "stock": 0,
+      "barcode": "352092007",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:49:17.931+00:00"
+    },
+    {
+      "id": "1787233990412",
+      "name": "مسلوب 50*32 كيسيل",
+      "price": 33.75,
+      "stock": 0,
+      "barcode": "",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:53:10.527+00:00"
+    },
+    {
+      "id": "1787234057857",
+      "name": "طبه كاب 32 كيسيل",
+      "price": 15.25,
+      "stock": 0,
+      "barcode": "352091012",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:54:17.971+00:00"
+    },
+    {
+      "id": "1787234140948",
+      "name": "طبه لتش 32 كيسيل",
+      "price": 12.75,
+      "stock": 0,
+      "barcode": "352091006",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232418390",
+      "updated_at": "2026-08-20T13:55:41.068+00:00"
+    },
+    {
+      "id": "1787234271586",
+      "name": "متر ماوسير  50م كيسيل",
+      "price": 73.5,
+      "stock": 0,
+      "barcode": "33202001",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T13:57:51.698+00:00"
+    },
+    {
+      "id": "1787234387400",
+      "name": "كوع مفتوح 50م كيسيل",
+      "price": 34.5,
+      "stock": 0,
+      "barcode": "352010002",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T13:59:47.515+00:00"
+    },
+    {
+      "id": "1787234483569",
+      "name": "كوع عاده 50م كيسيل",
+      "price": 33.25,
+      "stock": 0,
+      "barcode": "352020002",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:01:23.679+00:00"
+    },
+    {
+      "id": "1787234572281",
+      "name": "جلبه 50م كيسيل",
+      "price": 40.5,
+      "stock": 0,
+      "barcode": "352080002",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:02:52.28+00:00"
+    },
+    {
+      "id": "1787234654208",
+      "name": "جلبه اصلاح 50م كيسيل",
+      "price": 46.25,
+      "stock": 0,
+      "barcode": "352080017",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:04:14.314+00:00"
+    },
+    {
+      "id": "1787234745896",
+      "name": "مشترك واى 50م كيسيل",
+      "price": 71,
+      "stock": 0,
+      "barcode": "352040003",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:05:46.001+00:00"
+    },
+    {
+      "id": "1787234810921",
+      "name": "مشترك عاده 50م كيسيل",
+      "price": 68.75,
+      "stock": 0,
+      "barcode": "352050003",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:06:51.046+00:00"
+    },
+    {
+      "id": "1787234889559",
+      "name": "هوايه 50م كيسيل",
+      "price": 35,
+      "stock": 0,
+      "barcode": "352093001",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:08:09.663+00:00"
+    },
+    {
+      "id": "1787234958232",
+      "name": "طبة بيبة 50م كيسيل",
+      "price": 35,
+      "stock": 0,
+      "barcode": "352091002",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:09:18.345+00:00"
+    },
+    {
+      "id": "1787235031673",
+      "name": "طبه كاب 50م كيسيل",
+      "price": 30.75,
+      "stock": 0,
+      "barcode": "352091008",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:10:31.777+00:00"
+    },
+    {
+      "id": "1787235079730",
+      "name": "جلبه بسن 50م كيسيل",
+      "price": 31,
+      "stock": 0,
+      "barcode": "352080012",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:11:19.87+00:00"
+    },
+    {
+      "id": "1787235138750",
+      "name": "كوع بسن 50م كيسيل",
+      "price": 33.75,
+      "stock": 0,
+      "barcode": "35202007",
+      "main_category_id": "1786743257300",
+      "sub_category_id": "1787232476557",
+      "updated_at": "2026-08-20T14:12:18.86+00:00"
+    },
+    {
+      "id": "374",
+      "name": "وصلة مرنة اصيل 80 سم",
+      "price": 80,
+      "stock": 100,
+      "barcode": "AL.247",
+      "main_category_id": "وصله متعدده",
+      "sub_category_id": "وصلة مرنة اصيل",
+      "updated_at": "2026-08-13T16:42:46.911462+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_conflict_test",
+      "name": "Original Product Name",
+      "price": 75,
+      "stock": 80,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_idempotent_test",
+      "name": "Idempotent Pending Item",
+      "price": 999,
+      "stock": 10,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_0",
+      "name": "Load Test Product 0",
+      "price": 200,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_1",
+      "name": "Load Test Product 1",
+      "price": 201,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_14",
+      "name": "Load Test Product 14",
+      "price": 214,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_15",
+      "name": "Load Test Product 15",
+      "price": 215,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_16",
+      "name": "Load Test Product 16",
+      "price": 216,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_17",
+      "name": "Load Test Product 17",
+      "price": 217,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_19",
+      "name": "Load Test Product 19",
+      "price": 219,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_2",
+      "name": "Load Test Product 2",
+      "price": 202,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_23",
+      "name": "Load Test Product 23",
+      "price": 223,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_24",
+      "name": "Load Test Product 24",
+      "price": 224,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_25",
+      "name": "Load Test Product 25",
+      "price": 225,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_26",
+      "name": "Load Test Product 26",
+      "price": 226,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_27",
+      "name": "Load Test Product 27",
+      "price": 227,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_28",
+      "name": "Load Test Product 28",
+      "price": 228,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_29",
+      "name": "Load Test Product 29",
+      "price": 229,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_3",
+      "name": "Load Test Product 3",
+      "price": 203,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_30",
+      "name": "Load Test Product 30",
+      "price": 230,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_31",
+      "name": "Load Test Product 31",
+      "price": 231,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_32",
+      "name": "Load Test Product 32",
+      "price": 232,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_33",
+      "name": "Load Test Product 33",
+      "price": 233,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_36",
+      "name": "Load Test Product 36",
+      "price": 236,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_37",
+      "name": "Load Test Product 37",
+      "price": 137,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_38",
+      "name": "Load Test Product 38",
+      "price": 138,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_40",
+      "name": "Load Test Product 40",
+      "price": 140,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_41",
+      "name": "Load Test Product 41",
+      "price": 141,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_42",
+      "name": "Load Test Product 42",
+      "price": 142,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_43",
+      "name": "Load Test Product 43",
+      "price": 143,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_44",
+      "name": "Load Test Product 44",
+      "price": 144,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_45",
+      "name": "Load Test Product 45",
+      "price": 145,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_46",
+      "name": "Load Test Product 46",
+      "price": 146,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_47",
+      "name": "Load Test Product 47",
+      "price": 147,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785076896137_ins_48",
+      "name": "Load Test Product 48",
+      "price": 148,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_conflict_test",
+      "name": "Original Product Name",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_0",
+      "name": "Load Test Product 0",
+      "price": 200,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_1",
+      "name": "Load Test Product 1",
+      "price": 201,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_10",
+      "name": "Load Test Product 10",
+      "price": 210,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_11",
+      "name": "Load Test Product 11",
+      "price": 211,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_14",
+      "name": "Load Test Product 14",
+      "price": 214,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_15",
+      "name": "Load Test Product 15",
+      "price": 215,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_16",
+      "name": "Load Test Product 16",
+      "price": 216,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_17",
+      "name": "Load Test Product 17",
+      "price": 217,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_18",
+      "name": "Load Test Product 18",
+      "price": 218,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_2",
+      "name": "Load Test Product 2",
+      "price": 202,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_21",
+      "name": "Load Test Product 21",
+      "price": 221,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_22",
+      "name": "Load Test Product 22",
+      "price": 222,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_23",
+      "name": "Load Test Product 23",
+      "price": 223,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_24",
+      "name": "Load Test Product 24",
+      "price": 224,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_25",
+      "name": "Load Test Product 25",
+      "price": 225,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_26",
+      "name": "Load Test Product 26",
+      "price": 226,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_27",
+      "name": "Load Test Product 27",
+      "price": 227,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_28",
+      "name": "Load Test Product 28",
+      "price": 228,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_29",
+      "name": "Load Test Product 29",
+      "price": 229,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_3",
+      "name": "Load Test Product 3",
+      "price": 203,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_30",
+      "name": "Load Test Product 30",
+      "price": 230,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_31",
+      "name": "Load Test Product 31",
+      "price": 231,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_38",
+      "name": "Load Test Product 38",
+      "price": 238,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_39",
+      "name": "Load Test Product 39",
+      "price": 239,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_41",
+      "name": "Load Test Product 41",
+      "price": 241,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_42",
+      "name": "Load Test Product 42",
+      "price": 242,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_43",
+      "name": "Load Test Product 43",
+      "price": 243,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_44",
+      "name": "Load Test Product 44",
+      "price": 244,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_45",
+      "name": "Load Test Product 45",
+      "price": 245,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_46",
+      "name": "Load Test Product 46",
+      "price": 246,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_47",
+      "name": "Load Test Product 47",
+      "price": 247,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_48",
+      "name": "Load Test Product 48",
+      "price": 248,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_49",
+      "name": "Load Test Product 49",
+      "price": 249,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_6",
+      "name": "Load Test Product 6",
+      "price": 206,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "load_test_1785079220891_ins_8",
+      "name": "Load Test Product 8",
+      "price": 208,
+      "stock": 50,
+      "barcode": null,
+      "main_category_id": "عام",
+      "sub_category_id": null,
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_11_مسلوب_٧٥_٥٠_بولي_الاهرام",
+      "name": "مسلوب ٧٥*٥٠ بولي الاهرام",
+      "price": 121,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_12_جلبه_٧٥_سن_دخلي_بولي_الاهرام",
+      "name": "جلبه ٧٥ سن دخلي بولي الاهرام",
+      "price": 1012,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_2_جلبه_٢_بولي_الاهرام",
+      "name": "جلبه ٢ بولي الاهرام",
+      "price": 63,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_3_تي_٢_بولي_الاهرام",
+      "name": "تي ٢ بولي الاهرام",
+      "price": 93,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_4_م_٧٥_ملي_بولي_الاهرام_١٦_بن",
+      "name": "م ٧٥ ملي بولي الاهرام ١٦ بن",
+      "price": 371,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_5_كوع_٧٥ملي_بولي_الاهرام",
+      "name": "كوع ٧٥ملي بولي الاهرام",
+      "price": 131,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_6_جلبه٧٥بولي_الاهرام",
+      "name": "جلبه٧٥بولي الاهرام",
+      "price": 112,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_7_تي_٧٥_٥٠_ملي_بولي_الاهرام",
+      "name": "تي ٧٥*٥٠ ملي بولي الاهرام",
+      "price": 224,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_8_تي_٧٥_٣٢_ملي_بولي_الاهرام",
+      "name": "تي ٧٥*٣٢ ملي بولي الاهرام",
+      "price": 191.8,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-13T21:00:41.123393+00:00"
+    },
+    {
+      "id": "poly_sarf_بولي ٢ و ٣ بوصه الاهرام_9_مسلوب_٧٥_٣٢_بولي_الاهرام",
+      "name": "مسلوب ٧٥*٣٢ بولي الاهرام",
+      "price": 121,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "بولي ٢ و ٣ بوصه الاهرام",
+      "updated_at": "2026-08-14T15:35:59.167614+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١ بوصة الاهرام أبيض_0_متر_١_عادة_أبيض",
+      "name": "متر ١ عادة أبيض",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١ بوصة الاهرام أبيض",
+      "updated_at": "2026-08-14T00:06:05.645953+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١ بوصة الاهرام أبيض_1_م_١_بوصه_الاهرام_أبيض",
+      "name": "م ١ بوصه الاهرام أبيض",
+      "price": 40,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١ بوصة الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١ بوصة الاهرام أبيض_5_مشترك_١_بوصة_عادة_أبيض",
+      "name": "مشترك ١ بوصة عادة أبيض",
+      "price": 18,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١ بوصة الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١ بوصة الاهرام أبيض_6_مشترك_مفتوح_١_أبيض",
+      "name": "مشترك مفتوح ١ أبيض",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١ بوصة الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_0_متر_بولي_١,٥_الاهرام",
+      "name": "متر بولي ١,٥ الاهرام",
+      "price": 170,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_1_تي_لحام_١,٥_١_بولي_اهرام",
+      "name": "تي لحام ١,٥*١ بولي اهرام",
+      "price": 66,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_10_كوع_١,٥_بسن_الاهرام",
+      "name": "كوع ١,٥ بسن الاهرام",
+      "price": 298,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_11_جلبه_١,٥_بسن_دخلي_الاهرام",
+      "name": "جلبه ١,٥ بسن دخلي الاهرام",
+      "price": 297,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_13_جلبه_١,٥_بلاكور_بسن_خارجي_الاهرام",
+      "name": "جلبه ١,٥ بلاكور بسن خارجي الاهرام",
+      "price": 494,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_14_تي_١,٥_٣_٤_لحام_الاهرام",
+      "name": "تي ١,٥*٣/٤ لحام الاهرام",
+      "price": 66,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_2_محبس_١,٥_بلاكور_الاهرام",
+      "name": "محبس ١,٥ بلاكور الاهرام",
+      "price": 1206,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_3_كوع_١,٥_لحام_الاهرام",
+      "name": "كوع ١,٥ لحام الاهرام",
+      "price": 54,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_4_تي_١,٥_لحام_الاهرام",
+      "name": "تي ١,٥ لحام الاهرام",
+      "price": 66,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_6_جلبه_١,٥_لحام_الاهرام",
+      "name": "جلبه ١,٥ لحام الاهرام",
+      "price": 46,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_7_مسلوب_١,٥_١_لحام_الاهرام",
+      "name": "مسلوب ١,٥*١ لحام الاهرام",
+      "price": 46,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_8_مسلوب_١,٥_٣_٤_لحام_الاهرام",
+      "name": "مسلوب ١,٥*٣/٤ لحام الاهرام",
+      "price": 46,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.404734+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١,٥ بولي الاهرام_9_طبه_١,٥_لحام_الاهرام",
+      "name": "طبه ١,٥ لحام الاهرام",
+      "price": 46,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١,٥ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_0_كوع_١٫٥_٤٥_ابيض_الاهرام",
+      "name": "كوع ١٫٥ ٤٥ ابيض الاهرام",
+      "price": 19,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_1_كوع_مفتوح_١٫٥_ابيض_الاهرام",
+      "name": "كوع مفتوح ١٫٥ ابيض الاهرام",
+      "price": 19,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_2_تي_١٫٥_ابيض_الاهرام",
+      "name": "تي ١٫٥ ابيض الاهرام",
+      "price": 28,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_3_جلبه_١٫٥_ابيض_الاهرام",
+      "name": "جلبه ١٫٥ ابيض الاهرام",
+      "price": 16,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_4_واي_١٫٥_ابيض_الاهرام",
+      "name": "واي ١٫٥ ابيض الاهرام",
+      "price": 41,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_5_كوع_بسن_١٫٥_ابيض_الاهرام",
+      "name": "كوع بسن ١٫٥ ابيض الاهرام",
+      "price": 29,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_6_جلبه_بسن_١٫٥_ابيض_الاهرام",
+      "name": "جلبه بسن ١٫٥ ابيض الاهرام",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_7_بيبه_شور_١٫٥_ابيض_الاهرام",
+      "name": "بيبه شور ١٫٥ ابيض الاهرام",
+      "price": 94,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_8_م_١٫٥_٤_م_ابيض_الاهرام",
+      "name": "م ١٫٥ ٤ م ابيض الاهرام",
+      "price": 78,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١٫٥ ابيض الاهرام_9_م_١٫٥_٣_م_ابيض_الاهرام",
+      "name": "م ١٫٥ ٣ م ابيض الاهرام",
+      "price": 59,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١٫٥ ابيض الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_0_تي_مسلوب١_١_٢_بولي_اهرام",
+      "name": "تي مسلوب١*١/٢ بولي اهرام",
+      "price": 29,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_1_م_١_بوصه_بولي_الاهرام",
+      "name": "م ١ بوصه بولي الاهرام",
+      "price": 72,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_10_تي_مسلوب_بولي_٣_٤_١_اهرام",
+      "name": "تي مسلوب بولي ٣/٤*١ اهرام",
+      "price": 30.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_11_تي_بسن_١بوصه_الاهرام",
+      "name": "تي بسن ١بوصه الاهرام",
+      "price": 227,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_12_جلبه_١بوصه_سن_خارجي_الاهرام",
+      "name": "جلبه ١بوصه سن خارجي الاهرام",
+      "price": 202,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_13_جلبه_١_٣_٤_سن_خارجي_الاهرام",
+      "name": "جلبه ١*٣/٤ سن خارجي الاهرام",
+      "price": 130,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_14_جلبه_١بوصه_سن_داخلي_الاهرام",
+      "name": "جلبه ١بوصه سن داخلي الاهرام",
+      "price": 164,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_15_متر_بولي_١_معزول_الاهرام",
+      "name": "متر بولي ١ معزول الاهرام",
+      "price": 113,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_16_محبس_١_بوصه_بلاكور_الاهرام",
+      "name": "محبس ١ بوصه بلاكور الاهرام",
+      "price": 594,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_17_بكرة_تفلون_ايطالي",
+      "name": "بكرة تفلون ايطالي",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_18_بكرة_تفلون_صيني",
+      "name": "بكرة تفلون صيني",
+      "price": 10,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_2_مسلوب_٣_٤لحام_بولي١__الاهرام",
+      "name": "مسلوب ٣/٤لحام بولي١* الاهرام",
+      "price": 13.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_3_كوع_١_بوصه_بولي_الاهرام",
+      "name": "كوع ١ بوصه بولي الاهرام",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_4_كوع_١_مفتوح_بولي_الاهرام",
+      "name": "كوع ١ مفتوح بولي الاهرام",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_5_تي_١بوصه_بولي_الاهرام",
+      "name": "تي ١بوصه بولي الاهرام",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_6_مسلوب_١_٢_لحام_بولي_١__الاهرام",
+      "name": "مسلوب ١/٢ لحام بولي ١* الاهرام",
+      "price": 13.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_7_جلبه_لحام_١بوصه_الاهرام",
+      "name": "جلبه لحام ١بوصه الاهرام",
+      "price": 13.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_8_طبه_١بوصه_بولي_الاهرام",
+      "name": "طبه ١بوصه بولي الاهرام",
+      "price": 13.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ١بوصه بولي الاهرام_9_كوع_١بوصه_بسن_بولي_الاهرام",
+      "name": "كوع ١بوصه بسن بولي الاهرام",
+      "price": 178,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ١بوصه بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_0_جلتراب_الاهرام_20_20",
+      "name": "جلتراب الاهرام 20*20",
+      "price": 220,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_1_كوع_٢_بوصه_ابيض_الاهرام",
+      "name": "كوع ٢ بوصه ابيض الاهرام",
+      "price": 31,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_10_بيبه_٧_١,٥_سم_ابيض_الاهرام",
+      "name": "بيبه ٧*١,٥ سم ابيض الاهرام",
+      "price": 60,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_11_بيبه_٢_١,٥_بوصه_ابيض_الاهرام",
+      "name": "بيبه ٢*١,٥ بوصه ابيض الاهرام",
+      "price": 119,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_12_بيبه_٢_٢_ابيض_الاهرام",
+      "name": "بيبه ٢/٢ ابيض الاهرام",
+      "price": 124,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_13_بيبه_٢_٢_٧سم_ابيض_الاهرام",
+      "name": "بيبه ٢/٢ ٧سم ابيض الاهرام",
+      "price": 83,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_14_م_٢_بوصه_٣ملى_الاهرام_ابيض",
+      "name": "م ٢ بوصه ٣ملى الاهرام ابيض",
+      "price": 71,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_15_م_٢_بوصه_٤ملى_الاهرام_ابيض",
+      "name": "م ٢ بوصه ٤ملى الاهرام ابيض",
+      "price": 100,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_16_هوايه_٢_بوصه",
+      "name": "هوايه ٢ بوصه",
+      "price": 17,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_2_كوع_مفتوح_٢_بوصه_ابيض_الاهرام",
+      "name": "كوع مفتوح ٢ بوصه ابيض الاهرام",
+      "price": 31,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_3_تي_٢_بوصه_ابيض_الاهرام",
+      "name": "تي ٢ بوصه ابيض الاهرام",
+      "price": 43,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_4_جلبه_٢_بوصه_ابيض_الاهرام",
+      "name": "جلبه ٢ بوصه ابيض الاهرام",
+      "price": 21,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_5_واي_٢_بوصه_ابيض_الاهرام",
+      "name": "واي ٢ بوصه ابيض الاهرام",
+      "price": 57,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_6_كوع_باب_٢_بوصه_ابيض_الاهرام",
+      "name": "كوع باب ٢ بوصه ابيض الاهرام",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_7_طبه_٢_تسليك_بوصه_ابيض_الاهرام",
+      "name": "طبه ٢ تسليك بوصه ابيض الاهرام",
+      "price": 35,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_8_طبه_٢_بوصه_ابيض_الاهرام",
+      "name": "طبه ٢ بوصه ابيض الاهرام",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢ بوصه الاهرام أبيض_9_بوش_٣_١,٥_بوصه_ابيض_الاهرام",
+      "name": "بوش ٣*١,٥ بوصه ابيض الاهرام",
+      "price": 18,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_0_متر_بولي_٢_١_اهرام",
+      "name": "متر بولي ٢/١ اهرام",
+      "price": 36,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_1_كوع_٢_١_بولي_اهرام",
+      "name": "كوع ٢/١ بولي اهرام",
+      "price": 8.4,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_10_جلبه_بسن_خارجي_١_٢_بولي_اهرام",
+      "name": "جلبه بسن خارجي ١/٢ بولي اهرام",
+      "price": 88.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_12_افيز_٤_بوصه_ايطالى",
+      "name": "افيز �� بوصه ايطالى",
+      "price": 40,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_13_افيز_٣_بوصه_ايطالى",
+      "name": "افيز ٣ بوصه ايطالى",
+      "price": 35,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_14_افيز_٢_بوصه_ايطالى",
+      "name": "افيز ٢ بوصه ايطالى",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_15_افيز_١_٥_ايطالى",
+      "name": "افيز ١/٥ ايطالى",
+      "price": 22,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_16_افيز_١_بوصه_ايطالى",
+      "name": "افيز ١ بوصه ايطالى",
+      "price": 17,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_17_افيز_٣_٤_بوصه_ايطالى",
+      "name": "افيز ٣/٤ بوصه ايطالى",
+      "price": 15,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_18_افيز_١_٢_بوصه_ايطالى",
+      "name": "افيز ١/٢ بوصه ايطالى",
+      "price": 15,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_19_FOX_لحام_1_4",
+      "name": "FOX لحام 1/4",
+      "price": 90,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_2_تي_٢_١_لحام_بولي_اهرام",
+      "name": "تي ٢/١ لحام بولي اهرام",
+      "price": 9.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_20_FOX_لحام_1_8",
+      "name": "FOX لحام 1/8",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_21_نبل_نيكل_١_٢",
+      "name": "نبل نيكل ١/٢",
+      "price": 10,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_22_وصله_نيكل_40سم",
+      "name": "وصله نيكل 40سم",
+      "price": 20,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_23_طبه_اختبار_١_٢",
+      "name": "طبه اختبار ١/٢",
+      "price": 3,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_24_بكرة_تفلون_جامبو",
+      "name": "بكرة تفلون جامبو",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_25_بكره_عازل",
+      "name": "بكره عازل",
+      "price": 35,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_26_بكره_عازل_تايواني",
+      "name": "بكره عازل تايواني",
+      "price": 60,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_27_حنفيه_بليه_١_٢_LAVORA",
+      "name": "حنفيه بليه ١/٢ LAVORA",
+      "price": 65,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_28_K_لفه_السومات_٣",
+      "name": "K لفه السومات ٣",
+      "price": 500,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_29_K_لفه_السومات_٤",
+      "name": "K لفه السومات ٤",
+      "price": 550,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_3_جلبه_٢_١_بولي_اهرام",
+      "name": "جلبه ٢/١ بولي اهرام",
+      "price": 6.3,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_4_مسلوب_٢_١_٣_٤_لحام_بولي_اهرام",
+      "name": "مسلوب ٢/١*٣/٤ لحام بولي اهرام",
+      "price": 11.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_5_كوع_٢_١_بسن_بولي_اهرام",
+      "name": "كوع ٢/١ بسن بولي اهرام",
+      "price": 66,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_6_تي_بسن_٢_١_بولي_اهرام",
+      "name": "تي بسن ٢/١ بولي اهرام",
+      "price": 72,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_7_جلبه_بسن_٢_١_دخلي_بولي_اهرام",
+      "name": "جلبه بسن ٢/١ دخلي بولي اهرام",
+      "price": 70,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_8_محبس_٢_١_دفن_بولي_اهرام",
+      "name": "محبس ٢/١ دفن بولي اهرام",
+      "price": 483,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٢/١ بولي الاهرام_9_كرنك_٢_١_قصير_بولي_اهرام",
+      "name": "كرنك ٢/١ قصير بولي اهرام",
+      "price": 17,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٢/١ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_0_متر_٣_٤_بولي_الاهرام",
+      "name": "متر ٣/٤ بولي الاهرام",
+      "price": 49.25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_10_جلبه_بسن_داخلي_٣_٤_٢_١_الاهرام",
+      "name": "جلبه بسن داخلي ٣/٤*٢/١ الاهرام",
+      "price": 74,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_11_جلبه_بسن_خارجي_٣_٤_الاهرام_٢_١",
+      "name": "جلبه بسن خارجي ٣/٤ الاهرام ٢/١",
+      "price": 91,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_12_جلبه_بسن_داخلي_٣_٤_الاهرام",
+      "name": "جلبه بسن داخلي ٣/٤ الاهرام",
+      "price": 98,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_13_كوع_بسن_٣_٤_الاهرام",
+      "name": "كوع بسن ٣/٤ الاهرام",
+      "price": 104,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_14_تي_بسن_٣_٤_الاهرام",
+      "name": "تي بسن ٣/٤ الاهرام",
+      "price": 135,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_15_جلبه_بسن_خارجي_٣_٤_الاهرام",
+      "name": "جلبه بسن خارجي ٣/٤ الاهرام",
+      "price": 124,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_16_كرنك_٣_٤_قصير_الاهرام",
+      "name": "كرنك ٣/٤ قصير الاهرام",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_17_محبس_٣_٤_دفن_الاهرام",
+      "name": "محبس ٣/٤ دفن الاهرام",
+      "price": 502,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_18_محبس_٣_٤_بلاكور_الاهرام",
+      "name": "محبس ٣/٤ بلاكور الاهرام",
+      "price": 390,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_2_كوع_٣_٤_لحام_بولي_الاهرام",
+      "name": "كوع ٣/٤ لحام بولي الاهرام",
+      "price": 10.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_21_بكرة_تفلون_ايطالي",
+      "name": "بكرة تفلون ايطالي",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_22_حنفية_بلية_٢_١_لافورا",
+      "name": "حنفية بلية ٢/١ لافورا",
+      "price": 65,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_23_P-G_حنفية_بلية_٢_١",
+      "name": "P-G حنفية بلية ٢/١",
+      "price": 100,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_24_افيز_فيشر_٣_٤",
+      "name": "افيز فيشر ٣/٤",
+      "price": 15,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_25_افيز_فيشر_١_بوصة",
+      "name": "افيز فيشر ١ بوصة",
+      "price": 17,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_3_كوع_٣_٤_مفتوح_بولي_الاهرام",
+      "name": "كوع ٣/٤ مفتوح بولي الاهرام",
+      "price": 10,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_4_تي_٣_٤_لحام_بولي_الاهرام",
+      "name": "تي ٣/٤ لحام بولي الاهرام",
+      "price": 15.75,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_5_جلبه_٣_٤_لحام_بولي_الاهرام",
+      "name": "جلبه ٣/٤ لحام بولي الاهرام",
+      "price": 8.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_7_طبه_٣_٤_لحام_بولي_الاهرام",
+      "name": "طبه ٣/٤ لحام بولي الاهرام",
+      "price": 8.5,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_8_كوع_بسن_٣_٤_الاهرام_٢_١",
+      "name": "كوع بسن ٣/٤ الاهرام ٢/١",
+      "price": 70,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣/٤ بولي الاهرام_9_تي_بسن_٣_٤_الاهرام_٢_١",
+      "name": "تي بسن ٣/٤ الاهرام ٢/١",
+      "price": 79,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣/٤ بولي الاهرام",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_11_جلبه_اصلاح_٣بوصه_ابيض_الاهرام",
+      "name": "جلبه اصلاح ٣بوصه ابيض الاهرام",
+      "price": 36,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_13_صليبه_٣_٣بوصه_ابيض_الاهرام",
+      "name": "صليبه ٣*٣بوصه ابيض الاهرام",
+      "price": 178,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_14_طبه_تسليك_٣بوصه_ابيض_ال��هرام",
+      "name": "طبه تسليك ٣بوصه ابيض الاهرام",
+      "price": 53,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_15_طبه_عميه_٣بوصه_أبيض_الاهرام",
+      "name": "طبه عميه ٣بوصه أبيض الاهرام",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_17_نقاص_٣_٣_ابيض_الاهرام",
+      "name": "نقاص ٣*٣ ابيض الاهرام",
+      "price": 25,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_19_بيبه_٣_٢بوصه_ابيض_الاهرام",
+      "name": "بيبه ٣/٢بوصه ابيض الاهرام",
+      "price": 135,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_2_كوع_٣بوصه_ابيض_الاهرام",
+      "name": "كوع ٣بوصه ابيض الاهرام",
+      "price": 55,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_3_كوع_مفتوح_٣بوصه_ابيض_الاهرام",
+      "name": "كوع مفتوح ٣بوصه ابيض الاهرام",
+      "price": 55,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_4_كوع_باب_٣بوصه_ابيض_الاهرام",
+      "name": "كوع باب ٣بوصه ابيض الاهرام",
+      "price": 75,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_7_واي_٣بوصه_ابيض_الاهرام",
+      "name": "واي ٣بوصه ابيض الاهرام",
+      "price": 129,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٣بوصه الاهرام أبيض_9_تي_٣_٣_باب_ابيض_الاهرام",
+      "name": "تي ٣*٣ باب ابيض الاهرام",
+      "price": 102,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٣بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_0_كوع_٤بوصه_ابيض_الاهرام",
+      "name": "كوع ٤بوصه ابيض الاهرام",
+      "price": 99,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_1_كوع_مفتوح_٤بوصه_ابيض_الاهرام",
+      "name": "كوع مفتوح ٤بوصه ابيض الاهرام",
+      "price": 99,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_10_تي_٤باب_ابيض_الاهرام",
+      "name": "تي ٤باب ابيض الاهرام",
+      "price": 187,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_11_جلبه_٤اصلاح_ابيض_الاهرام",
+      "name": "جلبه ٤اصلاح ابيض الاهرام",
+      "price": 50,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_15_هوايه_٤بوصه_ابيض_الاهرام",
+      "name": "هوايه ٤بوصه ابيض الاهرام",
+      "price": 36,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_16_طبه_٤عميه_ابيض_الاهرام",
+      "name": "طبه ٤عميه ابيض الاهرام",
+      "price": 36,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_17_سفون_٤بوصه_ابيض_الاهرام",
+      "name": "سفون ٤بوصه ابيض الاهرام",
+      "price": 182,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_18_جلتراب_٣٠_٣٠_الاهرام",
+      "name": "جلتراب ٣٠*٣٠ الاهرام",
+      "price": 301,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_20_صليبه_٤_٣_ابيض_الاهرام",
+      "name": "صليبه ٤/٣ ابيض الاهرام",
+      "price": 190,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_3_تي_٤_بوصه_ابيض_الاهرام",
+      "name": "تي ٤ بوصه ابيض الاهرام",
+      "price": 140,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٤بوصه الاهرام أبيض_5_واي_٤بوصه_ابيض_الاهرام",
+      "name": "واي ٤بوصه ابيض الاهرام",
+      "price": 181,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٤بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_12_جلبه_٦بوصه_اصلاح_ابيض_الاهرام",
+      "name": "جلبه ٦بوصه اصلاح ابيض الاهرام",
+      "price": 113,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_13_واي_٦_٤_ابيض_الاهرام",
+      "name": "واي ٦*٤ ابيض الاهرام",
+      "price": 441,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_17_غرفه_٥٠_٥٠_البحر_الاحمر",
+      "name": "غرفه ٥٠*٥٠ البحر الاحمر",
+      "price": 1500,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_5_كوع_٦باب",
+      "name": "كوع ٦باب",
+      "price": 275,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_7_جلبه_٦_ابيض_الاهرام",
+      "name": "جلبه ٦ ابيض الاهرام",
+      "price": 113,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    },
+    {
+      "id": "poly_sarf_قطع ٦ بوصه الاهرام أبيض_9_تي_٦_٤_ابيض_الاهرام",
+      "name": "تي ٦*٤ ابيض الاهرام",
+      "price": 358,
+      "stock": 100,
+      "barcode": null,
+      "main_category_id": "بولي + صرف",
+      "sub_category_id": "قطع ٦ بوصه الاهرام أبيض",
+      "updated_at": "2026-08-13T16:42:48.756766+00:00"
+    }
+  ]
+}
