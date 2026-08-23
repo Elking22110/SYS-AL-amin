@@ -67,9 +67,37 @@ const DataLoader = ({ children }) => {
         }
 
         // ----------------------------------------------------
-        // DETERMINISTIC STARTUP STATE MACHINE (v61)
+        // DETERMINISTIC STARTUP STATE MACHINE & RECONCILIATION (v62)
         // ----------------------------------------------------
-        const existingProdsOnInit = await databaseManager.getAll('products');
+        const v62ReconciliationDone = localStorage.getItem('v62_canonical_catalog_reconciliation_2539') === 'true';
+        let existingProdsOnInit = await databaseManager.getAll('products');
+
+        if (!v62ReconciliationDone && Array.isArray(existingProdsOnInit) && existingProdsOnInit.length > 2539) {
+          console.log(`[DataLoader] V62 Reconciliation: Local IndexedDB contains ${existingProdsOnInit.length} products (expected 2539). Reconciling obsolete records...`);
+          const approvedProdIds = new Set((bundledProductsSeed.products || []).map(p => String(p.id)));
+          const approvedCatIds = new Set((bundledProductsSeed.categories || []).map(c => String(c.id)));
+
+          let purgedCount = 0;
+          for (const p of existingProdsOnInit) {
+            if (p && !approvedProdIds.has(String(p.id))) {
+              try { await databaseManager.delete('products', p.id); purgedCount++; } catch (_) {}
+            }
+          }
+
+          const existingCats = await databaseManager.getAll('categories');
+          if (Array.isArray(existingCats)) {
+            for (const c of existingCats) {
+              if (c && !approvedCatIds.has(String(c.id))) {
+                try { await databaseManager.delete('categories', c.id); } catch (_) {}
+              }
+            }
+          }
+
+          existingProdsOnInit = await databaseManager.getAll('products');
+          console.log(`[DataLoader] V62 Reconciliation COMPLETE: Purged ${purgedCount} obsolete products. Remaining: ${existingProdsOnInit.length}`);
+          localStorage.setItem('v62_canonical_catalog_reconciliation_2539', 'true');
+        }
+
         const localProductCount = Array.isArray(existingProdsOnInit) ? existingProdsOnInit.length : 0;
         const schemaVersion = Number(localStorage.getItem('app_data_schema_version') || 0);
         const cloudHydrationDone = localStorage.getItem('cloud_hydration_done');
