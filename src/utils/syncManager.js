@@ -871,6 +871,7 @@ class SyncManager {
             .from(storeName)
             .select('*')
             .order('updated_at', { ascending: true })
+            .order('id', { ascending: true })
             .range(fullPullOffset, fullPullOffset + fullPullPageSize - 1);
 
           if (fetchError) throw fetchError;
