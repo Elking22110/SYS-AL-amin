@@ -95,11 +95,8 @@ contextBridge.exposeInMainWorld('fileSystem', {
 
 // تعريض واجهة للوصول إلى مسار المستخدم
 contextBridge.exposeInMainWorld('userData', {
-  // الحصول على مسار بيانات المستخدم
-  getUserDataPath: () => {
-    const { app } = require('electron');
-    return app.getPath('userData');
-  },
+  // الحصول على مسار بيانات المستخدم عبر IPC (الطريقة الصحيحة في Electron مع contextIsolation)
+  getUserDataPath: () => ipcRenderer.invoke('user-data-path'),
 
   // الحصول على مسار سطح المكتب
   getDesktopPath: () => {

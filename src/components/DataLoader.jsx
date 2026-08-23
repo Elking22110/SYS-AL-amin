@@ -3,6 +3,7 @@ import { DataValidator } from '../utils/dataValidation';
 import databaseManager from '../utils/database';
 import { supabase, isKeysConfigured } from '../utils/supabaseClient';
 import syncManager from '../utils/syncManager';
+import { runLegacyMigration } from '../utils/legacyMigration';
 
 const DataLoader = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -12,8 +13,35 @@ const DataLoader = ({ children }) => {
     const loadData = async () => {
       try {
         setLoadingMessage('جاري تهيئة قاعدة البيانات...');
+        // ✅ FIX #2: استخدام Singleton — init() آمنة الآن (لن تُفتح IDB مرتين بسبب الـ guard)
+        // App.jsx يستدعيها أيضاً لكن الـ Singleton يضمن فتح واحد فقط
         await databaseManager.init();
         await databaseManager.ensureStoresExist();
+
+        // ── LEGACY DB MIGRATION ──────────────────────────────────────────────
+        // يجب أن تعمل قبل أي قراءة لبيانات تجارية
+        // تنسخ بيانات العميل من DB القديمة (undefined) للجديدة (pos-system-xxx)
+        // تعمل مرة واحدة فقط ولا تحذف أي بيانات
+        setLoadingMessage('جاري فحص بيانات التثبيت القديم...');
+        try {
+          const migResult = await runLegacyMigration(databaseManager.db);
+          if (migResult.migrationExecuted) {
+            if (migResult.verificationPassed) {
+              console.log('[DataLoader] ✅ Legacy migration succeeded:', migResult);
+              setLoadingMessage('تم نقل بياناتك القديمة بنجاح...');
+            } else {
+              console.warn('[DataLoader] ⚠️ Legacy migration ran but verification failed — data preserved, will retry next launch');
+            }
+          } else if (migResult.migrationRequired && !migResult.migrationExecuted) {
+            console.warn('[DataLoader] ⚠️ Migration required but did not execute — check logs');
+          } else {
+            console.log('[DataLoader] No legacy migration needed (fresh install or already done)');
+          }
+        } catch (migErr) {
+          // Migration failure is NOT fatal — app continues with whatever data is in canonical DB
+          console.error('[DataLoader] Legacy migration encountered an error (non-fatal):', migErr);
+        }
+        // ─────────────────────────────────────────────────────────────────────
 
         // ----------------------------------------------------
         // WIPE OPERATIONAL DATA TRIGGER CHECK

@@ -19,12 +19,26 @@ class DatabaseManager {
   constructor() {
     this.db = null;
     const prefix = getProjectPrefix();
+    // ✅ FIX #1: تعيين اسم قاعدة البيانات بشكل صريح — كان undefined مما يسبب فتح IDB باسم "undefined"
+    this.dbName = `pos-system-${prefix}`;
     this.version = 10; // رُفع إلى 10 لإضافة جداول suppliers و expenses لضمان التكامل الشامل لجميع الكيانات
+    // ✅ FIX #2: Singleton init guard — منع init() من الاستدعاء المتوازي أكثر من مرة واحدة
+    this._initPromise = null;
   }
 
-  // تهيئة قاعدة البيانات
+  // تهيئة قاعدة البيانات — محمية بـ Singleton Promise لمنع التنازع
   async init() {
-    return new Promise((resolve, reject) => {
+    // ✅ FIX #2: إذا كانت قاعدة البيانات مفتوحة بالفعل، أعد المثيل الحالي فوراً
+    if (this.db) {
+      return this.db;
+    }
+    // ✅ FIX #2: إذا كانت عملية الفتح جارية بالفعل، انتظر نفس الـ Promise بدلاً من فتح نسخة جديدة
+    if (this._initPromise) {
+      return this._initPromise;
+    }
+
+    this._initPromise = new Promise((resolve, reject) => {
+      console.log(`[DB] فتح قاعدة البيانات: "${this.dbName}" (v${this.version})`);
       const request = indexedDB.open(this.dbName, this.version);
 
       request.onerror = () => {
@@ -40,7 +54,14 @@ class DatabaseManager {
 
       request.onsuccess = () => {
         this.db = request.result;
-        console.log('تم فتح قاعدة البيانات بنجاح (الإصدار ' + this.db.version + ')');
+        // ✅ إضافة معالج لإغلاق DB عند تحديث الإصدار من tab آخر
+        this.db.onversionchange = () => {
+          console.warn('[DB] تم طلب تحديث الإصدار من نافذة أخرى — إغلاق الاتصال الحالي');
+          this.db.close();
+          this.db = null;
+          this._initPromise = null;
+        };
+        console.log(`[DB] ✅ تم فتح قاعدة البيانات "${this.dbName}" بنجاح (v${this.db.version})`);
         resolve(this.db);
       };
 
@@ -108,6 +129,13 @@ class DatabaseManager {
         this.createStores(db);
       };
     });
+
+    // ✅ FIX #2: في حال فشل الفتح، نسمح بالمحاولة مرة أخرى لاحقاً
+    this._initPromise.catch(() => {
+      this._initPromise = null;
+    });
+
+    return this._initPromise;
   }
 
   // إنشاء جداول البيانات
@@ -213,9 +241,12 @@ class DatabaseManager {
     const missingStores = requiredStores.filter(storeName => !this.db.objectStoreNames.contains(storeName));
 
     if (missingStores.length > 0) {
-      console.log('جداول مفقودة:', missingStores);
+      console.log('[DB] جداول مفقودة، جاري ترقية الإصدار:', missingStores);
       const currentVersion = this.db.version || this.version;
+      // ✅ إغلاق نظيف مع مسح الـ Singleton guard لإتاحة إعادة الفتح
       this.db.close();
+      this.db = null;
+      this._initPromise = null;
       this.version = currentVersion + 1;
       await this.init();
     }
