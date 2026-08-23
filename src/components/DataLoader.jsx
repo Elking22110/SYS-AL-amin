@@ -23,8 +23,9 @@ const DataLoader = ({ children }) => {
         // تنسخ بيانات العميل من DB القديمة (undefined) للجديدة (pos-system-xxx)
         // تعمل مرة واحدة فقط ولا تحذف أي بيانات
         setLoadingMessage('جاري فحص بيانات التثبيت القديم...');
+        let migResult = { migrationExecuted: false, migrationRequired: false, verificationPassed: false };
         try {
-          const migResult = await runLegacyMigration(databaseManager.db);
+          migResult = await runLegacyMigration(databaseManager.db);
           if (migResult.migrationExecuted) {
             if (migResult.verificationPassed) {
               console.log('[DataLoader] ✅ Legacy migration succeeded:', migResult);
@@ -72,11 +73,39 @@ const DataLoader = ({ children }) => {
         }
 
         // ----------------------------------------------------
-        // DETERMINISTIC MIGRATION & HYDRATION GUARD (v60)
+        // DETERMINISTIC STARTUP STATE MACHINE (v61)
+        // ----------------------------------------------------
+        // States:
+        //   FIRST_INSTALL    — No products, no prior cloud sync, no migration done
+        //   POST_MIGRATION   — Migration just ran but left 0 products (legacy had none)
+        //   ALREADY_SYNCED   — Has synced with cloud before (last_sync_ key present)
+        //   READY_LOCAL      — Has products locally; no cloud download needed
+        //   UNKNOWN          — Fallback; treat conservatively as READY_LOCAL
         // ----------------------------------------------------
         const existingProdsOnInit = await databaseManager.getAll('products');
-        const hasExistingData = Array.isArray(existingProdsOnInit) && existingProdsOnInit.length > 0;
+        const localProductCount = Array.isArray(existingProdsOnInit) ? existingProdsOnInit.length : 0;
         const schemaVersion = Number(localStorage.getItem('app_data_schema_version') || 0);
+        const cloudHydrationDone = localStorage.getItem('cloud_hydration_done');
+        const hasSyncHistory = Object.keys(localStorage).some(k => k.startsWith('last_sync_'));
+
+        const resolveStartupState = () => {
+          // Has products locally — safest path, never download
+          if (localProductCount > 0 || schemaVersion >= 60) return 'READY_LOCAL';
+          // Already hydrated from cloud before (flag persists across restarts)
+          if (cloudHydrationDone) return 'ALREADY_SYNCED';
+          // Has sync history — was connected before, incremental sync will handle it
+          if (hasSyncHistory) return 'ALREADY_SYNCED';
+          // Migration just ran: legacy DB had records (e.g. only shifts, no products)
+          // Do NOT treat 0-products-after-migration as first install for catalog purposes
+          if (migResult.migrationExecuted || migResult.migrationRequired) return 'POST_MIGRATION';
+          // Migration marker in settings store means it ran in a previous session
+          // (migResult.migrationExecuted = false because it was already done)
+          // Use schemaVersion as proxy — if not set, this may truly be first install
+          return 'FIRST_INSTALL';
+        };
+
+        const startupState = resolveStartupState();
+        console.log(`[DataLoader] Startup state: ${startupState} (products=${localProductCount}, schemaVersion=${schemaVersion}, migrationExecuted=${migResult.migrationExecuted})`);
 
         const HISTORICAL_PATCH_FLAGS = [
           'migration_sanitary_alamin_v20', 'patch_alamin_v21_products', 'patch_alamin_v22_aqua',
@@ -89,20 +118,31 @@ const DataLoader = ({ children }) => {
           'patch_ahram_poly_cats_v50', 'patch_remove_kisel_ahram_v51', 'patch_ahram_poly2and3_v52'
         ];
 
-        if (hasExistingData || schemaVersion >= 60) {
-          // If production data exists locally, mark all historical patch flags done and set schema version
+        if (startupState === 'READY_LOCAL' || startupState === 'ALREADY_SYNCED') {
+          // Production data exists locally — mark all historical patch flags done
           HISTORICAL_PATCH_FLAGS.forEach(flag => {
             try { localStorage.setItem(flag, 'true'); } catch (_) {}
           });
           localStorage.setItem('app_data_schema_version', '60');
-          console.log(`[DataLoader] Database opened. Production catalog active (${existingProdsOnInit.length} products). Skipping historical patches.`);
+          console.log(`[DataLoader] ${startupState}: Production catalog active (${localProductCount} products). Skipping cloud hydration.`);
+
+        } else if (startupState === 'POST_MIGRATION') {
+          // Legacy migration ran but had no catalog products (only shifts/settings)
+          // Do NOT download 1000 products — incremental sync will handle cloud state
+          // Mark schema version so we don't re-enter this branch next startup
+          HISTORICAL_PATCH_FLAGS.forEach(flag => {
+            try { localStorage.setItem(flag, 'true'); } catch (_) {}
+          });
+          localStorage.setItem('app_data_schema_version', '60');
+          console.log('[DataLoader] POST_MIGRATION: Legacy DB had no products — skipping cloud hydration. Sync will converge incrementally.');
+
         } else {
-          // Empty database: Cloud-First Hydration
+          // FIRST_INSTALL — genuine first run with no data anywhere
           let pulledFromCloud = false;
           if (isKeysConfigured && supabase) {
             try {
               setLoadingMessage('جاري سحب كتالوج المنتجات من السحاب...');
-              console.log('[DataLoader] Empty DB: Pulling canonical products & categories from Supabase...');
+              console.log('[DataLoader] FIRST_INSTALL: Pulling canonical products & categories from Supabase...');
               const { data: cloudProds, error: pErr } = await supabase.from('products').select('*');
               const { data: cloudCats, error: cErr } = await supabase.from('categories').select('*');
 
@@ -130,8 +170,11 @@ const DataLoader = ({ children }) => {
                 localStorage.setItem('productCategories', JSON.stringify(mappedCats));
                 window.__bypass_sync_proxy__ = false;
 
+                // ✅ Mark hydration complete — prevents re-download on next startup
+                localStorage.setItem('cloud_hydration_done', new Date().toISOString());
+
                 pulledFromCloud = true;
-                console.log(`[DataLoader] Cloud Hydration SUCCESS: loaded ${mappedProds.length} products & ${mappedCats.length} categories.`);
+                console.log(`[DataLoader] FIRST_INSTALL Cloud Hydration SUCCESS: loaded ${mappedProds.length} products & ${mappedCats.length} categories.`);
               }
             } catch (err) {
               console.warn('[DataLoader] Cloud Hydration failed:', err);
@@ -214,5 +257,3 @@ const DataLoader = ({ children }) => {
 };
 
 export default DataLoader;
-
-

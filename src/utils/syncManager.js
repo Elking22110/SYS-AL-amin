@@ -16,6 +16,9 @@ class SyncManager {
     this.realtimeChannel = null;
     this.lastSyncedAt = {}; // لتجنب مزامنة التغييرات الصادرة من نفس الجهاز
     this.projectSwitchChecked = false;
+    // 🛡️ ZOMBIE IDEMPOTENCY: سجل الجلسة — كل ID يُسجَّل مرة واحدة فقط طوال عمر الجلسة
+    // يُمسح عند تغيير حالة السجل (update/delete) حتى يُعاد تقييمه عند تغيُّر وضعه الفعلي
+    this._zombieAuditLog = {}; // { storeName: Set<string> }
 
     if (typeof window !== 'undefined') {
       this.status = window.navigator.onLine ? 'synced' : 'offline';
@@ -892,7 +895,13 @@ class SyncManager {
         // ═══ ZOMBIE SAFE MODE: حذف معطل — لا حذف فيزيائي حتى التحقق اليدوي ═══
         // CRITICAL RULE: No local record is physically deleted automatically.
         // All missing-from-cloud records are logged as KEEP_FOR_AUDIT.
+        // 🛡️ IDEMPOTENCY: كل ID يُسجَّل مرة واحدة فقط طوال الجلسة — لا تكرار لنفس التحذير
         if (allCloudIdsSet.size > 0) {
+          if (!this._zombieAuditLog[storeName]) {
+            this._zombieAuditLog[storeName] = new Set();
+          }
+          const storeZombieLog = this._zombieAuditLog[storeName];
+
           for (const localRecord of localRecords) {
             const localId = String(localRecord.id);
             const isCloudPresent = allCloudIdsSet.has(localId);
@@ -903,7 +912,11 @@ class SyncManager {
 
               if (isTombstone || isStaleSynced) {
                 // 🛡️ ZOMBIE SAFE MODE — KEEP_FOR_AUDIT: log only, no physical delete
-                console.warn(`[ZOMBIE SAFE MODE] Store: ${storeName} | ID: ${localId} | cloudSize: ${allCloudIdsSet.size} | sync_status: ${localRecord.sync_status} | action: KEEP_FOR_AUDIT — physical delete DISABLED`);
+                // 🛡️ IDEMPOTENCY: log only once per session per ID — prevents console flood every sync cycle
+                if (!storeZombieLog.has(localId)) {
+                  console.warn(`[ZOMBIE SAFE MODE] Store: ${storeName} | ID: ${localId} | cloudSize: ${allCloudIdsSet.size} | sync_status: ${localRecord.sync_status} | action: KEEP_FOR_AUDIT — physical delete DISABLED`);
+                  storeZombieLog.add(localId);
+                }
                 // ❌ NO databaseManager.deletePhysical() — disabled for customer data safety
                 // ❌ NO this.addDeletedTombstone() — disabled for customer data safety
               }
