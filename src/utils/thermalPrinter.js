@@ -248,7 +248,7 @@ class ThermalPrinterManager {
       }
 
       // عنوان المتجر
-      const storeAddress = receiptData.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل';
+      const storeAddress = receiptData.storeAddress || 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل';
       await this.sendCommand(`العنوان: ${storeAddress}\n`);
 
       await this.sendCommand('\n'); // سطر فارغ

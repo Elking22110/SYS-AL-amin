@@ -113,8 +113,8 @@ export class DataValidator {
         managerName: storeInfo.managerName || storeInfo.storeDescription || 'محمد أمين',
         storePhone: (!storeInfo.storePhone || storeInfo.storePhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.storePhone,
         companyPhone: (!storeInfo.companyPhone || storeInfo.companyPhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.companyPhone,
-        storeAddress: (!storeInfo.storeAddress || storeInfo.storeAddress.length < 5) ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.storeAddress,
-        companyAddress: (!storeInfo.companyAddress || storeInfo.companyAddress.length < 5) ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.companyAddress,
+        storeAddress: (!storeInfo.storeAddress || storeInfo.storeAddress.length < 5 || storeInfo.storeAddress.includes('القناطر')) ? 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل' : storeInfo.storeAddress,
+        companyAddress: (!storeInfo.companyAddress || storeInfo.companyAddress.length < 5 || storeInfo.companyAddress.includes('القناطر')) ? 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل' : storeInfo.companyAddress,
         storeDescription: storeInfo.storeDescription || 'إدارة محمد أمين'
       };
       localStorage.setItem('storeInfo', JSON.stringify(storeInfo));

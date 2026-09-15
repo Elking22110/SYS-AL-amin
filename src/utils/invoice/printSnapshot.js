@@ -69,7 +69,7 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
     storeName: storeInfo.companyName || storeInfo.storeName || 'الآمين للأدوات الصحية',
     managerName: storeInfo.managerName || storeInfo.storeDescription || 'إدارة محمد أمين',
     storePhone: storeInfo.companyPhone || storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815',
-    storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+    storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل',
     logoSrc: storeInfo.logo || ''
   };
 };
