@@ -29,17 +29,17 @@ const Settings = () => {
         setSettings(prev => ({
           ...prev,
           ...savedSettings,
-          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'Elking',
-          companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
-          companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
-          companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
+          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الآمين للأدوات الصحية',
+          companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+          companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01017856684 | 01200054511 | 01125291815',
+          companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || '',
           taxEnabled: savedStoreInfo.taxEnabled !== undefined ? savedStoreInfo.taxEnabled : savedSettings.taxEnabled !== undefined ? savedSettings.taxEnabled : false,
           taxRate: savedStoreInfo.taxRate || savedSettings.taxRate || 15,
           taxName: savedStoreInfo.taxName || savedSettings.taxName || 'ضريبة القيمة المضافة',
           inventoryEnabled: savedStoreInfo.inventoryEnabled !== undefined ? savedStoreInfo.inventoryEnabled : (savedSettings.inventoryEnabled !== undefined ? savedSettings.inventoryEnabled : true)
         }));
       } catch (_) {}
-      
+
       try {
         const savedUsers = JSON.parse(localStorage.getItem('users') || '[]');
         if (savedUsers.length > 0) {
@@ -108,15 +108,13 @@ const Settings = () => {
 
     return {
       // إعدادات عامة
-      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'Elking',
-      companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
-      companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01029022006',
-      companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || 'info@msgroupplast.com',
+      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الآمين للأدوات الصحية',
+      companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+      companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01017856684 | 01200054511 | 01125291815',
+      companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || '',
       currency: savedSettings.currency || 'EGP',
       language: savedSettings.language || 'ar',
       timezone: savedSettings.timezone || 'Africa/Cairo',
-
-      // إعدادات الضرائب
       taxEnabled: savedStoreInfo.taxEnabled !== undefined ? savedStoreInfo.taxEnabled : savedSettings.taxEnabled !== undefined ? savedSettings.taxEnabled : false,
       taxRate: savedStoreInfo.taxRate || savedSettings.taxRate || 15,
       taxName: savedStoreInfo.taxName || savedSettings.taxName || 'ضريبة القيمة المضافة',

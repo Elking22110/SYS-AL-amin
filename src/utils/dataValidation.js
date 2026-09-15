@@ -99,17 +99,20 @@ export class DataValidator {
       let storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
       if (typeof storeInfo !== 'object' || !storeInfo.storeName) {
         storeInfo = {
-          storeName: 'Elking',
-          storePhone: '01029022006',
-          storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
-          storeEmail: 'info@msgroupplast.com',
-          storeTaxNumber: '300123456789003',
+          storeName: 'الآمين للأدوات الصحية',
+          companyName: 'الآمين للأدوات الصحية',
+          managerName: 'محمد أمين',
+          storePhone: '01017856684 | 01200054511 | 01125291815',
+          storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+          companyAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+          storeEmail: '',
+          storeTaxNumber: '',
           storeLogo: '',
-          storeDescription: 'نظام إدارة المبيعات المتطور',
+          storeDescription: 'إدارة محمد أمين',
           taxEnabled: false,
           taxRate: 15,
           taxName: 'ضريبة القيمة المضافة',
-          inventoryEnabled: true,
+          inventoryEnabled: false,
           ...storeInfo
         };
       }
@@ -119,10 +122,10 @@ export class DataValidator {
       let posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
       if (typeof posSettings !== 'object' || !posSettings.companyName) {
         posSettings = {
-          companyName: storeInfo.storeName || 'Elking',
-          companyAddress: storeInfo.storeAddress || 'باسوس - القناطر الخيرية - الطريق الدائري',
-          companyPhone: storeInfo.storePhone || '01029022006',
-          companyEmail: storeInfo.storeEmail || 'info@msgroupplast.com',
+          companyName: storeInfo.storeName || 'الآمين للأدوات الصحية',
+          companyAddress: storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+          companyPhone: storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815',
+          companyEmail: storeInfo.storeEmail || '',
           currency: 'EGP',
           language: 'ar',
           timezone: 'Africa/Cairo',

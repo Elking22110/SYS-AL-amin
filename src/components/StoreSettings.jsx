@@ -3,13 +3,14 @@ import { Store, Save, RefreshCw, Building, Phone, Mail, MapPin } from 'lucide-re
 
 const StoreSettings = () => {
   const [storeInfo, setStoreInfo] = useState({
-    storeName: 'الأمين',
-    storePhone: '01029022006',
-    storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
-    storeEmail: 'info@msgroupplast.com',
-    storeTaxNumber: '300123456789003',
+    storeName: 'الآمين للأدوات الصحية',
+    managerName: 'محمد أمين',
+    storePhone: '01017856684 | 01200054511 | 01125291815',
+    storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+    storeEmail: '',
+    storeTaxNumber: '',
     storeLogo: '',
-    storeDescription: 'نظام إدارة المبيعات المتطور',
+    storeDescription: 'إدارة محمد أمين',
     // إعدادات الضرائب
     taxEnabled: false,
     taxRate: 15,
@@ -92,13 +93,14 @@ const StoreSettings = () => {
   // إعادة تعيين البيانات
   const handleReset = () => {
     const defaults = {
-      storeName: 'Elking',
-      storePhone: '01029022006',
-      storeAddress: 'باسوس - القناطر الخيرية - الطريق الدائري',
-      storeEmail: 'info@msgroupplast.com',
+      storeName: 'الآمين للأدوات الصحية',
+      managerName: 'محمد أمين',
+      storePhone: '01017856684 | 01200054511 | 01125291815',
+      storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
+      storeEmail: '',
       storeTaxNumber: '',
       storeLogo: '',
-      storeDescription: '',
+      storeDescription: 'إدارة محمد أمين',
       taxEnabled: false,
       taxRate: 15,
       taxName: 'ضريبة القيمة المضافة'
