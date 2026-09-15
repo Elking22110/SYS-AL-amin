@@ -96,71 +96,50 @@ export class DataValidator {
       localStorage.setItem('sales', JSON.stringify(sales));
 
       // إصلاح إعدادات المتجر
-      let storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}');
-      if (typeof storeInfo !== 'object' || !storeInfo.storeName) {
-        storeInfo = {
-          storeName: 'الآمين للأدوات الصحية',
-          companyName: 'الآمين للأدوات الصحية',
-          managerName: 'محمد أمين',
-          storePhone: '01017856684 | 01200054511 | 01125291815',
-          storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
-          companyAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
-          storeEmail: '',
-          storeTaxNumber: '',
-          storeLogo: '',
-          storeDescription: 'إدارة محمد أمين',
-          taxEnabled: false,
-          taxRate: 15,
-          taxName: 'ضريبة القيمة المضافة',
-          inventoryEnabled: false,
-          ...storeInfo
-        };
-      }
+      let storeInfo = {};
+      try { storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}'); } catch (_) {}
+      
+      const rawName = storeInfo.storeName || storeInfo.companyName;
+      const isOldDefault = !rawName || rawName.includes('Elking') || rawName === 'متجرنا';
+
+      storeInfo = {
+        taxEnabled: false,
+        taxRate: 15,
+        taxName: 'ضريبة القيمة المضافة',
+        inventoryEnabled: false,
+        ...storeInfo,
+        storeName: isOldDefault ? 'الآمين للأدوات الصحية' : (storeInfo.storeName || 'الآمين للأدوات الصحية'),
+        companyName: isOldDefault ? 'الآمين للأدوات الصحية' : (storeInfo.companyName || 'الآمين للأدوات الصحية'),
+        managerName: storeInfo.managerName || storeInfo.storeDescription || 'محمد أمين',
+        storePhone: (!storeInfo.storePhone || storeInfo.storePhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.storePhone,
+        companyPhone: (!storeInfo.companyPhone || storeInfo.companyPhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.companyPhone,
+        storeAddress: (!storeInfo.storeAddress || storeInfo.storeAddress.length < 5) ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.storeAddress,
+        companyAddress: (!storeInfo.companyAddress || storeInfo.companyAddress.length < 5) ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.companyAddress,
+        storeDescription: storeInfo.storeDescription || 'إدارة محمد أمين'
+      };
       localStorage.setItem('storeInfo', JSON.stringify(storeInfo));
 
       // إصلاح إعدادات نقاط البيع
-      let posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}');
-      if (typeof posSettings !== 'object' || !posSettings.companyName) {
-        posSettings = {
-          companyName: storeInfo.storeName || 'الآمين للأدوات الصحية',
-          companyAddress: storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
-          companyPhone: storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815',
-          companyEmail: storeInfo.storeEmail || '',
-          currency: 'EGP',
-          language: 'ar',
-          timezone: 'Africa/Cairo',
-          taxEnabled: storeInfo.taxEnabled !== undefined ? storeInfo.taxEnabled : false,
-          taxRate: storeInfo.taxRate || 15,
-          taxName: storeInfo.taxName || 'ضريبة القيمة المضافة',
-          allowRegistration: true,
-          requireEmailVerification: true,
-          defaultRole: 'cashier',
-          printerName: 'EPSON TM-T20III',
-          paperSize: '80mm',
-          printLogo: true,
-          printFooter: true,
-          autoBackup: true,
-          backupFrequency: 'daily',
-          backupLocation: 'local',
-          emailNotifications: true,
-          smsNotifications: false,
-          lowStockAlerts: true,
-          salesReports: true,
-          theme: 'light',
-          primaryColor: '#8B5CF6',
-          sidebarCollapsed: false,
-          soundsEnabled: true,
-          soundVolume: 0.7,
-          clickSounds: true,
-          notificationSounds: true,
-          systemSounds: true,
-          maintenanceMode: false,
-          debugMode: false,
-          analyticsEnabled: true,
-          inventoryEnabled: storeInfo.inventoryEnabled !== undefined ? storeInfo.inventoryEnabled : true,
-          ...posSettings
-        };
-      }
+      let posSettings = {};
+      try { posSettings = JSON.parse(localStorage.getItem('pos-settings') || '{}'); } catch (_) {}
+      posSettings = {
+        currency: 'EGP',
+        language: 'ar',
+        timezone: 'Africa/Cairo',
+        taxEnabled: storeInfo.taxEnabled !== undefined ? storeInfo.taxEnabled : false,
+        taxRate: storeInfo.taxRate || 15,
+        taxName: storeInfo.taxName || 'ضريبة القيمة المضافة',
+        allowRegistration: true,
+        requireEmailVerification: true,
+        defaultRole: 'cashier',
+        printerName: 'EPSON TM-T20III',
+        paperSize: '80mm',
+        printLogo: true,
+        ...posSettings,
+        companyName: storeInfo.storeName,
+        companyAddress: storeInfo.storeAddress,
+        companyPhone: storeInfo.storePhone
+      };
       localStorage.setItem('pos-settings', JSON.stringify(posSettings));
 
       // إصلاح إعدادات النظام
