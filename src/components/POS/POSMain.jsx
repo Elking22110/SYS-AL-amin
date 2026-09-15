@@ -1002,7 +1002,7 @@ const POSMain = () => {
                 <th>بيان المنتجات</th>
                 <th style="width: 12%" class="text-center">الكمية</th>
                 <th style="width: 16%" class="text-center">سعر الوحدة</th>
-                <th style="width: 14%" class="text-center">الخصم</th>
+                <th style="width: 14%" class="text-center">بعد الخصم</th>
                 <th style="width: 18%" class="text-center">الإجمالي</th>
               </tr>
             </thead>
@@ -1014,14 +1014,14 @@ const POSMain = () => {
                 const lineGross = safeMath.multiply(unitPrice, qty);
                 const lineDiscAmt = safeMath.calculatePercentage(lineGross, discPct);
                 const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, lineDiscAmt);
-                const discDisplay = discPct !== 0 ? `${discPct}%` : '0%';
+                const netUnitPrice = qty > 0 ? safeMath.fromCents(Math.round(safeMath.toCents(lineNet) / qty)) : safeMath.subtract(unitPrice, safeMath.calculatePercentage(unitPrice, discPct));
                 return `
                   <tr>
                     <td class="text-center">${idx + 1}</td>
                     <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
                     <td class="text-center">${qty}</td>
                     <td class="text-center">${unitPrice.toLocaleString('en-US')}</td>
-                    <td class="text-center">${discDisplay}</td>
+                    <td class="text-center">${netUnitPrice.toLocaleString('en-US')}</td>
                     <td class="text-center"><strong>${lineNet.toLocaleString('en-US')}</strong></td>
                   </tr>
                 `;

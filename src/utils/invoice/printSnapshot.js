@@ -18,6 +18,7 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
     const lineGross = safeMath.multiply(p, q);
     const lineDiscAmt = safeMath.calculatePercentage(lineGross, itemDiscPct);
     const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, lineDiscAmt);
+    const netUnitPrice = q > 0 ? safeMath.fromCents(Math.round(safeMath.toCents(lineNet) / q)) : safeMath.subtract(p, safeMath.calculatePercentage(p, itemDiscPct));
     return {
       id: item.id,
       name: item.name || 'منتج غير محدد',
@@ -27,7 +28,8 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
       discount: itemDiscPct,
       lineGross,
       lineDiscountAmount: lineDiscAmt,
-      total: lineNet
+      total: lineNet,
+      netUnitPrice
     };
   });
 

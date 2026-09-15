@@ -112,7 +112,7 @@ const mockThermalPrinter = {
     lines.push('المنتجات:');
     lines.push('------------------------------------------');
     this.items.forEach((item, i) => {
-      const discText = item.itemDiscount !== 0 ? ` | خصم: ${item.itemDiscount}%` : '';
+      const discText = item.itemDiscount !== 0 ? ` | بعد الخصم: ${item.netUnitPrice.toFixed(2)}` : '';
       lines.push(`${i + 1}. ${item.name}`);
       lines.push(`   ${item.quantity} × ${item.price.toFixed(2)}${discText} = ${item.total.toFixed(2)}`);
     });
@@ -131,8 +131,8 @@ const thermalOutput = mockThermalPrinter.formatReceipt();
 console.log('Thermal Output Stream:');
 thermalOutput.forEach(l => console.log('  ', l));
 
-const check3Pass = thermalOutput.some(l => l.includes(' خصم: 10%')) &&
-                   thermalOutput.some(l => l.includes(' خصم: 5%')) &&
+const check3Pass = thermalOutput.some(l => l.includes(' بعد الخصم: 90.00')) &&
+                   thermalOutput.some(l => l.includes(' بعد الخصم: 237.50')) &&
                    thermalOutput.some(l => l.includes('إجمالي قبل الخصم: 1300.00')) &&
                    thermalOutput.some(l => l.includes('إجمالي الخصومات: -75.00')) &&
                    thermalOutput.some(l => l.includes('الإجمالي النهائي: 1225.00'));

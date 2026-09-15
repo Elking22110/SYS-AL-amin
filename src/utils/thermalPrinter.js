@@ -291,9 +291,10 @@ class ThermalPrinterManager {
         const lineGross = safeMath.multiply(price, quantity);
         const discAmt = safeMath.calculatePercentage(lineGross, discPct);
         const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, discAmt);
+        const netUnitPrice = quantity > 0 ? safeMath.fromCents(Math.round(safeMath.toCents(lineNet) / quantity)) : safeMath.subtract(price, safeMath.calculatePercentage(price, discPct));
 
         await this.sendCommand(`${i + 1}. ${name}\n`);
-        const discText = discPct !== 0 ? ` | خصم: ${discPct}%` : '';
+        const discText = discPct !== 0 ? ` | بعد الخصم: ${netUnitPrice.toFixed(2)}` : '';
         const detailsLine = `   ${quantity} × ${price.toFixed(2)}${discText} = ${lineNet.toFixed(2)}\n`;
         await this.sendCommand(detailsLine);
       }
