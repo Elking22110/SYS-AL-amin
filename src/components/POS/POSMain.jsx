@@ -668,7 +668,7 @@ const POSMain = () => {
             const receiptData = {
               printerSettings: thermalPrinterManager.getPrinterSettings(),
               storeInfo: {
-                storeName: storeInfo.companyName || storeInfo.storeName || 'الآمين للأدوات الصحية',
+                storeName: storeInfo.companyName || storeInfo.storeName || 'الأمين للأدوات الصحية',
                 managerName: storeInfo.managerName || storeInfo.storeDescription || 'إدارة محمد أمين',
                 storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
                 storePhone: storeInfo.companyPhone || storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815'
@@ -973,7 +973,7 @@ const POSMain = () => {
             <tr>
               <td>
                 ${storeInfo.logo ? `<img src="${logoSrc}" class="logo" alt="Logo" />` : ''}
-                <div class="store-title">${storeInfo.companyName || storeInfo.storeName || 'الآمين للأدوات الصحية'}</div>
+                <div class="store-title">${storeInfo.companyName || storeInfo.storeName || 'الأمين للأدوات الصحية'}</div>
                 <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">إدارة: ${storeInfo.managerName || storeInfo.storeDescription || 'محمد أمين'}</div>
                 <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">هاتف: ${storeInfo.companyPhone || storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815'}</div>
                 <div class="store-subtitle" style="font-weight: 900; color: #000000; font-size: 10.5px;">العنوان: ${storeInfo.companyAddress || storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل'}</div>

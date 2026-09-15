@@ -3,7 +3,7 @@ import { Store, Save, RefreshCw, Building, Phone, Mail, MapPin } from 'lucide-re
 
 const StoreSettings = () => {
   const [storeInfo, setStoreInfo] = useState({
-    storeName: 'الآمين للأدوات الصحية',
+    storeName: 'الأمين للأدوات الصحية',
     managerName: 'محمد أمين',
     storePhone: '01017856684 | 01200054511 | 01125291815',
     storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
@@ -93,7 +93,7 @@ const StoreSettings = () => {
   // إعادة تعيين البيانات
   const handleReset = () => {
     const defaults = {
-      storeName: 'الآمين للأدوات الصحية',
+      storeName: 'الأمين للأدوات الصحية',
       managerName: 'محمد أمين',
       storePhone: '01017856684 | 01200054511 | 01125291815',
       storeAddress: 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',

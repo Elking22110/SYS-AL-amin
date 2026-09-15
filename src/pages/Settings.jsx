@@ -29,7 +29,7 @@ const Settings = () => {
         setSettings(prev => ({
           ...prev,
           ...savedSettings,
-          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الآمين للأدوات الصحية',
+          companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الأمين للأدوات الصحية',
           companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
           companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01017856684 | 01200054511 | 01125291815',
           companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || '',
@@ -108,7 +108,7 @@ const Settings = () => {
 
     return {
       // إعدادات عامة
-      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الآمين للأدوات الصحية',
+      companyName: savedStoreInfo.storeName || savedSettings.companyName || 'الأمين للأدوات الصحية',
       companyAddress: savedStoreInfo.storeAddress || savedSettings.companyAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
       companyPhone: savedStoreInfo.storePhone || savedSettings.companyPhone || '01017856684 | 01200054511 | 01125291815',
       companyEmail: savedStoreInfo.storeEmail || savedSettings.companyEmail || '',

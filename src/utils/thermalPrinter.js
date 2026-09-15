@@ -220,7 +220,7 @@ class ThermalPrinterManager {
       await this.sendCommand('\x1B\x61\x01'); // محاذاة وسط
 
       // اسم المتجر
-      const storeName = receiptData.storeName || 'الآمين للأدوات الصحية';
+      const storeName = receiptData.storeName || 'الأمين للأدوات الصحية';
       await this.sendCommand('\x1B\x45\x01'); // نص عريض
       await this.sendCommand(storeName + '\n');
       await this.sendCommand('\x1B\x45\x00'); // إلغاء النص العريض
@@ -248,7 +248,7 @@ class ThermalPrinterManager {
       }
 
       // عنوان المتجر
-      const storeAddress = receiptData.storeAddress || 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل';
+      const storeAddress = receiptData.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل';
       await this.sendCommand(`العنوان: ${storeAddress}\n`);
 
       await this.sendCommand('\n'); // سطر فارغ

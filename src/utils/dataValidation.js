@@ -100,7 +100,10 @@ export class DataValidator {
       try { storeInfo = JSON.parse(localStorage.getItem('storeInfo') || '{}'); } catch (_) {}
       
       const rawName = storeInfo.storeName || storeInfo.companyName;
-      const isOldDefault = !rawName || rawName.includes('Elking') || rawName === 'متجرنا';
+      const isOldDefault = !rawName || rawName.includes('Elking') || rawName === 'متجرنا' || rawName.includes('الآمين');
+
+      const rawAddress = storeInfo.storeAddress || storeInfo.companyAddress;
+      const isOldAddress = !rawAddress || rawAddress.length < 5 || rawAddress.includes('قليوب') || rawAddress.includes('ميدان الحادثة');
 
       storeInfo = {
         taxEnabled: false,
@@ -108,13 +111,13 @@ export class DataValidator {
         taxName: 'ضريبة القيمة المضافة',
         inventoryEnabled: false,
         ...storeInfo,
-        storeName: isOldDefault ? 'الآمين للأدوات الصحية' : (storeInfo.storeName || 'الآمين للأدوات الصحية'),
-        companyName: isOldDefault ? 'الآمين للأدوات الصحية' : (storeInfo.companyName || 'الآمين للأدوات الصحية'),
+        storeName: isOldDefault ? 'الأمين للأدوات الصحية' : (storeInfo.storeName || 'الأمين للأدوات الصحية'),
+        companyName: isOldDefault ? 'الأمين للأدوات الصحية' : (storeInfo.companyName || 'الأمين للأدوات الصحية'),
         managerName: storeInfo.managerName || storeInfo.storeDescription || 'محمد أمين',
         storePhone: (!storeInfo.storePhone || storeInfo.storePhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.storePhone,
         companyPhone: (!storeInfo.companyPhone || storeInfo.companyPhone.includes('01553448631')) ? '01017856684 | 01200054511 | 01125291815' : storeInfo.companyPhone,
-        storeAddress: (!storeInfo.storeAddress || storeInfo.storeAddress.length < 5 || storeInfo.storeAddress.includes('القناطر')) ? 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل' : storeInfo.storeAddress,
-        companyAddress: (!storeInfo.companyAddress || storeInfo.companyAddress.length < 5 || storeInfo.companyAddress.includes('القناطر')) ? 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل' : storeInfo.companyAddress,
+        storeAddress: isOldAddress ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.storeAddress,
+        companyAddress: isOldAddress ? 'طريق القناطر - الحادثة بجوار ماركت سلسبيل' : storeInfo.companyAddress,
         storeDescription: storeInfo.storeDescription || 'إدارة محمد أمين'
       };
       localStorage.setItem('storeInfo', JSON.stringify(storeInfo));

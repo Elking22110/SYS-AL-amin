@@ -66,10 +66,10 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
     downPaymentAmount: Number(invoice.downPayment?.amount) || 0,
     downPaymentEnabled: Boolean(invoice.downPayment?.enabled),
     remainingAmount,
-    storeName: storeInfo.companyName || storeInfo.storeName || 'الآمين للأدوات الصحية',
+    storeName: storeInfo.companyName || storeInfo.storeName || 'الأمين للأدوات الصحية',
     managerName: storeInfo.managerName || storeInfo.storeDescription || 'إدارة محمد أمين',
     storePhone: storeInfo.companyPhone || storeInfo.storePhone || '01017856684 | 01200054511 | 01125291815',
-    storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || 'ميدان الحادثة - طريق قليوب - بجوار ماركت سلسبيل',
+    storeAddress: storeInfo.companyAddress || storeInfo.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل',
     logoSrc: storeInfo.logo || ''
   };
 };
