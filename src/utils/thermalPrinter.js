@@ -219,23 +219,20 @@ class ThermalPrinterManager {
       await this.sendCommand('\x1B\x40'); // إعادة تعيين
       await this.sendCommand('\x1B\x61\x01'); // محاذاة وسط
 
-      // عنوان المتجر
-      if (receiptData.storeName) {
-        await this.sendCommand('\x1B\x45\x01'); // نص عريض
-        await this.sendCommand(receiptData.storeName + '\n');
-        await this.sendCommand('\x1B\x45\x00'); // إلغاء النص العريض
-      }
+      // اسم المتجر
+      const storeName = receiptData.storeName || 'الآمين للأدوات الصحية';
+      await this.sendCommand('\x1B\x45\x01'); // نص عريض
+      await this.sendCommand(storeName + '\n');
+      await this.sendCommand('\x1B\x45\x00'); // إلغاء النص العريض
 
-      // هاتف المتجر في نفس السطر تحت اسم المتجر مباشرة (Phone 1 | Phone 2)
+      // إدارة المتجر
+      const managerName = receiptData.managerName || receiptData.storeDescription || 'إدارة محمد أمين';
+      await this.sendCommand(managerName + '\n');
+
+      // هاتف المتجر
       const phoneList = [receiptData.storePhone1 || receiptData.storePhone, receiptData.storePhone2].filter(Boolean);
-      if (phoneList.length > 0) {
-        await this.sendCommand(`الهاتف: ${phoneList.join(' | ')}\n`);
-      }
-
-      // وصف المتجر
-      if (receiptData.storeDescription) {
-        await this.sendCommand(receiptData.storeDescription + '\n');
-      }
+      const storePhone = phoneList.length > 0 ? phoneList.join(' | ') : '01017856684 | 01200054511 | 01125291815';
+      await this.sendCommand(`الهاتف: ${storePhone}\n`);
 
       // خط فاصل
       await this.printLine('=', 48);
@@ -251,9 +248,8 @@ class ThermalPrinterManager {
       }
 
       // عنوان المتجر
-      if (receiptData.storeAddress) {
-        await this.sendCommand(`العنوان: ${receiptData.storeAddress}\n`);
-      }
+      const storeAddress = receiptData.storeAddress || 'طريق القناطر - الحادثة بجوار ماركت سلسبيل';
+      await this.sendCommand(`العنوان: ${storeAddress}\n`);
 
       await this.sendCommand('\n'); // سطر فارغ
       await this.printLine('-', 48);
