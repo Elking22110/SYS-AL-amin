@@ -47,7 +47,12 @@ export const processInvoiceEdit = (oldInvoice, newItems, options = {}) => {
       const oldItem = (oldInvoice.items || []).find(i => String(i.id) === String(change.productId));
       const newItem = newItems.find(i => String(i.id) === String(change.productId));
       const itemObj = oldItem || newItem;
-      const refundAmount = safeMath.multiply(itemObj?.price || 0, change.returnedQty);
+      const itemDiscPct = Number(itemObj?.itemDiscount ?? itemObj?.discount ?? itemObj?.discountPercentage) || 0;
+      const grossUnitPrice = Number(itemObj?.price) || 0;
+      const netUnitPrice = (itemObj?.total && itemObj?.quantity)
+        ? (Number(itemObj.total) / Number(itemObj.quantity))
+        : safeMath.subtract(grossUnitPrice, safeMath.calculatePercentage(grossUnitPrice, itemDiscPct));
+      const refundAmount = safeMath.multiply(netUnitPrice, change.returnedQty);
 
       const returnEntry = {
         id: `RET_${Date.now()}_${change.productId}_${Math.random().toString(36).substr(2, 6)}`,
@@ -57,7 +62,10 @@ export const processInvoiceEdit = (oldInvoice, newItems, options = {}) => {
         item: {
           id: change.productId,
           name: itemObj?.name || 'منتج غير معروف',
-          quantity: change.returnedQty
+          quantity: change.returnedQty,
+          unitPrice: grossUnitPrice,
+          itemDiscount: itemDiscPct,
+          netUnitPrice
         },
         amount: refundAmount,
         shiftId: currentShiftId

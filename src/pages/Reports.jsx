@@ -1130,62 +1130,91 @@ const Reports = () => {
             <table class="products-table">
               <thead>
                 <tr>
-                  <th style="width: 8%" class="text-center">م</th>
+                  <th style="width: 6%" class="text-center">م</th>
                   <th>بيان المنتجات</th>
-                  <th style="width: 15%" class="text-center">الكمية</th>
-                  <th style="width: 20%" class="text-center">سعر الوحدة</th>
-                  <th style="width: 20%" class="text-center">الإجمالي</th>
+                  <th style="width: 12%" class="text-center">الكمية</th>
+                  <th style="width: 16%" class="text-center">سعر الوحدة</th>
+                  <th style="width: 14%" class="text-center">الخصم</th>
+                  <th style="width: 18%" class="text-center">الإجمالي</th>
                 </tr>
               </thead>
               <tbody>
-                ${itemsArr.map((item, idx) => `
-                  <tr>
-                    <td class="text-center">${idx + 1}</td>
-                    <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
-                    <td class="text-center">${Number(item.quantity || 0)}</td>
-                    <td class="text-center">${(Number(item.price) || 0).toLocaleString('en-US')}</td>
-                    <td class="text-center"><strong>${(safeMath.multiply(Number(item.price) || 0, Number(item.quantity) || 0)).toLocaleString('en-US')}</strong></td>
-                  </tr>
-                `).join('')}
+                ${itemsArr.map((item, idx) => {
+                  const qty = Number(item.quantity || 0);
+                  const unitPrice = Number(item.price || 0);
+                  const discPct = Number(item.itemDiscount ?? item.discount ?? 0);
+                  const lineGross = safeMath.multiply(unitPrice, qty);
+                  const lineDiscAmt = safeMath.calculatePercentage(lineGross, discPct);
+                  const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, lineDiscAmt);
+                  const discDisplay = discPct !== 0 ? `${discPct}%` : '0%';
+                  return `
+                    <tr>
+                      <td class="text-center">${idx + 1}</td>
+                      <td><strong>${item.name || 'منتج غير محدد'}</strong></td>
+                      <td class="text-center">${qty}</td>
+                      <td class="text-center">${unitPrice.toLocaleString('en-US')}</td>
+                      <td class="text-center">${discDisplay}</td>
+                      <td class="text-center"><strong>${lineNet.toLocaleString('en-US')}</strong></td>
+                    </tr>
+                  `;
+                }).join('')}
               </tbody>
             </table>
 
-            <div class="summary-table-container">
-              <table class="summary-table">
-                <tr>
-                  <td class="label">إجمالي القيمة:</td>
-                  <td class="value">${(subtotal || 0).toLocaleString('en-US')}</td>
-                </tr>
-                ${discountAmount !== 0 ? `
-                  <tr>
-                    <td class="label">${discountAmount > 0 ? 'الخصم الممنوح:' : 'إضافة (زيادة السعر):'}</td>
-                    <td class="value ${discountAmount > 0 ? 'text-red-600' : 'text-green-600'}">${discountAmount > 0 ? '-' : '+'}${Math.abs(discountAmount).toLocaleString('en-US')}</td>
-                  </tr>
-                ` : ''}
-                ${taxAmount > 0 ? `
-                  <tr>
-                    <td class="label">الضريبة المضافة:</td>
-                    <td class="value">+${taxAmount.toLocaleString('en-US')}</td>
-                  </tr>
-                ` : ''}
-                ${invoice.downPayment?.enabled ? `
-                  <tr>
-                    <td class="label">العربون المدفوع:</td>
-                    <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')}</td>
-                  </tr>
-                ` : ''}
-                ${totalReturnedAmount > 0 ? `
-                  <tr style="color: #F97316; font-weight: 800;">
-                    <td class="label" style="color: #F97316;">قيمة المرتجعات:</td>
-                    <td class="value" style="color: #F97316;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
-                  </tr>
-                ` : ''}
-                <tr class="total-row">
-                  <td class="label">${(invoice.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
-                  <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')}</td>
-                </tr>
-              </table>
-            </div>
+            ${(() => {
+              const grossSubtotal = itemsArr.reduce((sum, item) => {
+                const p = Number(item.price || 0);
+                const q = Number(item.quantity || 0);
+                return safeMath.add(sum, safeMath.multiply(p, q));
+              }, 0);
+              const totalItemDiscounts = itemsArr.reduce((sum, item) => {
+                const p = Number(item.price || 0);
+                const q = Number(item.quantity || 0);
+                const discPct = Number(item.itemDiscount ?? item.discount ?? 0);
+                const lineGross = safeMath.multiply(p, q);
+                return safeMath.add(sum, safeMath.calculatePercentage(lineGross, discPct));
+              }, 0);
+              const totalDiscounts = safeMath.add(totalItemDiscounts, discountAmount);
+
+              return `
+                <div class="summary-table-container">
+                  <table class="summary-table">
+                    <tr>
+                      <td class="label">إجمالي قبل الخصم:</td>
+                      <td class="value">${grossSubtotal.toLocaleString('en-US')}</td>
+                    </tr>
+                    ${totalDiscounts !== 0 ? `
+                      <tr>
+                        <td class="label">${totalDiscounts > 0 ? 'إجمالي الخصومات:' : 'إضافة (زيادة السعر):'}</td>
+                        <td class="value ${totalDiscounts > 0 ? 'text-red-600' : 'text-green-600'}">${totalDiscounts > 0 ? '-' : '+'}${Math.abs(totalDiscounts).toLocaleString('en-US')}</td>
+                      </tr>
+                    ` : ''}
+                    ${taxAmount > 0 ? `
+                      <tr>
+                        <td class="label">الضريبة المضافة:</td>
+                        <td class="value">+${taxAmount.toLocaleString('en-US')}</td>
+                      </tr>
+                    ` : ''}
+                    ${invoice.downPayment?.enabled ? `
+                      <tr>
+                        <td class="label">العربون المدفوع:</td>
+                        <td class="value">${(invoice.downPayment.amount || 0).toLocaleString('en-US')}</td>
+                      </tr>
+                    ` : ''}
+                    ${totalReturnedAmount > 0 ? `
+                      <tr style="color: #F97316; font-weight: 800;">
+                        <td class="label" style="color: #F97316;">قيمة المرتجعات:</td>
+                        <td class="value" style="color: #F97316;">-${totalReturnedAmount.toLocaleString('en-US')}</td>
+                      </tr>
+                    ` : ''}
+                    <tr class="total-row">
+                      <td class="label">${(invoice.downPayment?.enabled ? 'المبلغ المتبقي المستحق:' : 'الإجمالي النهائي:')}</td>
+                      <td class="value">${((invoice.downPayment?.enabled ? remainingAmount : total)).toLocaleString('en-US')}</td>
+                    </tr>
+                  </table>
+                </div>
+              `;
+            })()}
 
             
 
@@ -1750,6 +1779,7 @@ const Reports = () => {
                             <th className="px-4 py-3 text-slate-600 font-bold text-xs">اسم الصنف والمقاس</th>
                             <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الكمية بالفاتورة</th>
                             <th className="px-4 py-3 text-slate-600 font-bold text-xs">سعر الوحدة</th>
+                            <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الخصم %</th>
                             <th className="px-4 py-3 text-slate-600 font-bold text-xs">إجمالي الصنف</th>
                             <th className="px-4 py-3 text-slate-600 font-bold text-xs text-center">الإجراءات</th>
                           </tr>
@@ -1758,6 +1788,10 @@ const Reports = () => {
                           {(selectedInvoice.items || []).map((item, idx) => {
                             const qtyValue = editingQty[item.id] !== undefined ? editingQty[item.id] : item.quantity;
                             const priceValue = editingPrice[item.id] !== undefined ? editingPrice[item.id] : item.price;
+                            const discPct = Number(item.itemDiscount ?? item.discount ?? 0);
+                            const lineGross = safeMath.multiply(item.price, item.quantity);
+                            const discAmt = safeMath.calculatePercentage(lineGross, discPct);
+                            const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, discAmt);
                             return (
                               <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
                                 <td className="px-4 py-3 text-sm">{renderProductTitleAndSize(item.name)}</td>
@@ -1832,7 +1866,8 @@ const Reports = () => {
                                     <span className="text-xs text-slate-500 mr-1">ج.م</span>
                                   </div>
                                 </td>
-                                <td className="px-4 py-3 text-blue-600 text-sm font-bold">{((item.price) * (item.quantity)).toLocaleString('en-US')} ج.م</td>
+                                <td className="px-4 py-3 text-center text-xs font-bold text-orange-600">{discPct > 0 ? `${discPct}%` : '0%'}</td>
+                                <td className="px-4 py-3 text-blue-600 text-sm font-bold">{lineNet.toLocaleString('en-US')} ج.م</td>
                                 <td className="px-4 py-3 text-center">
                                 <button
                                   onClick={() => { soundManager.play('delete'); deleteItemFromInvoice(selectedInvoice.id, idx); }}

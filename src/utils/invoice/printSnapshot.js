@@ -14,17 +14,28 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
   const items = (invoice.items || []).map(item => {
     const q = Number(item.quantity || 0);
     const p = Number(item.price || 0);
+    const itemDiscPct = Number(item.itemDiscount ?? item.discount ?? item.discountPercentage) || 0;
+    const lineGross = safeMath.multiply(p, q);
+    const lineDiscAmt = safeMath.calculatePercentage(lineGross, itemDiscPct);
+    const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, lineDiscAmt);
     return {
       id: item.id,
       name: item.name || 'منتج غير محدد',
       quantity: q,
       price: p,
-      total: item.total !== undefined ? Number(item.total) : safeMath.multiply(p, q)
+      itemDiscount: itemDiscPct,
+      discount: itemDiscPct,
+      lineGross,
+      lineDiscountAmount: lineDiscAmt,
+      total: lineNet
     };
   });
 
+  const grossSubtotal = items.reduce((sum, item) => safeMath.add(sum, item.lineGross), 0);
+  const totalItemDiscounts = items.reduce((sum, item) => safeMath.add(sum, item.lineDiscountAmount), 0);
   const subtotal = Number(invoice.subtotal) || safeMath.calculateSubtotal(items);
   const discountAmount = Number(invoice.discountAmount) || 0;
+  const totalDiscounts = safeMath.add(totalItemDiscounts, discountAmount);
   const taxAmount = Number(invoice.taxAmount) || 0;
   const total = Number(invoice.total) || Math.max(0, subtotal - discountAmount + taxAmount);
   const remainingAmount = invoice.downPayment?.enabled
@@ -43,8 +54,11 @@ export const generatePrintSnapshot = (invoice, storeInfo = {}) => {
     previousDebt: Number(invoice.customerPreviousDebt) || Number(invoice.customer?.debt) || 0,
     newTotalDebt: Number(invoice.customerNewTotalDebt) || 0,
     items,
+    grossSubtotal,
+    totalItemDiscounts,
     subtotal,
     discountAmount,
+    totalDiscounts,
     taxAmount,
     total,
     downPaymentAmount: Number(invoice.downPayment?.amount) || 0,

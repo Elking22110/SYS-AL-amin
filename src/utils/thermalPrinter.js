@@ -281,17 +281,21 @@ class ThermalPrinterManager {
 
       // المنتجات
       await this.sendCommand('المنتجات:\n');
-      await this.sendCommand('الوصف                    الكمية   السعر       الإجمالي\n');
       await this.sendCommand('------------------------------------------\n');
       for (let i = 0; i < receiptData.items.length; i++) {
         const item = receiptData.items[i];
-        const name = item.name.length > 24 ? item.name.substring(0, 24) + '...' : item.name;
-        const quantity = item.quantity;
-        const price = item.price;
-        const total = safeMath.multiply(price, quantity);
+        const name = item.name || 'منتج غير محدد';
+        const quantity = Number(item.quantity || 0);
+        const price = Number(item.price || 0);
+        const discPct = Number(item.itemDiscount ?? item.discount ?? item.discountPercentage ?? 0);
+        const lineGross = safeMath.multiply(price, quantity);
+        const discAmt = safeMath.calculatePercentage(lineGross, discPct);
+        const lineNet = item.total !== undefined ? Number(item.total) : safeMath.subtract(lineGross, discAmt);
 
-        const line = `  ${name.padEnd(24, ' ')} ${quantity.toString().padStart(3, ' ')} × ${price.toFixed(2).padStart(8, ' ')} = ${total.toFixed(2).padStart(10, ' ')}`;
-        await this.sendCommand(line + '\n');
+        await this.sendCommand(`${i + 1}. ${name}\n`);
+        const discText = discPct !== 0 ? ` | خصم: ${discPct}%` : '';
+        const detailsLine = `   ${quantity} × ${price.toFixed(2)}${discText} = ${lineNet.toFixed(2)}\n`;
+        await this.sendCommand(detailsLine);
       }
 
       await this.sendCommand('\n'); // سطر فارغ
@@ -299,12 +303,26 @@ class ThermalPrinterManager {
       await this.sendCommand('\n'); // سطر فارغ
 
       // ملخص الفاتورة
-      await this.sendCommand('ملخص الفاتورة:\n');
-      await this.sendCommand(`  المجموع الفرعي: ${receiptData.subtotal.toFixed(2)}\n`);
+      const grossSubtotal = (receiptData.items || []).reduce((sum, item) => {
+        const p = Number(item.price || 0);
+        const q = Number(item.quantity || 0);
+        return safeMath.add(sum, safeMath.multiply(p, q));
+      }, 0);
+      const totalItemDiscounts = (receiptData.items || []).reduce((sum, item) => {
+        const p = Number(item.price || 0);
+        const q = Number(item.quantity || 0);
+        const discPct = Number(item.itemDiscount ?? item.discount ?? item.discountPercentage ?? 0);
+        const lineGross = safeMath.multiply(p, q);
+        return safeMath.add(sum, safeMath.calculatePercentage(lineGross, discPct));
+      }, 0);
+      const globalDiscount = Number(receiptData.discount || 0);
+      const totalDiscounts = safeMath.add(totalItemDiscounts, globalDiscount);
 
-      // الخصم
-      if (receiptData.discount > 0) {
-        await this.sendCommand(`  الخصم: -${receiptData.discount.toFixed(2)}\n`);
+      await this.sendCommand('ملخص الفاتورة:\n');
+      await this.sendCommand(`  إجمالي قبل الخصم: ${grossSubtotal.toFixed(2)}\n`);
+
+      if (totalDiscounts > 0) {
+        await this.sendCommand(`  إجمالي الخصومات: -${totalDiscounts.toFixed(2)}\n`);
       }
 
       // الضريبة
@@ -469,6 +487,20 @@ class ThermalPrinterManager {
   }
 
   // طباعة بدون إذن (محاولة)
+  // طباعة فاتورة من كائن الفاتورة المباشرة
+  async printInvoice(invoice) {
+    try {
+      const storeInfo = (() => {
+        try { return JSON.parse(localStorage.getItem('storeInfo') || '{}'); } catch (_) { return {}; }
+      })();
+      const snapshot = generatePrintSnapshot(invoice, storeInfo);
+      return await this.printReceipt(snapshot);
+    } catch (error) {
+      console.error('خطأ في طباعة الفاتورة:', error);
+      return false;
+    }
+  }
+
   async printWithoutPermission(receiptData) {
     try {
       // محاولة استخدام Web Serial API بدون إذن
